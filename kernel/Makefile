@@ -8,7 +8,11 @@ LDFLAGS = -T linker.ld -nostdlib -nostartfiles -static
 
 # Verzeichnisse
 ASM_SRC = boot.s drivers/isr.s
-C_SRC = kernel.c smp/smp.c
+C_SRC = kernel.c smp/smp.c management/monitor.c management/database.c \
+        ai/request_optimizer.c ai/hybrid_cognition.c \
+        gui/gui_core.c ide/ide_shell.c
+AI_SRC = ai/request_optimizer.c ai/hybrid_cognition.c
+MONITOR_SRC = management/monitor.c management/database.c
 OBJ_DIR = obj
 BIN_DIR = bin
 
@@ -30,16 +34,37 @@ $(OBJ_DIR)/boot.o: boot.s | $(OBJ_DIR)
 
 # Compile C files
 $(OBJ_DIR)/kernel.o: kernel.c | $(OBJ_DIR)
-	$(CC) $(CFLAGS) -c -o $@ $<
+	$(CC) $(CFLAGS) -I. -c -o $@ $<
 
 $(OBJ_DIR)/smp.o: smp/smp.c | $(OBJ_DIR)
-	$(CC) $(CFLAGS) -c -o $@ $<
+	$(CC) $(CFLAGS) -I. -c -o $@ $<
 
 $(OBJ_DIR)/isr.o: drivers/isr.s | $(OBJ_DIR)
 	nasm -f elf64 -o $@ $<
 
+$(OBJ_DIR)/monitor.o: management/monitor.c | $(OBJ_DIR)
+	$(CC) $(CFLAGS) -I. -c -o $@ $<
+
+$(OBJ_DIR)/database.o: management/database.c | $(OBJ_DIR)
+	$(CC) $(CFLAGS) -I. -c -o $@ $<
+
+$(OBJ_DIR)/req_opt.o: ai/request_optimizer.c | $(OBJ_DIR)
+	$(CC) $(CFLAGS) -I. -c -o $@ $<
+
+$(OBJ_DIR)/hybrid.o: ai/hybrid_cognition.c | $(OBJ_DIR)
+	$(CC) $(CFLAGS) -I. -c -o $@ $<
+
+$(OBJ_DIR)/llm_merge.o: ai/llm_merge.c | $(OBJ_DIR)
+	$(CC) $(CFLAGS) -I. -c -o $@ $<
+
+$(OBJ_DIR)/persistent_db.o: management/persistent_db.c | $(OBJ_DIR)
+	$(CC) $(CFLAGS) -I. -c -o $@ $<
+
 # Link kernel
-$(BIN_DIR)/kernel.bin: $(OBJ_DIR)/kernel.o $(OBJ_DIR)/smp.o $(OBJ_DIR)/isr.o | $(BIN_DIR)
+$(BIN_DIR)/kernel.bin: $(OBJ_DIR)/kernel.o $(OBJ_DIR)/smp.o $(OBJ_DIR)/isr.o \
+    $(OBJ_DIR)/monitor.o $(OBJ_DIR)/database.o $(OBJ_DIR)/req_opt.o \
+    $(OBJ_DIR)/hybrid.o $(OBJ_DIR)/llm_merge.o $(OBJ_DIR)/persistent_db.o \
+    $(OBJ_DIR)/gui.o $(OBJ_DIR)/ide.o | $(BIN_DIR)
 	ld $(LDFLAGS) -o $@ $^
 
 # Create ISO for QEMU
