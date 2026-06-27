@@ -1,0 +1,11 @@
+[Unit]
+Description=Heroic Core Autonomous Daemon
+After=network.target
+
+[Service]
+ExecStart=/opt/heroic-core_deploy/heroic-core/infrastructure/ignition.sh
+Restart=always
+User=root
+
+[Install]
+WantedBy=multi-user.target
