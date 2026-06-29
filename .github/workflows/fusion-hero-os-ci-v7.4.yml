@@ -21,6 +21,7 @@ permissions:
   contents: read
   pull-requests: read
   actions: read
+  security-events: write  # Required for CodeQL SARIF upload (Trivy results)
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -116,7 +117,8 @@ jobs:
           fetch-depth: 1
 
       - name: Trivy Security Scan (container + fs)
-        uses: aquasecurity/trivy-action@master
+        # Pinned version for reproducibility (avoid @master)
+        uses: aquasecurity/trivy-action@0.30.0
         with:
           scan-type: 'fs'
           format: 'sarif'
@@ -128,9 +130,16 @@ jobs:
           echo "🔗 Checking GitHub, Notion, Gamma, Vercel, Canva connectors..."
           echo "✅ All roadmap connectors: OPERATIONAL (auto-loaded per mainframe-laden v7.4)"
 
-      - name: Upload Trivy SARIF (if exists)
-        uses: github/codeql-action/upload-sarif@v3
-        if: always()
+      - name: Upload Trivy SARIF to Code Scanning
+        # v4 is the current supported version (v3 deprecated Dec 2026)
+        uses: github/codeql-action/upload-sarif@v4
+        # Skip on external fork PRs (no write permission) + only if SARIF was generated
+        if: |
+          always() &&
+          (github.event_name != 'pull_request' ||
+           github.event.pull_request.head.repo.full_name == github.repository) &&
+          hashFiles('trivy-results.sarif') != ''
+        continue-on-error: true  # Further safety net: don't fail the job if upload is denied (e.g. fork PRs, token issues)
         with:
           sarif_file: 'trivy-results.sarif'
 
