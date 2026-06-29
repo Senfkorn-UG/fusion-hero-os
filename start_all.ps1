@@ -45,6 +45,26 @@ if ($Force) {
     Write-Host "Modus: FORCE (Full-Boot · Medienserver-Sync)" -ForegroundColor Magenta
 }
 Write-Host "Substrat: Windows | Meta-Layer: Fusion Hero OS v1.2" -ForegroundColor DarkCyan
+
+# Automatische Erkennung der Input- und Output-Faktoren ZU BEGINN DES OS STARTS
+Write-Host "[0] Automatische Faktor-Erkennung..." -NoNewline
+try {
+    $factors = & $Python -c "
+import sys, os, json
+sys.path.insert(0, '$Dash')
+from app import detect_input_factors, detect_output_factors
+i = detect_input_factors()
+o = detect_output_factors()
+print(json.dumps({'input': i, 'output': o}))
+" 2>$null
+    if ($factors) {
+        Write-Host " OK (Input/Output Faktoren erkannt)" -ForegroundColor Green
+    } else {
+        Write-Host " (Fallback)" -ForegroundColor Yellow
+    }
+} catch {
+    Write-Host " (nicht verfügbar)" -ForegroundColor Yellow
+}
 & (Join-Path $Root "sync_grok_intern.ps1")
 if ((Test-Path "G:\Meine Ablage") -and ($env:FUSION_SKIP_SYNC -ne "1")) {
     # Skip teure Syncs bei GPU-heavy Runs um Netzwerk/Drive Bottleneck zu vermeiden

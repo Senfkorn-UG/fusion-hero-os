@@ -322,6 +322,15 @@ def build_workspace():
                     ui.label('• Geisterjagd: STANDBY').classes('text-xs text-[#94a3b8]')
                     ui.label('• QUBO-Kernel: SYNCHRONIZED').classes('text-xs text-[#7c3aed]')
 
+                    # Automatisch erkannte Input/Output Faktoren beim OS-Start
+                    try:
+                        r = requests.get(f"{API_BASE}/api/input-factors", timeout=1).json()
+                        o = requests.get(f"{API_BASE}/api/output-factors", timeout=1).json()
+                        ui.label(f"Input-Faktoren: CPUs={r.get('logical_cpus', '?')}, HT={r.get('hyperthreading_env')}, GPU={r.get('gpu_count', 0)}").classes('text-xs text-[#94a3b8]')
+                        ui.label(f"Output-Faktoren: Workers={o.get('target_workers', '?')}, Strategy={o.get('task_assignment_strategy', 'best_fit')}").classes('text-xs text-[#94a3b8]')
+                    except:
+                        pass
+
                 with ui.tab_panel(tab_guide):
                     ui.label('HERO-GUIDE Geltungs-Werkbank').classes('text-sm font-bold text-[#fbbf24]')
                     ui.label('Alle Einträge dynamisch aus hero-guide_geltungsstand.json').classes('text-xs mb-2')
