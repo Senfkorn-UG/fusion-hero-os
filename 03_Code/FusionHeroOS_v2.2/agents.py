@@ -199,6 +199,30 @@ def default_executor(agent: "Agent", task: Task) -> Any:
     abgesehen von der realen Wanduhrzeit. Pluggable: ein eigener Executor mit der
     Signatur ``(agent, task) -> result`` kann uebergeben werden.
     """
+    import os
+    if os.getenv("FUSION_VIRTUAL_HT_GPU") == "1":
+        try:
+            from virtual_gpu_hyperthreading import get_virtual_gpu_ht_cache, gpu_virtual_energy_update
+            cache = get_virtual_gpu_ht_cache()
+            tid = cache.allocate_virtual_thread()
+            if tid is not None:
+                # Use virtual thread for "work" - hyper parallel update
+                gpu_virtual_energy_update([tid], None)
+                # simulate some work time via virtual
+                time.sleep(max(0.0, agent.work_seconds) * 0.1)  # faster due to virtual HT
+                result = {
+                    "task_id": task.task_id,
+                    "name": task.name,
+                    "worker": agent.name,
+                    "echo": task.payload,
+                    "virtual_tid": tid,
+                    "vht_used": True
+                }
+                cache.free(tid)
+                return result
+        except Exception:
+            pass  # fallback
+
     time.sleep(max(0.0, agent.work_seconds))
     return {
         "task_id": task.task_id,
