@@ -107,9 +107,9 @@ async def trigger_core_mod(code: str):
         ui.notify("Sende Modifikation an Mainframe (Geltung geprüft)...", type='info')
         # response = requests.post(f"{API_BASE}/mod/apply", json={"code": code})
         # Mocking für die initiale Implementierung:
-        ui.notify("Modifikation akzeptiert: PeerReview-Bögen 1-3 PASS (Heroic Guide).", type='positive')
+        ui.notify("Modifikation akzeptiert: PeerReview-Bögen 1-3 PASS (Heroischer Leitfaden).", type='positive')
     except Exception as e:
-        ui.notify(f"Mainframe-Error: {str(e)}", type='negative')
+        ui.notify(f"Mainframe-Fehler: {str(e)}", type='negative')
 
 def check_and_assign_task(input_field):
     """Eingabe IMMER prüfen (HERO-GUIDE) und automatisch (selbstständig) einem Task zuordnen."""
