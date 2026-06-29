@@ -15,6 +15,7 @@
 from __future__ import annotations
 import os
 import sys
+sys.path.insert(0, os.path.dirname(__file__))  # allow sibling imports for core modules
 import json
 from typing import Any, Dict, List, Optional, Tuple
 
