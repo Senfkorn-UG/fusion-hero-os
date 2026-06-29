@@ -22,7 +22,7 @@ from pydantic import BaseModel
 import numpy as np
 
 BASE = Path(__file__).parent
-app = FastAPI(title="ALTE_Frau_95g Heroic Core Dashboard v7.4 / Fusion Hero OS v7.5")
+app = FastAPI(title="ALTE_Frau_95g Heroischer Core Dashboard v7.4 / Fusion Hero OS v7.5")
 
 # === Consolidated imports for agents + hyperthreading + task orchestration (from heroic_orchestration merge) ===
 import sys, os
