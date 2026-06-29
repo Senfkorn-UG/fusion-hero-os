@@ -19,13 +19,23 @@ app = FastAPI(title="Denkprozess Monitor")
 async def api_health(light: bool = False):
     if light:
         return {"status": "ok", "backend": "online"}
+
+    ht_info = {"enabled": False, "logical_cpus": os.cpu_count() or 12, "workers": 1}
+    if ht:
+        try:
+            ht_info = ht.status()
+        except Exception:
+            pass
+    elif 'hyperthreading' in globals():
+        ht_info = globals().get('hyperthreading', ht_info)
+
     return {
         "backend": "online",
         "fusion_os": "v7.5 MasterSeed",
         "core": "v7.5",
         "mainframe": {"loaded": True, "version": "v5.25", "boot_phase": "full"},
         "v12": {"grok_intern_aligned": True},
-        "hyperthreading": {"enabled": True, "logical_cpus": 12, "workers": 54},
+        "hyperthreading": ht_info,
         "tasks": {"autonomous": True, "queue_len": len(TASK_QUEUE), "support": "selbstständig neue tasks zuordnen"},
         "agents": {"loaded": AGENT_STATE["loaded"], "count": len(AGENT_STATE["agents"]), "auto": "immer automatisch laden und zuordnen"},
     }
@@ -67,6 +77,9 @@ JOBS: Dict[str, Dict[str, Any]] = {}
 TASK_QUEUE: List[Dict[str, Any]] = []
 
 # === Consolidated from heroic_orchestration (merged agent + classify logic) ===
+import sys, os
+if '03_Code' not in sys.path:
+    sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 try:
     from heroic_orchestration import (
         ensure_agents_loaded as _ensure_agents_shared,
@@ -77,6 +90,11 @@ except Exception:
     def _ensure_agents_shared(force=False): return True
     def classify_and_normalize(q): return q, "model", None, "General"
     def get_loaded_agents(): return {}
+
+try:
+    import hyperthreading_config as ht
+except Exception:
+    ht = None
 
 AGENT_STATE = {
     "loaded": False,
@@ -305,8 +323,30 @@ async def api_agents_assign(payload: dict):
     assignment = {"task_id": task_id, "agent": agent, "dom": dom, "ts": time.time()}
     return {"status": "ok", "assignment": assignment, "agent": state["agents"].get(agent)}
 
-# Auto-load agents on module import (immer automatisch)
+# === Hyperthreading API: aktivieren / status (konsolidiert mit hyperthreading_config) ===
+@app.get("/api/hyperthreading")
+async def get_hyperthreading():
+    if ht:
+        return ht.status()
+    return {"enabled": False, "logical_cpus": os.cpu_count() or 12, "workers": 1, "note": "hyperthreading_config not loaded"}
+
+@app.post("/api/hyperthreading")
+async def post_hyperthreading(payload: dict):
+    enabled = payload.get("enabled", True)
+    if ht:
+        result = ht.enable(bool(enabled))
+        # Also reflect in env for child processes / workers
+        os.environ["FUSION_HYPERTHREADING"] = "1" if enabled else "0"
+        return result
+    return {"enabled": bool(enabled), "logical_cpus": os.cpu_count() or 12, "workers": (os.cpu_count() or 12)*4 if enabled else 1}
+
+# Auto-load agents + hyperthreading on module import (immer automatisch)
 _ensure_agents()
+if ht:
+    try:
+        ht.enable(True)  # default aktivieren
+    except Exception:
+        pass
 
 app.mount("/static", StaticFiles(directory=BASE / "static"), name="static")
 
