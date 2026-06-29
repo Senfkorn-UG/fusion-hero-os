@@ -22,6 +22,20 @@ from pydantic import BaseModel
 import numpy as np
 
 BASE = Path(__file__).parent
+
+# .env früh laden, damit os.getenv (FUSION_*, Supabase, ...) verfügbar ist
+try:
+    from dotenv import load_dotenv
+    load_dotenv(BASE / ".env")
+except Exception:
+    pass
+
+# Supabase-Integration (optional, defensiv – Dashboard startet auch ohne)
+try:
+    import supabase_client as supa
+except Exception:
+    supa = None
+
 app = FastAPI(title="ALTE_Frau_95g Heroischer Core Dashboard v7.4 / Fusion Hero OS v7.5")
 
 # === Consolidated imports for agents + hyperthreading + task orchestration (from heroic_orchestration merge) ===
@@ -389,9 +403,18 @@ async def api_health(light: bool = False):
         "ws_endpoint": "/ws",
         "tasks": {"autonomous": True, "queue_len": len(TASK_QUEUE) if 'TASK_QUEUE' in globals() else 0, "support": "selbstständig neue tasks zuordnen"},
         "agents": agent_info,
+        "supabase": (supa.status() if supa else {"configured": False, "error": "supabase_client module not loaded"}),
         "input_factors": get_input_factors(),
         "output_factors": get_output_factors(),
     }
+
+@app.get("/api/supabase/health")
+async def api_supabase_health(probe: bool = False):
+    """Supabase-Status. ?probe=true macht einen echten (opt-in) Netzwerk-Check."""
+    if supa is None:
+        return {"configured": False, "error": "supabase_client module not loaded"}
+    # Blockierender Probe-Aufruf im Threadpool, um den Event-Loop nicht zu blockieren
+    return await asyncio.to_thread(supa.status, probe)
 
 # === Agent state and helpers (for auto load/assign) ===
 def _ensure_agents():
