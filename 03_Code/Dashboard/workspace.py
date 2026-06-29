@@ -258,9 +258,9 @@ def run_auto_save(once: bool = True):
             # Starte Loop im Hintergrund (minimized)
             cmd = ['powershell', '-ExecutionPolicy', 'Bypass', '-File', script]
             subprocess.Popen(cmd, cwd=GIT_ROOT, creationflags=subprocess.CREATE_NEW_CONSOLE)
-            ui.notify("Auto-Save Loop im Hintergrund gestartet (45s Interval).", type='info')
+            ui.notify("Auto-Save-Schleife im Hintergrund gestartet (45s Intervall).", type='info')
     except Exception as e:
-        ui.notify(f"Auto-Save Fehler: {e}", type='negative')
+        ui.notify(f"Auto-Save-Fehler: {e}", type='negative')
 
 def end_session_and_push():
     """Beendet Sitzung: final save + push aller Branches (main + worktrees) zu GitHub."""
@@ -281,7 +281,7 @@ def end_session_and_push():
     except subprocess.TimeoutExpired:
         ui.notify("Push läuft noch im Hintergrund...", type='info')
     except Exception as e:
-        ui.notify(f"End-Session Fehler: {e}", type='negative')
+        ui.notify(f"End-Session-Fehler: {e}", type='negative')
 
 def toggle_auto_git_save(enabled: bool):
     global AUTO_SAVE_ENABLED
@@ -313,9 +313,9 @@ def build_workspace():
 
             with ui.tab_panels(tabs, value=tab_status).classes('w-full'):
                 with ui.tab_panel(tab_status):
-                    ui.label('Fusion Hero OS | v5.8').classes('text-lg font-bold text-[#00d4aa]')
+                    ui.label('Fusion Hero OS | v7.5').classes('text-lg font-bold text-[#00d4aa]')
                     ui.separator().classes('my-2')
-                    ui.label('Status: Global Anchor Locked').classes('text-sm text-[#94a3b8]')
+                    ui.label('Status: Globaler Anker gesichert').classes('text-sm text-[#94a3b8]')
                     ui.label('Geflecht-Kohärenz: 1.00').classes('text-sm text-[#fbbf24]')
                     ui.label('Aktive Module').classes('mt-3 font-bold')
                     ui.label('• HarmonisierungsCore: OK').classes('text-xs text-[#00d4aa]')
@@ -340,22 +340,22 @@ def build_workspace():
                     ui.label('Regel: Jede Aussage kategorisieren. Keine Metapher als Beweis.').classes('text-xs mt-2 text-[#fbbf24]')
 
             # Link to separate heo-guide/ folder (correct naming)
-            ui.button('Open H.E.O. Guide (heo-guide/index.html)', on_click=lambda: ui.run_javascript('window.open("file:///C:/Users/Admin/heo-guide/index.html", "_blank")')).classes('mt-2 text-xs')
+            ui.button('H.E.O. Guide öffnen (heo-guide/index.html)', on_click=lambda: ui.run_javascript('window.open("file:///C:/Users/Admin/heo-guide/index.html", "_blank")')).classes('mt-2 text-xs')
 
             # Integration links (correct naming: heo-guide folder)
-            ui.label('Related:').classes('text-xs mt-2')
-            ui.button('v2.2 App (FusionHeroOS_v2.2/app.py)', on_click=lambda: ui.notify('Run: cd 03_Code/FusionHeroOS_v2.2 && python app.py', type='info')).classes('text-xs')
-            ui.button('Tk GUI (heroic_core_gui.py)', on_click=lambda: ui.notify('Run the heroic_core_gui.py separately (Tk)', type='info')).classes('text-xs')
+            ui.label('Verwandt:').classes('text-xs mt-2')
+            ui.button('v2.2 App (FusionHeroOS_v2.2/app.py)', on_click=lambda: ui.notify('Ausführen: cd 03_Code/FusionHeroOS_v2.2 && python app.py', type='info')).classes('text-xs')
+            ui.button('Tk GUI (heroic_core_gui.py)', on_click=lambda: ui.notify('heroic_core_gui.py separat ausführen (Tk)', type='info')).classes('text-xs')
 
             # === SELBSTSTÄNDIGE TASK-ZUORDNUNG: Eingabe IMMER prüfen + automatisch einem Task zuordnen ===
             ui.separator().classes('my-3')
             ui.label('Autonome Task-Zuordnung — Eingabe IMMER prüfen + automatisch Task zuordnen').classes('text-sm font-bold text-[#fbbf24]')
-            task_input = ui.input(placeholder='Eingabe (ENTER = immer prüfen + auto Task zuordnen)').classes('w-full text-xs')
-            # ENTER key always triggers full check + auto-assign
+            task_input = ui.input(placeholder='Eingabe (EINGABE-Taste = immer prüfen + auto Task zuordnen)').classes('w-full text-xs')
+            # EINGABE-Taste (Enter) löst immer die vollständige Prüfung + automatische Zuordnung aus
             task_input.on('keydown.enter', lambda: check_and_assign_task(task_input))
             with ui.row().classes('w-full'):
                 ui.button('Prüfen & Task zuordnen', on_click=lambda: check_and_assign_task(task_input)).classes('text-xs')
-                ui.switch('Autonom (auto aus Guide)', value=False, on_change=lambda e: toggle_autonomous(e.value)).classes('text-xs')
+                ui.switch('Autonom (automatisch aus Guide)', value=False, on_change=lambda e: toggle_autonomous(e.value)).classes('text-xs')
             # Task table (global ref for updates) - zeigt selbstständig zugeordnete Tasks
             global task_table
             task_table = ui.table(
@@ -387,51 +387,51 @@ def build_workspace():
             # Extra controls for full autonomy
             with ui.row().classes('w-full mt-1'):
                 ui.button('Neue autonome Task erzwingen', on_click=lambda: auto_generate_and_assign()).classes('text-xs')
-                ui.button('Refresh Tasks', on_click=lambda: (task_table.update() if task_table else None)).classes('text-xs')
+                ui.button('Tasks aktualisieren', on_click=lambda: (task_table.update() if task_table else None)).classes('text-xs')
 
             # === AGENTEN: Immer automatisch laden und zuordnen ===
             ui.separator().classes('my-2')
-            ui.label('Agenten (immer auto laden + zuordnen)').classes('text-sm font-bold text-[#fbbf24]')
+            ui.label('Agenten (immer automatisch laden + zuordnen)').classes('text-sm font-bold text-[#fbbf24]')
             with ui.row().classes('w-full'):
                 ui.button('Agenten jetzt laden', on_click=lambda: ensure_agents_loaded(force=True)).classes('text-xs')
-                ui.button('Status', on_click=lambda: ui.notify(f"Loaded: {list(LOADED_AGENTS.keys())}", type='info')).classes('text-xs')
+                ui.button('Status', on_click=lambda: ui.notify(f"Geladen: {list(LOADED_AGENTS.keys())}", type='info')).classes('text-xs')
             def _agent_label():
                 try:
                     from heroic_orchestration import get_loaded_agents
                     ags = get_loaded_agents()
-                    return f"Agents: geladen | {len(ags)} aktiv"
+                    return f"Agenten: geladen | {len(ags)} aktiv"
                 except:
-                    return f"Agents: {'geladen' if AGENTS_LOADED else 'nicht geladen'} | {len(LOADED_AGENTS)} aktiv"
+                    return f"Agenten: {'geladen' if AGENTS_LOADED else 'nicht geladen'} | {len(LOADED_AGENTS)} aktiv"
             agent_status = ui.label(_agent_label).classes('text-xs text-[#94a3b8]')
 
             # === HYPERTHREADING aktivieren ===
             ui.separator().classes('my-2')
-            ui.label('Hyperthreading (FUSION_HYPERTHREADING + Virtual GPU HT)').classes('text-sm font-bold text-[#fbbf24]')
+            ui.label('Hyperthreading (FUSION_HYPERTHREADING + virtuelles GPU-HT)').classes('text-sm font-bold text-[#fbbf24]')
             def _refresh_ht():
                 try:
                     r = requests.get(f"{API_BASE}/api/hyperthreading", timeout=2).json()
-                    return f"HT: {'EIN' if r.get('enabled') else 'AUS'} | workers={r.get('workers','?')} | vGPU={r.get('virtual_ht_gpu', False)}"
+                    return f"HT: {'EIN' if r.get('enabled') else 'AUS'} | Worker={r.get('workers','?')} | vGPU={r.get('virtual_ht_gpu', False)}"
                 except Exception as ex:
-                    return f"HT status (backend not running or not reachable)"
+                    return f"HT-Status (Backend nicht erreichbar oder nicht gestartet)"
             ht_label = ui.label(_refresh_ht).classes('text-xs text-[#94a3b8]')
             with ui.row().classes('w-full'):
                 ui.button('Hyperthreading AKTIVIEREN', on_click=lambda: (
                     requests.post(f"{API_BASE}/api/hyperthreading", json={"enabled": True}, timeout=3),
                     ht_label.set_text(_refresh_ht()),
-                    ui.notify("Hyperthreading aktiviert (workers scaled)", type='positive')
+                    ui.notify("Hyperthreading aktiviert (Worker skaliert)", type='positive')
                 )).classes('text-xs bg-green-700')
                 ui.button('Deaktivieren', on_click=lambda: (
                     requests.post(f"{API_BASE}/api/hyperthreading", json={"enabled": False}, timeout=3),
                     ht_label.set_text(_refresh_ht())
                 )).classes('text-xs')
-                ui.button('Refresh', on_click=lambda: ht_label.set_text(_refresh_ht())).classes('text-xs')
+                ui.button('Aktualisieren', on_click=lambda: ht_label.set_text(_refresh_ht())).classes('text-xs')
 
             # === GIT: Alle Neuerungen automatisch speichern + am Ende der Sitzung pushen ===
             ui.separator().classes('my-3')
-            ui.label('Git Auto-Save & Session-Push').classes('text-sm font-bold text-[#fbbf24]')
+            ui.label('Git Auto-Save & Sitzungs-Push').classes('text-sm font-bold text-[#fbbf24]')
             ui.label('Neuerungen immer committen. Am Sitzungsende: alle Branches sicher zu GitHub.').classes('text-xs mb-1')
             with ui.row().classes('w-full'):
-                ui.button('Jetzt speichern (commit)', on_click=lambda: run_auto_save(once=True)).classes('text-xs')
+                ui.button('Jetzt speichern (Commit)', on_click=lambda: run_auto_save(once=True)).classes('text-xs')
                 ui.button('Sitzung beenden + Push', on_click=end_session_and_push).classes('text-xs bg-red-600')
             with ui.row().classes('w-full mt-1'):
                 ui.switch('Auto-Save (während Sitzung)', value=False, on_change=lambda e: toggle_auto_git_save(e.value)).classes('text-xs')
