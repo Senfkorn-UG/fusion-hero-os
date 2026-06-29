@@ -36,7 +36,7 @@ function Get-Worktrees {
 function Commit-All([string]$Path, [string]$Branch) {
     Push-Location $Path
     try {
-        $porcelain = git status --porcelain
+        $porcelain = git status --porcelain --untracked-files=all
         if ($porcelain) {
             $ts = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
             $msg = "session-end [$ts] $Branch - Alle Neuerungen der Sitzung"

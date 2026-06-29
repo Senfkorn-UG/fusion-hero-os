@@ -35,7 +35,7 @@ function GetAllWorktrees {
 function CommitChanges($Path, $BranchName) {
     Push-Location $Path
     try {
-        $status = git status --porcelain
+        $status = git status --porcelain --untracked-files=all
         if (-not $status) {
             Write-Host ("[" + (Split-Path $Path -Leaf) + "] clean")
             return $false
