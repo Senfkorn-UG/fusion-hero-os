@@ -486,5 +486,6 @@ def execute_heroic_task():
                     .classes('bg-[#7c3aed] text-white')
 
 # Start des Workspace
-build_workspace()
-ui.run(port=8080)
+if __name__ == "__main__":
+    build_workspace()
+    ui.run(port=8080)
