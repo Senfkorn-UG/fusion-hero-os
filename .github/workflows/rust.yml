@@ -19,7 +19,9 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-    - name: Build
+    - name: Build Rust prototype (alte_frau_rust)
+      working-directory: 03_Code/Rust_Prototype/alte_frau_rust
       run: cargo build --verbose
-    - name: Run tests
+    - name: Run tests for Rust prototype
+      working-directory: 03_Code/Rust_Prototype/alte_frau_rust
       run: cargo test --verbose
