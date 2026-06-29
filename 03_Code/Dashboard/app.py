@@ -29,7 +29,7 @@ import sys, os
 if '03_Code' not in sys.path:
     sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 try:
-    from heroic_orchestration import (
+    from core.heroic_orchestration import (
         ensure_agents_loaded as _ensure_agents_shared,
         classify_and_normalize,
         get_loaded_agents,
@@ -44,7 +44,7 @@ except Exception:
     def get_best_qubo_solver(): return None
 
 try:
-    import hyperthreading_config as ht
+    from core import hyperthreading_config as ht
 except Exception:
     ht = None
 

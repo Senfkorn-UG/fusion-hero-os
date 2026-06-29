@@ -31,7 +31,7 @@ import sys
 if '03_Code' not in sys.path:
     sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 try:
-    from heroic_orchestration import (
+    from core.heroic_orchestration import (
         load_guide,
         classify_and_normalize,
         ensure_agents_loaded,
@@ -211,7 +211,7 @@ def complete_task(task_id):
 
     # Automatisch den besten offenen Task dem geeignetsten Agenten zuweisen (Task findet sich selbst)
     try:
-        from heroic_orchestration import auto_load, assign_task_to_agent, create_classified_task
+        from core.heroic_orchestration import auto_load, assign_task_to_agent, create_classified_task
         auto_load(phase="staged")
         pending = [t for t in tasks if t.get('status') == 'pending']
         if pending:
@@ -415,7 +415,7 @@ def build_workspace():
             # Generelles AutoLoad periodisch (jede Minute)
             def _auto_load_periodic():
                 try:
-                    from heroic_orchestration import auto_load
+                    from core.heroic_orchestration import auto_load
                     auto_load(phase="staged")
                 except:
                     ensure_agents_loaded()
@@ -434,7 +434,7 @@ def build_workspace():
                 ui.button('Status', on_click=lambda: ui.notify(f"Geladen: {list(LOADED_AGENTS.keys())}", type='info')).classes('text-xs')
             def _agent_label():
                 try:
-                    from heroic_orchestration import get_loaded_agents
+                    from core.heroic_orchestration import get_loaded_agents
                     ags = get_loaded_agents()
                     return f"Agenten: geladen | {len(ags)} aktiv"
                 except:
