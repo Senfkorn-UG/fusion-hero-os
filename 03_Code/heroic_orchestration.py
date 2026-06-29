@@ -148,7 +148,7 @@ def get_agent_supervisor():
 
 
 def assign_task_to_agent(task: Dict[str, Any]) -> str:
-    """Auto-assign agent based on dom/geltung. Returns agent name."""
+    """Auto-assign agent based on dom/geltung. Respects hyperthreading worker scaling."""
     ensure_agents_loaded()
     dom = task.get("dom", "General")
     agent_name = {
@@ -156,6 +156,14 @@ def assign_task_to_agent(task: Dict[str, Any]) -> str:
         "Phil": "phil-worker",
         "Info": "info-worker",
     }.get(dom, "general-worker")
+
+    # HT scaling hint (more parallel tracks when enabled)
+    try:
+        import hyperthreading_config as _htc
+        if _htc.status().get("enabled"):
+            task["ht_workers"] = _htc.parallel_workers()
+    except Exception:
+        pass
 
     sup = _AGENT_SUPERVISOR
     if sup and hasattr(sup, "task_queue"):
