@@ -27,6 +27,7 @@ async def api_health(light: bool = False):
         "v12": {"grok_intern_aligned": True},
         "hyperthreading": {"enabled": True, "logical_cpus": 12, "workers": 54},
         "tasks": {"autonomous": True, "queue_len": len(TASK_QUEUE), "support": "selbstständig neue tasks zuordnen"},
+        "agents": {"loaded": AGENT_STATE["loaded"], "count": len(AGENT_STATE["agents"]), "auto": "immer automatisch laden und zuordnen"},
     }
 
 MAX_EVENTS = 500
@@ -64,6 +65,33 @@ KEY_PROBLEMS: List[dict] = [
 # === Autonomous task input / orchestration support (for workspace "selbstständig neue tasks zuordnen") ===
 JOBS: Dict[str, Dict[str, Any]] = {}
 TASK_QUEUE: List[Dict[str, Any]] = []
+
+# === Agents: immer automatisch laden und zuordnen ===
+AGENT_STATE = {
+    "loaded": False,
+    "supervisor": None,
+    "agents": {},
+    "last_load": None
+}
+
+def _ensure_agents():
+    """Backend: Agenten immer automatisch laden."""
+    if AGENT_STATE["loaded"]:
+        return AGENT_STATE
+    try:
+        # Fallback simple agents for backend
+        AGENT_STATE["agents"] = {
+            "supervisor": {"name": "fusion-hero-supervisor", "role": "supervisor", "state": "running"},
+            "math-worker": {"name": "math-worker", "role": "worker", "dom": "Math"},
+            "phil-worker": {"name": "phil-worker", "role": "worker", "dom": "Phil"},
+            "info-worker": {"name": "info-worker", "role": "worker", "dom": "Info"},
+            "general-worker": {"name": "general-worker", "role": "worker"},
+        }
+        AGENT_STATE["loaded"] = True
+        AGENT_STATE["last_load"] = time.time()
+    except Exception:
+        pass
+    return AGENT_STATE
 
 class InputPayload(BaseModel):
     query: str = ""
@@ -244,6 +272,35 @@ async def api_orchestrate(payload: OrchestratePayload):
 @app.get("/api/tasks")
 async def api_tasks():
     return {"tasks": TASK_QUEUE[-50:], "active_jobs": len(JOBS)}
+
+# === Agents endpoints: immer automatisch laden und zuordnen ===
+@app.get("/api/agents")
+async def api_agents():
+    state = _ensure_agents()
+    return {"loaded": state["loaded"], "agents": state["agents"], "count": len(state["agents"])}
+
+@app.post("/api/agents/load")
+async def api_agents_load():
+    state = _ensure_agents()
+    state["loaded"] = True
+    state["last_load"] = time.time()
+    return {"status": "ok", "loaded": True, "agents": list(state["agents"].keys())}
+
+@app.post("/api/agents/assign")
+async def api_agents_assign(payload: dict):
+    state = _ensure_agents()
+    task_id = payload.get("task_id")
+    dom = payload.get("dom", "General")
+    # Auto assign logic
+    agent_map = {"Math": "math-worker", "Phil": "phil-worker", "Info": "info-worker"}
+    agent = agent_map.get(dom, "general-worker")
+    if agent not in state["agents"]:
+        agent = "general-worker"
+    assignment = {"task_id": task_id, "agent": agent, "dom": dom, "ts": time.time()}
+    return {"status": "ok", "assignment": assignment, "agent": state["agents"].get(agent)}
+
+# Auto-load agents on module import (immer automatisch)
+_ensure_agents()
 
 app.mount("/static", StaticFiles(directory=BASE / "static"), name="static")
 

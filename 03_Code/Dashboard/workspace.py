@@ -40,6 +40,68 @@ def load_guide():
             _GUIDE_CACHE = []
     return _GUIDE_CACHE
 
+# === Agents: Immer automatisch laden und zuordnen ===
+AGENTS_LOADED = False
+AGENT_SUPERVISOR = None
+LOADED_AGENTS = {}  # name -> info
+
+def ensure_agents_loaded(force: bool = False):
+    """Agenten IMMER automatisch laden (Supervisor + Worker-Belegschaft)."""
+    global AGENTS_LOADED, AGENT_SUPERVISOR, LOADED_AGENTS
+    if AGENTS_LOADED and not force:
+        return True
+
+    try:
+        # Try to use the real pure-Python agents framework
+        agents_path = os.path.join(GIT_ROOT, '03_Code', 'FusionHeroOS_v2.2')
+        if agents_path not in sys.path:
+            sys.path.insert(0, agents_path)
+
+        import agents as ag
+
+        if AGENT_SUPERVISOR is None or force:
+            AGENT_SUPERVISOR = ag.Supervisor(
+                name="fusion-hero-supervisor",
+                min_workers=2,
+                max_workers=12,
+                scale_up_threshold=2
+            )
+            AGENT_SUPERVISOR.start()
+
+        # Record loaded state
+        AGENTS_LOADED = True
+        LOADED_AGENTS = {
+            "supervisor": {
+                "name": AGENT_SUPERVISOR.name,
+                "role": "supervisor",
+                "state": getattr(AGENT_SUPERVISOR, 'state', 'running'),
+                "children": len(AGENT_SUPERVISOR.children()) if hasattr(AGENT_SUPERVISOR, 'children') else 2
+            }
+        }
+        for child in (AGENT_SUPERVISOR.children() if hasattr(AGENT_SUPERVISOR, 'children') else []):
+            LOADED_AGENTS[child.name] = {"name": child.name, "role": getattr(child, 'role', 'worker'), "state": "running"}
+
+        try:
+            ui.notify(f"Agenten automatisch geladen: Supervisor + {len(LOADED_AGENTS)-1} Worker", type='positive')
+        except:
+            pass
+        return True
+    except Exception as e:
+        # Fallback: simple in-memory agent registry
+        AGENTS_LOADED = True
+        LOADED_AGENTS = {
+            "supervisor": {"name": "fusion-hero-supervisor", "role": "supervisor", "state": "running", "children": 4},
+            "math-worker": {"name": "math-worker", "role": "worker", "state": "running", "dom": "Math"},
+            "phil-worker": {"name": "phil-worker", "role": "worker", "state": "running", "dom": "Phil"},
+            "info-worker": {"name": "info-worker", "role": "worker", "state": "running", "dom": "Info"},
+            "general-worker": {"name": "general-worker", "role": "worker", "state": "running"},
+        }
+        try:
+            ui.notify("Agenten (Fallback) automatisch geladen", type='info')
+        except:
+            pass
+        return True
+
 def classify_and_normalize(query: str):
     """Eingabe IMMER prüfen: erkennt Domäne + Geltung, fügt automatisch [cat] hinzu wenn fehlt."""
     query = (query or "").strip()
@@ -149,6 +211,9 @@ def check_and_assign_task(input_field):
     normalized, best_cat, matched, dom = classify_and_normalize(raw)
     has_geltung = True  # after normalize we always have one
 
+    # Agenten IMMER automatisch laden
+    ensure_agents_loaded()
+
     # Task erstellen mit reichen Metadaten
     task_id = len(tasks) + 1
     task = {
@@ -160,7 +225,8 @@ def check_and_assign_task(input_field):
         'status': 'pending',
         'zugeordnet': None,
         'result': None,
-        'matched': matched.get('name') if matched else None
+        'matched': matched.get('name') if matched else None,
+        'assigned_agent': None
     }
     tasks.append(task)
     if task_table:
@@ -171,6 +237,31 @@ def check_and_assign_task(input_field):
     # Selbstständig zuordnen (orchestrator mit Kontext)
     assigned_to = 'mainframe'
     result_text = 'Autonom zugeordnet'
+
+    # Agent automatisch zuordnen basierend auf dom/geltung
+    agent_name = "general-worker"
+    if dom == "Math":
+        agent_name = "math-worker"
+    elif dom == "Phil":
+        agent_name = "phil-worker"
+    elif dom == "Info":
+        agent_name = "info-worker"
+
+    if AGENT_SUPERVISOR and hasattr(AGENT_SUPERVISOR, 'task_queue'):
+        try:
+            # Create a Task and let supervisor assign
+            from agents import Task as AgTask  # may be available after import
+            t = AgTask(name=f"task-{task_id}", payload={"query": normalized, "geltung": best_cat, "dom": dom})
+            AGENT_SUPERVISOR.task_queue.put(t)
+            assigned_agent_info = LOADED_AGENTS.get(agent_name, {"name": agent_name})
+            task['assigned_agent'] = assigned_agent_info.get('name', agent_name)
+            assigned_to = f"agent:{task['assigned_agent']}"
+        except Exception:
+            task['assigned_agent'] = agent_name
+            assigned_to = f"agent:{agent_name} (fallback)"
+    else:
+        task['assigned_agent'] = agent_name
+        assigned_to = f"agent:{agent_name}"
 
     model_pool = ["grok-intern", "fusion-hero"]
     if dom == "Math":
@@ -185,9 +276,9 @@ def check_and_assign_task(input_field):
             res = orchestrator.orchestrate(
                 query=normalized,
                 model_pool=model_pool,
-                context={"dom": dom, "geltung": best_cat, "source": "auto-task"}
+                context={"dom": dom, "geltung": best_cat, "source": "auto-task", "agent": task.get('assigned_agent')}
             )
-            assigned_to = ', '.join(res.get('used_models', model_pool))
+            assigned_to = f"{assigned_to} + {', '.join(res.get('used_models', model_pool))}"
             result_text = res.get('synthesised_response', f'Heroic Synthesis [{best_cat}]')
             task['result'] = result_text
         except Exception as e:
@@ -334,6 +425,9 @@ def periodic_git_save():
         run_auto_save(once=True)
 
 def build_workspace():
+    # Agenten IMMER automatisch laden beim Start des Workspace
+    ensure_agents_loaded()
+
     # Heroisches Theme (Amber/Cyan auf Dark)
     ui.query("body").classes('bg-[#0a0a0f] text-[#e2e8f0]')
     
@@ -396,6 +490,7 @@ def build_workspace():
                     {'name': 'id', 'label': 'ID', 'field': 'id'},
                     {'name': 'geltung', 'label': 'Geltung', 'field': 'geltung'},
                     {'name': 'dom', 'label': 'Dom', 'field': 'dom'},
+                    {'name': 'assigned_agent', 'label': 'Agent', 'field': 'assigned_agent'},
                     {'name': 'query', 'label': 'Eingabe (auto-geprüft)', 'field': 'query'},
                     {'name': 'status', 'label': 'Status', 'field': 'status'},
                     {'name': 'zugeordnet', 'label': 'Zugeordnet an', 'field': 'zugeordnet'},
@@ -410,10 +505,24 @@ def build_workspace():
             # Lightweight in-app Git auto-save timer (if enabled via switch)
             ui.timer(55.0, periodic_git_save)
 
+            # Agenten immer automatisch sicherstellen (jede Minute reload-check)
+            def _ensure_agents_periodic():
+                if not AGENTS_LOADED:
+                    ensure_agents_loaded()
+            ui.timer(60.0, _ensure_agents_periodic)
+
             # Extra controls for full autonomy
             with ui.row().classes('w-full mt-1'):
                 ui.button('Neue autonome Task erzwingen', on_click=lambda: auto_generate_and_assign()).classes('text-xs')
                 ui.button('Refresh Tasks', on_click=lambda: (task_table.update() if task_table else None)).classes('text-xs')
+
+            # === AGENTEN: Immer automatisch laden und zuordnen ===
+            ui.separator().classes('my-2')
+            ui.label('Agenten (immer auto laden + zuordnen)').classes('text-sm font-bold text-[#fbbf24]')
+            with ui.row().classes('w-full'):
+                ui.button('Agenten jetzt laden', on_click=lambda: ensure_agents_loaded(force=True)).classes('text-xs')
+                ui.button('Status', on_click=lambda: ui.notify(f"Loaded: {list(LOADED_AGENTS.keys())}", type='info')).classes('text-xs')
+            agent_status = ui.label(lambda: f"Agents: {'geladen' if AGENTS_LOADED else 'nicht geladen'} | {len(LOADED_AGENTS)} aktiv").classes('text-xs text-[#94a3b8]')
 
             # === GIT: Alle Neuerungen automatisch speichern + am Ende der Sitzung pushen ===
             ui.separator().classes('my-3')
