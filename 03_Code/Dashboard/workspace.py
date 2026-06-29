@@ -26,6 +26,60 @@ try:
 except Exception as e:
     print(f"Warning: Could not load DynamicOrchestrationCoreModule: {e}")
 
+# Cache for HERO-GUIDE for classification
+_GUIDE_CACHE = None
+
+def load_guide():
+    global _GUIDE_CACHE
+    if _GUIDE_CACHE is None:
+        try:
+            guide_path = os.path.join(os.path.dirname(__file__), '..', '..', '02_Mathematik', 'hero-guide_geltungsstand.json')
+            with open(guide_path, encoding='utf-8') as f:
+                _GUIDE_CACHE = json.load(f)
+        except Exception:
+            _GUIDE_CACHE = []
+    return _GUIDE_CACHE
+
+def classify_and_normalize(query: str):
+    """Eingabe IMMER prüfen: erkennt Domäne + Geltung, fügt automatisch [cat] hinzu wenn fehlt."""
+    query = (query or "").strip()
+    if not query:
+        return query, "model", None
+
+    cats = ['proven', 'cond', 'model', 'frag', 'over']
+    has_geltung = any(f"[{c}]" in query for c in cats) or any(f"#{c}" in query for c in cats)
+
+    guide = load_guide()
+    matched = None
+    best_cat = "model"
+    dom = "General"
+
+    # Simple keyword matching against guide for auto-categorization
+    q_lower = query.lower()
+    for entry in guide:
+        name = entry.get('name', '').lower()
+        formula = entry.get('formula', '').lower()
+        task = entry.get('task', '').lower()
+        if any(kw in q_lower for kw in [name[:20], entry.get('dom','').lower()]) or \
+           any(part in q_lower for part in name.split()[:3] if len(part) > 3):
+            matched = entry
+            best_cat = entry.get('cat', 'model')
+            dom = entry.get('dom', 'General')
+            break
+
+    # If no geltung, auto-prepend the best one
+    normalized = query
+    if not has_geltung:
+        prefix = f"[{best_cat}] "
+        if not query.startswith('['):
+            normalized = prefix + query
+        try:
+            ui.notify(f"HERO-GUIDE: Auto-Tag hinzugefügt → {prefix.strip()} (dom: {dom})", type='info')
+        except:
+            pass  # non-UI context safe
+
+    return normalized, best_cat, matched, dom
+
 # Global task list for autonomous assignment (selbstständig neue tasks zuordnen)
 tasks = []
 task_table = None
@@ -39,7 +93,12 @@ try:
         with open(auto_task_file, encoding='utf-8') as f:
             loaded = json.load(f)
             if isinstance(loaded, list):
-                tasks.extend(loaded)
+                for t in loaded:
+                    # Backfill new fields for older tasks
+                    t.setdefault('geltung', t.get('geltung', 'model'))
+                    t.setdefault('dom', t.get('dom', 'General'))
+                    t.setdefault('original', t.get('original', t.get('query', '')))
+                    tasks.append(t)
 except Exception:
     pass
 
@@ -81,68 +140,83 @@ async def trigger_core_mod(code: str):
 
 def check_and_assign_task(input_field):
     """Eingabe IMMER prüfen (HERO-GUIDE) und automatisch (selbstständig) einem Task zuordnen."""
-    query = (input_field.value or "").strip()
-    if not query:
+    raw = (input_field.value or "").strip()
+    if not raw:
         ui.notify("Keine Eingabe", type='warning')
         return
 
-    # Immer prüfen mit HERO-GUIDE (Geltungskategorien)
-    cats = ['proven', 'cond', 'model', 'frag', 'over']
-    has_geltung = any(f"[{c}]" in query for c in cats) or any(f"#{c}" in query for c in cats)
-    if not has_geltung:
-        ui.notify('HERO-GUIDE: Eingabe ohne Geltungskategorie! Füge [cat] hinzu (proven/cond/model/frag/over).', type='warning')
-        # Immer noch zuordnen (user request: immer prüfen + zuordnen)
+    # === IMMER PRÜFEN + AUTOMATISCH TAGGEN ===
+    normalized, best_cat, matched, dom = classify_and_normalize(raw)
+    has_geltung = True  # after normalize we always have one
 
-    # Task erstellen
+    # Task erstellen mit reichen Metadaten
     task_id = len(tasks) + 1
     task = {
         'id': task_id,
-        'query': query,
+        'query': normalized,
+        'original': raw,
+        'geltung': best_cat,
+        'dom': dom,
         'status': 'pending',
         'zugeordnet': None,
-        'result': None
+        'result': None,
+        'matched': matched.get('name') if matched else None
     }
     tasks.append(task)
     if task_table:
         task_table.update()
-    ui.notify(f"Task {task_id} erstellt. Selbstständige Zuordnung läuft...", type='info')
+    ui.notify(f"Task {task_id} erstellt (auto geprüft & getaggt [{best_cat}] / {dom}). Selbstständige Zuordnung...", type='info')
     input_field.value = ''
 
-    # Selbstständig zuordnen (orchestrator -> backend -> mainframe fallback)
+    # Selbstständig zuordnen (orchestrator mit Kontext)
     assigned_to = 'mainframe'
     result_text = 'Autonom zugeordnet'
+
+    model_pool = ["grok-intern", "fusion-hero"]
+    if dom == "Math":
+        model_pool = ["grok-intern", "qb-qubo", "architect"]
+    elif dom == "Phil":
+        model_pool = ["grok-intern", "claude", "code-reviewer"]
+    elif dom == "Info":
+        model_pool = ["grok-intern", "fusion-hero", "meta-layer"]
 
     if orchestrator:
         try:
             res = orchestrator.orchestrate(
-                query=query,
-                model_pool=["grok-intern", "claude", "architect", "code-reviewer", "fusion-hero"]
+                query=normalized,
+                model_pool=model_pool,
+                context={"dom": dom, "geltung": best_cat, "source": "auto-task"}
             )
-            assigned_to = ', '.join(res.get('used_models', ['orchestrator']))
-            result_text = res.get('synthesised_response', 'Heroic Synthesis')
+            assigned_to = ', '.join(res.get('used_models', model_pool))
+            result_text = res.get('synthesised_response', f'Heroic Synthesis [{best_cat}]')
             task['result'] = result_text
         except Exception as e:
             result_text = f"Orchestrator error: {e}"
             task['result'] = result_text
 
-    # Auch an Backend melden (für globale Sichtbarkeit / logging)
+    # Backend: Eingabe immer prüfen + Task zuordnen
     try:
-        requests.post(f"{API_BASE}/api/events", json={"type": "task", "msg": f"Task {task_id} assigned: {query[:60]} -> {assigned_to}"}, timeout=1.5)
-        # Try extended input endpoint if present (future proof)
-        requests.post(f"{API_BASE}/api/input", json={"query": query, "task_id": task_id, "category": "auto"}, timeout=1.0)
+        requests.post(f"{API_BASE}/api/events", json={
+            "type": "task",
+            "msg": f"Task {task_id} auto-assigned: [{best_cat}] {normalized[:50]} -> {assigned_to}"
+        }, timeout=1.5)
+        requests.post(f"{API_BASE}/api/input", json={
+            "query": normalized,
+            "task_id": task_id,
+            "category": best_cat,
+            "dom": dom
+        }, timeout=1.0)
     except Exception:
-        pass  # Backend optional
+        pass
 
     task['status'] = 'zugeordnet'
     task['zugeordnet'] = assigned_to
-    if not task.get('result'):
-        task['result'] = result_text
 
     if task_table:
         task_table.update()
-    ui.notify(f"Task {task_id} selbstständig zugeordnet an: {assigned_to}", type='positive')
+    ui.notify(f"Task {task_id} AUTOMATISCH zugeordnet an: {assigned_to} [{best_cat}/{dom}]", type='positive')
 
-    # Persist autonomous task
+    # Persist
     try:
         auto_task_file = os.path.join(os.path.dirname(__file__), 'autonomous_tasks.json')
         with open(auto_task_file, 'w', encoding='utf-8') as f:
@@ -150,7 +224,7 @@ def check_and_assign_task(input_field):
     except Exception:
         pass
 
-    # Nach kurzer Zeit automatisch "abschließen" (simuliert echte Verarbeitung)
+    # Nach kurzer Zeit automatisch "abschließen"
     ui.timer(6.0, lambda: complete_task(task_id), once=True)
 
 def complete_task(task_id):
@@ -306,10 +380,12 @@ def build_workspace():
             ui.button('v2.2 App (FusionHeroOS_v2.2/app.py)', on_click=lambda: ui.notify('Run: cd 03_Code/FusionHeroOS_v2.2 && python app.py', type='info')).classes('text-xs')
             ui.button('Tk GUI (heroic_core_gui.py)', on_click=lambda: ui.notify('Run the heroic_core_gui.py separately (Tk)', type='info')).classes('text-xs')
 
-            # === SELBSTSTÄNDIGE TASK-ZUORDNUNG: Eingabe IMMER prüfen + autonom zuordnen ===
+            # === SELBSTSTÄNDIGE TASK-ZUORDNUNG: Eingabe IMMER prüfen + automatisch einem Task zuordnen ===
             ui.separator().classes('my-3')
-            ui.label('Autonome Task-Zuordnung (selbstständig neue Tasks zuordnen)').classes('text-sm font-bold text-[#fbbf24]')
-            task_input = ui.input(placeholder='Eingabe hier → immer HERO-GUIDE prüfen & selbstständig Task zuordnen').classes('w-full text-xs')
+            ui.label('Autonome Task-Zuordnung — Eingabe IMMER prüfen + automatisch Task zuordnen').classes('text-sm font-bold text-[#fbbf24]')
+            task_input = ui.input(placeholder='Eingabe (ENTER = immer prüfen + auto Task zuordnen)').classes('w-full text-xs')
+            # ENTER key always triggers full check + auto-assign
+            task_input.on('keydown.enter', lambda: check_and_assign_task(task_input))
             with ui.row().classes('w-full'):
                 ui.button('Prüfen & Task zuordnen', on_click=lambda: check_and_assign_task(task_input)).classes('text-xs')
                 ui.switch('Autonom (auto aus Guide)', value=False, on_change=lambda e: toggle_autonomous(e.value)).classes('text-xs')
@@ -318,7 +394,9 @@ def build_workspace():
             task_table = ui.table(
                 columns=[
                     {'name': 'id', 'label': 'ID', 'field': 'id'},
-                    {'name': 'query', 'label': 'Eingabe / Query', 'field': 'query'},
+                    {'name': 'geltung', 'label': 'Geltung', 'field': 'geltung'},
+                    {'name': 'dom', 'label': 'Dom', 'field': 'dom'},
+                    {'name': 'query', 'label': 'Eingabe (auto-geprüft)', 'field': 'query'},
                     {'name': 'status', 'label': 'Status', 'field': 'status'},
                     {'name': 'zugeordnet', 'label': 'Zugeordnet an', 'field': 'zugeordnet'},
                     {'name': 'result', 'label': 'Ergebnis', 'field': 'result'},

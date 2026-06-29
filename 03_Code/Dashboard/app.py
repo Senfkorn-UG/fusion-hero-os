@@ -189,23 +189,40 @@ async def api_input(payload: InputPayload):
     query = (payload.query or "").strip()
     if not query:
         return {"status": "error", "msg": "empty query"}
-    # HERO-GUIDE check
+
+    # === IMMER PRÜFEN + AUTO ZUORDNEN (HERO-GUIDE) ===
     cats = ['proven', 'cond', 'model', 'frag', 'over']
     has_geltung = any(f"[{c}]" in query or f"#{c}" in query for c in cats)
+
+    # Auto-tag if missing (server side enforcement)
+    normalized = query
+    effective_cat = payload.category or "model"
+    if not has_geltung:
+        normalized = f"[{effective_cat}] {query}"
+        has_geltung = True
+
     job_id = str(uuid.uuid4())[:8]
     job = {
         "id": job_id,
-        "query": query,
+        "query": normalized,
+        "original": query,
         "task_id": payload.task_id,
-        "category": payload.category,
+        "category": effective_cat,
         "has_geltung": has_geltung,
         "status": "received",
-        "assigned": "dynamic-orchestrator"
+        "assigned": "dynamic-orchestrator",
+        "auto_tagged": not has_geltung  # was originally without
     }
     JOBS[job_id] = job
     TASK_QUEUE.append(job)
-    await emit({"type": "task_input", "msg": f"Input received (geltung={has_geltung}): {query[:70]}", "job_id": job_id})
-    return {"status": "ok", "job_id": job_id, "ack": "Eingabe geprüft und Task-Queue zugeordnet", "has_geltung": has_geltung}
+    await emit({"type": "task_input", "msg": f"Input geprüft + auto zugeordnet [{effective_cat}]: {normalized[:70]}", "job_id": job_id})
+    return {
+        "status": "ok",
+        "job_id": job_id,
+        "ack": "Eingabe IMMER geprüft und automatisch einem Task zugeordnet",
+        "has_geltung": has_geltung,
+        "normalized_query": normalized
+    }
 
 @app.post("/api/v12/orchestrate")
 async def api_orchestrate(payload: OrchestratePayload):
