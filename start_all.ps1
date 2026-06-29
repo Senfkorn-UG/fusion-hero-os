@@ -142,3 +142,21 @@ Write-Host "  GUI API:   $BackendUrl/api/gui/status"
 Write-Host "  AutoLoad:  $BackendUrl/api/autoload/status"
 Write-Host "  Backend:   $BackendUrl"
 Write-Host ('  Mainframe: ' + $BackendUrl + '/api/mainframe/status')
+
+# Automatisches Speichern aller Neuerungen starten (Hintergrund)
+Write-Host "[Auto-Save] Starte automatisches Speichern aller Neuerungen..." -NoNewline
+try {
+    $autoSave = Join-Path $Root "auto_save.ps1"
+    if (Test-Path $autoSave) {
+        Start-Process -FilePath "powershell" -ArgumentList "-ExecutionPolicy Bypass -File `"$autoSave`"" `
+            -WorkingDirectory $Root -WindowStyle Minimized -ErrorAction SilentlyContinue
+        Write-Host " OK (Loop)" -ForegroundColor Green
+    } else {
+        Write-Host " (Script fehlt)" -ForegroundColor Yellow
+    }
+} catch {
+    Write-Host " (Fehler)" -ForegroundColor Yellow
+}
+
+Write-Host ""
+Write-Host "Zum finalen Push:  powershell -File end_session.ps1   (oder Button im Workspace)" -ForegroundColor DarkCyan

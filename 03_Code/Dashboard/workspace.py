@@ -9,12 +9,60 @@ from nicegui import ui
 import requests
 import json
 import os
+import random
+import sys
+import subprocess
+import time
+from datetime import datetime
+
+# Ensure we can import from parent dir (03_Code/)
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+# Import orchestration for autonomous task assignment
+orchestrator = None
+try:
+    from dynamic_orchestration_core import DynamicOrchestrationCoreModule
+    orchestrator = DynamicOrchestrationCoreModule()
+except Exception as e:
+    print(f"Warning: Could not load DynamicOrchestrationCoreModule: {e}")
+
+# Global task list for autonomous assignment (selbstständig neue tasks zuordnen)
+tasks = []
+task_table = None
+autonomous = False
+_editor = None
+
+# Load persisted autonomous tasks (from previous self-assignments incl. CI logs etc.)
+try:
+    auto_task_file = os.path.join(os.path.dirname(__file__), 'autonomous_tasks.json')
+    if os.path.exists(auto_task_file):
+        with open(auto_task_file, encoding='utf-8') as f:
+            loaded = json.load(f)
+            if isinstance(loaded, list):
+                tasks.extend(loaded)
+except Exception:
+    pass
+
+# Session tracking for automatic save/push
+try:
+    session_dir = os.path.join(GIT_ROOT, '.fusion-hero-os')
+    os.makedirs(session_dir, exist_ok=True)
+    start_file = os.path.join(session_dir, 'session_start.json')
+    if not os.path.exists(start_file):
+        with open(start_file, 'w', encoding='utf-8') as f:
+            json.dump({
+                "session_start": datetime.now().isoformat(),
+                "version": "Fusion Hero OS v7.5 MasterSeed",
+                "auto_save_enabled": True,
+                "note": "Automatisches Speichern + End-of-Session Push aktiv"
+            }, f, indent=2)
+except Exception:
+    pass
 
 # Konfiguration der Mainframe-API-Schnittstelle
 API_BASE = "http://127.0.0.1:8000"
+GIT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 
-# Global for editor (to allow guide buttons before editor in layout)
-_editor = None
 
 async def trigger_core_mod(code: str):
     """Sendet den Code an den Mainframe-Orchestrator zur Validierung (Heroic Guide enforced)."""
@@ -30,6 +78,186 @@ async def trigger_core_mod(code: str):
         ui.notify("Modifikation akzeptiert: PeerReview-Bögen 1-3 PASS (Heroic Guide).", type='positive')
     except Exception as e:
         ui.notify(f"Mainframe-Error: {str(e)}", type='negative')
+
+def check_and_assign_task(input_field):
+    """Eingabe IMMER prüfen (HERO-GUIDE) und automatisch (selbstständig) einem Task zuordnen."""
+    query = (input_field.value or "").strip()
+    if not query:
+        ui.notify("Keine Eingabe", type='warning')
+        return
+
+    # Immer prüfen mit HERO-GUIDE (Geltungskategorien)
+    cats = ['proven', 'cond', 'model', 'frag', 'over']
+    has_geltung = any(f"[{c}]" in query for c in cats) or any(f"#{c}" in query for c in cats)
+    if not has_geltung:
+        ui.notify('HERO-GUIDE: Eingabe ohne Geltungskategorie! Füge [cat] hinzu (proven/cond/model/frag/over).', type='warning')
+        # Immer noch zuordnen (user request: immer prüfen + zuordnen)
+
+    # Task erstellen
+    task_id = len(tasks) + 1
+    task = {
+        'id': task_id,
+        'query': query,
+        'status': 'pending',
+        'zugeordnet': None,
+        'result': None
+    }
+    tasks.append(task)
+    if task_table:
+        task_table.update()
+    ui.notify(f"Task {task_id} erstellt. Selbstständige Zuordnung läuft...", type='info')
+    input_field.value = ''
+
+    # Selbstständig zuordnen (orchestrator -> backend -> mainframe fallback)
+    assigned_to = 'mainframe'
+    result_text = 'Autonom zugeordnet'
+
+    if orchestrator:
+        try:
+            res = orchestrator.orchestrate(
+                query=query,
+                model_pool=["grok-intern", "claude", "architect", "code-reviewer", "fusion-hero"]
+            )
+            assigned_to = ', '.join(res.get('used_models', ['orchestrator']))
+            result_text = res.get('synthesised_response', 'Heroic Synthesis')
+            task['result'] = result_text
+        except Exception as e:
+            result_text = f"Orchestrator error: {e}"
+            task['result'] = result_text
+
+    # Auch an Backend melden (für globale Sichtbarkeit / logging)
+    try:
+        requests.post(f"{API_BASE}/api/events", json={"type": "task", "msg": f"Task {task_id} assigned: {query[:60]} -> {assigned_to}"}, timeout=1.5)
+        # Try extended input endpoint if present (future proof)
+        requests.post(f"{API_BASE}/api/input", json={"query": query, "task_id": task_id, "category": "auto"}, timeout=1.0)
+    except Exception:
+        pass  # Backend optional
+
+    task['status'] = 'zugeordnet'
+    task['zugeordnet'] = assigned_to
+    if not task.get('result'):
+        task['result'] = result_text
+
+    if task_table:
+        task_table.update()
+    ui.notify(f"Task {task_id} selbstständig zugeordnet an: {assigned_to}", type='positive')
+
+    # Persist autonomous task
+    try:
+        auto_task_file = os.path.join(os.path.dirname(__file__), 'autonomous_tasks.json')
+        with open(auto_task_file, 'w', encoding='utf-8') as f:
+            json.dump(tasks, f, ensure_ascii=False, indent=2)
+    except Exception:
+        pass
+
+    # Nach kurzer Zeit automatisch "abschließen" (simuliert echte Verarbeitung)
+    ui.timer(6.0, lambda: complete_task(task_id), once=True)
+
+def complete_task(task_id):
+    for t in tasks:
+        if t['id'] == task_id and t['status'] == 'zugeordnet':
+            t['status'] = 'abgeschlossen'
+            if task_table:
+                task_table.update()
+            ui.notify(f"Task {task_id} abgeschlossen.", type='positive')
+            # Persist on complete too
+            try:
+                auto_task_file = os.path.join(os.path.dirname(__file__), 'autonomous_tasks.json')
+                with open(auto_task_file, 'w', encoding='utf-8') as f:
+                    json.dump(tasks, f, ensure_ascii=False, indent=2)
+            except Exception:
+                pass
+            break
+
+def toggle_autonomous(value):
+    global autonomous
+    autonomous = value
+    if autonomous:
+        ui.notify("Autonomer Modus AKTIVIERT: Neue Tasks werden selbstständig erzeugt und zugeordnet (aus HERO-GUIDE).")
+        # Start recurring autonomous generation (NiceGUI timer created in build)
+    else:
+        ui.notify("Autonomer Modus deaktiviert.")
+
+def auto_generate_and_assign():
+    """Selbstständig neue Tasks generieren und zuordnen (wird vom Timer im autonomen Modus aufgerufen)."""
+    global autonomous
+    if not autonomous:
+        return
+    # Selbstständig neue Task aus dem Guide generieren (Priorität: offene Geltungs-Tasks)
+    try:
+        guide_path = os.path.join(os.path.dirname(__file__), '..', '..', '02_Mathematik', 'hero-guide_geltungsstand.json')
+        with open(guide_path, encoding='utf-8') as f:
+            geltungs = json.load(f)
+        # Prefer tasks that have drift or are 'frag'/'cond'/'over' for interesting autonomous work
+        candidates = [g for g in geltungs if g.get('cat') in ('frag', 'cond', 'over', 'model') or g.get('driftBad')]
+        g = random.choice(candidates) if candidates else random.choice(geltungs)
+        query = f"[model] Autonome Aufgabe: {g['task']}  | Thema: {g['name']} ({g.get('dom','')})"
+    except Exception:
+        query = "[cond] Neue autonome Aufgabe: Verbessere Fusion Hero OS Mainframe / Orchestration Layer."
+    # Simuliere Eingabe-Feld und rufe direkte Zuordnung auf
+    class DummyInput:
+        value = query
+    check_and_assign_task(DummyInput())
+
+# === Git Auto-Save & End-of-Session Push (alle Neuerungen automatisch speichern + pushen) ===
+AUTO_SAVE_ENABLED = False
+LAST_SAVE = None
+
+def run_auto_save(once: bool = True):
+    """Ruft auto_save.ps1 auf (einmalig oder Hintergrund)."""
+    global LAST_SAVE
+    script = os.path.join(GIT_ROOT, 'auto_save.ps1')
+    if not os.path.exists(script):
+        ui.notify("auto_save.ps1 nicht gefunden!", type='negative')
+        return
+    try:
+        if once:
+            cmd = ['powershell', '-ExecutionPolicy', 'Bypass', '-File', script, '-Once']
+            subprocess.run(cmd, cwd=GIT_ROOT, capture_output=True, text=True, timeout=30)
+            LAST_SAVE = datetime.now().strftime("%H:%M:%S")
+            ui.notify(f"Auto-Save durchgeführt ({LAST_SAVE})", type='positive')
+        else:
+            # Starte Loop im Hintergrund (minimized)
+            cmd = ['powershell', '-ExecutionPolicy', 'Bypass', '-File', script]
+            subprocess.Popen(cmd, cwd=GIT_ROOT, creationflags=subprocess.CREATE_NEW_CONSOLE)
+            ui.notify("Auto-Save Loop im Hintergrund gestartet (45s Interval).", type='info')
+    except Exception as e:
+        ui.notify(f"Auto-Save Fehler: {e}", type='negative')
+
+def end_session_and_push():
+    """Beendet Sitzung: final save + push aller Branches (main + worktrees) zu GitHub."""
+    script = os.path.join(GIT_ROOT, 'end_session.ps1')
+    if not os.path.exists(script):
+        ui.notify("end_session.ps1 nicht gefunden!", type='negative')
+        return
+    ui.notify("Sitzung beenden + Push zu GitHub gestartet... (kann 30-90s dauern)", type='warning')
+    try:
+        cmd = ['powershell', '-ExecutionPolicy', 'Bypass', '-File', script]
+        # Run sync (may take time)
+        result = subprocess.run(cmd, cwd=GIT_ROOT, capture_output=True, text=True, timeout=180)
+        out = (result.stdout or '')[-800:]  # last lines
+        ui.notify("Sitzung beendet. Siehe Konsole / end_session.ps1 Output.", type='positive')
+        # Optional reload of autonomous tasks
+        if task_table:
+            task_table.update()
+    except subprocess.TimeoutExpired:
+        ui.notify("Push läuft noch im Hintergrund...", type='info')
+    except Exception as e:
+        ui.notify(f"End-Session Fehler: {e}", type='negative')
+
+def toggle_auto_git_save(enabled: bool):
+    global AUTO_SAVE_ENABLED
+    AUTO_SAVE_ENABLED = enabled
+    if enabled:
+        ui.notify("Git Auto-Save aktiviert: Neuerungen werden automatisch committet.")
+        run_auto_save(once=False)  # start background loop
+    else:
+        ui.notify("Git Auto-Save deaktiviert.")
+
+# Background timer for in-UI auto-save (lightweight, every ~60s)
+def periodic_git_save():
+    if AUTO_SAVE_ENABLED:
+        run_auto_save(once=True)
 
 def build_workspace():
     # Heroisches Theme (Amber/Cyan auf Dark)
@@ -77,6 +305,55 @@ def build_workspace():
             ui.label('Related:').classes('text-xs mt-2')
             ui.button('v2.2 App (FusionHeroOS_v2.2/app.py)', on_click=lambda: ui.notify('Run: cd 03_Code/FusionHeroOS_v2.2 && python app.py', type='info')).classes('text-xs')
             ui.button('Tk GUI (heroic_core_gui.py)', on_click=lambda: ui.notify('Run the heroic_core_gui.py separately (Tk)', type='info')).classes('text-xs')
+
+            # === SELBSTSTÄNDIGE TASK-ZUORDNUNG: Eingabe IMMER prüfen + autonom zuordnen ===
+            ui.separator().classes('my-3')
+            ui.label('Autonome Task-Zuordnung (selbstständig neue Tasks zuordnen)').classes('text-sm font-bold text-[#fbbf24]')
+            task_input = ui.input(placeholder='Eingabe hier → immer HERO-GUIDE prüfen & selbstständig Task zuordnen').classes('w-full text-xs')
+            with ui.row().classes('w-full'):
+                ui.button('Prüfen & Task zuordnen', on_click=lambda: check_and_assign_task(task_input)).classes('text-xs')
+                ui.switch('Autonom (auto aus Guide)', value=False, on_change=lambda e: toggle_autonomous(e.value)).classes('text-xs')
+            # Task table (global ref for updates) - zeigt selbstständig zugeordnete Tasks
+            global task_table
+            task_table = ui.table(
+                columns=[
+                    {'name': 'id', 'label': 'ID', 'field': 'id'},
+                    {'name': 'query', 'label': 'Eingabe / Query', 'field': 'query'},
+                    {'name': 'status', 'label': 'Status', 'field': 'status'},
+                    {'name': 'zugeordnet', 'label': 'Zugeordnet an', 'field': 'zugeordnet'},
+                    {'name': 'result', 'label': 'Ergebnis', 'field': 'result'},
+                ],
+                rows=tasks,
+                row_key='id'
+            ).classes('text-xs w-full')
+            # Recurring autonomous generator (respects autonomous flag)
+            ui.timer(7.5, auto_generate_and_assign)
+
+            # Lightweight in-app Git auto-save timer (if enabled via switch)
+            ui.timer(55.0, periodic_git_save)
+
+            # Extra controls for full autonomy
+            with ui.row().classes('w-full mt-1'):
+                ui.button('Neue autonome Task erzwingen', on_click=lambda: auto_generate_and_assign()).classes('text-xs')
+                ui.button('Refresh Tasks', on_click=lambda: (task_table.update() if task_table else None)).classes('text-xs')
+
+            # === GIT: Alle Neuerungen automatisch speichern + am Ende der Sitzung pushen ===
+            ui.separator().classes('my-3')
+            ui.label('Git Auto-Save & Session-Push').classes('text-sm font-bold text-[#fbbf24]')
+            ui.label('Neuerungen immer committen. Am Sitzungsende: alle Branches sicher zu GitHub.').classes('text-xs mb-1')
+            with ui.row().classes('w-full'):
+                ui.button('Jetzt speichern (commit)', on_click=lambda: run_auto_save(once=True)).classes('text-xs')
+                ui.button('Sitzung beenden + Push', on_click=end_session_and_push).classes('text-xs bg-red-600')
+            with ui.row().classes('w-full mt-1'):
+                ui.switch('Auto-Save (während Sitzung)', value=False, on_change=lambda e: toggle_auto_git_save(e.value)).classes('text-xs')
+            last_save_label = ui.label('Letzter Save: noch nicht').classes('text-[10px] text-[#94a3b8]')
+
+            # Update label periodically when auto-save runs
+            def _refresh_last_save():
+                global LAST_SAVE
+                if LAST_SAVE and last_save_label:
+                    last_save_label.text = f'Letzter Save: {LAST_SAVE}'
+            ui.timer(8.0, _refresh_last_save)
 
             def insert_heroic_template():
                 global _editor
