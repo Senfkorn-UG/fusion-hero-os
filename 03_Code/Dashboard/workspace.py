@@ -26,121 +26,29 @@ try:
 except Exception as e:
     print(f"Warning: Could not load DynamicOrchestrationCoreModule: {e}")
 
-# Cache for HERO-GUIDE for classification
-_GUIDE_CACHE = None
+# Use consolidated heroic orchestration (merged logic from previous duplicates)
+try:
+    from heroic_orchestration import (
+        load_guide,
+        classify_and_normalize,
+        ensure_agents_loaded,
+        assign_task_to_agent,
+        get_loaded_agents,
+        create_classified_task,
+    )
+except Exception:
+    # Fallback inline (should not happen after merge)
+    def load_guide(): return []
+    def classify_and_normalize(q): return q, "model", None, "General"
+    def ensure_agents_loaded(force=False): return True
+    def assign_task_to_agent(t): t['assigned_agent'] = 'general-worker'; return 'general-worker'
+    def get_loaded_agents(): return {}
+    def create_classified_task(q, **k): return {"query": q, **k}
 
-def load_guide():
-    global _GUIDE_CACHE
-    if _GUIDE_CACHE is None:
-        try:
-            guide_path = os.path.join(os.path.dirname(__file__), '..', '..', '02_Mathematik', 'hero-guide_geltungsstand.json')
-            with open(guide_path, encoding='utf-8') as f:
-                _GUIDE_CACHE = json.load(f)
-        except Exception:
-            _GUIDE_CACHE = []
-    return _GUIDE_CACHE
-
-# === Agents: Immer automatisch laden und zuordnen ===
-AGENTS_LOADED = False
+# Re-export for UI / legacy
+AGENTS_LOADED = False  # will be updated by ensure
 AGENT_SUPERVISOR = None
-LOADED_AGENTS = {}  # name -> info
-
-def ensure_agents_loaded(force: bool = False):
-    """Agenten IMMER automatisch laden (Supervisor + Worker-Belegschaft)."""
-    global AGENTS_LOADED, AGENT_SUPERVISOR, LOADED_AGENTS
-    if AGENTS_LOADED and not force:
-        return True
-
-    try:
-        # Try to use the real pure-Python agents framework
-        agents_path = os.path.join(GIT_ROOT, '03_Code', 'FusionHeroOS_v2.2')
-        if agents_path not in sys.path:
-            sys.path.insert(0, agents_path)
-
-        import agents as ag
-
-        if AGENT_SUPERVISOR is None or force:
-            AGENT_SUPERVISOR = ag.Supervisor(
-                name="fusion-hero-supervisor",
-                min_workers=2,
-                max_workers=12,
-                scale_up_threshold=2
-            )
-            AGENT_SUPERVISOR.start()
-
-        # Record loaded state
-        AGENTS_LOADED = True
-        LOADED_AGENTS = {
-            "supervisor": {
-                "name": AGENT_SUPERVISOR.name,
-                "role": "supervisor",
-                "state": getattr(AGENT_SUPERVISOR, 'state', 'running'),
-                "children": len(AGENT_SUPERVISOR.children()) if hasattr(AGENT_SUPERVISOR, 'children') else 2
-            }
-        }
-        for child in (AGENT_SUPERVISOR.children() if hasattr(AGENT_SUPERVISOR, 'children') else []):
-            LOADED_AGENTS[child.name] = {"name": child.name, "role": getattr(child, 'role', 'worker'), "state": "running"}
-
-        try:
-            ui.notify(f"Agenten automatisch geladen: Supervisor + {len(LOADED_AGENTS)-1} Worker", type='positive')
-        except:
-            pass
-        return True
-    except Exception as e:
-        # Fallback: simple in-memory agent registry
-        AGENTS_LOADED = True
-        LOADED_AGENTS = {
-            "supervisor": {"name": "fusion-hero-supervisor", "role": "supervisor", "state": "running", "children": 4},
-            "math-worker": {"name": "math-worker", "role": "worker", "state": "running", "dom": "Math"},
-            "phil-worker": {"name": "phil-worker", "role": "worker", "state": "running", "dom": "Phil"},
-            "info-worker": {"name": "info-worker", "role": "worker", "state": "running", "dom": "Info"},
-            "general-worker": {"name": "general-worker", "role": "worker", "state": "running"},
-        }
-        try:
-            ui.notify("Agenten (Fallback) automatisch geladen", type='info')
-        except:
-            pass
-        return True
-
-def classify_and_normalize(query: str):
-    """Eingabe IMMER prüfen: erkennt Domäne + Geltung, fügt automatisch [cat] hinzu wenn fehlt."""
-    query = (query or "").strip()
-    if not query:
-        return query, "model", None
-
-    cats = ['proven', 'cond', 'model', 'frag', 'over']
-    has_geltung = any(f"[{c}]" in query for c in cats) or any(f"#{c}" in query for c in cats)
-
-    guide = load_guide()
-    matched = None
-    best_cat = "model"
-    dom = "General"
-
-    # Simple keyword matching against guide for auto-categorization
-    q_lower = query.lower()
-    for entry in guide:
-        name = entry.get('name', '').lower()
-        formula = entry.get('formula', '').lower()
-        task = entry.get('task', '').lower()
-        if any(kw in q_lower for kw in [name[:20], entry.get('dom','').lower()]) or \
-           any(part in q_lower for part in name.split()[:3] if len(part) > 3):
-            matched = entry
-            best_cat = entry.get('cat', 'model')
-            dom = entry.get('dom', 'General')
-            break
-
-    # If no geltung, auto-prepend the best one
-    normalized = query
-    if not has_geltung:
-        prefix = f"[{best_cat}] "
-        if not query.startswith('['):
-            normalized = prefix + query
-        try:
-            ui.notify(f"HERO-GUIDE: Auto-Tag hinzugefügt → {prefix.strip()} (dom: {dom})", type='info')
-        except:
-            pass  # non-UI context safe
-
-    return normalized, best_cat, matched, dom
+LOADED_AGENTS = {}
 
 # Global task list for autonomous assignment (selbstständig neue tasks zuordnen)
 tasks = []
@@ -207,61 +115,23 @@ def check_and_assign_task(input_field):
         ui.notify("Keine Eingabe", type='warning')
         return
 
-    # === IMMER PRÜFEN + AUTOMATISCH TAGGEN ===
-    normalized, best_cat, matched, dom = classify_and_normalize(raw)
-    has_geltung = True  # after normalize we always have one
-
-    # Agenten IMMER automatisch laden
+    # Consolidated path (shared heroic_orchestration)
+    task_id = len(tasks) + 1
+    task = create_classified_task(raw, id=task_id)
     ensure_agents_loaded()
 
-    # Task erstellen mit reichen Metadaten
-    task_id = len(tasks) + 1
-    task = {
-        'id': task_id,
-        'query': normalized,
-        'original': raw,
-        'geltung': best_cat,
-        'dom': dom,
-        'status': 'pending',
-        'zugeordnet': None,
-        'result': None,
-        'matched': matched.get('name') if matched else None,
-        'assigned_agent': None
-    }
     tasks.append(task)
     if task_table:
         task_table.update()
-    ui.notify(f"Task {task_id} erstellt (auto geprüft & getaggt [{best_cat}] / {dom}). Selbstständige Zuordnung...", type='info')
+    ui.notify(f"Task {task_id} erstellt (auto geprüft & getaggt [{task.get('geltung')}] / {task.get('dom')}). Selbstständige Zuordnung...", type='info')
     input_field.value = ''
 
-    # Selbstständig zuordnen (orchestrator mit Kontext)
-    assigned_to = 'mainframe'
-    result_text = 'Autonom zugeordnet'
+    assigned_to = f"agent:{task.get('assigned_agent', 'general-worker')}"
 
-    # Agent automatisch zuordnen basierend auf dom/geltung
-    agent_name = "general-worker"
-    if dom == "Math":
-        agent_name = "math-worker"
-    elif dom == "Phil":
-        agent_name = "phil-worker"
-    elif dom == "Info":
-        agent_name = "info-worker"
-
-    if AGENT_SUPERVISOR and hasattr(AGENT_SUPERVISOR, 'task_queue'):
-        try:
-            # Create a Task and let supervisor assign
-            from agents import Task as AgTask  # may be available after import
-            t = AgTask(name=f"task-{task_id}", payload={"query": normalized, "geltung": best_cat, "dom": dom})
-            AGENT_SUPERVISOR.task_queue.put(t)
-            assigned_agent_info = LOADED_AGENTS.get(agent_name, {"name": agent_name})
-            task['assigned_agent'] = assigned_agent_info.get('name', agent_name)
-            assigned_to = f"agent:{task['assigned_agent']}"
-        except Exception:
-            task['assigned_agent'] = agent_name
-            assigned_to = f"agent:{agent_name} (fallback)"
-    else:
-        task['assigned_agent'] = agent_name
-        assigned_to = f"agent:{agent_name}"
+    # Use values from the shared task object
+    normalized = task.get("query", raw)
+    best_cat = task.get("geltung", "model")
+    dom = task.get("dom", "General")
 
     model_pool = ["grok-intern", "fusion-hero"]
     if dom == "Math":
@@ -522,7 +392,14 @@ def build_workspace():
             with ui.row().classes('w-full'):
                 ui.button('Agenten jetzt laden', on_click=lambda: ensure_agents_loaded(force=True)).classes('text-xs')
                 ui.button('Status', on_click=lambda: ui.notify(f"Loaded: {list(LOADED_AGENTS.keys())}", type='info')).classes('text-xs')
-            agent_status = ui.label(lambda: f"Agents: {'geladen' if AGENTS_LOADED else 'nicht geladen'} | {len(LOADED_AGENTS)} aktiv").classes('text-xs text-[#94a3b8]')
+            def _agent_label():
+                try:
+                    from heroic_orchestration import get_loaded_agents
+                    ags = get_loaded_agents()
+                    return f"Agents: geladen | {len(ags)} aktiv"
+                except:
+                    return f"Agents: {'geladen' if AGENTS_LOADED else 'nicht geladen'} | {len(LOADED_AGENTS)} aktiv"
+            agent_status = ui.label(_agent_label).classes('text-xs text-[#94a3b8]')
 
             # === GIT: Alle Neuerungen automatisch speichern + am Ende der Sitzung pushen ===
             ui.separator().classes('my-3')

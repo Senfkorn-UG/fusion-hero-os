@@ -66,7 +66,18 @@ KEY_PROBLEMS: List[dict] = [
 JOBS: Dict[str, Dict[str, Any]] = {}
 TASK_QUEUE: List[Dict[str, Any]] = []
 
-# === Agents: immer automatisch laden und zuordnen ===
+# === Consolidated from heroic_orchestration (merged agent + classify logic) ===
+try:
+    from heroic_orchestration import (
+        ensure_agents_loaded as _ensure_agents_shared,
+        classify_and_normalize,
+        get_loaded_agents,
+    )
+except Exception:
+    def _ensure_agents_shared(force=False): return True
+    def classify_and_normalize(q): return q, "model", None, "General"
+    def get_loaded_agents(): return {}
+
 AGENT_STATE = {
     "loaded": False,
     "supervisor": None,
@@ -75,12 +86,12 @@ AGENT_STATE = {
 }
 
 def _ensure_agents():
-    """Backend: Agenten immer automatisch laden."""
+    """Backend: Agenten immer automatisch laden (delegates to shared)."""
     if AGENT_STATE["loaded"]:
         return AGENT_STATE
+    _ensure_agents_shared()
     try:
-        # Fallback simple agents for backend
-        AGENT_STATE["agents"] = {
+        AGENT_STATE["agents"] = get_loaded_agents() or {
             "supervisor": {"name": "fusion-hero-supervisor", "role": "supervisor", "state": "running"},
             "math-worker": {"name": "math-worker", "role": "worker", "dom": "Math"},
             "phil-worker": {"name": "phil-worker", "role": "worker", "dom": "Phil"},
@@ -218,17 +229,11 @@ async def api_input(payload: InputPayload):
     if not query:
         return {"status": "error", "msg": "empty query"}
 
-    # === IMMER PRÜFEN + AUTO ZUORDNEN (HERO-GUIDE) ===
-    cats = ['proven', 'cond', 'model', 'frag', 'over']
-    has_geltung = any(f"[{c}]" in query or f"#{c}" in query for c in cats)
+    # Use shared classification (consolidated)
+    normalized, effective_cat, _, dom = classify_and_normalize(query)
+    _ensure_agents()
 
-    # Auto-tag if missing (server side enforcement)
-    normalized = query
-    effective_cat = payload.category or "model"
-    if not has_geltung:
-        normalized = f"[{effective_cat}] {query}"
-        has_geltung = True
-
+    has_geltung = True
     job_id = str(uuid.uuid4())[:8]
     job = {
         "id": job_id,
@@ -236,10 +241,11 @@ async def api_input(payload: InputPayload):
         "original": query,
         "task_id": payload.task_id,
         "category": effective_cat,
+        "dom": dom,
         "has_geltung": has_geltung,
         "status": "received",
         "assigned": "dynamic-orchestrator",
-        "auto_tagged": not has_geltung  # was originally without
+        "auto_tagged": True
     }
     JOBS[job_id] = job
     TASK_QUEUE.append(job)
