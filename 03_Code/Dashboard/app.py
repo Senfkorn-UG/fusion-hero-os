@@ -33,11 +33,15 @@ try:
         ensure_agents_loaded as _ensure_agents_shared,
         classify_and_normalize,
         get_loaded_agents,
+        auto_load,
+        get_best_qubo_solver,
     )
 except Exception:
     def _ensure_agents_shared(force=False): return True
     def classify_and_normalize(q): return q, "model", None, "General"
     def get_loaded_agents(): return {}
+    def auto_load(phase="staged", force=False): return {"loaded": ["fallback"]}
+    def get_best_qubo_solver(): return None
 
 try:
     import hyperthreading_config as ht
@@ -131,19 +135,20 @@ class AutoLoader:
 
         # Core Modules (example - can be extended)
         self.register("selfmodify_core", lambda: True, "meta")  # placeholder, real load if needed
-        self.register("orchestration", lambda: ensure_agents_loaded() if 'ensure_agents_loaded' in globals() else True, "orchestration")
+        self.register("orchestration", lambda: auto_load(phase="full") if 'auto_load' in globals() else (ensure_agents_loaded() if 'ensure_agents_loaded' in globals() else True), "orchestration")
 
-        # External projects integration (from C: search: qubo_miner, FusionHero caches)
+        # External projects integration (from C: search: qubo_miner, FusionHero caches, heroic layers)
         try:
-            qm_solver = _try_load_external_qubo_solver()  # from heroic_orchestration
-            if qm_solver:
-                self.register("qubo_miner_solver", lambda: qm_solver, "qubo")
+            from heroic_orchestration import get_best_qubo_solver, EXTERNAL_QUBO_SOLVER
+            qm = get_best_qubo_solver()
+            if qm:
+                self.register("qubo_miner_solver", lambda: qm, "qubo")
         except:
             pass
         # Use C:\FusionHero as SSD if present
         if os.path.exists(r"C:\FusionHero\LongTermCache"):
             os.environ.setdefault("FUSION_SSD_LONGTERM_CACHE", r"C:\FusionHero\LongTermCache")
-        # heroic layers
+        # heroic layers from C: search
         try:
             import sys
             sys.path.insert(0, r"C:\Users\Admin\heroic-highest-layer")

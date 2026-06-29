@@ -209,6 +209,25 @@ def complete_task(task_id):
                 pass
             break
 
+    # Automatisch den besten offenen Task dem geeignetsten Agenten zuweisen (Task findet sich selbst)
+    try:
+        from heroic_orchestration import auto_load, assign_task_to_agent, create_classified_task
+        auto_load(phase="staged")
+        pending = [t for t in tasks if t.get('status') == 'pending']
+        if pending:
+            # Pick "best" pending (e.g. first, or by dom match to available agents)
+            best_task = pending[0]
+            dom = best_task.get('dom', 'General')
+            # Re-assign using current factors/agents
+            agent = assign_task_to_agent(best_task)
+            best_task['status'] = 'zugeordnet'
+            best_task['zugeordnet'] = agent
+            if task_table:
+                task_table.update()
+            ui.notify(f"Auto: Task {best_task['id']} ({dom}) dem besten Agenten {agent} zugewiesen.", type='positive')
+    except Exception as e:
+        pass  # silent if not ready
+
 def toggle_autonomous(value):
     global autonomous
     autonomous = value
