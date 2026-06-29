@@ -110,6 +110,64 @@ def get_input_factors() -> Dict[str, Any]:
 def get_output_factors() -> Dict[str, Any]:
     return OUTPUT_FACTORS or detect_output_factors()
 
+# === General AutoLoad Logic (generell implementieren wo passend) ===
+class AutoLoader:
+    def __init__(self):
+        self.drivers: Dict[str, Dict] = {}
+        self.loaded: Dict[str, bool] = {}
+        self._register_default_drivers()
+
+    def _register_default_drivers(self):
+        # Input/Output Factors
+        self.register("input_factors", lambda: detect_input_factors(), "core")
+        self.register("output_factors", lambda: detect_output_factors(), "core")
+
+        # Hyperthreading
+        if ht:
+            self.register("hyperthreading", lambda: ht.enable(True), "performance")
+
+        # Agents (from heroic_orchestration)
+        self.register("agents", lambda: _ensure_agents(), "orchestration")
+
+        # Core Modules (example - can be extended)
+        self.register("selfmodify_core", lambda: True, "meta")  # placeholder, real load if needed
+        self.register("orchestration", lambda: ensure_agents_loaded() if 'ensure_agents_loaded' in globals() else True, "orchestration")
+
+    def register(self, name: str, loader: callable, category: str = "general"):
+        self.drivers[name] = {"loader": loader, "category": category, "loaded": False}
+
+    def run(self, phase: str = "staged", force: bool = False, sync: bool = False, attach_meta: bool = False) -> Dict[str, Any]:
+        results = {"drivers_loaded": 0, "drivers_ready": 0, "drivers_total": len(self.drivers), "summary": {}}
+        for name, info in self.drivers.items():
+            if force or not info["loaded"]:
+                try:
+                    info["loader"]()
+                    info["loaded"] = True
+                    results["drivers_loaded"] += 1
+                    results["summary"][name] = "loaded"
+                except Exception as e:
+                    results["summary"][name] = f"error: {e}"
+            else:
+                results["summary"][name] = "already loaded"
+            if info["loaded"]:
+                results["drivers_ready"] += 1
+        results["phase"] = phase
+        return results
+
+    def status(self) -> Dict[str, Any]:
+        return {
+            "drivers_total": len(self.drivers),
+            "drivers_loaded": sum(1 for d in self.drivers.values() if d.get("loaded")),
+            "drivers_ready": sum(1 for d in self.drivers.values() if d.get("loaded")),
+            "summary": {name: "loaded" if info.get("loaded") else "pending" for name, info in self.drivers.items()}
+        }
+
+autoloader = AutoLoader()
+
+# Ensure detection at import time for early start
+detect_input_factors()
+detect_output_factors()
+
 # === Heroic Core State ===
 MAX_EVENTS = 500
 events: deque[dict] = deque(maxlen=MAX_EVENTS)
@@ -211,13 +269,21 @@ async def heroic_core_event_loop():
 
 @app.on_event("startup")
 async def startup_event():
-    # Automatische Erkennung der Input- und Output-Faktoren ZU BEGINN DES OS STARTS
+    # Generelles AutoLoad + Faktenerkennung ZU BEGINN DES OS STARTS
+    autoloader.run(phase="staged", attach_meta=True)
     detect_input_factors()
     detect_output_factors()
+    _ensure_agents()
+    if ht:
+        try:
+            ht.enable(True)
+        except:
+            pass
     asyncio.create_task(heroic_core_event_loop())
     print("[ALTE_Frau_95g] Heroic Core Dashboard gestartet")
-    print(f"  Input-Faktoren erkannt: CPUs={INPUT_FACTORS.get('logical_cpus')}, HT={INPUT_FACTORS.get('hyperthreading_env')}, GPU={INPUT_FACTORS.get('gpu_count', 0)}")
-    print(f"  Output-Faktoren erkannt: target_workers={OUTPUT_FACTORS.get('target_workers')}")
+    print(f"  AutoLoad Status: {autoloader.status()}")
+    print(f"  Input-Faktoren: CPUs={INPUT_FACTORS.get('logical_cpus')}, HT={INPUT_FACTORS.get('hyperthreading_env')}")
+    print(f"  Output-Faktoren: target_workers={OUTPUT_FACTORS.get('target_workers')}")
 
 @app.post("/api/events")
 async def post_event(payload: EventIn):
@@ -434,3 +500,26 @@ async def api_input_factors():
 @app.get("/api/output-factors")
 async def api_output_factors():
     return get_output_factors()
+
+# === AutoLoad Endpoints (generell, für start_all.ps1 und Boot-Optimierung) ===
+@app.post("/api/autoload/run")
+async def api_autoload_run(payload: dict = None):
+    if payload is None:
+        payload = {}
+    phase = payload.get("phase", "staged")
+    force = payload.get("force", False)
+    sync = payload.get("sync", False)
+    attach_meta = payload.get("attach_meta", False)
+    result = autoloader.run(phase=phase, force=force, sync=sync, attach_meta=attach_meta)
+    # Also ensure core things
+    _ensure_agents()
+    if ht:
+        try:
+            ht.enable(autoloader.status().get("hyperthreading", {}).get("enabled", True))
+        except:
+            pass
+    return result
+
+@app.get("/api/autoload/status")
+async def api_autoload_status():
+    return autoloader.status()
