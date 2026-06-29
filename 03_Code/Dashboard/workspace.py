@@ -43,9 +43,9 @@ def build_workspace():
             ui.label('Mainframe Editor - Heroische Meta-Modifikation').classes('text-md mb-2')
             
             # Monaco Code Editor
-            editor = ui.codemirror(
+            editor = ui.monaco(
                 value='# Hier heroische Module einfuegen...\n\ndef execute_task():\n    pass',
-                language='Python'
+                language='python'
             ).classes('w-full h-5/6 rounded-lg')
             
             with ui.row().classes('w-full justify-end mt-4'):
