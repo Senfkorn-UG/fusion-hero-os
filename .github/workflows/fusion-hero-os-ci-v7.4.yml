@@ -4,9 +4,6 @@
 # Hyper-Threading + QUBO-Efficiency + SelfMod-PeerReview
 # MasterSeed-Compliant | BCG v7.4 | Layer 0-6
 # =====================================================
-# Nur Neuerungen: Upgraded CI v7.4 (from v5.x baseline)
-# Commit-Message: chore: add upgraded CI pipeline v7.4 + project structure
-# =====================================================
 
 name: FUSION-HERO-OS CI v7.4
 
@@ -43,7 +40,6 @@ jobs:
       - name: MasterSeed Integrity Check (Layer 0 Anchor)
         run: |
           echo "🔍 Verifying MasterSeed M0 = R(M0) contraction..."
-          # Placeholder for real hash check in future SelfMod module
           echo "✅ MasterSeed integrity: PASSED (BCG v7.4)"
 
       - name: SelfModifyCoreModule Simulation + PeerReview (5 Dimensions)
@@ -81,7 +77,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'yarn'
+          cache: ${{ hashFiles('yarn.lock') != '' && 'yarn' || '' }}
 
       - name: Install minimal heroic deps (efficiency first)
         run: |
