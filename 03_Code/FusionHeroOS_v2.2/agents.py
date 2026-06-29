@@ -207,7 +207,8 @@ def default_executor(agent: "Agent", task: Task) -> Any:
             tid = cache.allocate_virtual_thread()
             if tid is not None:
                 # Use virtual thread for "work" - hyper parallel update
-                gpu_virtual_energy_update([tid], None)
+                q = task.payload.get('Q') if isinstance(task.payload, dict) else None
+                gpu_virtual_energy_update([tid], q)
                 # simulate some work time via virtual
                 time.sleep(max(0.0, agent.work_seconds) * 0.1)  # faster due to virtual HT
                 result = {
