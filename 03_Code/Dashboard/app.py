@@ -51,6 +51,65 @@ AGENT_STATE = {
     "last_load": None
 }
 
+# === Automatische Erkennung von Input- und Output-Faktoren beim OS-Start ===
+INPUT_FACTORS: Dict[str, Any] = {}
+OUTPUT_FACTORS: Dict[str, Any] = {}
+
+def detect_input_factors() -> Dict[str, Any]:
+    """Automatische Erkennung der Input-Faktoren zu Beginn des OS-Starts."""
+    global INPUT_FACTORS
+    factors = {}
+    try:
+        import psutil
+        factors["logical_cpus"] = psutil.cpu_count(logical=True) or 1
+        factors["physical_cpus"] = psutil.cpu_count(logical=False) or 1
+        mem = psutil.virtual_memory()
+        factors["memory_total_gb"] = round(mem.total / (1024**3), 2)
+        factors["memory_available_gb"] = round(mem.available / (1024**3), 2)
+    except Exception:
+        factors["logical_cpus"] = os.cpu_count() or 1
+        factors["memory_total_gb"] = 0
+    # GPU detection (optional)
+    try:
+        import torch
+        factors["gpu_available"] = torch.cuda.is_available()
+        factors["gpu_count"] = torch.cuda.device_count() if torch.cuda.is_available() else 0
+    except Exception:
+        factors["gpu_available"] = False
+        factors["gpu_count"] = 0
+    # FUSION env vars as input factors
+    factors["fusion_env"] = {k: v for k, v in os.environ.items() if k.startswith("FUSION_")}
+    factors["hyperthreading_env"] = os.getenv("FUSION_HYPERTHREADING") == "1"
+    factors["profile"] = os.getenv("FUSION_PROFILE", "balanced")
+    factors["detected_at"] = time.time()
+    INPUT_FACTORS = factors
+    return factors
+
+def detect_output_factors() -> Dict[str, Any]:
+    """Automatische Erkennung der Output-Faktoren basierend auf Inputs zu Beginn des OS-Starts."""
+    global OUTPUT_FACTORS
+    inputs = INPUT_FACTORS or detect_input_factors()
+    cpus = inputs.get("logical_cpus", 4)
+    ht = inputs.get("hyperthreading_env", False)
+    target_workers = cpus * (6 if ht else 2)
+    factors = {
+        "target_workers": target_workers,
+        "max_parallel_tasks": target_workers * 2,
+        "synthesis_dimensions": 6,  # from MasterSeed
+        "default_agent_roles": ["supervisor", "math-worker", "phil-worker", "info-worker", "general-worker"],
+        "metrics_to_emit": ["cpu", "ram", "events", "hyperthreading", "agents"],
+        "task_assignment_strategy": "best_fit",  # auto assign to most suitable
+        "detected_at": time.time()
+    }
+    OUTPUT_FACTORS = factors
+    return factors
+
+def get_input_factors() -> Dict[str, Any]:
+    return INPUT_FACTORS or detect_input_factors()
+
+def get_output_factors() -> Dict[str, Any]:
+    return OUTPUT_FACTORS or detect_output_factors()
+
 # === Heroic Core State ===
 MAX_EVENTS = 500
 events: deque[dict] = deque(maxlen=MAX_EVENTS)
@@ -152,8 +211,13 @@ async def heroic_core_event_loop():
 
 @app.on_event("startup")
 async def startup_event():
+    # Automatische Erkennung der Input- und Output-Faktoren ZU BEGINN DES OS STARTS
+    detect_input_factors()
+    detect_output_factors()
     asyncio.create_task(heroic_core_event_loop())
-    print("[ALTE_Frau_95g] Heroic Core Dashboard v7.4 started with deepened WS + background event loop")
+    print("[ALTE_Frau_95g] Heroic Core Dashboard gestartet")
+    print(f"  Input-Faktoren erkannt: CPUs={INPUT_FACTORS.get('logical_cpus')}, HT={INPUT_FACTORS.get('hyperthreading_env')}, GPU={INPUT_FACTORS.get('gpu_count', 0)}")
+    print(f"  Output-Faktoren erkannt: target_workers={OUTPUT_FACTORS.get('target_workers')}")
 
 @app.post("/api/events")
 async def post_event(payload: EventIn):
@@ -259,6 +323,8 @@ async def api_health(light: bool = False):
         "ws_endpoint": "/ws",
         "tasks": {"autonomous": True, "queue_len": len(TASK_QUEUE) if 'TASK_QUEUE' in globals() else 0, "support": "selbstständig neue tasks zuordnen"},
         "agents": agent_info,
+        "input_factors": get_input_factors(),
+        "output_factors": get_output_factors(),
     }
 
 # === Agent state and helpers (for auto load/assign) ===
@@ -356,3 +422,15 @@ if ht:
     try:
         ht.enable(True)
     except: pass
+
+# Automatische Faktor-Erkennung auch für direkte Aufrufe
+detect_input_factors()
+detect_output_factors()
+
+@app.get("/api/input-factors")
+async def api_input_factors():
+    return get_input_factors()
+
+@app.get("/api/output-factors")
+async def api_output_factors():
+    return get_output_factors()
