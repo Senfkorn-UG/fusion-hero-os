@@ -27,6 +27,9 @@ except Exception as e:
     print(f"Warning: Could not load DynamicOrchestrationCoreModule: {e}")
 
 # Use consolidated heroic orchestration (merged logic from previous duplicates)
+import sys
+if '03_Code' not in sys.path:
+    sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 try:
     from heroic_orchestration import (
         load_guide,
@@ -400,6 +403,28 @@ def build_workspace():
                 except:
                     return f"Agents: {'geladen' if AGENTS_LOADED else 'nicht geladen'} | {len(LOADED_AGENTS)} aktiv"
             agent_status = ui.label(_agent_label).classes('text-xs text-[#94a3b8]')
+
+            # === HYPERTHREADING aktivieren ===
+            ui.separator().classes('my-2')
+            ui.label('Hyperthreading (FUSION_HYPERTHREADING + Virtual GPU HT)').classes('text-sm font-bold text-[#fbbf24]')
+            def _refresh_ht():
+                try:
+                    r = requests.get(f"{API_BASE}/api/hyperthreading", timeout=2).json()
+                    return f"HT: {'EIN' if r.get('enabled') else 'AUS'} | workers={r.get('workers','?')} | vGPU={r.get('virtual_ht_gpu', False)}"
+                except Exception as ex:
+                    return f"HT status (backend not running or not reachable)"
+            ht_label = ui.label(_refresh_ht).classes('text-xs text-[#94a3b8]')
+            with ui.row().classes('w-full'):
+                ui.button('Hyperthreading AKTIVIEREN', on_click=lambda: (
+                    requests.post(f"{API_BASE}/api/hyperthreading", json={"enabled": True}, timeout=3),
+                    ht_label.set_text(_refresh_ht()),
+                    ui.notify("Hyperthreading aktiviert (workers scaled)", type='positive')
+                )).classes('text-xs bg-green-700')
+                ui.button('Deaktivieren', on_click=lambda: (
+                    requests.post(f"{API_BASE}/api/hyperthreading", json={"enabled": False}, timeout=3),
+                    ht_label.set_text(_refresh_ht())
+                )).classes('text-xs')
+                ui.button('Refresh', on_click=lambda: ht_label.set_text(_refresh_ht())).classes('text-xs')
 
             # === GIT: Alle Neuerungen automatisch speichern + am Ende der Sitzung pushen ===
             ui.separator().classes('my-3')
