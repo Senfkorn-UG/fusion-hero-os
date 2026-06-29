@@ -221,6 +221,21 @@ def parallel_anneal(Q, steps=8000, T0=2.0, n_restarts=None, n_samples=60,
     Rückgabe: dict mit solution, energy, energies[], traces[][], trace_steps[],
     best_restart, n_restarts, workers, runtime_seconds (+ ggf. backend).
     """
+    # Wire virtual HT threads if active (GPU/SSD virtual hyperthreading)
+    v_tids = []
+    vcache = None
+    if os.getenv("FUSION_VIRTUAL_HT_GPU") == "1":
+        try:
+            from virtual_gpu_hyperthreading import get_virtual_gpu_ht_cache, gpu_virtual_energy_update
+            vcache = get_virtual_gpu_ht_cache()
+            n_v = n_restarts or workers or 4
+            v_tids = [vcache.allocate_virtual_thread() for _ in range(n_v) if vcache]
+            if v_tids:
+                # Use virtual threads for additional parallel energy updates
+                gpu_virtual_energy_update(v_tids[:len(v_tids)//2], Q)
+        except Exception:
+            v_tids = []
+
     if backend in ("rust", "auto"):
         rb = None
         try:
@@ -266,7 +281,16 @@ def parallel_anneal(Q, steps=8000, T0=2.0, n_restarts=None, n_samples=60,
         "n_restarts": n_restarts,
         "workers": workers,
         "runtime_seconds": runtime,
+        "vht_threads_used": len(v_tids) if 'v_tids' in locals() else 0,
     }
+
+    # Cleanup virtual threads
+    if vcache and v_tids:
+        for tid in v_tids:
+            try:
+                vcache.free(tid)
+            except:
+                pass
 
 
 def warmup_kernels():

@@ -133,6 +133,32 @@ class AutoLoader:
         self.register("selfmodify_core", lambda: True, "meta")  # placeholder, real load if needed
         self.register("orchestration", lambda: ensure_agents_loaded() if 'ensure_agents_loaded' in globals() else True, "orchestration")
 
+        # External projects integration (from C: search: qubo_miner, FusionHero caches)
+        try:
+            qm_solver = _try_load_external_qubo_solver()  # from heroic_orchestration
+            if qm_solver:
+                self.register("qubo_miner_solver", lambda: qm_solver, "qubo")
+        except:
+            pass
+        # Use C:\FusionHero as SSD if present
+        if os.path.exists(r"C:\FusionHero\LongTermCache"):
+            os.environ.setdefault("FUSION_SSD_LONGTERM_CACHE", r"C:\FusionHero\LongTermCache")
+        # heroic layers
+        try:
+            import sys
+            sys.path.insert(0, r"C:\Users\Admin\heroic-highest-layer")
+            from highest_layer import load as load_highest
+            self.register("highest_layer", lambda: load_highest(), "layer")
+        except:
+            pass
+        try:
+            import sys
+            sys.path.insert(0, r"C:\Users\Admin\heroic-core-foundation")
+            from foundation import check_foundation_gate
+            self.register("foundation_checks", lambda: check_foundation_gate({}), "layer0")
+        except:
+            pass
+
     def register(self, name: str, loader: callable, category: str = "general"):
         self.drivers[name] = {"loader": loader, "category": category, "loaded": False}
 
@@ -277,8 +303,12 @@ async def startup_event():
     if ht:
         try:
             ht.enable(True)
-        except:
-            pass
+            # Force virtual GPU HT + SSD cache init
+            vcache = ht.get_virtual_gpu_ht_cache()
+            if hasattr(vcache, 'status'):
+                print('[AutoLoad] Virtual GPU HT + SSD cache active:', vcache.status())
+        except Exception as e:
+            print('[AutoLoad] Virtual HT init note:', e)
     asyncio.create_task(heroic_core_event_loop())
     print("[ALTE_Frau_95g] Heroic Core Dashboard gestartet")
     print(f"  AutoLoad Status: {autoloader.status()}")

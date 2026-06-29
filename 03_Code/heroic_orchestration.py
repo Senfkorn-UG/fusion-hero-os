@@ -165,6 +165,21 @@ def assign_task_to_agent(task: Dict[str, Any]) -> str:
     except Exception:
         pass
 
+    # Wire to qubo_miner external if available for QUBO tasks
+    if "qubo" in str(task.get("dom", "")).lower() or "qubo" in str(task.get("query", "")).lower():
+        try:
+            if EXTERNAL_QUBO_SOLVER:
+                task["external_solver"] = "qubo_miner"
+                # pass vht cache if set
+                try:
+                    from virtual_gpu_hyperthreading import get_virtual_gpu_ht_cache
+                    if hasattr(EXTERNAL_QUBO_SOLVER, 'vht_cache') and not getattr(EXTERNAL_QUBO_SOLVER, 'vht_cache', None):
+                        EXTERNAL_QUBO_SOLVER.vht_cache = get_virtual_gpu_ht_cache()
+                except:
+                    pass
+        except:
+            pass
+
     sup = _AGENT_SUPERVISOR
     if sup and hasattr(sup, "task_queue"):
         try:
@@ -182,6 +197,29 @@ def get_orchestrator():
     """Return the (possibly enhanced) orchestrator."""
     global _ORCHESTRATOR
     return _ORCHESTRATOR
+
+# === Integration of similar projects found on C: (qubo_miner, heroic-*) ===
+def _try_load_external_qubo_solver():
+    """Try to load from qubo_miner project for better GPU/QUBO with vHT."""
+    try:
+        import sys
+        qubo_path = r"C:\Users\Admin\qubo_miner"
+        if qubo_path not in sys.path:
+            sys.path.insert(0, qubo_path)
+        from qubo_solver import QUBOSolver
+        solver = QUBOSolver(solver="gpu" if os.getenv("FUSION_USE_GPU") == "1" else "neal")
+        # wire vht if available
+        try:
+            from virtual_gpu_hyperthreading import get_virtual_gpu_ht_cache
+            solver.vht_cache = get_virtual_gpu_ht_cache()
+        except:
+            pass
+        return solver
+    except Exception:
+        return None
+
+# Expose for agents / mainframe to use if wanted
+EXTERNAL_QUBO_SOLVER = _try_load_external_qubo_solver()
 
 # General AutoLoad for orchestration layer
 def auto_load(phase: str = "staged", force: bool = False) -> Dict[str, Any]:

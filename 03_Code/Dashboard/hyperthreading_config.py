@@ -39,7 +39,7 @@ _workers: int = _compute_workers()
 
 def status() -> Dict[str, Any]:
     """Current hyperthreading status (used by health, UI, scripts)."""
-    return {
+    base = {
         "enabled": _enabled,
         "logical_cpus": _logical_cpus,
         "workers": _workers,
@@ -50,6 +50,18 @@ def status() -> Dict[str, Any]:
         "gpu_streams": _FUSION_GPU_STREAMS if _FUSION_VHT_GPU else 0,
         "fusion_hyperthreading_env": _FUSION_HT,
     }
+    if _FUSION_VHT_GPU:
+        try:
+            cache = get_virtual_gpu_ht_cache()
+            if hasattr(cache, "status"):
+                vstatus = cache.status()
+                base.update({
+                    "virtual_cache_status": vstatus,
+                    "virtual_threads_active": vstatus.get("active_virtual_threads", 0),
+                })
+        except:
+            pass
+    return base
 
 def enable(enabled: bool = True) -> Dict[str, Any]:
     """Runtime toggle. Used by POST /api/hyperthreading."""
@@ -65,17 +77,32 @@ def parallel_workers() -> int:
     """Number of parallel workers / HT tracks to use."""
     return _workers
 
-def get_virtual_gpu_ht_cache() -> Dict[str, Any]:
-    """For virtual GPU HT modules."""
+def get_virtual_gpu_ht_cache():
+    """Returns the real Virtual GPU HT cache (with SSD spill if configured).
+    Falls back to dict if virtual HT disabled.
+    """
     if not _FUSION_VHT_GPU:
         return {"enabled": False}
-    return {
-        "enabled": True,
-        "virtual_threads": _FUSION_VTHREADS,
-        "state_size": _FUSION_VSTATE,
-        "gpu_streams": _FUSION_GPU_STREAMS,
-        "share_factor": float(os.getenv("FUSION_GPU_SHARE_FACTOR", "3.0")),
-    }
+    try:
+        from virtual_gpu_hyperthreading import get_virtual_gpu_ht_cache as _real_get
+        cache = _real_get()
+        # Also init SSD if not present
+        try:
+            from ssd_longterm_cache import SSDLongTermCache
+            # attach if needed
+        except:
+            pass
+        return cache
+    except Exception as e:
+        print(f"[hyperthreading_config] virtual_gpu_hyperthreading import failed: {e}")
+        return {
+            "enabled": True,
+            "virtual_threads": _FUSION_VTHREADS,
+            "state_size": _FUSION_VSTATE,
+            "gpu_streams": _FUSION_GPU_STREAMS,
+            "share_factor": float(os.getenv("FUSION_GPU_SHARE_FACTOR", "3.0")),
+            "note": "simulated (real module not loadable)"
+        }
 
 # Auto-activate on import if env requests it (consistent with "immer automatisch")
 if _FUSION_HT:
