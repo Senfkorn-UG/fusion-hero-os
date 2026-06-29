@@ -38,6 +38,7 @@ try:
         assign_task_to_agent,
         get_loaded_agents,
         create_classified_task,
+        auto_load,
     )
 except Exception:
     # Fallback inline (should not happen after merge)
@@ -47,6 +48,7 @@ except Exception:
     def assign_task_to_agent(t): t['assigned_agent'] = 'general-worker'; return 'general-worker'
     def get_loaded_agents(): return {}
     def create_classified_task(q, **k): return {"query": q, **k}
+    def auto_load(phase="staged", force=False): return {"loaded": ["fallback"]}
 
 # Re-export for UI / legacy
 AGENTS_LOADED = False  # will be updated by ensure
@@ -121,7 +123,7 @@ def check_and_assign_task(input_field):
     # Consolidated path (shared heroic_orchestration)
     task_id = len(tasks) + 1
     task = create_classified_task(raw, id=task_id)
-    ensure_agents_loaded()
+    auto_load(phase="staged")
 
     tasks.append(task)
     if task_table:
@@ -298,8 +300,12 @@ def periodic_git_save():
         run_auto_save(once=True)
 
 def build_workspace():
-    # Agenten IMMER automatisch laden beim Start des Workspace
-    ensure_agents_loaded()
+    # Generelles AutoLoad zu Beginn
+    try:
+        from heroic_orchestration import auto_load
+        auto_load(phase="staged")
+    except:
+        ensure_agents_loaded()
 
     # Heroisches Theme (Amber/Cyan auf Dark)
     ui.query("body").classes('bg-[#0a0a0f] text-[#e2e8f0]')
@@ -387,11 +393,14 @@ def build_workspace():
             # Lightweight in-app Git auto-save timer (if enabled via switch)
             ui.timer(55.0, periodic_git_save)
 
-            # Agenten immer automatisch sicherstellen (jede Minute reload-check)
-            def _ensure_agents_periodic():
-                if not AGENTS_LOADED:
+            # Generelles AutoLoad periodisch (jede Minute)
+            def _auto_load_periodic():
+                try:
+                    from heroic_orchestration import auto_load
+                    auto_load(phase="staged")
+                except:
                     ensure_agents_loaded()
-            ui.timer(60.0, _ensure_agents_periodic)
+            ui.timer(60.0, _auto_load_periodic)
 
             # Extra controls for full autonomy
             with ui.row().classes('w-full mt-1'):
@@ -402,7 +411,7 @@ def build_workspace():
             ui.separator().classes('my-2')
             ui.label('Agenten (immer automatisch laden + zuordnen)').classes('text-sm font-bold text-[#fbbf24]')
             with ui.row().classes('w-full'):
-                ui.button('Agenten jetzt laden', on_click=lambda: ensure_agents_loaded(force=True)).classes('text-xs')
+                ui.button('Agenten jetzt laden', on_click=lambda: auto_load(force=True)).classes('text-xs')
                 ui.button('Status', on_click=lambda: ui.notify(f"Geladen: {list(LOADED_AGENTS.keys())}", type='info')).classes('text-xs')
             def _agent_label():
                 try:

@@ -183,11 +183,31 @@ def get_orchestrator():
     global _ORCHESTRATOR
     return _ORCHESTRATOR
 
+# General AutoLoad for orchestration layer
+def auto_load(phase: str = "staged", force: bool = False) -> Dict[str, Any]:
+    """Generelle AutoLoad Logik für alles was passt: Agents, HT, Factors etc."""
+    results = {"loaded": [], "errors": []}
+    try:
+        ensure_agents_loaded(force=force)
+        results["loaded"].append("agents")
+    except Exception as e:
+        results["errors"].append(f"agents: {e}")
+    try:
+        import hyperthreading_config as htc
+        if force or not htc.status().get("enabled"):
+            htc.enable(True)
+        results["loaded"].append("hyperthreading")
+    except Exception as e:
+        results["errors"].append(f"hyperthreading: {e}")
+    # Could add more: core modules, etc.
+    results["phase"] = phase
+    return results
+
 
 # Convenience for task creation (used by check_and_assign)
 def create_classified_task(raw_query: str, **extra) -> Dict[str, Any]:
     normalized, cat, matched, dom = classify_and_normalize(raw_query)
-    ensure_agents_loaded()
+    auto_load(phase="staged")  # general auto load
     agent = assign_task_to_agent({"dom": dom, "geltung": cat, "id": extra.get("id", 0)})
 
     task = {
