@@ -1,4 +1,4 @@
-name: Fusion Hero OS Hyperthreading CI
+name: Fusion Hero OS - Heroic Core CI
 
 on:
   push:
@@ -7,36 +7,55 @@ on:
     branches: [ "main" ]
 
 jobs:
-  heroic-core-validation:
+  heroic-core-ci:
     runs-on: ubuntu-latest
+    name: Heroic Core Validation
+
     steps:
       - uses: actions/checkout@v4
 
-      - name: Validate Heroic Core Presence
+      - name: Validate Repository Structure
         run: |
-          echo "ALTE_Frau_95g Heroic Core v7.12 loaded"
-          echo "Layer 6 ω Ultimate Fixed-Point / MasterSeed engaged"
-          echo "Hyperthreading native active"
-          echo "Core vs Developer separation active"
-
-      - name: Check Core Module Structure
-        run: |
-          if [ -d "core" ]; then
-            echo "core/ directory exists - good"
-            ls core/
-          else
-            echo "ERROR: core/ directory missing"
+          echo "=== Checking Core vs Developer Separation ==="
+          if [ ! -d "core" ]; then
+            echo "::error::core/ directory is missing!"
             exit 1
           fi
-
-      - name: Validate Python Syntax in Core
-        run: |
-          python3 -m py_compile core/cec.py core/psycholysis_trigger.py core/rhe.py || echo "Syntax check completed with warnings"
-
-      - name: Check Developer Directory
-        run: |
-          if [ -d "developer" ]; then
-            echo "developer/ directory exists - good"
-          else
-            echo "WARNING: developer/ directory not found"
+          if [ ! -d "developer" ]; then
+            echo "::warning::developer/ directory not found (may be intentional)"
           fi
+          echo "Structure OK"
+
+      - name: Validate Core Python Syntax
+        run: |
+          echo "=== Validating Python files in core/ ==="
+          find core -name "*.py" -print0 | while IFS= read -r -d '' file; do
+            echo "Checking: $file"
+            python3 -m py_compile "$file" || exit 1
+          done
+          echo "All core Python files have valid syntax"
+
+      - name: Check Required Core Files
+        run: |
+          echo "=== Checking required core files ==="
+          REQUIRED_FILES=(
+            "core/cec.py"
+            "core/psycholysis_trigger.py"
+            "core/rhe.py"
+          )
+          for file in "${REQUIRED_FILES[@]}"; do
+            if [ ! -f "$file" ]; then
+              echo "::error::Required file missing: $file"
+              exit 1
+            fi
+          done
+          echo "All required core files present"
+
+      - name: Heroic Core Status Report
+        run: |
+          echo "===================================="
+          echo "ALTE_Frau_95g Heroic Core CI - SUCCESS"
+          echo "Version: v7.12"
+          echo "Core Structure: Validated"
+          echo "Python Syntax: OK"
+          echo "===================================="
