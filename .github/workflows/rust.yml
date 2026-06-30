@@ -1,27 +1,12 @@
-name: Rust
+# DISABLED as part of Fusion Hero OS v7.4 cleanup (2026-06-30)
+# Original template for Rust projects - not applicable to the unified ALTE_Frau_95g Heroic Core.
+# All active workflows consolidated in fusion-hero-os-hyperthread.yml
 
+name: DISABLED - Rust
 on:
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
-
-permissions:
-  contents: read
-
-env:
-  CARGO_TERM_COLOR: always
-
+  workflow_dispatch:
 jobs:
-  build:
-
+  disabled:
     runs-on: ubuntu-latest
-
     steps:
-    - uses: actions/checkout@v4
-    - name: Build Rust prototype (alte_frau_rust)
-      working-directory: 03_Code/Rust_Prototype/alte_frau_rust
-      run: cargo build --verbose
-    - name: Run tests for Rust prototype
-      working-directory: 03_Code/Rust_Prototype/alte_frau_rust
-      run: cargo test --verbose
+      - run: echo "Workflow disabled. See fusion-hero-os-hyperthread.yml for Heroic Core CI."
