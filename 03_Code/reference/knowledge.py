@@ -21,7 +21,7 @@ Eigenschaften (HARTE CONSTRAINTS):
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Dict, List, Optional
 
 __version__ = "1.0"
@@ -65,30 +65,33 @@ class FileVersion:
 
 
 # =====================================================================
-# ARCHITEKTUR — Module in heroic_core_mainframe.py (v5.25)
+# ARCHITEKTUR — Module in mainframe.py (v5.25)
 # =====================================================================
 
-_MAINFRAME = "heroic_core_mainframe.py"
+_MAINFRAME = "mainframe.py"
 _APP = "app.py"
 _SKILL = "HEROIC_SKILL.md"
 
 MAINFRAME_MODULES: List[Module] = [
     Module(
         "SelfModifyCoreModule",
-        "Selbstmodifikation über eine Hook-Registry; erlaubt das Registrieren "
-        "und Auslösen von Modifikations-Hooks zur Laufzeit.",
+        "PLATZHALTER-STUB: Audit-Hook-Registry (registrieren/ausloesen) und "
+        "Vorschlags-Liste. Kein echtes Selbst-Modifikationssystem zur Laufzeit.",
         _MAINFRAME,
-        "Hook-Registry.",
+        "Hook-Registry (Stub).",
     ),
     Module(
         "GenerationalEvolutionProtocolCoreModule",
-        "Generationszähler; verfolgt evolutionäre Iterationen des Kerns.",
+        "Echte (mu+lambda)-Evolution ueber SA-Solver-Konfigurationen "
+        "(Genom=(steps,T0,n_restarts), Fitness=-energy via parallel_anneal); "
+        "elitaer, beste Fitness monoton nicht-fallend.",
         _MAINFRAME,
-        "Generation counter.",
+        "(mu+lambda)-Evolution; Methoden run_generation()/evolve().",
     ),
     Module(
         "CriticalMetaAnalysisCoreModule",
-        "Kritische Meta-Analyse; prüft u. a. auf Text-Inflation (text inflation check).",
+        "PLATZHALTER-STUB: grobe Substring-Pruefung auf Absolutheits-Marker "
+        "(\"immer\"/\"nie\"). Heuristik, kein inhaltliches Meta-Analyse-Urteil.",
         _MAINFRAME,
     ),
     Module(
@@ -128,7 +131,7 @@ MAINFRAME_MODULES: List[Module] = [
 ]
 
 # =====================================================================
-# ARCHITEKTUR — Module in app.py (v2.0, NiceGUI 3.13)
+# ARCHITEKTUR — Module in app.py (v2.2, NiceGUI 3.x)
 # =====================================================================
 
 APP_MODULES: List[Module] = [
@@ -136,7 +139,7 @@ APP_MODULES: List[Module] = [
     Module("Run-Console", "Konsole zum Ausführen von Code und Anzeige der Ausgabe.", _APP),
     Module("5-Dimensionen-Review", "Eingebauter Peer-Review nach 5 Dimensionen.", _APP),
     Module("ZIP-Bundle", "Bündelt Projektdateien als ZIP-Export.", _APP),
-    Module("Mainframe-Dialog", "Dialog zur Interaktion mit dem heroic_core_mainframe.", _APP),
+    Module("Mainframe-Dialog", "Dialog zur Interaktion mit der Mainframe-Engine (mainframe.py).", _APP),
     Module(
         "Live-Monitoring",
         "Live-CPU-/RAM-Anzeige via psutil, aktualisiert über ui.timer.",
@@ -256,8 +259,8 @@ GITHUB: Dict[str, object] = {
 # =====================================================================
 
 VERSIONS: Dict[str, FileVersion] = {
-    _APP: FileVersion(_APP, "2.0", "NiceGUI 3.13 Editor/IDE."),
-    _MAINFRAME: FileVersion(_MAINFRAME, "5.25", "QUBO-Solver / Parallel-Engine / Core-Sicherheits-Layer."),
+    _APP: FileVersion(_APP, "2.2", "NiceGUI 3.x Editor/IDE + Live-Agent-Monitor."),
+    _MAINFRAME: FileVersion(_MAINFRAME, "5.25", "QUBO-Solver / Parallel-SA-Engine + Audit-Layer (Stub-Hooks)."),
 }
 
 
@@ -312,7 +315,7 @@ def get_decision(key: str) -> Optional[Decision]:
 def list_modules(file: Optional[str] = None) -> List[Module]:
     """Liste aller bekannten Module.
 
-    Wird ``file`` angegeben (z. B. "heroic_core_mainframe.py", "app.py" oder
+    Wird ``file`` angegeben (z. B. "mainframe.py", "app.py" oder
     "HEROIC_SKILL.md"), werden nur die Module dieser Datei zurückgegeben.
     """
     all_modules: List[Module] = [*MAINFRAME_MODULES, *APP_MODULES, *SKILL_MODULES]
@@ -341,8 +344,8 @@ def as_markdown() -> str:
         "## Architektur",
         "",
     ]
-    lines += _md_modules("heroic_core_mainframe.py (v5.25)", MAINFRAME_MODULES)
-    lines += _md_modules("app.py (v2.0, NiceGUI 3.13)", APP_MODULES)
+    lines += _md_modules("mainframe.py (v5.25)", MAINFRAME_MODULES)
+    lines += _md_modules("app.py (v2.2, NiceGUI 3.x)", APP_MODULES)
     lines += _md_modules("HEROIC_SKILL.md (Methodik)", SKILL_MODULES)
 
     lines += ["### Konnektoren", ""]

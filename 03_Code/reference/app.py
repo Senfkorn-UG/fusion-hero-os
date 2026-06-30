@@ -18,14 +18,14 @@ Verbesserungen ggü. v1.0:
 Neu in v2.1:
 - Visualisierung via ui.echart (Konvergenz, Q-/Beitrags-Heatmap, CPU/RAM-Verlauf, Sweep)
 - Pipelines-Panel: 4 Workflows (Erkenntnis-Lauf 5-Stufen, Parallel-Solve, Review&Archive, Sweep)
-- Hyperthreading: paralleles Multi-Start-SA über alle Kerne (heroic_core_mainframe.parallel_anneal)
+- Hyperthreading: paralleles Multi-Start-SA über alle Kerne (mainframe.parallel_anneal)
 """
 from pathlib import Path
 from collections import deque
 import zipfile, datetime, re, subprocess, sys, os, io, contextlib, time
 import numpy as np
 from nicegui import ui, run
-import heroic_core_mainframe as hc
+import mainframe as hc
 import agents as ag
 
 ROOT = Path(__file__).parent
@@ -291,7 +291,7 @@ def _solve_qubo_on(Q, steps: int):
 def open_mainframe():
     with ui.dialog() as d, ui.card().classes("bg-[#11111b] min-w-[480px]"):
         ui.label("HEROIC Mainframe · QUBO-Solver").classes("text-lg font-bold text-[#00d4aa]")
-        ui.label("Simulated Annealing über die integrierte Engine (heroic_core_mainframe.py)") \
+        ui.label("Simulated Annealing über die integrierte Engine (mainframe.py)") \
             .classes("text-xs text-[#94a3b8]")
         with ui.row().classes("w-full gap-3 mt-2 items-center"):
             n_in = ui.number("Dimension n", value=12, min=2, max=200, format="%d") \
@@ -583,7 +583,7 @@ async def _a_kritik():
     for line in audit.splitlines():
         if line.strip():
             pipe_log.push(line)
-    _set_detail("Audit Layer 1+3 passed (gleiche Q wie Stufe 2)")
+    _set_detail("Audit Layer 1+3 ausgefuehrt; keine Schwellenwarnung gemeldet (gleiche Q wie Stufe 2)")
 
 
 async def _a_synthese():
