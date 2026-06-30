@@ -4,7 +4,7 @@ QUBO-Architektur der q/b-Beziehung  —  Optimierte Version
 ===========================================================
 Optimierungen:
   1. make_Q: vollstaendig vektorisiert mit NumPy-Broadcasting
-  2. brute_force_min: Batch-Auswertung via np.einsum (BLAS-beschleunigt)
+  2. brute_force_min: Batch-Auswertung via (X @ Q * X).sum(axis=1) (BLAS-beschleunigt)
   3. greedy_fix: Integer-Masken, keine Float-Konvertierung im Hot-Loop
   4. local_search: Energie-Delta-Analytik (O(n) pro Iteration statt O(n^2))
   5. simulated_annealing: Integer-Operationen, fewer copies
@@ -12,35 +12,9 @@ Optimierungen:
 """
 import numpy as np
 import itertools
-from numba import jit
 
 
 rng = np.random.default_rng(7)
-
-
-@jit(nopython=True, cache=True, fastmath=True)
-def _batch_energy_numba(Q, X):
-    n = Q.shape[0]
-    batch = X.shape[0]
-    out = np.empty(batch, dtype=np.float64)
-    for b in range(batch):
-        s = 0.0
-        for i in range(n):
-            for j in range(n):
-                s += Q[i, j] * X[b, i] * X[b, j]
-        out[b] = s
-    return out
-
-
-@jit(nopython=True, cache=True, fastmath=True)
-def _energy_delta_numba(Qf, x, i):
-    n = len(x)
-    delta_x = 1 - 2 * x[i]
-    de = 0.0
-    for j in range(n):
-        de += 2.0 * delta_x * Qf[j, i] * x[j]
-    de += Qf[i, i] * delta_x * delta_x
-    return de
 
 # ---------- Kernfunktionen ----------
 
@@ -57,10 +31,7 @@ def make_Q(n, submodular=False, scale=1.0):
     Q += (r + r.T) / 2.0          # symmetrisch
     np.fill_diagonal(Q, rng.normal(0, scale, size=n))
     if submodular:
-        Q -= np.abs(Q)            # Off-Diagonale <= 0 => submodular
-        np.fill_diagonal(Q, np.abs(np.diag(Q)))  # Diagonalen wieder positiv belassen? Original macht das nicht.
-        # Original: v = -abs(v) fuer Off-Diagonale. Diagonalen bleiben normal.
-        # Daher korrigieren wir nur Off-Diagonale:
+        # Off-Diagonale <= 0 erzwingen (submodular); Diagonale bleibt unveraendert.
         off = np.ones_like(Q) - np.eye(n)
         Q = np.where(off, -np.abs(Q), Q)
     return Q
