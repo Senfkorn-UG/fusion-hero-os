@@ -45,18 +45,22 @@ import sys, os
 if '03_Code' not in sys.path:
     sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 try:
-    from heroic_orchestration import (
+    from core.heroic_orchestration import (
         ensure_agents_loaded as _ensure_agents_shared,
         classify_and_normalize,
         get_loaded_agents,
+        auto_load,
+        get_best_qubo_solver,
     )
 except Exception:
     def _ensure_agents_shared(force=False): return True
     def classify_and_normalize(q): return q, "model", None, "General"
     def get_loaded_agents(): return {}
+    def auto_load(phase="staged", force=False): return {"loaded": ["fallback"]}
+    def get_best_qubo_solver(): return None
 
 try:
-    import hyperthreading_config as ht
+    from core import hyperthreading_config as ht
 except Exception:
     ht = None
 
@@ -147,7 +151,33 @@ class AutoLoader:
 
         # Core Modules (example - can be extended)
         self.register("selfmodify_core", lambda: True, "meta")  # placeholder, real load if needed
-        self.register("orchestration", lambda: _ensure_agents_shared(), "orchestration")
+        self.register("orchestration", lambda: auto_load(phase="full") if callable(auto_load) else _ensure_agents_shared(), "orchestration")
+
+        # External projects integration (from C: search: qubo_miner, FusionHero caches, heroic layers)
+        try:
+            qm = get_best_qubo_solver()
+            if qm:
+                self.register("qubo_miner_solver", lambda: qm, "qubo")
+        except:
+            pass
+        # Use C:\FusionHero as SSD if present
+        if os.path.exists(r"C:\FusionHero\LongTermCache"):
+            os.environ.setdefault("FUSION_SSD_LONGTERM_CACHE", r"C:\FusionHero\LongTermCache")
+        # heroic layers from C: search
+        try:
+            import sys
+            sys.path.insert(0, r"C:\Users\Admin\heroic-highest-layer")
+            from highest_layer import load as load_highest
+            self.register("highest_layer", lambda: load_highest(), "layer")
+        except:
+            pass
+        try:
+            import sys
+            sys.path.insert(0, r"C:\Users\Admin\heroic-core-foundation")
+            from foundation import check_foundation_gate
+            self.register("foundation_checks", lambda: check_foundation_gate({}), "layer0")
+        except:
+            pass
 
     def register(self, name: str, loader: callable, category: str = "general"):
         self.drivers[name] = {"loader": loader, "category": category, "loaded": False}
@@ -293,8 +323,12 @@ async def startup_event():
     if ht:
         try:
             ht.enable(True)
-        except:
-            pass
+            # Force virtual GPU HT + SSD cache init
+            vcache = ht.get_virtual_gpu_ht_cache()
+            if hasattr(vcache, 'status'):
+                print('[AutoLoad] Virtual GPU HT + SSD cache active:', vcache.status())
+        except Exception as e:
+            print('[AutoLoad] Virtual HT init note:', e)
     asyncio.create_task(heroic_core_event_loop())
     print("[ALTE_Frau_95g] Heroic Core Dashboard gestartet")
     print(f"  AutoLoad Status: {autoloader.status()}")
