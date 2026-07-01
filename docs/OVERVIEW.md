@@ -1,66 +1,70 @@
-# Fusion-Hero-OS – Top-Down Repository Structure
+# Fusion-Hero-OS – Top-Down Repository Structure (v8)
 
-**Version:** v8 (in Entwicklung)  
+**Version:** v8  
 **Letztes Update:** 2026-07-01
 
-Dieses Dokument definiert die **klare Top-Down-Struktur** des `fusion-hero-os` Repositories.
+Dieses Dokument definiert die **offizielle Top-Down-Struktur** des Repositories. Die Struktur ist bewusst seriös, klar hierarchisch und skalierbar gestaltet.
 
 ---
 
-## Grundprinzip
+## Designprinzipien
 
-Das Repository folgt einer bewussten **Top-Down-Logik**, analog zum Layer-Modell des Heroic Core:
-
-- **Oben (Strategie & Vision)**: Warum existiert dieses Repo und wohin entwickelt es sich?
-- **Mitte (Architektur & Integration)**: Wie ist das System aufgebaut?
-- **Unten (Umsetzung)**: Konkrete Werkzeuge, Chains und Module
+- **Top-Down-Logik**: Von Strategie über Architektur bis zur konkreten Umsetzung
+- **Seriosität & Klarheit**: Professionelle, nachvollziehbare Ordnerstruktur
+- **Skalierbarkeit**: Einfach erweiterbar bei wachsendem Inhalt
+- **Konsistenz** mit dem Layer-Modell des Heroic Core
 
 ---
 
-## Empfohlene Ordnerstruktur (v8)
+## Offizielle Ordnerstruktur (v8)
 
 ```
 fusion-hero-os/
-├── README.md                          # Einstieg & aktuelle Ausrichtung
+├── README.md
 ├── docs/
-│   ├── OVERVIEW.md                    # Diese Datei (Top-Down Navigation)
-│   ├── strategy/                      # v8 Strategie, Vision & Governance
+│   ├── OVERVIEW.md                 # Zentrale Navigation & Strukturbeschreibung
+│   ├── 01_vision/                  # Strategie, Vision & Governance
 │   │   ├── V8_STRATEGY.md
 │   │   └── V8_SYNTHESIS.md
-│   ├── architecture/                  # Kern-Architektur & Layer-Modell
+│   ├── 02_architecture/            # Kern-Architektur & Layer-Modell
 │   │   └── FUSION_HERO_OS_v7.5_MASTER_UNIFIED.md
-│   ├── pms/                           # PMS Evidence Spine Integration
-│   │   ├── PMS_OPERATOR_CATALOG_v7.5.md
-│   │   └── CROSS_REPO_ALIGNMENT_v7.5.md
-│   └── legacy/                        # Alte Versionen & Experimente
-├── core/                            # Technische Core-Module (MasterSeed, SelfModify...)
-├── modules/                         # Skill-Module
-├── book/                            # Heroismus Buchstruktur
-├── roadmap/                         # Langfristige Entwicklung
-└── archive/                         # Archivierter Content
+│   ├── 03_integration/             # System-Integration & Schnittstellen
+│   │   ├── CROSS_REPO_ALIGNMENT_v7.5.md
+│   │   └── Weitere Integrationsdokumente
+│   ├── 04_execution/               # Konkrete Umsetzung & Werkzeuge
+│   │   └── PMS_OPERATOR_CATALOG_v7.5.md
+│   ├── 05_reference/               # Technische Referenz & Spezifikationen
+│   └── 99_archive/                 # Legacy, alte Versionen & Experimente
+├── core/
+├── modules/
+├── book/
+├── roadmap/
+└── archive/
 ```
 
 ---
 
-## Aktueller Stand der Umsetzung
+## Bedeutung der Layer
 
-| Bereich            | Status      | Nächste Aktion                     |
-|--------------------|-------------|-------------------------------------|
-| `docs/strategy/`   | Geplant     | V8_STRATEGY + V8_SYNTHESIS hierhin  |
-| `docs/architecture/` | Geplant   | Master Unified hierhin verschieben  |
-| `docs/pms/`        | Geplant     | PMS-Dokumente hierhin               |
-| `docs/legacy/`     | Geplant     | Alte Inhalte hierhin                |
-
----
-
-## Vorteile dieser Top-Down-Struktur
-
-- Klare Navigation von oben nach unten
-- Trennung von Strategie, Architektur und Umsetzung
-- Einfachere Einarbeitung für neue Mitwirkende
-- Bessere Skalierbarkeit bei wachsendem Inhalt
-- Konsistenz mit dem philosophischen Layer-Modell des Projekts
+| Layer            | Name              | Inhalt                                      | Charakter          |
+|------------------|-------------------|---------------------------------------------|--------------------|
+| `01_vision/`     | Vision            | Strategie, Ziele, Governance, Synthese      | Strategisch        |
+| `02_architecture/` | Architecture    | Kern-Design, Layer-Modell, Prinzipien       | Konzeptionell      |
+| `03_integration/` | Integration     | Wie Komponenten und Repos zusammenspielen   | Verbindend         |
+| `04_execution/`  | Execution         | Konkrete Chains, Module, Werkzeuge          | Operativ           |
+| `05_reference/`  | Reference         | Technische Spezifikationen & Referenzen     | Nachschlagewerk    |
+| `99_archive/`    | Archive           | Historische Versionen & Experimente         | Historisch         |
 
 ---
 
-**Ziel:** Ein Repository, das sowohl als technisches Arbeitswerkzeug als auch als philosophisches Manifest klar und professionell strukturiert ist.
+## Vorteile dieser Struktur
+
+- Sehr klare Top-Down-Navigation
+- Seriöses und professionelles Erscheinungsbild
+- Einfach erweiterbar (neue Layer können bei Bedarf hinzugefügt werden)
+- Passt zum philosophischen Anspruch des Projekts
+- Trennt strategische von operativen Inhalten sauber
+
+---
+
+**Diese Struktur gilt ab sofort als verbindliche Top-Down-Architektur für das `fusion-hero-os` Repository.**
