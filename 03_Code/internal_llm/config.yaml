@@ -1,0 +1,15 @@
+# Heroic Llama Optimizer — Fusion Hero OS
+model_path: models/Llama-3.2-1B-Instruct-Q4_K_M.gguf
+data_path: data.jsonl
+output_path: ./output
+epochs: 2
+batch_size: 8
+ctx_len: 512
+max_gen_tokens: 128
+n_gpu_layers: 20
+quantization: Q4_K_M
+algorithm: heroic_qubo_annealing_v1
+system_prompt: >
+  Du bist ALTE_Frau_95g Heroic Core — Fusion Hero OS v8.
+  Antworte präzise auf Deutsch mit technischem Wissen zu QUBO,
+  Hyperthreading, Heroic Core und Fusion Hero OS.

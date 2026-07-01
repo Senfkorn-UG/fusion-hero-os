@@ -167,9 +167,25 @@ class AdaptiveGPUAllocator:
             return min(self.max_interval, self.min_interval * 3)
         return min(self.max_interval, self.state.next_interval_s * 1.25)
 
+    def _release_pool_unsafe(self) -> float:
+        freed = self._vram_pool_mb
+        self._pool_tensors.clear()
+        self._vram_pool_mb = 0.0
+        if freed > 0:
+            self.state.last_action = "released_vram_pool"
+        return freed
+
+    def release_pool(self) -> float:
+        """VRAM-Pool freigeben (RAM-Druck / Coupler-Anforderung)."""
+        with self._lock:
+            return self._release_pool_unsafe()
+
     def _resize_vram_pool(self, snap: GPUMemorySnapshot) -> float:
         """Pre-allocate GPU buffers to approach target VRAM utilization."""
         if not snap.cuda_available or snap.dedicated_total_mb <= 0:
+            return 0.0
+        if snap.system_ram_util_pct >= _env_float("FUSION_RAM_SOFT_PCT", 80.0):
+            self.state.last_action = "vram_pool_skipped_ram_pressure"
             return 0.0
 
         target_used_mb = snap.dedicated_total_mb * self.target_ratio
@@ -246,6 +262,9 @@ class AdaptiveGPUAllocator:
             prev_util = None
             if self.state.history:
                 prev_util = self.state.history[-1].get("dedicated_util_pct")
+
+            if snap.system_ram_util_pct >= _env_float("FUSION_RAM_HARD_PCT", 90.0):
+                self._release_pool_unsafe()
 
             pool_mb = self._resize_vram_pool(snap)
             vcache = self._rebalance_virtual_cache(snap)
