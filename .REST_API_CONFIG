@@ -1,43 +1,26 @@
-# Fusion Hero OS REST API Configuration
-# Backend Server auf Port 8000
+# Fusion Hero OS — Standard GUI + API auf Port 8000
+# NiceGUI (workspace.py :8080) ist optional, nicht Standard
 
-# === STARTUP ===
-python 03_Code/reference/rest_api_server.py
+# === STARTUP (Standard) ===
+cd 03_Code\Dashboard
+python -m uvicorn app:app --host 127.0.0.1 --port 8000
 
-# === BASE URL ===
-http://127.0.0.1:8000
+# Oder: run_backend.bat / start_all.ps1
 
-# === ENDPOINTS ===
+# === STANDARD GUI ===
+http://127.0.0.1:8000              # Dashboard (templates/index.html)
+ws://127.0.0.1:8000/ws             # Live Event Stream
 
-# Health & Status
-GET  /                            # Root info
+# === API ===
+GET  /                             # Standard-GUI
 GET  /api/health                 # System health
-
-# Input/Output Factors
-GET  /api/input-factors          # CPU/GPU/HT status
-GET  /api/output-factors         # Worker configuration
-
-# Hyperthreading
-GET  /api/hyperthreading         # Get HT status
+GET  /api/gui/status             # GUI metadata
+GET  /api/gui/workspace          # Redirect → /
+GET  /api/hyperthreading         # HT status
 POST /api/hyperthreading         # Enable/disable HT
+GET  /api/autoload/status        # AutoLoad drivers
+POST /api/autoload/run           # Run AutoLoad
+GET  /docs                       # Swagger UI
 
-# Tasks & Events
-POST /api/events                 # Log event
-POST /api/input                  # Process task input
-GET  /api/events                 # Get event log
-GET  /api/tasks                  # Get all tasks
-GET  /api/tasks/{task_id}        # Get specific task
-
-# Code Modifications
-POST /mod/apply                  # Apply code modification with PeerReview
-
-# === FEATURES ===
-# ✅ CORS enabled for localhost:8080
-# ✅ Autonomous task queue
-# ✅ Event logging
-# ✅ Hyperthreading control
-# ✅ FastAPI with automatic docs at /docs
-
-# === API DOCS ===
-# Swagger UI:  http://127.0.0.1:8000/docs
-# ReDoc:       http://127.0.0.1:8000/redoc
+# === OPTIONAL LEGACY ===
+# workspace.py → http://127.0.0.1:8080 (start_all.ps1 -NiceGUI)

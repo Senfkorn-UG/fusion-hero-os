@@ -1,13 +1,17 @@
 # Fusion-Hero-OS v8 - Auto-Load aller Komponenten
-# Hauptstart-Skript: Backend (Dashboard :8000) + Workspace (:8080) + Grok-Sync
+# Standard-GUI: FastAPI Dashboard auf Port 8000 (templates/index.html + /ws)
+# NiceGUI workspace.py (:8080) nur optional via -NiceGUI
 
-param([switch]$Force)
+param(
+    [switch]$Force,
+    [switch]$NiceGUI
+)
 $ErrorActionPreference = "Stop"
 $Root = Split-Path -Parent $MyInvocation.MyCommand.Path
 $Dash = Join-Path $Root "03_Code\Dashboard"
 $Python = "C:\Users\Admin\venv\Scripts\python.exe"
-$BackendUrl = "http://127.0.0.1:8000"
-$WorkspaceUrl = "http://127.0.0.1:8080"
+$GuiUrl = "http://127.0.0.1:8000"
+$LegacyNiceGuiUrl = "http://127.0.0.1:8080"
 
 function Stop-FusionProcesses {
     Get-CimInstance Win32_Process -Filter "Name='python.exe'" -ErrorAction SilentlyContinue |
@@ -31,7 +35,7 @@ function Wait-MainframeLoaded([int]$MaxSec = 120) {
     $deadline = (Get-Date).AddSeconds($MaxSec)
     while ((Get-Date) -lt $deadline) {
         try {
-            $s = Invoke-RestMethod -Uri "$BackendUrl/api/health" -TimeoutSec 3
+            $s = Invoke-RestMethod -Uri "$GuiUrl/api/health" -TimeoutSec 3
             $s = $s.mainframe
             if ($s.loaded) { return $s }
         } catch {}
@@ -47,7 +51,8 @@ if ($Force) {
     Write-Host "Modus: FORCE (Full-Boot · Medienserver-Sync)" -ForegroundColor Magenta
 }
 Write-Host "Substrat: Windows | Meta-Layer: Fusion Hero OS v8" -ForegroundColor DarkCyan
-Write-Host "GitHub:   https://github.com/95guknow/fusion-hero-os (main @ v8)" -ForegroundColor DarkGray
+Write-Host "Standard-GUI: $GuiUrl  (FastAPI Dashboard, kein NiceGUI)" -ForegroundColor DarkGray
+Write-Host "GitHub:       https://github.com/95guknow/fusion-hero-os (main @ v8)" -ForegroundColor DarkGray
 
 Write-Host "[0] Automatische Faktor-Erkennung..." -NoNewline
 try {
@@ -81,14 +86,18 @@ Start-Sleep -Seconds 1
 
 Start-Process -FilePath (Join-Path $Root "run_backend.bat") -WorkingDirectory $Root -WindowStyle Minimized
 
-Write-Host "[1/4] Backend starten..." -NoNewline
-if (-not (Wait-HttpReady "$BackendUrl/api/health?light=true")) {
+Write-Host "[1/3] Dashboard + API starten (:8000)..." -NoNewline
+if (-not (Wait-HttpReady "$GuiUrl/api/health?light=true")) {
     Write-Host " FEHLER" -ForegroundColor Red
+    exit 1
+}
+if (-not (Wait-HttpReady $GuiUrl)) {
+    Write-Host " FEHLER (GUI /)" -ForegroundColor Red
     exit 1
 }
 Write-Host " OK" -ForegroundColor Green
 
-Write-Host "[2/4] AutoLoader Treiber+Prozesse..." -NoNewline
+Write-Host "[2/3] AutoLoader Treiber+Prozesse..." -NoNewline
 try {
     if ($Force) {
         $alBody = '{"phase":"full","force":true,"sync":true,"attach_meta":true}'
@@ -97,7 +106,7 @@ try {
         $alBody = '{"phase":"staged","attach_meta":true}'
         $alTimeout = 90
     }
-    $al = Invoke-RestMethod -Uri "$BackendUrl/api/autoload/run" -Method POST `
+    $al = Invoke-RestMethod -Uri "$GuiUrl/api/autoload/run" -Method POST `
         -Body $alBody -ContentType "application/json" -TimeoutSec $alTimeout
     $sum = $al.summary
     $ready = if ($sum.drivers_ready) { $sum.drivers_ready } else { $sum.drivers_loaded }
@@ -106,7 +115,7 @@ try {
     Write-Host " FALLBACK" -ForegroundColor Yellow
 }
 
-Write-Host "[3/4] Mainframe-Status..." -NoNewline
+Write-Host "[3/3] Mainframe-Status..." -NoNewline
 $mf = Wait-MainframeLoaded
 if ($mf) {
     Write-Host " OK ($($mf.version))" -ForegroundColor Green
@@ -116,7 +125,7 @@ if ($mf) {
 
 Write-Host "[Profil] Fusion-Leistung 2/3 (ohne Windows)..." -NoNewline
 try {
-    $pr = Invoke-RestMethod -Uri "$BackendUrl/api/performance/set" -Method POST -Body '{"ratio":0.667}' -ContentType "application/json" -TimeoutSec 8
+    $pr = Invoke-RestMethod -Uri "$GuiUrl/api/performance/set" -Method POST -Body '{"ratio":0.667}' -ContentType "application/json" -TimeoutSec 8
     Write-Host " OK ($($pr.fusion.active))" -ForegroundColor Green
 } catch {
     Write-Host " WARTE" -ForegroundColor Yellow
@@ -124,7 +133,7 @@ try {
 
 Write-Host "[Meta] Windows-Substrat + Meta-Layer attach..." -NoNewline
 try {
-    $ml = Invoke-RestMethod -Uri "$BackendUrl/api/meta-layer/attach" -Method POST -TimeoutSec 10
+    $ml = Invoke-RestMethod -Uri "$GuiUrl/api/meta-layer/attach" -Method POST -TimeoutSec 10
     $hostName = $ml.substrate.hostname
     Write-Host " OK ($hostName)" -ForegroundColor Green
 } catch {
@@ -133,7 +142,7 @@ try {
 
 Write-Host "[Substrat] Windows-Substrat-Tuning..." -NoNewline
 try {
-    $st = Invoke-RestMethod -Uri "$BackendUrl/api/windows/substrate/tune" -Method POST -TimeoutSec 20
+    $st = Invoke-RestMethod -Uri "$GuiUrl/api/windows/substrate/tune" -Method POST -TimeoutSec 20
     $pwr = $st.scan.power_plan.name
     Write-Host " OK ($pwr · $($st.applied_count) Aktionen)" -ForegroundColor Green
 } catch {
@@ -142,31 +151,33 @@ try {
 
 Write-Host "[Cyber] Cyber Layer aktivieren..." -NoNewline
 try {
-    $cy = Invoke-RestMethod -Uri "$BackendUrl/api/windows/cyber-layer/activate" -Method POST -TimeoutSec 12
+    $cy = Invoke-RestMethod -Uri "$GuiUrl/api/windows/cyber-layer/activate" -Method POST -TimeoutSec 12
     $badge = $cy.visual.badge
     Write-Host " OK ($badge · Score $($cy.optimization_score))" -ForegroundColor Green
 } catch {
     Write-Host " FALLBACK" -ForegroundColor Yellow
 }
 
-Start-Process -FilePath (Join-Path $Root "run_workspace.bat") -WorkingDirectory $Root -WindowStyle Minimized
-Write-Host "[4/4] Workspace starten..." -NoNewline
-if (Wait-HttpReady $WorkspaceUrl) {
-    Write-Host " OK" -ForegroundColor Green
-} else {
-    Write-Host " FEHLER" -ForegroundColor Red
-    exit 1
+if ($NiceGUI) {
+    Write-Host "[Optional] NiceGUI Legacy-Workspace (:8080)..." -NoNewline
+    Start-Process -FilePath (Join-Path $Root "run_workspace.bat") -WorkingDirectory $Root -WindowStyle Minimized
+    if (Wait-HttpReady $LegacyNiceGuiUrl) {
+        Write-Host " OK" -ForegroundColor Green
+    } else {
+        Write-Host " FEHLER" -ForegroundColor Yellow
+    }
 }
 
-Start-Process $WorkspaceUrl
+Start-Process $GuiUrl
 Write-Host ""
 Write-Host "Bereit:" -ForegroundColor Cyan
-Write-Host "  Workspace: $WorkspaceUrl  (gui/ + workspace.py)"
-Write-Host "  GUI API:   $BackendUrl/api/gui/status"
-Write-Host "  AutoLoad:  $BackendUrl/api/autoload/status"
-Write-Host "  Backend:   $BackendUrl"
-Write-Host "  REST API:  $BackendUrl/docs  (reference/rest_api_server.py)"
-Write-Host ('  Mainframe: ' + $BackendUrl + '/api/mainframe/status')
+Write-Host "  GUI:       $GuiUrl  (Dashboard templates/index.html + WebSocket /ws)"
+Write-Host "  API:       $GuiUrl/api/health"
+Write-Host "  AutoLoad:  $GuiUrl/api/autoload/status"
+Write-Host "  API Docs:  $GuiUrl/docs"
+if ($NiceGUI) {
+    Write-Host "  Legacy:    $LegacyNiceGuiUrl  (NiceGUI workspace.py, optional)"
+}
 
 Write-Host "[Auto-Save] Starte automatisches Speichern aller Neuerungen..." -NoNewline
 try {
@@ -183,4 +194,5 @@ try {
 }
 
 Write-Host ""
-Write-Host "Zum finalen Push:  powershell -File end_session.ps1   (oder Button im Workspace)" -ForegroundColor DarkCyan
+Write-Host "Zum finalen Push:  powershell -File end_session.ps1" -ForegroundColor DarkCyan
+Write-Host "NiceGUI nur bei Bedarf:  start_all.ps1 -NiceGUI" -ForegroundColor DarkGray

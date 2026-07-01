@@ -1,95 +1,85 @@
 # Fusion Hero OS - Deployment Guide
 
-## 🎯 Quick Start
+## Quick Start
 
 ### Prerequisites
 ```bash
-pip install fastapi uvicorn nicegui requests psutil
+pip install fastapi uvicorn psutil
 ```
 
-### Terminal 1: Backend (Port 8000)
+### Single Process: Dashboard GUI + API (Port 8000)
 ```bash
-cd 03_Code/reference
-python rest_api_server.py
+cd 03_Code/Dashboard
+python -m uvicorn app:app --host 127.0.0.1 --port 8000
 ```
 
-### Terminal 2: Frontend (Port 8080)
-```bash
-cd 03_Code/reference
-python app.py
+Or on Windows:
+```bat
+run_backend.bat
+```
+
+### Auto-Load (recommended)
+```powershell
+powershell -File start_all.ps1
 ```
 
 ### Access
-- **Frontend UI**: http://127.0.0.1:8080
-- **Backend API**: http://127.0.0.1:8000
+- **Standard GUI**: http://127.0.0.1:8000
+- **API Health**: http://127.0.0.1:8000/api/health
 - **API Docs**: http://127.0.0.1:8000/docs
+- **WebSocket**: ws://127.0.0.1:8000/ws
+
+### Optional: NiceGUI Legacy (Port 8080)
+Only if needed — not the default GUI:
+```powershell
+powershell -File start_all.ps1 -NiceGUI
+```
+Or manually: `run_workspace.bat` → http://127.0.0.1:8080
 
 ---
 
-## 📋 Architecture
+## Architecture
 
 ```
 ┌─────────────────────────────────────────────────────────┐
-│              Frontend (NiceGUI, Port 8080)              │
-│  - Workspace Canvas + IDE                               │
-│  - Autonomous Task Assignment                           │
-│  - Live Agent Monitor                                   │
-│  - Pipelines & Visualization                            │
-└────────────────────┬────────────────────────────────────┘
-                     │ HTTP REST
-                     ▼
-┌─────────────────────────────────────────────────────────┐
-│            Backend API (FastAPI, Port 8000)             │
-│  - Task Queue Management                                │
-│  - Event Logging                                        │
-│  - Hyperthreading Control                               │
-│  - System Monitoring                                    │
+│     Standard GUI (FastAPI + HTML, Port 8000)            │
+│  - templates/index.html (Dashboard)                     │
+│  - WebSocket /ws (Live Events)                          │
+│  - REST API /api/*                                      │
 └────────────────────┬────────────────────────────────────┘
                      │ Python imports
                      ▼
 ┌─────────────────────────────────────────────────────────┐
 │           Mainframe Core (in-process)                   │
-│  - QUBO Solver (Simulated Annealing)                    │
 │  - Heroic Orchestration                                 │
+│  - Hyperthreading Control                               │
 │  - Agent Supervisor                                     │
-│  - PeerReview Module                                    │
-└───────────────────────���─────────────────────────────────┘
+│  - QUBO / AutoLoad                                      │
+└─────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## ✅ Fixes Applied
-
-✅ CodeQL Workflow disabled (`.github/workflows/codeql.yml`)
-✅ Git submodules fixed (`.gitmodules` created)
-✅ Frontend configured (Port 8080, NiceGUI)
-✅ Backend REST API configured (Port 8000, FastAPI)
-✅ CORS enabled between frontend and backend
-
----
-
-## 🚀 Deployment Status
+## Deployment Status
 
 | Component | Status | Location | Port |
 |-----------|--------|----------|------|
-| Frontend | ✅ Ready | `03_Code/reference/app.py` | 8080 |
-| Backend API | ✅ Ready | `03_Code/reference/rest_api_server.py` | 8000 |
-| Mainframe Core | ✅ Integrated | In-process | — |
-| Agent Monitor | ✅ Ready | Frontend module | — |
-| Git Workflows | ✅ Fixed | `.github/workflows/` | — |
+| Standard GUI | Ready | `03_Code/Dashboard/app.py` | 8000 |
+| NiceGUI Legacy | Optional | `03_Code/Dashboard/workspace.py` | 8080 |
+| Reference REST | Dev/Ref | `03_Code/reference/rest_api_server.py` | — |
 
 ---
 
-## 📡 API Example Usage
+## API Example Usage
 
 ### Health Check
 ```bash
 curl http://127.0.0.1:8000/api/health
 ```
 
-### Get CPU Info
+### GUI Status
 ```bash
-curl http://127.0.0.1:8000/api/input-factors
+curl http://127.0.0.1:8000/api/gui/status
 ```
 
 ### Enable Hyperthreading
@@ -99,46 +89,15 @@ curl -X POST http://127.0.0.1:8000/api/hyperthreading \
   -d '{"enabled": true}'
 ```
 
-### Log Event
-```bash
-curl -X POST http://127.0.0.1:8000/api/events \
-  -H "Content-Type: application/json" \
-  -d '{"type": "task", "msg": "Task 1 assigned"}'
-```
-
 ---
 
-## 🔧 Troubleshooting
+## Troubleshooting
 
-### Port already in use
-```bash
-# Windows
+### Port 8000 already in use
+```bat
 netstat -ano | findstr :8000
 taskkill /PID <PID> /F
-
-# Linux/Mac
-lsof -i :8000
-kill -9 <PID>
 ```
 
-### Backend not responding
-- Check: `python 03_Code/reference/rest_api_server.py` running?
-- Check: CORS headers correct?
-- Check: Firewall allowing localhost connections?
-
-### Frontend can't connect to backend
-- Verify `API_BASE = "http://127.0.0.1:8000"` in `workspace.py` (line 97)
-- Check CORS middleware in `rest_api_server.py`
-- Check Network tab in browser DevTools
-
----
-
-## 📚 Next Steps
-
-1. **Start Backend**: `python 03_Code/reference/rest_api_server.py`
-2. **Start Frontend**: `python 03_Code/reference/app.py`
-3. **Open Browser**: http://127.0.0.1:8080
-4. **Test Features**: Try autonomous task assignment, pipelines, etc.
-5. **Monitor**: Check `http://127.0.0.1:8000/docs` for live API docs
-
-✨ **Deployment ready!**
+### NiceGUI conflicts with other apps on 8080
+Do not start NiceGUI unless needed. Default is port 8000 only.
