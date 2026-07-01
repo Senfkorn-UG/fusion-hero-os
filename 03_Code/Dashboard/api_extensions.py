@@ -36,6 +36,26 @@ class AgentControlPayload(BaseModel):
     strategies: Optional[List[str]] = None
 
 
+class AutoLoadPayload(BaseModel):
+    phase: str = "staged"
+    force: bool = False
+    sync: bool = False
+    attach_meta: bool = True
+
+
+class HeroGuideResolvePayload(BaseModel):
+    text: str = ""
+    kategorie: str = "FRAGMENT"
+    praemissen: List[str] = []
+    praemissen_erfuellt: bool = False
+    fehlende_praemisse: str = ""
+    persist: bool = False
+
+
+class CodeValidatePayload(BaseModel):
+    code: str = ""
+
+
 def _orch():
     from core.dynamic_orchestration_core import DynamicOrchestrationCoreModule
     return DynamicOrchestrationCoreModule()
@@ -587,3 +607,152 @@ async def api_llama_qubo_status():
     from core.qubo_llama_bridge import status as qubo_status
     from local_llama import get_local_llama
     return {"llama": get_local_llama().status(), "qubo_bridge": qubo_status()}
+
+
+@router.get("/api/medienserver/status")
+async def api_medienserver_status():
+    from core.medienserver_bridge import status as ms_status
+
+    return ms_status()
+
+
+@router.get("/api/autoload/status")
+async def api_autoload_status():
+    from autoloader import autoload_status
+
+    return autoload_status()
+
+
+@router.post("/api/autoload/run")
+async def api_autoload_run(payload: AutoLoadPayload):
+    from autoloader import run_autoload
+
+    return await run_autoload(
+        phase=payload.phase,
+        force=payload.force,
+        sync_medienserver=payload.sync,
+        attach_meta=payload.attach_meta,
+    )
+
+
+@router.get("/api/hero-guide/status")
+async def api_hero_guide_status():
+    import sys
+    from pathlib import Path
+
+    code_root = Path(__file__).resolve().parents[1]
+    if str(code_root) not in sys.path:
+        sys.path.insert(0, str(code_root))
+    from hero_guide_ide import status as hg_status
+    from audit_agent import status as audit_status
+
+    return {"hero_guide": hg_status(), "audit_agent": audit_status()}
+
+
+@router.get("/api/hero-guide/audit")
+async def api_hero_guide_audit(limit: int = 50):
+    import sys
+    from pathlib import Path
+
+    code_root = Path(__file__).resolve().parents[1]
+    if str(code_root) not in sys.path:
+        sys.path.insert(0, str(code_root))
+    from hero_guide_ide import get_workbench
+
+    wb = get_workbench(with_graph=False)
+    return {"audit_log": wb.audit_log[-limit:], "total": len(wb.audit_log)}
+
+
+@router.post("/api/hero-guide/resolve")
+async def api_hero_guide_resolve(payload: HeroGuideResolvePayload):
+    import sys
+    from pathlib import Path
+
+    code_root = Path(__file__).resolve().parents[1]
+    if str(code_root) not in sys.path:
+        sys.path.insert(0, str(code_root))
+    from audit_agent import audit_claim
+
+    return await asyncio.to_thread(
+        audit_claim,
+        payload.text,
+        payload.kategorie,
+        payload.praemissen,
+        payload.praemissen_erfuellt,
+        payload.fehlende_praemisse,
+        persist=payload.persist,
+    )
+
+
+@router.get("/api/knowledge-graph/status")
+async def api_knowledge_graph_status():
+    import sys
+    from pathlib import Path
+
+    code_root = Path(__file__).resolve().parents[1]
+    if str(code_root) not in sys.path:
+        sys.path.insert(0, str(code_root))
+    from knowledge_graph import get_knowledge_graph
+
+    return get_knowledge_graph().status()
+
+
+@router.get("/api/knowledge-graph/nodes")
+async def api_knowledge_graph_nodes(limit: int = 50):
+    import sys
+    from pathlib import Path
+
+    code_root = Path(__file__).resolve().parents[1]
+    if str(code_root) not in sys.path:
+        sys.path.insert(0, str(code_root))
+    from knowledge_graph import get_knowledge_graph
+
+    return {"nodes": get_knowledge_graph().list_nodes(limit)}
+
+
+@router.post("/api/knowledge-graph/write")
+async def api_knowledge_graph_write(payload: HeroGuideResolvePayload):
+    import sys
+    from pathlib import Path
+
+    code_root = Path(__file__).resolve().parents[1]
+    if str(code_root) not in sys.path:
+        sys.path.insert(0, str(code_root))
+    from audit_agent import audit_before_write
+
+    body = payload.model_dump()
+    body["persist"] = True
+    return await asyncio.to_thread(audit_before_write, body)
+
+
+@router.post("/api/mod/validate-code")
+async def api_mod_validate_code(payload: CodeValidatePayload):
+    import re
+    import sys
+    from pathlib import Path
+
+    code_root = Path(__file__).resolve().parents[1]
+    if str(code_root) not in sys.path:
+        sys.path.insert(0, str(code_root))
+
+    checks = [
+        ("Alternativen", r"(alternativ|gegenargument|jedoch|stattdessen|abwägung)"),
+        ("Implikationen", r"(implikation|folge|handlungsempfehl|nächst|next step)"),
+        ("Risiken/Lücken", r"(risik|unsicher|lücke|tbd|todo|offen)"),
+    ]
+    review = [{"name": n, "ok": bool(re.search(p, payload.code, re.I))} for n, p in checks]
+    passed = sum(c["ok"] for c in review)
+    hero_guide_scan = []
+    try:
+        from audit_agent import scan_code_claims
+
+        hero_guide_scan = scan_code_claims(payload.code)
+    except Exception:
+        pass
+    return {
+        "checks": review,
+        "passed": passed,
+        "total": len(review),
+        "accepted": passed >= 2,
+        "hero_guide_scan": hero_guide_scan,
+    }

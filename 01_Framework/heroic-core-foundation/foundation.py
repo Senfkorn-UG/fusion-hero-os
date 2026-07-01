@@ -140,7 +140,7 @@ def main(argv: Optional[List[str]] = None) -> int:
         text = path.read_text(encoding="utf-8", errors="replace")
         name = path.name
 
-    report = check_foundation_gate(text, require_explicit=strict or True)
+    report = check_foundation_gate(text, require_explicit=strict)
 
     print(f"\n=== Heroic Core Foundation Gate ===")
     print(f"Input: {name}")
