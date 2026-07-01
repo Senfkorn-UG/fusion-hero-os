@@ -46,7 +46,8 @@ fusion-hero-os/
 │       └── masterseed_visual.png               # Generated MasterSeed icon
 ├── artifacts/                                  # Sandbox outputs (this dir)
 ├── docs/
-│   └── PROJECT_STRUCTURE_v7.4.md               # ← THIS FILE (new)
+│   ├── PROJECT_STRUCTURE_v7.4.md               # ← THIS FILE (new)
+│   └── HEROIC_CORE_PMS_ALIGNMENT.md            # ← NEW: Ψ-level hyper-threaded PMS-RUST Evidence Spine alignment
 ├── .gitignore
 ├── README.md                                   # Updated with v7.4 badge
 └── pyproject.toml                              # Future: heroic packaging
@@ -73,9 +74,11 @@ fusion-hero-os/
    - Interdisziplinarität as operative Praxis-Ebene
    - Sisyphos-Zyklus as sustainability core
 
-4. **Roadmap Connectors**
-   - Permanent auto-load rule for all connected services (GitHub, Notion, etc.)
-   - Documented in roadmap/connectors.md (to be filled in next iteration)
+4. **PMS-RUST Evidence Spine Integration** (NEW)
+   - `docs/HEROIC_CORE_PMS_ALIGNMENT.md` – Top-down Ψ-level self-binding alignment
+   - Hyper-threaded parallel execution layer inside Fusion-Hero-OS
+   - Validated Δ–Ψ operator chains for praxeological recommendations
+   - Source: tz-dev/PMS-RUST (Evidence Spine v0.1)
 
 ---
 
@@ -109,7 +112,7 @@ M_0 = R(M_0)
 d_I(R(S), M_0) < d_I(S, M_0)   ∀ S ≠ M_0
 ```
 
-Jede neue Datei (CI, Structure) erfüllt die **Strict Contraction Property** → nähert sich dem unveränderlichen Fixpunkt.
+Jede neue Datei (CI, Structure, PMS Alignment) erfüllt die **Strict Contraction Property** → nähert sich dem unveränderlichen Fixpunkt.
 
 ---
 
@@ -117,4 +120,4 @@ Jede neue Datei (CI, Structure) erfüllt die **Strict Contraction Property** →
 
 **Ready for local GitHub sync.** 
 
-**Hyper-Threading Status:** All threads converged. Core stable.
+**Hyper-Threading Status:** All threads converged. Core stable. PMS Evidence Spine hyper-threaded.
