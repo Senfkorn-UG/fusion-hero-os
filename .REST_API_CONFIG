@@ -1,0 +1,43 @@
+# Fusion Hero OS REST API Configuration
+# Backend Server auf Port 8000
+
+# === STARTUP ===
+python 03_Code/reference/rest_api_server.py
+
+# === BASE URL ===
+http://127.0.0.1:8000
+
+# === ENDPOINTS ===
+
+# Health & Status
+GET  /                            # Root info
+GET  /api/health                 # System health
+
+# Input/Output Factors
+GET  /api/input-factors          # CPU/GPU/HT status
+GET  /api/output-factors         # Worker configuration
+
+# Hyperthreading
+GET  /api/hyperthreading         # Get HT status
+POST /api/hyperthreading         # Enable/disable HT
+
+# Tasks & Events
+POST /api/events                 # Log event
+POST /api/input                  # Process task input
+GET  /api/events                 # Get event log
+GET  /api/tasks                  # Get all tasks
+GET  /api/tasks/{task_id}        # Get specific task
+
+# Code Modifications
+POST /mod/apply                  # Apply code modification with PeerReview
+
+# === FEATURES ===
+# ✅ CORS enabled for localhost:8080
+# ✅ Autonomous task queue
+# ✅ Event logging
+# ✅ Hyperthreading control
+# ✅ FastAPI with automatic docs at /docs
+
+# === API DOCS ===
+# Swagger UI:  http://127.0.0.1:8000/docs
+# ReDoc:       http://127.0.0.1:8000/redoc
