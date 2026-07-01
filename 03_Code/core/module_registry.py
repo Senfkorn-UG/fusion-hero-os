@@ -125,6 +125,9 @@ def _build_registry() -> None:
     _register("llama_subagent_tester", 2, "llm",
               lambda: _try_import("llama_subagent_tester", "status")(),
               "Subagent-Tracks: Llama Status/CLI/QUBO/Generate-Tests")
+    _register("agent_backend_router", 2, "orchestration",
+              lambda: _try_import("agent_backend_router", "status")(),
+              "Agent→Llama, Anti-Agent→Grok Routing")
     _register("provider_switcher", 2, "orchestration",
               lambda: _try_import("provider_switcher", "select_provider")(force_probe=True),
               "Automatischer LLM-Anbieterwechsler")

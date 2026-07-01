@@ -42,10 +42,24 @@ class DynamicOrchestrationCoreModule:
         Returns:
             Dict mit synthesierter Antwort und Traceability
         """
-        models = model_pool or ["grok-intern", "fusion-hero"]
+        models = model_pool or ["llama-local", "grok-intern", "fusion-hero"]
         response = ""
         backend = "placeholder"
         route_reason = None
+        anti_review = None
+
+        try:
+            from agent_backend_router import is_dual_agent_enabled, dual_run
+
+            if is_dual_agent_enabled() and os.getenv("FUSION_ORCH_DUAL_AGENT", "1") == "1":
+                dual = dual_run(query, context)
+                if dual.get("ok"):
+                    response = dual.get("synthesis", "")
+                    backend = f"{dual.get('agent_backend')}+{dual.get('anti_agent_backend')}"
+                    route_reason = "dual_agent_llama_grok"
+                    models = ["llama-local", "grok-intern"] + [m for m in models if m not in ("llama-local", "grok-intern")]
+        except Exception:
+            pass
 
         try:
             from claude_science import (
@@ -66,7 +80,7 @@ class DynamicOrchestrationCoreModule:
             if route_reason in ("science_domain", "heroic_science"):
                 response = f"[Claude Science Fallback] {exc}"
 
-        if not response and route_reason not in ("science_domain", "heroic_science"):
+        if not response and route_reason not in ("science_domain", "heroic_science", "dual_agent_llama_grok"):
             use_llama = "llama-local" in models or os.getenv("FUSION_LLM_BACKEND") == "llama-local"
             try:
                 from qubo_llama_bridge import is_qubo_query

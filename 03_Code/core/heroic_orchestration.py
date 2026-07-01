@@ -177,7 +177,10 @@ def ensure_agents_loaded(force: bool = False) -> bool:
             "backend": "llama-local",
             "action": "llama_subagent_tests",
         },
-        "general-worker": {"name": "general-worker", "role": "worker"},
+        "general-worker": {"name": "general-worker", "role": "worker", "backend": "llama-local"},
+        "anti-general-worker": {"name": "anti-general-worker", "role": "anti_agent", "backend": "grok-intern"},
+        "anti-math-worker": {"name": "anti-math-worker", "role": "anti_agent", "backend": "grok-intern", "dom": "Math"},
+        "anti-phil-worker": {"name": "anti-phil-worker", "role": "anti_agent", "backend": "grok-intern", "dom": "Phil"},
     }
     return True
 
@@ -207,6 +210,22 @@ def assign_task_to_agent(task: Dict[str, Any]) -> str:
 
     dom = task.get("dom", "General")
     q_lower = str(task.get("query") or task.get("original") or "").lower()
+
+    try:
+        from agent_backend_router import is_anti_agent as _is_anti
+
+        if _is_anti(task=task):
+            dom_key = dom.lower().replace(" ", "-")
+            agent_name = task.get("assigned_agent") or f"anti-{dom_key}-worker"
+            if agent_name not in _LOADED_AGENTS:
+                agent_name = "anti-general-worker"
+            task["agent_kind"] = "anti_agent"
+            task["backend"] = "grok-intern"
+            task["assigned_agent"] = agent_name
+            return agent_name
+    except Exception:
+        pass
+
     llama_test = (
         task.get("subagent_action") == "llama_subagent_tests"
         or task.get("type") == "llama_subagent_test"
@@ -233,6 +252,8 @@ def assign_task_to_agent(task: Dict[str, Any]) -> str:
             "Info": "info-worker",
             "Science": "science-worker",
         }.get(dom, "general-worker")
+        task["agent_kind"] = "agent"
+        task["backend"] = "llama-local"
 
     # HT scaling hint (more parallel tracks when enabled)
     try:
@@ -265,6 +286,21 @@ def assign_task_to_agent(task: Dict[str, Any]) -> str:
                 sup.task_queue.put(t)
         except Exception:
             pass
+
+    try:
+        from agent_backend_router import annotate_task, is_dual_agent_enabled, dual_run, is_anti_agent
+
+        annotate_task(task)
+        if (
+            is_dual_agent_enabled()
+            and task.get("dual_agent")
+            and not is_anti_agent(task=task)
+        ):
+            q = task.get("query") or task.get("original") or ""
+            if q.strip():
+                task["dual_agent_result"] = dual_run(q, task)
+    except Exception:
+        pass
 
     task["assigned_agent"] = agent_name
     return agent_name

@@ -627,6 +627,38 @@ async def api_llama_subagent_tests_run(payload: dict = None):
     return await asyncio.to_thread(run, subagents, max_workers, include_generate)
 
 
+@router.get("/api/agent-backend/policy")
+async def api_agent_backend_policy():
+    from core.agent_backend_router import policy, status
+
+    return {"policy": policy(), "status": status()}
+
+
+@router.post("/api/agent-backend/dual-run")
+async def api_agent_backend_dual_run(payload: ChatPayload):
+    from core.agent_backend_router import dual_run
+
+    msg = (payload.message or "").strip()
+    if not msg:
+        return {"status": "error", "error": "empty message"}
+    return await asyncio.to_thread(dual_run, msg, {})
+
+
+@router.post("/api/agent-backend/invoke")
+async def api_agent_backend_invoke(payload: dict = None):
+    from core.agent_backend_router import invoke
+
+    payload = payload or {}
+    role = payload.get("role", "agent")
+    query = (payload.get("query") or payload.get("message") or "").strip()
+    if not query:
+        return {"status": "error", "error": "empty query"}
+    result = await asyncio.to_thread(
+        invoke, role, query, payload.get("context"), payload.get("agent_response"),
+    )
+    return {"status": "ok" if result.get("ok") else "error", **result}
+
+
 @router.post("/api/subagents/llama-test")
 async def api_subagents_llama_test(payload: dict = None):
     """Alias: Subagenten führen Llama-Test-Tracks parallel aus."""

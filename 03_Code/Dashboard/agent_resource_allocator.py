@@ -28,6 +28,7 @@ class AgentSlot:
     workers: int
     priority: int
     concurrent: int
+    backend: str = "llama-local"
 
     def to_dict(self) -> dict:
         return asdict(self)
@@ -118,13 +119,13 @@ def build_resource_plan(
     max_p = int(profile.get("max_parallel_agents", 4))
     max_s = int(profile.get("max_parallel_subagents", 2))
 
-    model_pool = ["grok", "claude", "gpt"]
+    model_pool = ["llama-local", "grok", "claude", "gpt"]
     if pname == "admin":
         model_pool += [a["id"] for a in primaries[:max_p]]
     elif pname == "balanced":
         model_pool += [a["id"] for a in primaries[: max_p // 2]]
     else:
-        model_pool = ["grok"] + [a["id"] for a in primaries[:1]]
+        model_pool = ["llama-local", "grok"] + [a["id"] for a in primaries[:1]]
 
     slots: List[AgentSlot] = []
 
@@ -140,6 +141,7 @@ def build_resource_plan(
             if i == len(selected) - 1:
                 share = max(1, budget - used)
             used += share
+            backend = "grok-intern" if str(ag.get("id", "")).startswith("anti-") else "llama-local"
             slots.append(AgentSlot(
                 agent_id=ag["id"],
                 mode=ag.get("mode", tier),
@@ -148,6 +150,7 @@ def build_resource_plan(
                 workers=share,
                 priority=profile.get("priority", 50) - i,
                 concurrent=min(share, 2 if tier == "primary" else 1),
+                backend=backend,
             ))
         return max(0, budget - used)
 
