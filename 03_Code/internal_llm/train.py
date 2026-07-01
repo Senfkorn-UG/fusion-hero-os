@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import sys
 from pathlib import Path
 from typing import Any, Dict
@@ -60,6 +61,8 @@ def main() -> int:
     opt_cfg = OptimizerConfig.from_dict(cfg_data)
     result = HeroicLlamaOptimizer(opt_cfg).optimize()
     print(json.dumps(result.get("metrics", {}), indent=2))
+    os.environ["FUSION_LLM_BACKEND"] = "llama-local"
+    print("[*] FUSION_LLM_BACKEND=llama-local — System nutzt jetzt lokales Llama")
     return 0
 
 
