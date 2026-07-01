@@ -302,6 +302,17 @@ def assign_task_to_agent(task: Dict[str, Any]) -> str:
     except Exception:
         pass
 
+    try:
+        from conversation_context_core import allocate_subagent, is_enabled
+
+        if is_enabled():
+            weight = "heavy" if task.get("subagent_action") else "medium"
+            ctx = allocate_subagent(agent_name, task_weight=weight, seed_fragment=task.get("query"))
+            task["subagent_context_window"] = ctx.get("subagent_window")
+            task["context_prompt_block"] = ctx.get("prompt_block", "")[:500]
+    except Exception:
+        pass
+
     task["assigned_agent"] = agent_name
     return agent_name
 
@@ -419,6 +430,15 @@ def create_classified_task(raw_query: str, **extra) -> Dict[str, Any]:
         "id": extra.get("id", 0),
         **extra,
     }
+
+    try:
+        from conversation_context_core import init_root, is_enabled
+
+        if is_enabled():
+            root = init_root(raw_query, {"dom": dom, "geltung": cat, "task_weight": extra.get("task_weight", "medium")})
+            task["start_context_window"] = root.get("root")
+    except Exception:
+        pass
 
     try:
         from agent_control import is_enabled, pre_dispatch

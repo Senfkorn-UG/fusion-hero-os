@@ -302,6 +302,23 @@ def track_llama_subagent_tests() -> Dict[str, Any]:
     return run(include_generate=None)
 
 
+def track_context_window_feedback() -> Dict[str, Any]:
+    from conversation_context_core import allocate_subagent, feedback, init_root, status
+
+    root = init_root(
+        "Parallel-Optimizer: adaptives Subagent-Kontextfenster mit Start-Anker",
+        {"task_weight": "medium", "source": "parallel_internal_optimizer"},
+    )
+    sub = allocate_subagent("context-feedback-probe", task_weight="light")
+    wid = sub["subagent_window"]["window_id"]
+    fb = feedback(
+        wid,
+        "Probe-Rückkopplung: Subagent meldet erfolgreiche Delta-Kompression zum Root-Fenster.",
+        {"probe": True},
+    )
+    return {"root": root, "subagent": sub, "feedback": fb, "status": status()}
+
+
 def track_module_reload() -> Dict[str, Any]:
     from module_registry import load_module
 
@@ -349,6 +366,7 @@ def run(
         "llama_config_patch": track_llama_config_patch,
         "claude_science_distill": track_claude_science_distill,
         "llama_subagent_tests": track_llama_subagent_tests,
+        "context_window_feedback": track_context_window_feedback,
         "module_reload": track_module_reload,
         "supabase_event": track_supabase_event,
     }

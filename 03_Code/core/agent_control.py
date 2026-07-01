@@ -403,6 +403,15 @@ def post_dispatch(task: Dict[str, Any], result: Any = None) -> ControlResult:
                 task["anti_agent_review"] = anti
         except Exception:
             pass
+    try:
+        from conversation_context_core import feedback_from_task, is_enabled
+
+        if is_enabled():
+            fb = feedback_from_task(task, result)
+            if fb:
+                task["context_feedback"] = fb
+    except Exception:
+        pass
     task["control_post"] = cr.to_dict()
     return cr
 

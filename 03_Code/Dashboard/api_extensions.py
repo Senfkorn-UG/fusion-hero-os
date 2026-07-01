@@ -670,7 +670,59 @@ async def api_subagents_llama_test(payload: dict = None):
         payload.get("subagents"),
         payload.get("max_workers"),
         payload.get("include_generate"),
+        payload.get("seed_context"),
     )
+
+
+@router.get("/api/context/window/status")
+async def api_context_window_status():
+    from core.conversation_context_core import status
+
+    return status()
+
+
+@router.post("/api/context/window/init")
+async def api_context_window_init(payload: dict = None):
+    from core.conversation_context_core import init_root
+
+    payload = payload or {}
+    seed = (payload.get("seed_text") or payload.get("query") or payload.get("message") or "").strip()
+    if not seed:
+        return {"status": "error", "error": "empty seed_text"}
+    return await asyncio.to_thread(
+        init_root,
+        seed,
+        payload.get("task_meta"),
+        bool(payload.get("force_new")),
+    )
+
+
+@router.post("/api/context/window/subagent")
+async def api_context_window_subagent(payload: dict = None):
+    from core.conversation_context_core import allocate_subagent
+
+    payload = payload or {}
+    name = (payload.get("subagent_name") or payload.get("name") or "").strip()
+    if not name:
+        return {"status": "error", "error": "empty subagent_name"}
+    return await asyncio.to_thread(
+        allocate_subagent,
+        name,
+        payload.get("task_weight", "medium"),
+        payload.get("seed_fragment"),
+    )
+
+
+@router.post("/api/context/window/feedback")
+async def api_context_window_feedback(payload: dict = None):
+    from core.conversation_context_core import feedback
+
+    payload = payload or {}
+    wid = (payload.get("window_id") or payload.get("subagent_id") or "").strip()
+    text = (payload.get("result_text") or payload.get("result") or payload.get("message") or "").strip()
+    if not wid or not text:
+        return {"status": "error", "error": "window_id and result_text required"}
+    return await asyncio.to_thread(feedback, wid, text, payload.get("metadata"))
 
 
 @router.get("/api/medienserver/status")

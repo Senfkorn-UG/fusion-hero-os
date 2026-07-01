@@ -181,10 +181,51 @@ def all_subagents() -> Dict[str, Callable[[], Any]]:
     return agents
 
 
+def _context_for_subagent(name: str, weight: str) -> Dict[str, Any]:
+    try:
+        from conversation_context_core import allocate_subagent, feedback, is_enabled
+
+        if not is_enabled():
+            return {}
+        alloc = allocate_subagent(name, task_weight=weight)
+        return {
+            "window_id": alloc.get("subagent_window", {}).get("window_id"),
+            "token_budget": alloc.get("allocation", {}).get("token_budget"),
+            "prompt_block": alloc.get("prompt_block", "")[:400],
+        }
+    except Exception:
+        return {}
+
+
+def _feedback_track(track: Dict[str, Any]) -> None:
+    try:
+        from conversation_context_core import feedback, get_context, is_enabled
+
+        if not is_enabled():
+            return
+        name = track.get("subagent", "llama_track")
+        ctx = get_context()
+        wins = [
+            w for w in ctx.windows.values()
+            if w.role == "subagent" and w.subagent_name == name
+        ]
+        if not wins:
+            return
+        wid = sorted(wins, key=lambda w: w.updated_ts)[-1].window_id
+        summary = f"{name}: {'OK' if track.get('ok') else 'FAIL'}"
+        res = track.get("result")
+        if isinstance(res, dict) and res.get("preview"):
+            summary += f" — {res['preview'][:80]}"
+        feedback(wid, summary, {"track": name, "duration_ms": track.get("duration_ms")})
+    except Exception:
+        pass
+
+
 def run(
     subagents: Optional[List[str]] = None,
     max_workers: Optional[int] = None,
     include_generate: Optional[bool] = None,
+    seed_context: Optional[str] = None,
 ) -> Dict[str, Any]:
     """Führt Llama-Tests als parallele Subagent-Tracks aus (ressourcenbewusst)."""
     if include_generate is False:
@@ -194,21 +235,42 @@ def run(
 
     catalog = all_subagents()
     selected = [s for s in (subagents or list(catalog.keys())) if s in catalog]
-    workers = max_workers or _workers("heavy" if any("generate" in s for s in selected) else "medium")
+    weight = "heavy" if any("generate" in s for s in selected) else "medium"
+    workers = max_workers or _workers(weight)
     started = time.time()
     results: List[Dict[str, Any]] = []
 
+    context_meta: Dict[str, Any] = {}
+    try:
+        from conversation_context_core import init_root, is_enabled
+
+        if is_enabled():
+            context_meta = init_root(
+                seed_context or "Llama Subagent Test-Session",
+                {"task_weight": weight, "subagents": selected},
+            )
+    except Exception:
+        pass
+
     with ThreadPoolExecutor(max_workers=workers) as pool:
-        futures = {pool.submit(_track, name, catalog[name]): name for name in selected}
+        futures = {}
+        for name in selected:
+            ctx = _context_for_subagent(name, "light" if "generate" not in name else "heavy")
+            futures[pool.submit(_track, name, catalog[name])] = (name, ctx)
         for fut in as_completed(futures):
-            results.append(fut.result())
+            name, ctx = futures[fut]
+            track = fut.result()
+            if ctx:
+                track["context_window"] = ctx
+            _feedback_track(track)
+            results.append(track)
 
     ok = sum(1 for r in results if r.get("ok"))
     skipped = sum(
         1 for r in results
         if isinstance(r.get("result"), dict) and r["result"].get("skipped")
     )
-    return {
+    out: Dict[str, Any] = {
         "status": "completed" if ok == len(results) else "partial",
         "module": "llama_subagent_tester",
         "subagents_ok": ok,
@@ -219,6 +281,15 @@ def run(
         "duration_ms": round((time.time() - started) * 1000, 1),
         "tracks": sorted(results, key=lambda x: x.get("subagent", "")),
     }
+    if context_meta:
+        out["start_context_window"] = context_meta.get("root")
+        try:
+            from conversation_context_core import status as ctx_status
+
+            out["context_feedback"] = ctx_status().get("recent_feedback")
+        except Exception:
+            pass
+    return out
 
 
 def status() -> Dict[str, Any]:
@@ -229,9 +300,18 @@ def status() -> Dict[str, Any]:
         rec = recommend_workers("heavy")
     except Exception:
         pass
+    ctx: Dict[str, Any] = {}
+    try:
+        from conversation_context_core import is_enabled, status as ctx_status
+
+        if is_enabled():
+            ctx = ctx_status()
+    except Exception:
+        pass
     return {
         "module": "llama_subagent_tester",
         "available_subagents": list(all_subagents().keys()),
         "generate_would_skip": _skip_generate(),
         "resource_recommendation": rec,
+        "context_window": ctx,
     }
