@@ -54,6 +54,12 @@ except Exception:
     def get_gpu_allocator():
         return None
 
+try:
+    from core.cpu_adaptive_tuner import get_cpu_tuner
+except Exception:
+    def get_cpu_tuner():
+        return None
+
 AGENT_STATE = {
     "loaded": False,
     "supervisor": None,
@@ -328,6 +334,14 @@ async def startup_event():
         else:
             alloc.rebalance_once()
             print("[GPU] VRAM-Rebalance einmalig:", alloc.state.last_action)
+    cpu_tuner = get_cpu_tuner()
+    if cpu_tuner:
+        result = cpu_tuner.tune_once()
+        snap = result.get("cpu", {})
+        print(f"[CPU] Adaptives Tuning: {result.get('action')} | "
+              f"Last={snap.get('load_pct')}% Temp={snap.get('temp_c')}°C "
+              f"Ratio={result.get('tuning', {}).get('ratio')}")
+        cpu_tuner.start_background()
     print("[ALTE_Frau_95g] Heroic Core Dashboard gestartet")
     print(f"  AutoLoad Status: {autoloader.status()}")
     print(f"  Input-Faktoren: CPUs={INPUT_FACTORS.get('logical_cpus')}, HT={INPUT_FACTORS.get('hyperthreading_env')}")
@@ -613,3 +627,19 @@ async def api_gpu_allocator_status():
     if not alloc:
         return {"error": "gpu_allocator_unavailable"}
     return alloc.status()
+
+
+@app.get("/api/cpu/tuner/status")
+async def api_cpu_tuner_status():
+    tuner = get_cpu_tuner()
+    if not tuner:
+        return {"error": "cpu_tuner_unavailable"}
+    return tuner.status()
+
+
+@app.post("/api/cpu/tuner/run")
+async def api_cpu_tuner_run():
+    tuner = get_cpu_tuner()
+    if not tuner:
+        return {"error": "cpu_tuner_unavailable"}
+    return tuner.tune_once()
