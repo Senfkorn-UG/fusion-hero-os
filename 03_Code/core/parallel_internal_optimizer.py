@@ -296,10 +296,16 @@ def track_claude_science_distill() -> Dict[str, Any]:
     return analyze(q)
 
 
+def track_llama_subagent_tests() -> Dict[str, Any]:
+    from llama_subagent_tester import run
+
+    return run(include_generate=None)
+
+
 def track_module_reload() -> Dict[str, Any]:
     from module_registry import load_module
 
-    names = ["claude_science", "heroic_orchestration", "local_llama", "provider_switcher"]
+    names = ["claude_science", "heroic_orchestration", "local_llama", "provider_switcher", "llama_subagent_tester"]
     loaded = []
     errors = []
     for name in names:
@@ -342,6 +348,7 @@ def run(
         "v5_knowledge_index": track_v5_knowledge_index,
         "llama_config_patch": track_llama_config_patch,
         "claude_science_distill": track_claude_science_distill,
+        "llama_subagent_tests": track_llama_subagent_tests,
         "module_reload": track_module_reload,
         "supabase_event": track_supabase_event,
     }

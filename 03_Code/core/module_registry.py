@@ -122,6 +122,9 @@ def _build_registry() -> None:
     _register("local_llama", 2, "llm",
               lambda: _try_import("local_llama", "get_local_llama")().status(),
               "Lokales Llama (Heroic Optimizer)")
+    _register("llama_subagent_tester", 2, "llm",
+              lambda: _try_import("llama_subagent_tester", "status")(),
+              "Subagent-Tracks: Llama Status/CLI/QUBO/Generate-Tests")
     _register("provider_switcher", 2, "orchestration",
               lambda: _try_import("provider_switcher", "select_provider")(force_probe=True),
               "Automatischer LLM-Anbieterwechsler")

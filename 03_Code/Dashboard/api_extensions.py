@@ -609,6 +609,38 @@ async def api_llama_qubo_status():
     return {"llama": get_local_llama().status(), "qubo_bridge": qubo_status()}
 
 
+@router.get("/api/llama/subagent-tests/status")
+async def api_llama_subagent_tests_status():
+    from core.llama_subagent_tester import status
+
+    return status()
+
+
+@router.post("/api/llama/subagent-tests/run")
+async def api_llama_subagent_tests_run(payload: dict = None):
+    from core.llama_subagent_tester import run
+
+    payload = payload or {}
+    subagents = payload.get("subagents")
+    max_workers = payload.get("max_workers")
+    include_generate = payload.get("include_generate")
+    return await asyncio.to_thread(run, subagents, max_workers, include_generate)
+
+
+@router.post("/api/subagents/llama-test")
+async def api_subagents_llama_test(payload: dict = None):
+    """Alias: Subagenten führen Llama-Test-Tracks parallel aus."""
+    from core.llama_subagent_tester import run
+
+    payload = payload or {}
+    return await asyncio.to_thread(
+        run,
+        payload.get("subagents"),
+        payload.get("max_workers"),
+        payload.get("include_generate"),
+    )
+
+
 @router.get("/api/medienserver/status")
 async def api_medienserver_status():
     from core.medienserver_bridge import status as ms_status
