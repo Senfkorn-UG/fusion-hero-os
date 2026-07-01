@@ -8,7 +8,7 @@ mit Umwelt-Feedback (Theorie + Embodiment + PMS Execution Layer).
 Teil der 02_architecture Schicht.
 """
 
-from typing import Any, Callable
+from typing import Any
 
 
 class CoEvolutionaryClosure:

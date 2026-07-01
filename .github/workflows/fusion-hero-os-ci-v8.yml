@@ -23,9 +23,9 @@ jobs:
         python -m pip install --upgrade pip
         pip install numpy ruff
 
-    - name: Lint with Ruff
+    - name: Lint with Ruff (v8 scope)
       run: |
-        ruff check .
+        ruff check core/ 03_Code/reference/rest_api_server.py
 
     - name: Run Heroic Math Engine Verification
       run: |

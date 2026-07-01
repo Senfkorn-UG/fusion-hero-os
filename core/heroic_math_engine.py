@@ -9,7 +9,6 @@ Teil der 02_architecture Schicht.
 """
 
 import numpy as np
-import typing
 
 
 class HeroicMatrixEngine:
