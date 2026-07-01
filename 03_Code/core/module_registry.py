@@ -128,6 +128,9 @@ def _build_registry() -> None:
     _register("agent_backend_router", 2, "orchestration",
               lambda: _try_import("agent_backend_router", "status")(),
               "Agent→Llama, Anti-Agent→Grok Routing")
+    _register("conversation_context_core", 1, "orchestration",
+              lambda: _try_import("conversation_context_core", "status")(),
+              "Adaptives Kontextfenster + Banach-Rückkopplung zum Start-Kontext")
     _register("provider_switcher", 2, "orchestration",
               lambda: _try_import("provider_switcher", "select_provider")(force_probe=True),
               "Automatischer LLM-Anbieterwechsler")
