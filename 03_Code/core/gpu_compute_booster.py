@@ -68,7 +68,21 @@ class GPUComputeBooster:
             "FUSION_GPU_BOOST_MODEL",
             r"C:\Users\Admin\internal_llm\models\Llama-3.2-1B-Instruct-Q4_K_M.gguf",
         )
-        self._gpu_layers = _env_int("FUSION_LLAMA_GPU_LAYERS", 25)
+        self._gpu_layers = _env_int("FUSION_LLAMA_GPU_LAYERS", 99)
+        self._ctx_size = _env_int("FUSION_LLAMA_CTX_SIZE", 512)
+        self._ram_soft = _env_float("FUSION_RAM_SOFT_PCT", 80.0)
+
+    def stop_server(self) -> bool:
+        stopped = False
+        if self._server_proc and self._server_proc.poll() is None:
+            self._server_proc.terminate()
+            try:
+                self._server_proc.wait(timeout=5)
+            except Exception:
+                self._server_proc.kill()
+            stopped = True
+        self._server_proc = None
+        return stopped
 
     def _server_base(self) -> str:
         return f"http://{self._server_host}:{self._server_port}"
@@ -82,6 +96,10 @@ class GPUComputeBooster:
             return False
 
     def _ensure_llama_server(self) -> bool:
+        import psutil
+        if psutil.virtual_memory().percent >= self._ram_soft:
+            self.state.last_action = "llama_server_skipped_ram_pressure"
+            return False
         if self._server_healthy():
             return True
         if self._server_proc and self._server_proc.poll() is None:
@@ -100,6 +118,7 @@ class GPUComputeBooster:
                 "--port", str(self._server_port),
                 "--host", self._server_host,
                 "-ngl", str(self._gpu_layers),
+                "-c", str(self._ctx_size),
             ],
             stdout=subprocess.DEVNULL,
             stderr=subprocess.DEVNULL,
@@ -218,7 +237,10 @@ class GPUComputeBooster:
             action = "hold"
             work: Dict[str, Any] = {}
 
-            if snap.cuda_available and compute < self.low_threshold:
+            import psutil
+            if psutil.virtual_memory().percent >= self._ram_soft:
+                action = "boost_skipped_ram_pressure"
+            elif snap.cuda_available and compute < self.low_threshold:
                 intensity = int(1 + gap / 10.0)
                 if compute < 15.0:
                     intensity = min(8, intensity + 2)

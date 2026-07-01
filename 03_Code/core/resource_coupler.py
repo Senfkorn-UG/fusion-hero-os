@@ -105,7 +105,17 @@ class ResourceCoupler:
                     spilled += 1
         except Exception:
             pass
-        return {"freed_vram_pool_mb": freed_mb, "spilled_host_threads": spilled}
+        llama_stopped = False
+        try:
+            from gpu_compute_booster import get_gpu_compute_booster
+            llama_stopped = get_gpu_compute_booster().stop_server()
+        except Exception:
+            pass
+        return {
+            "freed_vram_pool_mb": freed_mb,
+            "spilled_host_threads": spilled,
+            "llama_server_stopped": llama_stopped,
+        }
 
     def _boost_gpu(self, snap_gpu, deficit_ratio: float) -> Dict[str, Any]:
         alloc = get_gpu_allocator()

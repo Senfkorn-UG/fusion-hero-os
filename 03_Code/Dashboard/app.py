@@ -73,6 +73,12 @@ except Exception:
         return None
 
 try:
+    from core.memory_guard import get_memory_guard
+except Exception:
+    def get_memory_guard():
+        return None
+
+try:
     import supabase_client as supa
     import supabase_store as supa_store
 except Exception:
@@ -390,11 +396,17 @@ async def startup_event():
             print(f"[Modules] Freigabe: {mod_result.get('count')}/{mod_result.get('total')} geladen")
         except Exception as e:
             print(f"[Modules] Load note: {e}")
+    mem_guard = get_memory_guard()
+    if mem_guard:
+        mg = mem_guard.relieve_once()
+        print(f"[RAM] Memory-Guard: {mg.get('action')} | {mg.get('ram', {}).get('util_pct')}%")
+        mem_guard.start_background()
     gpu_booster = get_gpu_compute_booster()
     if gpu_booster:
-        bresult = gpu_booster.boost_once()
-        print(f"[GPU] Compute-Booster: {bresult.get('action')} | "
-              f"SM={bresult.get('compute_util_pct')}% Ziel={bresult.get('target_compute_pct')}%")
+        if os.getenv("FUSION_GPU_COMPUTE_BOOSTER_AUTO", "1") == "1":
+            bresult = gpu_booster.boost_once()
+            print(f"[GPU] Compute-Booster: {bresult.get('action')} | "
+                  f"SM={bresult.get('compute_util_pct')}% Ziel={bresult.get('target_compute_pct')}%")
         gpu_booster.start_background()
     print("[ALTE_Frau_95g] Heroic Core Dashboard gestartet")
     print(f"  AutoLoad Status: {autoloader.status()}")
@@ -754,6 +766,22 @@ async def api_gpu_compute_boost():
     if not booster:
         return {"error": "gpu_compute_booster_unavailable"}
     return booster.boost_once()
+
+
+@app.get("/api/memory/status")
+async def api_memory_status():
+    guard = get_memory_guard()
+    if not guard:
+        return {"error": "memory_guard_unavailable"}
+    return guard.status()
+
+
+@app.post("/api/memory/relieve")
+async def api_memory_relieve():
+    guard = get_memory_guard()
+    if not guard:
+        return {"error": "memory_guard_unavailable"}
+    return guard.relieve_once()
 
 
 @app.get("/api/supabase/health")
