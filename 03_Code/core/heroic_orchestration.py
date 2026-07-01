@@ -170,6 +170,13 @@ def ensure_agents_loaded(force: bool = False) -> bool:
         "phil-worker": {"name": "phil-worker", "role": "worker", "dom": "Phil"},
         "info-worker": {"name": "info-worker", "role": "worker", "dom": "Info"},
         "science-worker": {"name": "science-worker", "role": "worker", "dom": "Science", "backend": "claude-science"},
+        "llama-test-worker": {
+            "name": "llama-test-worker",
+            "role": "subagent",
+            "dom": "LLM",
+            "backend": "llama-local",
+            "action": "llama_subagent_tests",
+        },
         "general-worker": {"name": "general-worker", "role": "worker"},
     }
     return True
@@ -199,12 +206,33 @@ def assign_task_to_agent(task: Dict[str, Any]) -> str:
         pass
 
     dom = task.get("dom", "General")
-    agent_name = {
-        "Math": "math-worker",
-        "Phil": "phil-worker",
-        "Info": "info-worker",
-        "Science": "science-worker",
-    }.get(dom, "general-worker")
+    q_lower = str(task.get("query") or task.get("original") or "").lower()
+    llama_test = (
+        task.get("subagent_action") == "llama_subagent_tests"
+        or task.get("type") == "llama_subagent_test"
+        or any(k in q_lower for k in ("llama test", "llama-test", "subagent llama", "teste llama", "llama subagent"))
+    )
+    if llama_test:
+        agent_name = "llama-test-worker"
+        task["subagent_action"] = "llama_subagent_tests"
+        try:
+            from llama_subagent_tester import run as llama_subagent_run
+
+            include_gen = task.get("include_generate")
+            task["llama_subagent_result"] = llama_subagent_run(
+                subagents=task.get("subagents"),
+                max_workers=task.get("max_workers"),
+                include_generate=include_gen,
+            )
+        except Exception as exc:
+            task["llama_subagent_result"] = {"status": "error", "error": str(exc)}
+    else:
+        agent_name = {
+            "Math": "math-worker",
+            "Phil": "phil-worker",
+            "Info": "info-worker",
+            "Science": "science-worker",
+        }.get(dom, "general-worker")
 
     # HT scaling hint (more parallel tracks when enabled)
     try:

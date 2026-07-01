@@ -49,6 +49,8 @@ set FUSION_LLAMA_GPU_LAYERS=20
 REM QUBO-Logik in lokalem Llama (Inference + Multi-Kandidaten-Scoring)
 set FUSION_LLAMA_QUBO=1
 set FUSION_LLAMA_QUBO_CANDIDATES=2
+REM Subagenten testen Llama parallel (Status/CLI/QUBO; Generate nur bei freiem RAM)
+set FUSION_LLAMA_SUBAGENT_AUTO=1
 set FUSION_QUBO_SA_STEPS=1200
 set FUSION_OFFLOAD_TO_GPU=1
 set FUSION_HOST_RAM_MINIMAL=1
