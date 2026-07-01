@@ -132,6 +132,20 @@ try {
     Write-Host " FALLBACK" -ForegroundColor Yellow
 }
 
+Write-Host "[Supabase] Projekt swmmoxhdzarmoupyssqe..." -NoNewline
+try {
+    $sb = Invoke-RestMethod -Uri "$GuiUrl/api/supabase/health?probe=true" -TimeoutSec 10
+    if ($sb.probe.key_accepted) {
+        Write-Host " OK (verbunden, $($sb.probe.latency_ms)ms)" -ForegroundColor Green
+    } elseif ($sb.configured) {
+        Write-Host " OK (konfiguriert)" -ForegroundColor Green
+    } else {
+        Write-Host " NICHT KONFIGURIERT" -ForegroundColor Yellow
+    }
+} catch {
+    Write-Host " FALLBACK" -ForegroundColor Yellow
+}
+
 Write-Host "[Coupler] CPU+GPU+SSD gekoppelt..." -NoNewline
 try {
     $rc = Invoke-RestMethod -Uri "$GuiUrl/api/resource/coupler/run" -Method POST -TimeoutSec 15

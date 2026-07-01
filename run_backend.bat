@@ -41,6 +41,10 @@ set FUSION_LLAMA_GPU_LAYERS=20
 set FUSION_OFFLOAD_TO_GPU=1
 set FUSION_HOST_RAM_MINIMAL=1
 
+REM Supabase Persistenz (swmmoxhdzarmoupyssqe)
+set FUSION_SUPABASE_SYNC=1
+set PUBLIC_SUPABASE_PROJECT_REF=swmmoxhdzarmoupyssqe
+
 REM Virtual Hyper-Threading via GPU VRAM caches (über virtuelle Caches in der GPU)
 set FUSION_VIRTUAL_HT_GPU=1
 set FUSION_VIRTUAL_THREADS=256

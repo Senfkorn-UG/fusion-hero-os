@@ -66,6 +66,13 @@ except Exception:
     def get_resource_coupler():
         return None
 
+try:
+    import supabase_client as supa
+    import supabase_store as supa_store
+except Exception:
+    supa = None
+    supa_store = None
+
 AGENT_STATE = {
     "loaded": False,
     "supervisor": None,
@@ -154,6 +161,10 @@ class AutoLoader:
             self.register("resource_coupler", lambda: get_resource_coupler().couple_once(), "performance")
         except Exception:
             pass
+
+        # Supabase (swmmoxhdzarmoupyssqe)
+        if supa:
+            self.register("supabase", lambda: supa.get_client() or supa.status(probe=True), "storage")
 
         # Agents (from heroic_orchestration)
         self.register("agents", lambda: _ensure_agents(), "orchestration")
@@ -280,6 +291,8 @@ async def emit(event: dict) -> str:
     event["id"] = str(uuid.uuid4())[:8]
     events.append(event)
     event_id = event["id"]
+    if supa_store and os.getenv("FUSION_SUPABASE_SYNC", "1") == "1":
+        asyncio.create_task(asyncio.to_thread(supa_store.save_event, dict(event)))
     if subscribers:
         broadcast_start = time.perf_counter()
         await asyncio.gather(*[_send_safe(ws, event) for ws in list(subscribers)], return_exceptions=True)
@@ -497,6 +510,9 @@ async def api_health(light: bool = False):
             get_resource_coupler().status().get("coupler")
             if get_resource_coupler() else {"enabled": False}
         ),
+        "supabase": (
+            supa.status() if supa else {"configured": False, "error": "supabase_client not loaded"}
+        ),
     }
 
 # === Agent state and helpers (for auto load/assign) ===
@@ -569,6 +585,8 @@ async def api_input(payload: InputPayload):
     job = {"id": job_id, "query": normalized, "category": cat, "dom": dom, "status": "received"}
     JOBS[job_id] = job
     TASK_QUEUE.append(job)
+    if supa_store:
+        asyncio.create_task(asyncio.to_thread(supa_store.save_job, dict(job)))
     await emit({"type": "task_input", "msg": f"Input auto-checked + agent assigned: {normalized[:60]}"})
     return {"status": "ok", "job_id": job_id, "normalized": normalized, "category": cat}
 
@@ -685,3 +703,27 @@ async def api_resource_coupler_run():
     if not coupler:
         return {"error": "resource_coupler_unavailable"}
     return coupler.couple_once()
+
+
+@app.get("/api/supabase/health")
+async def api_supabase_health(probe: bool = False):
+    if supa is None:
+        return {"configured": False, "error": "supabase_client not loaded"}
+    return await asyncio.to_thread(supa.status, probe)
+
+
+@app.get("/api/supabase/events")
+async def api_supabase_events(limit: int = 20):
+    if supa_store is None:
+        return {"events": [], "error": "supabase_store not loaded"}
+    return {"events": await asyncio.to_thread(supa_store.list_recent_events, limit)}
+
+
+@app.post("/api/supabase/sync/metrics")
+async def api_supabase_sync_metrics():
+    if supa_store is None:
+        return {"error": "supabase_store not loaded"}
+    metrics = await get_metrics()
+    payload = metrics if isinstance(metrics, dict) else metrics.model_dump()
+    result = await asyncio.to_thread(supa_store.save_metrics, payload)
+    return result
