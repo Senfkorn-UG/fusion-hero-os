@@ -28,6 +28,17 @@ def _try_import(path: str, attr: Optional[str] = None) -> Any:
         return {"error": str(exc)}
 
 
+def _load_code_module(module: str, attr: Optional[str] = None) -> Any:
+    code_root = _CORE.parent
+    if str(code_root) not in sys.path:
+        sys.path.insert(0, str(code_root))
+    try:
+        mod = importlib.import_module(module)
+        return getattr(mod, attr) if attr else mod
+    except Exception as exc:
+        return {"error": str(exc)}
+
+
 def _register(
     name: str,
     layer: int,
@@ -135,6 +146,43 @@ def _build_registry() -> None:
     _register("heroic_core_orchestrator", 2, "orchestration",
               lambda: _try_import("v8_core_bridge", "orchestrator_status")(),
               "v8 Layer 0/4/5 Orchestrator (root core/)")
+    _register("medienserver", 2, "sync",
+              lambda: _try_import("medienserver_bridge", "status")(),
+              "Grok Medienserver (Google Drive G:)")
+    _register("hero_guide", 0, "layer0",
+              lambda: _load_code_module("hero_guide_ide", "status")(),
+              "HERO-GUIDE Geltungs-Werkbank")
+    _register("audit_agent", 0, "layer0",
+              lambda: _load_code_module("audit_agent", "status")(),
+              "Executable Audit Agent")
+    _register("knowledge_graph", 1, "science",
+              lambda: _load_code_module("knowledge_graph", "get_knowledge_graph")().status(),
+              "Epistemischer Wissensgraph")
+    def _anti_loop():
+        cls = _load_code_module("StarrLernenderAntiLoopGuardCoreModule_v1", "StarrLernenderAntiLoopGuard")
+        if isinstance(cls, dict):
+            return cls
+        inst = cls()
+        return {
+            "module": "anti_loop_guard",
+            "agents": len(getattr(inst, "agents", {})),
+            "max_workers": getattr(inst, "max_workers", None),
+        }
+
+    _register("anti_loop_guard", 3, "meta", _anti_loop, "StarrLernender Anti-Loop Guard")
+
+    def _token_mgmt():
+        cls = _load_code_module("TokenManagementSystem", "TokenManagementSystem")
+        if isinstance(cls, dict):
+            return cls
+        inst = cls()
+        return {
+            "module": "token_management",
+            "base_tokens": getattr(inst, "base_tokens", None),
+            "allocation_log_len": len(getattr(inst, "allocation_log", [])),
+        }
+
+    _register("token_management", 2, "orchestration", _token_mgmt, "Token Management System")
 
     if str(_DASH) not in sys.path:
         sys.path.insert(0, str(_DASH))
