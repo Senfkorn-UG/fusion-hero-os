@@ -45,6 +45,11 @@ set FUSION_VRAM_LOW_PCT=50
 set FUSION_COUPLER_MIN_INTERVAL=2
 set FUSION_COUPLER_MAX_INTERVAL=15
 set FUSION_LLAMA_GPU_LAYERS=20
+
+REM QUBO-Logik in lokalem Llama (Inference + Multi-Kandidaten-Scoring)
+set FUSION_LLAMA_QUBO=1
+set FUSION_LLAMA_QUBO_CANDIDATES=2
+set FUSION_QUBO_SA_STEPS=1200
 set FUSION_OFFLOAD_TO_GPU=1
 set FUSION_HOST_RAM_MINIMAL=1
 
@@ -60,7 +65,19 @@ set FUSION_GPU_BOOST_MODEL=C:\Users\Admin\internal_llm\models\Llama-3.2-1B-Instr
 
 REM Alle Module freigeben
 set FUSION_ALL_MODULES=1
+set FUSION_PROVIDER_AUTO=1
+set FUSION_PROVIDER_ORDER=llama-local,claude-science,grok-intern,fusion-hero
+set FUSION_CLAUDE_SCIENCE=1
+set FUSION_CLAUDE_SCIENCE_ESCALATE=1
+set FUSION_BANACH_LAMBDA=0.74
 set FUSION_LLM_BACKEND=llama-local
+set FUSION_FIRST_INSTALL_AUTO=1
+
+REM Globale Agenten-Kontrolle (Multi-Strategie: geltung, peer_review, meta, audit)
+set FUSION_AGENT_CONTROL=1
+set FUSION_AGENT_CONTROL_FAIL_CLOSED=1
+set FUSION_AGENT_CONTROL_STRATEGIES=geltung,peer_review,meta,audit
+set FUSION_AGENT_CONTROL_MIN_VOTES=2
 
 REM Supabase Persistenz (swmmoxhdzarmoupyssqe)
 set FUSION_SUPABASE_SYNC=1

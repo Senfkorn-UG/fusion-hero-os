@@ -16,9 +16,19 @@ try:
 except Exception:
     pass
 
-SUPABASE_URL = os.getenv("PUBLIC_SUPABASE_URL", "").strip()
-SUPABASE_KEY = os.getenv("PUBLIC_SUPABASE_PUBLISHABLE_KEY", "").strip()
-SUPABASE_PROJECT_REF = os.getenv("PUBLIC_SUPABASE_PROJECT_REF", "swmmoxhdzarmoupyssqe").strip()
+def _env(*names: str, default: str = "") -> str:
+    for name in names:
+        value = os.getenv(name, "").strip()
+        if value:
+            return value
+    return default
+
+
+SUPABASE_URL = _env("SUPABASE_URL", "PUBLIC_SUPABASE_URL")
+SUPABASE_KEY = _env("SUPABASE_PUBLISHABLE_KEY", "PUBLIC_SUPABASE_PUBLISHABLE_KEY")
+SUPABASE_SECRET_KEY = _env("SUPABASE_SECRET_KEY")
+SUPABASE_JWKS_URL = _env("SUPABASE_JWKS_URL")
+SUPABASE_PROJECT_REF = _env("SUPABASE_PROJECT_REF", "PUBLIC_SUPABASE_PROJECT_REF", default="swmmoxhdzarmoupyssqe")
 
 try:
     from supabase import Client, create_client  # type: ignore
@@ -50,7 +60,7 @@ def get_client() -> "Optional[Client]":
         _client_error = f"supabase package not available: {_IMPORT_ERROR}"
         return None
     if not is_configured():
-        _client_error = "missing PUBLIC_SUPABASE_URL / PUBLIC_SUPABASE_PUBLISHABLE_KEY"
+        _client_error = "missing SUPABASE_URL / SUPABASE_PUBLISHABLE_KEY"
         return None
     try:
         _client = create_client(SUPABASE_URL, SUPABASE_KEY)
@@ -101,6 +111,8 @@ def status(do_probe: bool = False, timeout: float = 4.0) -> Dict[str, Any]:
         "package_available": _PACKAGE_AVAILABLE,
         "package_version": _SUPABASE_VERSION,
         "url": SUPABASE_URL or None,
+        "jwks_url": SUPABASE_JWKS_URL or None,
+        "secret_key_configured": bool(SUPABASE_SECRET_KEY),
         "project_ref": SUPABASE_PROJECT_REF,
         "dashboard_url": f"https://supabase.com/dashboard/project/{SUPABASE_PROJECT_REF}",
         "client_initialized": client is not None,
