@@ -8,6 +8,7 @@ Enthält die zentralen Core-Module:
 - RustHybridEmbodiment (RHE)
 - PsycholysisTrigger
 - HeroicMathEngine (mathematische Kernkomponenten)
+- HeroicCoreOrchestrator (Layer 0/4/5 Integration + Fail-Closed Bridge)
 
 Teil der 02_architecture Schicht.
 """
@@ -37,3 +38,17 @@ except ImportError:
     StableCoreLattice = None
     RepairedStructureIP = None
     global_heroic_math = None
+
+# Heroic Core Orchestrator (Layer 0 + Layer 4/5 Bridge)
+try:
+    from .heroic_core_orchestrator import (
+        MasterSeed,
+        PMSEvidenceSpine,
+        QuadCoreBridge,
+        bootstrap_v8_system
+    )
+except ImportError:
+    MasterSeed = None
+    PMSEvidenceSpine = None
+    QuadCoreBridge = None
+    bootstrap_v8_system = None
