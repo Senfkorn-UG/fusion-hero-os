@@ -1,4 +1,24 @@
-# ALTE_Frau_95g Heroic Core v7.12 Extensions
-# Co-Evolutionary Closure (CEC) + Rust Hybrid Embodiment (RHE) + PsycholysisBreakthroughTrigger
+# Fusion-Hero-OS Core - v8
 
-__version__ = "v7.12"
+"""
+ALTE_Frau_95g Heroic Core
+
+Enthält die zentralen Core-Module:
+- CoEvolutionaryClosure (CEC)
+- RustHybridEmbodiment (RHE)
+- PsycholysisTrigger
+
+Teil der 02_architecture Schicht.
+"""
+
+__version__ = "v8"
+
+from .cec import global_cec
+try:
+    from .rhe import global_rhe
+except ImportError:
+    global_rhe = None
+try:
+    from .psycholysis_trigger import PsycholysisTrigger
+except ImportError:
+    PsycholysisTrigger = None
