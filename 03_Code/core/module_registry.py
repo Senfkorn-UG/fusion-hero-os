@@ -91,25 +91,62 @@ def _build_registry() -> None:
     _register("classical", 2, "math",
               lambda: _try_import("classical"),
               "Klassische Mathematik-Module")
+    _register("agent_control", 2, "orchestration",
+              lambda: _try_import("agent_control", "status")(),
+              "Globale Agenten-Kontrolle (Multi-Strategie)")
+    _register("geisterjagd_banach_viz", 2, "viz",
+              lambda: _try_import("geisterjagd_banach_viz", "get_viz")().snapshot(),
+              "Geisterjagd + Banach-Kontraktion Visualisierung")
+    _register("heroic_science_audit", 2, "science",
+              lambda: _try_import("heroic_science_audit", "status")(),
+              "Heroik-Wissenschaft Audit (Claude Science)")
+    _register("qubo_llama_bridge", 2, "llm",
+              lambda: _try_import("qubo_llama_bridge", "status")(),
+              "QUBO-Logik in lokales Llama (Inference + Synthese)")
+    _register("first_install_bootstrap", 0, "substrate",
+              lambda: {
+                  "pending": _try_import("first_install_bootstrap", "is_first_install_pending")(),
+              },
+              "Einmalige Erstinstallation aller Dienste")
     _register("local_llama", 2, "llm",
               lambda: _try_import("local_llama", "get_local_llama")().status(),
               "Lokales Llama (Heroic Optimizer)")
+    _register("provider_switcher", 2, "orchestration",
+              lambda: _try_import("provider_switcher", "select_provider")(force_probe=True),
+              "Automatischer LLM-Anbieterwechsler")
+    _register("claude_science", 2, "science",
+              lambda: _try_import("claude_science", "status")(),
+              "Claude Science Workbench (Anthropic API)")
+    _register("parallel_internal_optimizer", 2, "orchestration",
+              lambda: _try_import("parallel_internal_optimizer", "run")(),
+              "Parallele Intern-Optimierung (Hyperthreading-Tracks)")
     _register("windows_substrate", 0, "substrate",
               lambda: _try_import("windows_substrate", "get_substrate")().status(),
               "Windows Meta-Layer + Cyber Layer")
     _register("supabase", 2, "storage",
               lambda: _load_supabase(),
               "Supabase Persistenz swmmoxhdzarmoupyssqe")
+    _register("resource_workflow", 1, "performance",
+              lambda: _try_import("resource_workflow", "status")(),
+              "RAM/CPU-bewusste Worker-Empfehlung für Subagents")
+    _register("heroic_math_engine", 2, "math",
+              lambda: _try_import("v8_core_bridge", "math_status")(),
+              "v8 Heroic Math Engine (root core/)")
+    _register("heroic_core_orchestrator", 2, "orchestration",
+              lambda: _try_import("v8_core_bridge", "orchestrator_status")(),
+              "v8 Layer 0/4/5 Orchestrator (root core/)")
 
     if str(_DASH) not in sys.path:
         sys.path.insert(0, str(_DASH))
 
     def _foundation():
-        p = Path(r"C:\Users\Admin\heroic-core-foundation")
-        if p.exists() and str(p) not in sys.path:
-            sys.path.insert(0, str(p))
-        from foundation import check_foundation_gate  # type: ignore
-        return check_foundation_gate({"probe": True})
+        from foundation_loader import ensure_foundation_on_path, foundation_report_to_dict, load_check_foundation_gate
+
+        if ensure_foundation_on_path() is None:
+            return {"passed": False, "error": "heroic-core-foundation not found"}
+        check = load_check_foundation_gate()
+        report = check("[Modell] foundation probe", require_explicit=False)
+        return foundation_report_to_dict(report)
 
     _register("foundation_gate", 0, "layer0", _foundation, "Heroic Core Foundation Gate")
 

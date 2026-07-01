@@ -22,7 +22,7 @@ from typing import Any, Dict, List, Optional, Tuple
 # --- Paths ---
 _HERE = os.path.dirname(__file__)
 _GUIDE_PATH = os.path.join(_HERE, '..', '02_Mathematik', 'hero-guide_geltungsstand.json')
-_V22_AGENTS_PATH = os.path.join(_HERE, 'FusionHeroOS_v2.2')
+_V22_AGENTS_PATH = os.path.abspath(os.path.join(_HERE, '..', 'reference'))
 
 # --- Cache ---
 _GUIDE_CACHE: Optional[List[Dict[str, Any]]] = None
@@ -75,13 +75,30 @@ def classify_and_normalize(query: str) -> Tuple[str, str, Optional[Dict], str]:
     dom = "General"
 
     q_lower = query.lower()
+    science_dom = False
+    heroic_science = False
+    try:
+        from claude_science import is_science_query, is_heroic_science_query
+        if is_heroic_science_query(query):
+            science_dom = True
+            heroic_science = True
+            dom = "Science"
+            best_cat = "cond"
+        elif is_science_query(query):
+            science_dom = True
+            dom = "Science"
+            best_cat = "cond"
+    except Exception:
+        pass
+
     for entry in guide:
         name = entry.get('name', '').lower()
         if any(kw in q_lower for kw in name.split()[:3] if len(kw) > 3) or \
            entry.get('dom', '').lower() in q_lower:
             matched = entry
             best_cat = entry.get('cat', 'model')
-            dom = entry.get('dom', 'General')
+            if not science_dom:
+                dom = entry.get('dom', 'General')
             break
 
     normalized = query
@@ -104,13 +121,30 @@ def ensure_agents_loaded(force: bool = False) -> bool:
 
     if _AGENTS_MODULE is not None:
         try:
+            executor = None
+            try:
+                from agent_control import is_enabled, wrap_executor, register_message_bus_hooks
+                _default_executor = getattr(_AGENTS_MODULE, "default_executor", None)
+                if is_enabled() and _default_executor is not None:
+                    executor = wrap_executor(_default_executor)
+            except Exception:
+                executor = None
+
             if _AGENT_SUPERVISOR is None or force:
-                _AGENT_SUPERVISOR = _AGENTS_MODULE.Supervisor(
-                    name="fusion-hero-supervisor",
-                    min_workers=2,
-                    max_workers=12,
-                )
+                sup_kwargs: Dict[str, Any] = {
+                    "name": "fusion-hero-supervisor",
+                    "min_workers": 2,
+                    "max_workers": 12,
+                }
+                if executor is not None:
+                    sup_kwargs["executor"] = executor
+                _AGENT_SUPERVISOR = _AGENTS_MODULE.Supervisor(**sup_kwargs)
                 _AGENT_SUPERVISOR.start()
+                if executor is not None:
+                    try:
+                        register_message_bus_hooks(_AGENT_SUPERVISOR.bus)
+                    except Exception:
+                        pass
             _AGENTS_LOADED = True
             _LOADED_AGENTS["supervisor"] = {
                 "name": _AGENT_SUPERVISOR.name,
@@ -131,10 +165,11 @@ def ensure_agents_loaded(force: bool = False) -> bool:
     _AGENTS_LOADED = True
     _AGENT_SUPERVISOR = None
     _LOADED_AGENTS = {
-        "supervisor": {"name": "fusion-hero-supervisor", "role": "supervisor", "state": "running", "children": 4},
+        "supervisor": {"name": "fusion-hero-supervisor", "role": "supervisor", "state": "running", "children": 5},
         "math-worker": {"name": "math-worker", "role": "worker", "dom": "Math"},
         "phil-worker": {"name": "phil-worker", "role": "worker", "dom": "Phil"},
         "info-worker": {"name": "info-worker", "role": "worker", "dom": "Info"},
+        "science-worker": {"name": "science-worker", "role": "worker", "dom": "Science", "backend": "claude-science"},
         "general-worker": {"name": "general-worker", "role": "worker"},
     }
     return True
@@ -151,11 +186,24 @@ def get_agent_supervisor():
 def assign_task_to_agent(task: Dict[str, Any]) -> str:
     """Auto-assign agent based on dom/geltung. Respects hyperthreading worker scaling."""
     ensure_agents_loaded()
+
+    try:
+        from agent_control import is_enabled, pre_dispatch
+        if is_enabled() and (task.get("query") or task.get("original")) and not task.get("control_pre"):
+            pre = pre_dispatch(task)
+            if pre.blocked:
+                task["assigned_agent"] = "control-gate"
+                task["status"] = "control_blocked"
+                return "control-gate"
+    except Exception:
+        pass
+
     dom = task.get("dom", "General")
     agent_name = {
         "Math": "math-worker",
         "Phil": "phil-worker",
         "Info": "info-worker",
+        "Science": "science-worker",
     }.get(dom, "general-worker")
 
     # HT scaling hint (more parallel tracks when enabled)
@@ -296,7 +344,6 @@ def auto_load(phase: str = "staged", force: bool = False) -> Dict[str, Any]:
 def create_classified_task(raw_query: str, **extra) -> Dict[str, Any]:
     normalized, cat, matched, dom = classify_and_normalize(raw_query)
     auto_load(phase="staged")  # general auto load
-    agent = assign_task_to_agent({"dom": dom, "geltung": cat, "id": extra.get("id", 0)})
 
     task = {
         "query": normalized,
@@ -304,10 +351,24 @@ def create_classified_task(raw_query: str, **extra) -> Dict[str, Any]:
         "geltung": cat,
         "dom": dom,
         "matched": matched.get("name") if matched else None,
-        "assigned_agent": agent,
         "status": "pending",
+        "id": extra.get("id", 0),
         **extra,
     }
+
+    try:
+        from agent_control import is_enabled, pre_dispatch
+        if is_enabled():
+            pre = pre_dispatch(task)
+            if pre.blocked:
+                task["assigned_agent"] = "control-gate"
+                task["status"] = "control_blocked"
+                return task
+    except Exception:
+        pass
+
+    agent = assign_task_to_agent(task)
+    task["assigned_agent"] = agent
 
     # If QUBO-related, pre-wire the best solver + virtual threads
     if "qubo" in (dom or "").lower() or "qubo" in normalized.lower():
@@ -316,5 +377,15 @@ def create_classified_task(raw_query: str, **extra) -> Dict[str, Any]:
             result = solve_qubo(q_data, extra.get("bias"))
             task["qubo_result"] = result
             task["solver"] = "qubo_miner+vht" if EXTERNAL_QUBO_SOLVER else "internal_vht"
+
+    try:
+        from agent_control import is_enabled, pre_dispatch, post_dispatch
+        if is_enabled():
+            pre_dispatch(task)
+            synth = task.get("synthesised_response") or task.get("response")
+            if synth:
+                post_dispatch(task, {"response": synth})
+    except Exception:
+        pass
 
     return task

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import asyncio
 import os
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 
 from fastapi import APIRouter
 from pydantic import BaseModel
@@ -28,6 +28,14 @@ class ValidatePayload(BaseModel):
     text: str = ""
 
 
+class AgentControlPayload(BaseModel):
+    text: str = ""
+    query: str = ""
+    dom: str = "General"
+    geltung: str = "model"
+    strategies: Optional[List[str]] = None
+
+
 def _orch():
     from core.dynamic_orchestration_core import DynamicOrchestrationCoreModule
     return DynamicOrchestrationCoreModule()
@@ -48,9 +56,67 @@ async def api_modules():
 @router.post("/api/agents/{agent_id}/use")
 async def api_agent_use(agent_id: str, payload: dict = None):
     from core.heroic_orchestration import assign_task_to_agent
+    from core.agent_control import is_enabled, post_dispatch
+
     task = {"dom": "General", "id": agent_id, **(payload or {})}
     agent = assign_task_to_agent(task)
-    return {"status": "ok", "agent_id": agent_id, "assigned": agent}
+    status = "ok"
+    if task.get("status") == "control_blocked":
+        status = "control_blocked"
+    elif is_enabled() and task.get("control_pre", {}).get("passed") is False:
+        status = "control_warning"
+    if is_enabled() and task.get("result"):
+        post_dispatch(task, task.get("result"))
+    return {
+        "status": status,
+        "agent_id": agent_id,
+        "assigned": agent,
+        "control_pre": task.get("control_pre"),
+        "control_post": task.get("control_post"),
+    }
+
+
+@router.get("/api/agent-control/status")
+async def api_agent_control_status():
+    from core.agent_control import status as control_status
+    return control_status()
+
+
+@router.get("/api/agent-control/history")
+async def api_agent_control_history(limit: int = 20):
+    from core.agent_control import history
+    return {"history": history(limit)}
+
+
+@router.post("/api/agent-control/verify")
+async def api_agent_control_verify(payload: AgentControlPayload):
+    from core.agent_control import verify_text, strategy_order
+
+    text = (payload.text or payload.query or "").strip()
+    if not text:
+        return {"status": "error", "error": "empty text"}
+    ctx = {"dom": payload.dom, "geltung": payload.geltung, "query": text}
+    if payload.strategies:
+        os.environ["FUSION_AGENT_CONTROL_STRATEGIES"] = ",".join(payload.strategies)
+    result = await asyncio.to_thread(verify_text, text, ctx)
+    result["status"] = "ok" if result.get("passed") else "failed"
+    result["strategies_configured"] = strategy_order()
+    return result
+
+
+@router.post("/api/agent-control/pre-check")
+async def api_agent_control_pre_check(payload: AgentControlPayload):
+    from core.agent_control import pre_dispatch
+
+    text = (payload.text or payload.query or "").strip()
+    task = {
+        "query": text,
+        "dom": payload.dom,
+        "geltung": payload.geltung,
+        "id": "api-pre-check",
+    }
+    cr = await asyncio.to_thread(pre_dispatch, task)
+    return {"status": "ok" if cr.passed else "blocked", **cr.to_dict()}
 
 
 @router.post("/api/mainframe/load")
@@ -77,13 +143,12 @@ async def api_layer4_status():
 @router.post("/api/foundation/gate")
 async def api_foundation_gate(payload: GatePayload):
     try:
-        import sys
-        from pathlib import Path
-        p = Path(r"C:\Users\Admin\heroic-core-foundation")
-        if str(p) not in sys.path:
-            sys.path.insert(0, str(p))
-        from foundation import check_foundation_gate  # type: ignore
-        return check_foundation_gate({"text": payload.text})
+        from core.foundation_loader import ensure_foundation_on_path, foundation_report_to_dict, load_check_foundation_gate
+
+        if ensure_foundation_on_path() is None:
+            return {"passed": False, "error": "heroic-core-foundation not found"}
+        check = load_check_foundation_gate()
+        return foundation_report_to_dict(check(payload.text))
     except Exception as exc:
         return {"passed": False, "error": str(exc)}
 
@@ -122,14 +187,151 @@ async def api_mod_validate(payload: ValidatePayload):
 @router.get("/api/grok/status")
 async def api_grok_status():
     from core.local_llama import get_local_llama, default_model_pool
+    from core.claude_science import status as science_status
     llama = get_local_llama().status()
     return {
         "bridge": "grok-intern",
         "skill": "fusion-hero-os",
         "llama_local": llama,
+        "claude_science": science_status(),
         "default_model_pool": default_model_pool(),
-        "endpoints": ["/api/grok/chat", "/api/v12/orchestrate", "/api/input"],
+        "endpoints": [
+            "/api/grok/chat",
+            "/api/v12/orchestrate",
+            "/api/claude-science/analyze",
+            "/api/input",
+        ],
     }
+
+
+@router.get("/api/claude-science/heroic-audit/status")
+async def api_heroic_audit_status():
+    from core.heroic_science_audit import status as audit_status, load_last_report
+    last = load_last_report()
+    return {
+        "audit": audit_status(),
+        "last_run": {
+            "ts": last.get("ts") if last else None,
+            "summary": last.get("summary") if last else None,
+            "configured": last.get("configured") if last else None,
+        },
+    }
+
+
+@router.post("/api/claude-science/heroic-audit/run")
+async def api_heroic_audit_run(payload: dict = None):
+    from core.heroic_science_audit import run_audit
+
+    payload = payload or {}
+    approach_ids = payload.get("approach_ids")
+    max_workers = int(payload.get("max_workers", 2))
+    return await asyncio.to_thread(
+        run_audit,
+        approach_ids=approach_ids,
+        include_items=payload.get("include_items", True),
+        include_domains=payload.get("include_domains", True),
+        max_workers=max_workers,
+        save=payload.get("save", True),
+        desktop_copy=payload.get("desktop_copy", True),
+    )
+
+
+@router.get("/api/claude-science/heroic-audit/report")
+async def api_heroic_audit_report(format: str = "json"):
+    from pathlib import Path
+    from core.heroic_science_audit import load_last_report, render_markdown_report
+
+    report = load_last_report()
+    if not report:
+        return {"status": "not_found", "hint": "POST /api/claude-science/heroic-audit/run zuerst"}
+    if format == "md":
+        from fastapi.responses import PlainTextResponse
+        md_path = Path(__file__).resolve().parents[1] / "core" / "knowledge" / "Heroik_Wissenschaft_Claude_Science_Audit.md"
+        if md_path.exists():
+            return PlainTextResponse(md_path.read_text(encoding="utf-8"), media_type="text/markdown")
+        return PlainTextResponse(render_markdown_report(report), media_type="text/markdown")
+    return report
+
+
+@router.get("/api/claude-science/status")
+async def api_claude_science_status(probe: bool = False):
+    from core.claude_science import probe as science_probe, status as science_status
+
+    info = science_status()
+    if probe:
+        info["probe"] = await asyncio.to_thread(science_probe)
+    return info
+
+
+@router.post("/api/claude-science/analyze")
+async def api_claude_science_analyze(payload: ChatPayload):
+    from core.claude_science import analyze
+
+    msg = (payload.message or "").strip()
+    if not msg:
+        return {"status": "error", "error": "empty message"}
+    result = await asyncio.to_thread(analyze, msg)
+    return {"status": "ok" if result.get("ok") else "error", **result}
+
+
+@router.post("/api/claude-science/chat")
+async def api_claude_science_chat(payload: ChatPayload):
+    from core.claude_science import analyze
+
+    msg = (payload.message or "").strip()
+    if not msg:
+        return {"status": "error", "error": "empty message"}
+    result = await asyncio.to_thread(analyze, msg)
+    return {
+        "status": "ok" if result.get("ok") else "error",
+        "response": result.get("response", ""),
+        "backend": result.get("backend", "claude-science"),
+        "meta": result.get("meta"),
+        "error": result.get("error"),
+    }
+
+
+@router.get("/api/provider/status")
+async def api_provider_status():
+    from core.provider_switcher import status
+
+    return status()
+
+
+@router.post("/api/provider/select")
+async def api_provider_select():
+    from core.provider_switcher import select_provider, status
+
+    active = await asyncio.to_thread(select_provider, True)
+    return {"active_backend": active, **status()}
+
+
+@router.get("/api/first-install/status")
+async def api_first_install_status():
+    from core.first_install_bootstrap import is_first_install_pending, _MARKER_FILE
+
+    return {
+        "pending": is_first_install_pending(),
+        "marker": str(_MARKER_FILE),
+        "marker_exists": _MARKER_FILE.exists(),
+    }
+
+
+@router.post("/api/first-install/run")
+async def api_first_install_run(force: bool = False):
+    from core.first_install_bootstrap import run
+
+    return await asyncio.to_thread(run, force)
+
+
+@router.post("/api/internal/optimize-parallel")
+async def api_internal_optimize_parallel(payload: dict = None):
+    from core.parallel_internal_optimizer import run
+
+    payload = payload or {}
+    tracks = payload.get("tracks")
+    max_workers = payload.get("max_workers")
+    return await asyncio.to_thread(run, tracks, max_workers)
 
 
 @router.post("/api/grok/chat")
@@ -139,28 +341,62 @@ async def api_grok_chat(payload: ChatPayload):
         return {"status": "error", "error": "empty message"}
     from core.heroic_orchestration import classify_and_normalize
     from core.local_llama import get_local_llama, default_model_pool
+    from core.provider_switcher import select_provider_for_query
+    from core.claude_science import (
+        analyze as science_analyze,
+        should_use_claude_science,
+        is_unclear_response,
+        escalate_to_science,
+        is_heroic_science_query,
+    )
     normalized, cat, _, dom = classify_and_normalize(msg)
     llama = get_local_llama()
     response = ""
-    backend = "grok-intern"
-    if llama.active or os.getenv("FUSION_LLM_BACKEND") == "llama-local":
-        try:
-            response = await asyncio.to_thread(llama.generate, normalized)
-            backend = "llama-local"
-        except Exception as exc:
-            response = f"[Llama error: {exc}] Fallback zu Fusion Hero."
-    if not response:
-        result = await asyncio.to_thread(_orch().orchestrate, normalized, default_model_pool())
-        response = result.get("synthesised_response", "")
-        backend = result.get("backend", "fusion-hero")
+    route_reason = None
+    backend = await asyncio.to_thread(select_provider_for_query, normalized)
+    use_science, route_reason = should_use_claude_science(normalized)
+
+    if backend == "claude-science" or dom == "Science" or use_science:
+        sci = await asyncio.to_thread(science_analyze, normalized)
+        if sci.get("ok"):
+            response = sci.get("response", "")
+            backend = sci.get("backend", "claude-science")
+            route_reason = sci.get("route_reason", route_reason)
+
+    if not response and route_reason not in ("science_domain", "heroic_science"):
+        if backend == "llama-local" and llama.active:
+            try:
+                response = await asyncio.to_thread(llama.generate, normalized)
+            except Exception as exc:
+                response = f"[Llama error: {exc}]"
+                backend = "fusion-hero"
+        if not response:
+            pool = default_model_pool(normalized)
+            result = await asyncio.to_thread(_orch().orchestrate, normalized, pool)
+            response = result.get("synthesised_response", "")
+            backend = result.get("backend", backend or "fusion-hero")
+            route_reason = result.get("route_reason", route_reason)
+
+    # Eskalation bei unklaren Ergebnissen oder Heroik-Wissenschaft ohne klare Antwort
+    esc_use, esc_reason = should_use_claude_science(normalized, response)
+    if esc_use and esc_reason == "unclear_result" and is_unclear_response(response):
+        sci = await asyncio.to_thread(escalate_to_science, normalized, response)
+        if sci.get("ok") and sci.get("response"):
+            response = sci.get("response", "")
+            backend = sci.get("backend", "claude-science-escalated")
+            route_reason = esc_reason
+
     return {
         "status": "ok",
         "query": normalized,
         "response": response,
         "backend": backend,
+        "route_reason": route_reason,
+        "heroic_science": is_heroic_science_query(normalized),
         "category": cat,
         "dom": dom,
-        "model_pool": default_model_pool(),
+        "model_pool": default_model_pool(normalized),
+        "provider_auto": os.getenv("FUSION_PROVIDER_AUTO", "1") == "1",
     }
 
 
@@ -219,6 +455,87 @@ async def api_resources_plan():
     return resource_plan()
 
 
+@router.get("/api/resources/workflow")
+async def api_resources_workflow(task_weight: str = "medium"):
+    from core.resource_workflow import recommend_workers
+
+    return recommend_workers(task_weight)
+
+
+@router.get("/api/v8/math/status")
+async def api_v8_math_status():
+    from core.v8_core_bridge import math_status
+
+    return math_status()
+
+
+@router.post("/api/v8/math/verify")
+async def api_v8_math_verify():
+    from core.v8_core_bridge import run_math_verification
+
+    return await asyncio.to_thread(run_math_verification)
+
+
+@router.get("/api/v8/orchestrator/status")
+async def api_v8_orchestrator_status():
+    from core.v8_core_bridge import orchestrator_status
+
+    return orchestrator_status()
+
+
+@router.post("/api/v8/orchestrator/bootstrap")
+async def api_v8_orchestrator_bootstrap():
+    from core.v8_core_bridge import bootstrap_orchestrator
+
+    return await asyncio.to_thread(bootstrap_orchestrator)
+
+
+@router.post("/api/v8/orchestrator/query")
+async def api_v8_orchestrator_query(payload: dict = None):
+    from core.v8_core_bridge import process_query
+
+    payload = payload or {}
+    domain = payload.get("domain", "GESTALT")
+    operator_id = payload.get("operator_id", "OP_Q_B_CIRC")
+    return await asyncio.to_thread(process_query, domain, operator_id, payload.get("payload"))
+
+
+@router.get("/api/viz/geisterjagd-banach")
+async def api_viz_geisterjagd_banach(tick: bool = True):
+    from core.geisterjagd_banach_viz import get_viz, build_hints_from_system
+
+    viz = get_viz()
+    hints: Dict[str, Any] = {"event_rate": 0.3, "queue_pressure": 0.1, "heuristic_score": 0.5}
+    if tick:
+        try:
+            from app import events, TASK_QUEUE, PERFORMANCE_TRACKING
+
+            recent = [e.get("type", "") for e in list(events)[-8:]]
+            cpu = 50.0
+            try:
+                import psutil
+                cpu = psutil.cpu_percent(interval=None)
+            except Exception:
+                pass
+            blocked = 0
+            try:
+                from core.agent_control import status as ac_status
+                blocked = ac_status().get("blocked_total", 0)
+            except Exception:
+                pass
+            hints = build_hints_from_system(
+                event_count=len(events),
+                recent_types=recent,
+                queue_len=len(TASK_QUEUE) if TASK_QUEUE else 0,
+                cpu_pct=cpu,
+                agent_blocked=blocked,
+            )
+        except Exception:
+            pass
+        await asyncio.to_thread(viz.tick, hints)
+    return viz.snapshot()
+
+
 @router.get("/api/signal/health")
 async def api_signal_health(layer: str = "full"):
     from core.module_registry import signal_health
@@ -250,5 +567,23 @@ async def api_llama_chat(payload: ChatPayload):
     msg = (payload.message or "").strip()
     if not msg:
         return {"status": "error", "error": "empty message"}
-    response = await asyncio.to_thread(llama.generate, msg)
+    use_qubo = os.getenv("FUSION_LLAMA_QUBO", "1") == "1"
+    if use_qubo:
+        result = await asyncio.to_thread(llama.generate_qubo, msg)
+        return {
+            "status": "ok",
+            "response": result.get("response", ""),
+            "backend": result.get("backend", "llama-local"),
+            "qubo_applied": result.get("qubo_applied", False),
+            "qubo_result": result.get("qubo_result"),
+            "candidate_scores": result.get("candidate_scores"),
+        }
+    response = await asyncio.to_thread(llama.generate, msg, None, False)
     return {"status": "ok", "response": response, "backend": "llama-local"}
+
+
+@router.get("/api/llama/qubo/status")
+async def api_llama_qubo_status():
+    from core.qubo_llama_bridge import status as qubo_status
+    from local_llama import get_local_llama
+    return {"llama": get_local_llama().status(), "qubo_bridge": qubo_status()}

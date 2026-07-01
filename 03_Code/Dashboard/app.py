@@ -211,10 +211,15 @@ class AutoLoader:
         except:
             pass
         try:
-            import sys
-            sys.path.insert(0, r"C:\Users\Admin\heroic-core-foundation")
-            from foundation import check_foundation_gate
-            self.register("foundation_checks", lambda: check_foundation_gate({}), "layer0")
+            from core.foundation_loader import ensure_foundation_on_path, foundation_report_to_dict, load_check_foundation_gate
+
+            if ensure_foundation_on_path() is not None:
+                check = load_check_foundation_gate()
+                self.register(
+                    "foundation_checks",
+                    lambda: foundation_report_to_dict(check("", require_explicit=False)),
+                    "layer0",
+                )
         except:
             pass
 
@@ -354,6 +359,44 @@ async def heroic_core_event_loop():
                 "severity": "high"
             })
 
+        # Geisterjagd + Banach live tick (~ jeder 2. Zyklus)
+        if random.random() < 0.55:
+            try:
+                from core.geisterjagd_banach_viz import get_viz, build_hints_from_system
+                recent = [e.get("type", "") for e in list(events)[-8:]]
+                cpu = 50.0
+                try:
+                    import psutil
+                    cpu = psutil.cpu_percent(interval=None)
+                except Exception:
+                    pass
+                blocked = 0
+                try:
+                    from core.agent_control import status as ac_status
+                    blocked = ac_status().get("blocked_total", 0)
+                except Exception:
+                    pass
+                hints = build_hints_from_system(
+                    event_count=len(events),
+                    recent_types=recent,
+                    queue_len=len(TASK_QUEUE) if "TASK_QUEUE" in globals() else 0,
+                    cpu_pct=cpu,
+                    agent_blocked=blocked,
+                )
+                viz = get_viz()
+                tick_info = viz.tick(hints)
+                snap = viz.snapshot()
+                await emit({
+                    "type": "geisterjagd_banach",
+                    "msg": (
+                        f"λ={snap['lambda']:.3f} d={snap['distance']:.3f} "
+                        f"Emergenz={tick_info.get('emerged', 0)} Heuristik={snap['heuristic_score']:.2f}"
+                    ),
+                    "viz": snap,
+                })
+            except Exception:
+                pass
+
 @app.on_event("startup")
 async def startup_event():
     # Generelles AutoLoad + Faktenerkennung ZU BEGINN DES OS STARTS
@@ -420,6 +463,21 @@ async def startup_event():
             print(f"[GPU] Compute-Booster: {bresult.get('action')} | "
                   f"SM={bresult.get('compute_util_pct')}% Ziel={bresult.get('target_compute_pct')}%")
         gpu_booster.start_background()
+    try:
+        from core.provider_switcher import select_provider, status as provider_status
+        active_provider = select_provider(force_probe=True)
+        ps = provider_status()
+        print(f"[Provider] Auto-Wechsler aktiv={ps.get('auto_enabled')} | backend={active_provider}")
+    except Exception as e:
+        print(f"[Provider] Load note: {e}")
+    if os.getenv("FUSION_FIRST_INSTALL_AUTO", "1") == "1":
+        try:
+            from core.first_install_bootstrap import is_first_install_pending, run as run_first_install
+            if is_first_install_pending():
+                fi = run_first_install()
+                print(f"[FirstInstall] {fi.get('status')} ({fi.get('steps_ok')}/{fi.get('steps_total')} Schritte)")
+        except Exception as e:
+            print(f"[FirstInstall] note: {e}")
     print("[ALTE_Frau_95g] Heroic Core Dashboard gestartet")
     print(f"  AutoLoad Status: {autoloader.status()}")
     print(f"  Input-Faktoren: CPUs={INPUT_FACTORS.get('logical_cpus')}, HT={INPUT_FACTORS.get('hyperthreading_env')}")
@@ -558,6 +616,16 @@ async def api_health(light: bool = False):
         ),
         "all_modules": os.getenv("FUSION_ALL_MODULES", "1") == "1",
         "llm_backend": os.getenv("FUSION_LLM_BACKEND", "llama-local"),
+        "provider_switcher": (
+            __import__("core.provider_switcher", fromlist=["status"]).status()
+            if os.getenv("FUSION_PROVIDER_AUTO", "1") == "1"
+            else {"auto_enabled": False, "active_backend": os.getenv("FUSION_LLM_BACKEND", "llama-local")}
+        ),
+        "agent_control": (
+            __import__("core.agent_control", fromlist=["status"]).status()
+            if os.getenv("FUSION_AGENT_CONTROL", "1") == "1"
+            else {"enabled": False}
+        ),
     }
 
 # === Agent state and helpers (for auto load/assign) ===
