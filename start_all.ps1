@@ -123,12 +123,13 @@ if ($mf) {
     Write-Host " TIMEOUT" -ForegroundColor Yellow
 }
 
-Write-Host "[Profil] Fusion-Leistung 2/3 (ohne Windows)..." -NoNewline
+Write-Host "[CPU] Adaptives Tuning (Last+Temp)..." -NoNewline
 try {
-    $pr = Invoke-RestMethod -Uri "$GuiUrl/api/performance/set" -Method POST -Body '{"ratio":0.667}' -ContentType "application/json" -TimeoutSec 8
-    Write-Host " OK ($($pr.fusion.active))" -ForegroundColor Green
+    $ct = Invoke-RestMethod -Uri "$GuiUrl/api/cpu/tuner/run" -Method POST -TimeoutSec 10
+    $cpu = $ct.cpu
+    Write-Host " OK ($($ct.action) | Last=$($cpu.load_pct)% Temp=$($cpu.temp_c)C)" -ForegroundColor Green
 } catch {
-    Write-Host " WARTE" -ForegroundColor Yellow
+    Write-Host " FALLBACK" -ForegroundColor Yellow
 }
 
 Write-Host "[Meta] Windows-Substrat + Meta-Layer attach..." -NoNewline

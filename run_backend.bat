@@ -17,6 +17,13 @@ set FUSION_WINDOWS_SKIN=synthwave
 REM GPU acceleration for QUBO / Mainframe
 set FUSION_USE_GPU=1
 
+REM Adaptives CPU-Tuning: Last+Temperatur (z.B. 40%% Last / 70C -> Boost)
+set FUSION_CPU_TUNER_AUTO=1
+set FUSION_CPU_TEMP_SOFT_C=75
+set FUSION_CPU_TEMP_HARD_C=82
+set FUSION_CPU_LOAD_LOW_PCT=50
+set FUSION_CPU_LOAD_HIGH_PCT=85
+
 REM Adaptive VRAM-Steuerung: dedizierten Grafikspeicher fast voll, System-RAM minimal
 set FUSION_GPU_ALLOCATOR_AUTO=1
 set FUSION_VRAM_TARGET_RATIO=0.92
