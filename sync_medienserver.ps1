@@ -46,7 +46,8 @@ $manifest = @{
         repo = "95guknow/fusion-hero-os"
         branch = "main"
         health_local = "http://127.0.0.1:8000/api/health"
-        workspace_local = "http://127.0.0.1:8080"
+        gui_local = "http://127.0.0.1:8000"
+        nicegui_legacy = "http://127.0.0.1:8080"
     }
     medienserver_path = $Target
 } | ConvertTo-Json -Depth 4

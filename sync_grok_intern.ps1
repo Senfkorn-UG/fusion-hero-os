@@ -51,7 +51,8 @@ $manifest = Join-Path $GrokSkill "GITHUB_SYNC.json"
     synced_at = (Get-Date -Format "yyyy-MM-ddTHH:mm:ss")
     version = "v8"
     deployment_guide = "DEPLOYMENT_GUIDE.md"
-    backend = "03_Code/Dashboard/app.py (prod) | 03_Code/reference/rest_api_server.py (REST)"
+    gui = "http://127.0.0.1:8000 (03_Code/Dashboard/app.py — Standard-GUI)"
+    nicegui_legacy = "http://127.0.0.1:8080 (workspace.py, optional)"
 } | ConvertTo-Json -Depth 3 | Set-Content -Path $manifest -Encoding UTF8
 
 Write-Host "  Manifest:  $manifest" -ForegroundColor DarkGray
