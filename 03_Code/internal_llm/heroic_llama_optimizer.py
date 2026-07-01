@@ -298,10 +298,17 @@ class HeroicLlamaOptimizer:
         self.metrics.duration_s = time.time() - t0
 
         # Export
+        try:
+            from system_prompt_normalize import normalize_system_prompt
+
+            sys_prompt = normalize_system_prompt(self.cfg.system_prompt)
+        except Exception:
+            sys_prompt = self.cfg.system_prompt
+
         config_out = {
             "algorithm": "heroic_qubo_annealing_v1",
             "model_path": self.cfg.model_path,
-            "system_prompt": self.cfg.system_prompt,
+            "system_prompt": sys_prompt,
             "generation": self.metrics.best_params,
             "metrics": {
                 "epoch_scores": self.metrics.epoch_scores,
@@ -319,7 +326,7 @@ FROM {Path(self.cfg.model_path).resolve()}
 PARAMETER temperature {best_params.get('temperature', 0.7)}
 PARAMETER top_p {best_params.get('top_p', 0.9)}
 PARAMETER repeat_penalty {best_params.get('repeat_penalty', 1.1)}
-SYSTEM \"\"\"{self.cfg.system_prompt}\"\"\"
+SYSTEM \"\"\"{sys_prompt}\"\"\"
 """
         (out_dir / "Modelfile").write_text(modelfile, encoding="utf-8")
         print(f"[*] Gespeichert: {out_dir / 'heroic_llama_config.json'}")

@@ -258,24 +258,14 @@ def track_llama_config_patch() -> Dict[str, Any]:
         "bridges": ["heroische_mathematik", "heroische_informatik", "neurotheologie", "dissertation", "concept_space", "heroismus_edition_0.7"],
         "visual": ["Pi_KG", "Pi_SN", "trajektorien"],
     }
-    sys_prompt = cfg.get("system_prompt", "")
-    for old in (
-        "Geisteskrankheiten-4D-Matrix v2",
-        "Geisteskrankheiten-4D-Matrix v3",
-        "Geisteskrankheiten-4D-Matrix v4",
-        "Geisteskrankheiten-4D-Matrix v5",
-        "Geisteskrankheiten-4D-Matrix v6",
-    ):
-        if old in sys_prompt:
-            sys_prompt = sys_prompt.replace(old, "Geisteskrankheiten-4D-Matrix v7")
-    marker = "Geisteskrankheiten-4D-Matrix v7"
-    if marker not in sys_prompt:
-        cfg["system_prompt"] = (
-            sys_prompt.rstrip()
-            + " Du kennst die MER 4D-Matrix Geisteskrankheiten v7 (Heroismus Edition 0.7, Dissertation, Concept Space, Trajektorien)."
-        )
-    else:
-        cfg["system_prompt"] = sys_prompt
+    import sys as _sys
+
+    _llm = _ROOT / "03_Code" / "internal_llm"
+    if str(_llm) not in _sys.path:
+        _sys.path.insert(0, str(_llm))
+    from system_prompt_normalize import normalize_system_prompt
+
+    cfg["system_prompt"] = normalize_system_prompt(cfg.get("system_prompt", ""))
     cfg["internal_optimization"] = {
         "parallel_tracks": True,
         "last_insights": "geisteskrankheiten_4d_v7",

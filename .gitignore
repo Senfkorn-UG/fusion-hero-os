@@ -28,4 +28,5 @@ __pycache__/
 *.gguf
 03_Code/internal_llm/models/
 03_Code/internal_llm/output/
+03_Code/internal_llm/data.jsonl
 .fusion/

@@ -173,6 +173,55 @@ class ConversationContextCore:
                 )
         except Exception:
             pass
+        self._prune_duplicates()
+
+    def _prune_duplicates(self) -> None:
+        """Entfernt veraltete Root-Fenster und doppelte Subagent-Einträge."""
+        roots = [w for w in self.windows.values() if w.role == "root"]
+        if len(roots) > 1:
+            keep = max(roots, key=lambda w: w.updated_ts)
+            self.root_id = keep.window_id
+            for w in roots:
+                if w.window_id != keep.window_id:
+                    del self.windows[w.window_id]
+
+        if self.root_id and self.root_id not in self.windows:
+            if roots:
+                self.root_id = max(roots, key=lambda w: w.updated_ts).window_id
+            else:
+                self.root_id = None
+
+        seen_sub: Dict[str, str] = {}
+        stale: List[str] = []
+        for wid, w in self.windows.items():
+            if w.role != "subagent" or not w.subagent_name:
+                continue
+            prev = seen_sub.get(w.subagent_name)
+            if prev is None or self.windows[prev].updated_ts < w.updated_ts:
+                if prev:
+                    stale.append(prev)
+                seen_sub[w.subagent_name] = wid
+            else:
+                stale.append(wid)
+        for wid in stale:
+            self.windows.pop(wid, None)
+
+        root = self.windows.get(self.root_id) if self.root_id else None
+        if root and root.executive_summary:
+            parts = [
+                p.strip()
+                for p in re.split(r"\s*\|\s*", root.executive_summary.replace("Rückkopplung zum Start-Kontext: ", ""))
+                if p.strip()
+            ]
+            deduped: List[str] = []
+            for p in parts:
+                if p not in deduped:
+                    deduped.append(p)
+            if deduped:
+                root.executive_summary = _clip(
+                    "Rückkopplung zum Start-Kontext: " + " | ".join(deduped[:8]),
+                    150,
+                )
 
     def _persist(self) -> None:
         try:

@@ -2,8 +2,8 @@
 cd /d "%~dp003_Code\Dashboard"
 if not defined FUSION_AUTO_LOAD set FUSION_AUTO_LOAD=1
 set FUSION_HYPERTHREADING=1
-set FUSION_PROFILE=two_thirds
-set FUSION_PERFORMANCE_RATIO=0.667
+set FUSION_PROFILE=admin
+set FUSION_PERFORMANCE_RATIO=1.0
 set FUSION_BOOT_STEPS=2000
 set FUSION_BOOT_N=12
 set PYTHONUTF8=1
@@ -39,12 +39,11 @@ set FUSION_RAM_SOFT_PCT=78
 set FUSION_RAM_HARD_PCT=85
 set FUSION_RAM_CRITICAL_PCT=90
 set FUSION_MEMORY_GUARD_AUTO=1
-set FUSION_LLAMA_GPU_LAYERS=99
+set FUSION_LLAMA_GPU_LAYERS=20
 set FUSION_LLAMA_CTX_SIZE=2048
 set FUSION_VRAM_LOW_PCT=50
 set FUSION_COUPLER_MIN_INTERVAL=2
 set FUSION_COUPLER_MAX_INTERVAL=15
-set FUSION_LLAMA_GPU_LAYERS=20
 
 REM QUBO-Logik in lokalem Llama (Inference + Multi-Kandidaten-Scoring)
 set FUSION_LLAMA_QUBO=1
@@ -99,10 +98,6 @@ set FUSION_GPU_SHARE_FACTOR=3.0
 set FUSION_VCACHE_AGGRESSIVE=1
 set FUSION_SSD_LONGTERM_CACHE=C:\FusionHero\LongTermCache
 if not exist "%FUSION_SSD_LONGTERM_CACHE%" mkdir "%FUSION_SSD_LONGTERM_CACHE%"
-
-REM Full performance
-set FUSION_PROFILE=admin
-set FUSION_PERFORMANCE_RATIO=1.0
 
 REM Port 8000 freimachen — verhindert Errno 10048 bei Doppelstart
 powershell -NoProfile -Command "Get-CimInstance Win32_Process -Filter \"Name='python.exe'\" -ErrorAction SilentlyContinue | Where-Object { $_.CommandLine -match 'uvicorn app:app' } | ForEach-Object { Stop-Process -Id $_.ProcessId -Force -ErrorAction SilentlyContinue }"
