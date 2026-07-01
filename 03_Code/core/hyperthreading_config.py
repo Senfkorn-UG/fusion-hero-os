@@ -61,6 +61,12 @@ def status() -> Dict[str, Any]:
                 })
         except:
             pass
+    try:
+        from gpu_memory_allocator import get_gpu_allocator
+        alloc = get_gpu_allocator().status().get("allocator", {})
+        base["gpu_allocator"] = alloc
+    except Exception:
+        pass
     return base
 
 def enable(enabled: bool = True) -> Dict[str, Any]:

@@ -48,6 +48,12 @@ try:
 except Exception:
     ht = None
 
+try:
+    from core.gpu_memory_allocator import get_gpu_allocator
+except Exception:
+    def get_gpu_allocator():
+        return None
+
 AGENT_STATE = {
     "loaded": False,
     "supervisor": None,
@@ -315,6 +321,13 @@ async def startup_event():
         except Exception as e:
             print('[AutoLoad] Virtual HT init note:', e)
     asyncio.create_task(heroic_core_event_loop())
+    alloc = get_gpu_allocator()
+    if alloc:
+        if alloc.start_background():
+            print("[GPU] Adaptiver VRAM-Allocator gestartet (dediziert priorisiert)")
+        else:
+            alloc.rebalance_once()
+            print("[GPU] VRAM-Rebalance einmalig:", alloc.state.last_action)
     print("[ALTE_Frau_95g] Heroic Core Dashboard gestartet")
     print(f"  AutoLoad Status: {autoloader.status()}")
     print(f"  Input-Faktoren: CPUs={INPUT_FACTORS.get('logical_cpus')}, HT={INPUT_FACTORS.get('hyperthreading_env')}")
@@ -576,3 +589,27 @@ async def api_autoload_run(payload: dict = None):
 @app.get("/api/autoload/status")
 async def api_autoload_status():
     return autoloader.status()
+
+
+@app.get("/api/gpu/memory")
+async def api_gpu_memory():
+    alloc = get_gpu_allocator()
+    if not alloc:
+        return {"error": "gpu_allocator_unavailable"}
+    return alloc.status()
+
+
+@app.post("/api/gpu/allocator/rebalance")
+async def api_gpu_allocator_rebalance():
+    alloc = get_gpu_allocator()
+    if not alloc:
+        return {"error": "gpu_allocator_unavailable"}
+    return alloc.rebalance_once()
+
+
+@app.get("/api/gpu/allocator/status")
+async def api_gpu_allocator_status():
+    alloc = get_gpu_allocator()
+    if not alloc:
+        return {"error": "gpu_allocator_unavailable"}
+    return alloc.status()
