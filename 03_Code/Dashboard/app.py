@@ -818,6 +818,74 @@ async def api_supabase_events(limit: int = 20):
     return {"events": await asyncio.to_thread(supa_store.list_recent_events, limit)}
 
 
+@app.post("/api/llama/train")
+async def api_llama_train():
+    """Heroic Llama Optimizer (QUBO+SA) — setzt llama-local nach Training."""
+    root = BASE.parent / "internal_llm"
+
+    def _run():
+        import subprocess
+        import sys
+        env = os.environ.copy()
+        env["FUSION_LLM_BACKEND"] = "llama-local"
+        return subprocess.run(
+            [sys.executable, "train.py"],
+            cwd=str(root),
+            capture_output=True,
+            text=True,
+            timeout=600,
+            encoding="utf-8",
+            errors="replace",
+            env=env,
+        )
+
+    proc = await asyncio.to_thread(_run)
+    if proc.returncode != 0:
+        return {"status": "error", "stderr": (proc.stderr or "")[-800:]}
+    os.environ["FUSION_LLM_BACKEND"] = "llama-local"
+    try:
+        from core.local_llama import get_local_llama
+        status = get_local_llama().status()
+    except Exception as exc:
+        status = {"error": str(exc)}
+    if supa_store:
+        try:
+            import json
+            cfg_path = root / "output" / "heroic_llama_config.json"
+            if cfg_path.exists():
+                cfg = json.loads(cfg_path.read_text(encoding="utf-8"))
+                asyncio.create_task(asyncio.to_thread(supa_store.save_llama_config, cfg))
+        except Exception:
+            pass
+    return {"status": "ok", "llm_backend": "llama-local", "llama": status, "stdout": (proc.stdout or "")[-400:]}
+
+
+@app.get("/api/supabase/node-health")
+async def api_supabase_node_health():
+    """@supabase/server npm Paket Health-Check."""
+    script = BASE / "scripts" / "supabase-health.mjs"
+    if not script.exists():
+        return {"error": "supabase-health.mjs missing"}
+
+    def _run():
+        import subprocess
+        return subprocess.run(
+            ["node", str(script)],
+            cwd=str(BASE),
+            capture_output=True,
+            text=True,
+            timeout=15,
+            env=os.environ.copy(),
+        )
+
+    proc = await asyncio.to_thread(_run)
+    try:
+        import json
+        return json.loads(proc.stdout or "{}")
+    except Exception:
+        return {"status": "error", "stdout": proc.stdout, "stderr": proc.stderr}
+
+
 @app.post("/api/supabase/sync/metrics")
 async def api_supabase_sync_metrics():
     if supa_store is None:

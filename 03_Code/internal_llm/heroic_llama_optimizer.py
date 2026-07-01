@@ -180,6 +180,15 @@ class HeroicLlamaOptimizer:
 
     def _init_backend(self) -> None:
         try:
+            from llama_server_backend import healthy, generate as server_generate
+            if healthy():
+                self._server_generate = server_generate
+                self._backend = "server"
+                print("    Backend: llama-server (:8081)")
+                return
+        except Exception:
+            pass
+        try:
             from llama_cpp import Llama
             self.llm = Llama(
                 model_path=self.cfg.model_path,
@@ -198,6 +207,12 @@ class HeroicLlamaOptimizer:
 
     def _generate(self, prompt: str, params: Dict[str, float]) -> str:
         full = self._format_prompt(prompt)
+        if self._backend == "server":
+            text = self._server_generate(full, params, max_tokens=self.cfg.max_gen_tokens)
+            for stop in ("<|user|>", "<|system|>", "\n\nUser:"):
+                if stop in text:
+                    text = text.split(stop, 1)[0]
+            return text.strip()
         if self._backend == "cli":
             text = self._cli_generate(
                 self.cfg.model_path,
@@ -246,15 +261,18 @@ class HeroicLlamaOptimizer:
         val_set = dataset[:val_n]
         base_params = {"temperature": 0.7, "top_p": 0.9, "repeat_penalty": 1.1}
 
+        val_samples = int(os.getenv("FUSION_TRAIN_VAL_SAMPLES", "4"))
+        sa_steps = int(os.getenv("FUSION_TRAIN_SA_STEPS", "8"))
+
         def score_params(p: Dict[str, float]) -> float:
             scores = []
-            for sample in val_set[:8]:
+            for sample in val_set[:val_samples]:
                 pred = self._generate(sample["prompt"], p)
                 scores.append(token_f1(pred, sample["response"]))
             return float(np.mean(scores)) if scores else 0.0
 
         print("[*] Phase 1: Simulated Annealing (Generation-Parameter)...")
-        best_params = simulated_annealing_params(score_params, steps=12)
+        best_params = simulated_annealing_params(score_params, steps=sa_steps)
         print(f"    Beste Params: {best_params}")
 
         # Phase 2: Epochs mit QUBO-Sample-Selection

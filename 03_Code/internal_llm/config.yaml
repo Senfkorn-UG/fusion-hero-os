@@ -1,12 +1,12 @@
 # Heroic Llama Optimizer — Fusion Hero OS
-model_path: models/Llama-3.2-1B-Instruct-Q4_K_M.gguf
+model_path: C:/Users/Admin/internal_llm/models/Llama-3.2-1B-Instruct-Q4_K_M.gguf
 data_path: data.jsonl
 output_path: ./output
-epochs: 2
-batch_size: 8
+epochs: 1
+batch_size: 4
 ctx_len: 512
-max_gen_tokens: 128
-n_gpu_layers: 20
+max_gen_tokens: 64
+n_gpu_layers: 99
 quantization: Q4_K_M
 algorithm: heroic_qubo_annealing_v1
 system_prompt: >
