@@ -202,6 +202,13 @@ class ResourceCoupler:
                 self.state.gpu_target_ratio = alloc.target_ratio
                 details["allocator_trim"] = alloc.rebalance_once()
 
+            elif vram_pct < self.vram_low and ram_pct < 72.0:
+                action = "fill_dedicated_vram"
+                try:
+                    from gpu_vram_prioritizer import get_vram_prioritizer
+                    details["vram_prioritizer"] = get_vram_prioritizer().prioritize_once()
+                except Exception as exc:
+                    details["vram_prioritizer"] = {"error": str(exc)}
             elif compute_pct < self.compute_low and not ram_critical:
                 action = "boost_gpu_compute"
                 booster = get_gpu_compute_booster()

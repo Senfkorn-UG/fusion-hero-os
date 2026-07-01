@@ -79,6 +79,12 @@ except Exception:
         return None
 
 try:
+    from core.gpu_vram_prioritizer import get_vram_prioritizer
+except Exception:
+    def get_vram_prioritizer():
+        return None
+
+try:
     import supabase_client as supa
     import supabase_store as supa_store
 except Exception:
@@ -782,6 +788,14 @@ async def api_memory_relieve():
     if not guard:
         return {"error": "memory_guard_unavailable"}
     return guard.relieve_once()
+
+
+@app.post("/api/gpu/vram/prioritize")
+async def api_gpu_vram_prioritize():
+    prio = get_vram_prioritizer()
+    if not prio:
+        return {"error": "vram_prioritizer_unavailable"}
+    return prio.prioritize_once()
 
 
 @app.get("/api/supabase/health")

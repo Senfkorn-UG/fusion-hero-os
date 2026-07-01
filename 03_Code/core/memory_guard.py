@@ -96,6 +96,13 @@ class MemoryGuard:
             action = "hold"
             details: Dict[str, Any] = {}
 
+            try:
+                from gpu_memory_allocator import probe_gpu_memory
+                vram_pct = probe_gpu_memory().dedicated_util_pct
+            except Exception:
+                vram_pct = 100.0
+            vram_underfilled = vram_pct < float(os.getenv("FUSION_VRAM_FILL_BELOW_PCT", "45"))
+
             if pct >= self.critical:
                 action = "critical_ram_release"
                 details["llama_stopped"] = self._stop_llama_server()
@@ -110,11 +117,15 @@ class MemoryGuard:
                     tuner._apply_hyperthreading(0.5, tuner.state.target_workers)
                 except Exception:
                     pass
-            elif pct >= self.hard:
+            elif pct >= self.hard and not (vram_underfilled and pct < self.critical):
                 action = "hard_ram_release"
                 details["llama_stopped"] = self._stop_llama_server()
                 details["release"] = self._release_pools()
                 os.environ["FUSION_GPU_COMPUTE_BOOSTER_AUTO"] = "0"
+            elif pct >= self.hard and vram_underfilled:
+                action = "hard_ram_keep_gpu"
+                details["release"] = self._release_pools()
+                details["note"] = "llama-server behalten — VRAM unter Ziel"
             elif pct >= self.soft:
                 action = "soft_ram_trim"
                 details["release"] = self._release_pools()
