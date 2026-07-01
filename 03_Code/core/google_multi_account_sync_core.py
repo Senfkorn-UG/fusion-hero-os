@@ -55,6 +55,11 @@ class GoogleMultiAccountSyncCoreModule:
             "timestamp": self.last_sync.isoformat()
         }
 
+    def sync_all(self, horkrux_id: str = "fusion-hero-os-main") -> Dict:
+        """Vollständiger Sync aller registrierten Ziele."""
+        targets = self.sync_targets or ["local-mainframe"]
+        return self.sync_horkrux(horkrux_id, targets, sync_mode="delta")
+
     def register_target(self, account_or_folder: str) -> None:
         """Registriert ein neues Sync-Ziel."""
         if account_or_folder not in self.sync_targets:

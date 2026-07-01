@@ -154,6 +154,14 @@ try {
     Write-Host " FALLBACK" -ForegroundColor Yellow
 }
 
+Write-Host "[Module] Alle Funktionen freigeben..." -NoNewline
+try {
+    $la = Invoke-RestMethod -Uri "$GuiUrl/api/load-all?force=true" -Method POST -TimeoutSec 90
+    Write-Host " OK ($($la.count)/$($la.total) Module)" -ForegroundColor Green
+} catch {
+    Write-Host " FALLBACK" -ForegroundColor Yellow
+}
+
 Write-Host "[Coupler] CPU+GPU+SSD gekoppelt..." -NoNewline
 try {
     $rc = Invoke-RestMethod -Uri "$GuiUrl/api/resource/coupler/run" -Method POST -TimeoutSec 15

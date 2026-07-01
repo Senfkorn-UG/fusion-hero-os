@@ -1,0 +1,241 @@
+# module_registry.py — zentrale Freigabe aller Fusion Hero OS Module
+
+from __future__ import annotations
+
+import importlib
+import os
+import socket
+import sys
+import time
+from pathlib import Path
+from typing import Any, Callable, Dict, List, Optional
+
+_CORE = Path(__file__).parent
+_DASH = _CORE.parent / "Dashboard"
+_INTERNAL_LLM = _CORE.parent / "internal_llm"
+
+_REGISTRY: Dict[str, Dict[str, Any]] = {}
+_LOADED: Dict[str, bool] = {}
+
+
+def _try_import(path: str, attr: Optional[str] = None) -> Any:
+    if str(_CORE) not in sys.path:
+        sys.path.insert(0, str(_CORE))
+    try:
+        mod = importlib.import_module(path)
+        return getattr(mod, attr) if attr else mod
+    except Exception as exc:
+        return {"error": str(exc)}
+
+
+def _register(
+    name: str,
+    layer: int,
+    category: str,
+    loader: Callable[[], Any],
+    description: str = "",
+) -> None:
+    _REGISTRY[name] = {
+        "name": name,
+        "layer": layer,
+        "category": category,
+        "description": description,
+        "loader": loader,
+        "enabled": os.getenv("FUSION_ALL_MODULES", "1") == "1",
+    }
+
+
+def _build_registry() -> None:
+    if _REGISTRY:
+        return
+
+    _register("hyperthreading", 1, "performance",
+              lambda: _try_import("hyperthreading_config", "enable")(True),
+              "Hyperthreading + virtuelle GPU-Threads")
+    _register("gpu_allocator", 1, "performance",
+              lambda: _try_import("gpu_memory_allocator", "get_gpu_allocator")().rebalance_once(),
+              "Adaptiver VRAM-Allocator")
+    _register("cpu_tuner", 1, "performance",
+              lambda: _try_import("cpu_adaptive_tuner", "get_cpu_tuner")().tune_once(),
+              "CPU Last+Temperatur Tuner")
+    _register("resource_coupler", 1, "performance",
+              lambda: _try_import("resource_coupler", "get_resource_coupler")().couple_once(),
+              "CPU+GPU+SSD Kopplung")
+    _register("gpu_compute_booster", 1, "performance",
+              lambda: _try_import("gpu_compute_booster", "get_gpu_compute_booster")().boost_once(),
+              "GPU SM-Auslastung via llama-server")
+    _register("virtual_gpu_ht", 1, "performance",
+              lambda: _try_import("virtual_gpu_hyperthreading", "get_virtual_gpu_ht_cache")().status(),
+              "Virtuelle Hyper-Threads auf VRAM")
+    _register("ssd_cache", 1, "storage",
+              lambda: _try_import("ssd_longterm_cache", "SSDLongTermCache")().status(),
+              "SSD Long-Term Cache")
+    _register("heroic_orchestration", 2, "orchestration",
+              lambda: _try_import("heroic_orchestration", "ensure_agents_loaded")(True),
+              "Agenten + QUBO + Klassifikation")
+    _register("dynamic_orchestration", 2, "orchestration",
+              lambda: _try_import("dynamic_orchestration_core", "DynamicOrchestrationCoreModule")(),
+              "Multi-Model Orchestrierung")
+    _register("selfmodify_core", 3, "meta",
+              lambda: _try_import("SelfModifyCoreModule", "SelfModifyCoreModule")(),
+              "Self-Modification Proposals")
+    _register("critical_meta", 3, "meta",
+              lambda: _try_import("CriticalMetaAnalysisCoreModule", "CriticalMetaAnalysisCoreModule")(),
+              "Epistemische Meta-Analyse")
+    _register("generational_evolution", 3, "meta",
+              lambda: _try_import("GenerationalEvolutionProtocolCoreModule", "GenerationalEvolutionProtocolCoreModule")(),
+              "Generational Evolution Protocol")
+    _register("google_sync", 2, "sync",
+              lambda: _try_import("google_multi_account_sync_core", "GoogleMultiAccountSyncCoreModule")(),
+              "Google Multi-Account Sync")
+    _register("classical", 2, "math",
+              lambda: _try_import("classical"),
+              "Klassische Mathematik-Module")
+    _register("local_llama", 2, "llm",
+              lambda: _try_import("local_llama", "get_local_llama")().status(),
+              "Lokales Llama (Heroic Optimizer)")
+    _register("windows_substrate", 0, "substrate",
+              lambda: _try_import("windows_substrate", "get_substrate")().status(),
+              "Windows Meta-Layer + Cyber Layer")
+    _register("supabase", 2, "storage",
+              lambda: _load_supabase(),
+              "Supabase Persistenz swmmoxhdzarmoupyssqe")
+
+    if str(_DASH) not in sys.path:
+        sys.path.insert(0, str(_DASH))
+
+    def _foundation():
+        p = Path(r"C:\Users\Admin\heroic-core-foundation")
+        if p.exists() and str(p) not in sys.path:
+            sys.path.insert(0, str(p))
+        from foundation import check_foundation_gate  # type: ignore
+        return check_foundation_gate({"probe": True})
+
+    _register("foundation_gate", 0, "layer0", _foundation, "Heroic Core Foundation Gate")
+
+    def _highest_layer():
+        p = Path(r"C:\Users\Admin\heroic-highest-layer")
+        if p.exists() and str(p) not in sys.path:
+            sys.path.insert(0, str(p))
+        from highest_layer import load  # type: ignore
+        return load().status()
+
+    _register("highest_layer", 4, "layer4", _highest_layer, "Heroic Highest Layer Roadmap")
+
+
+def _load_supabase() -> Any:
+    if str(_DASH) not in sys.path:
+        sys.path.insert(0, str(_DASH))
+    import supabase_client as sc  # type: ignore
+    return sc.status(do_probe=True)
+
+
+def list_modules() -> List[Dict[str, Any]]:
+    _build_registry()
+    out = []
+    for name, info in _REGISTRY.items():
+        out.append({
+            "name": name,
+            "layer": info["layer"],
+            "category": info["category"],
+            "description": info["description"],
+            "enabled": info["enabled"],
+            "loaded": _LOADED.get(name, False),
+        })
+    return sorted(out, key=lambda x: (x["layer"], x["name"]))
+
+
+def load_module(name: str) -> Dict[str, Any]:
+    _build_registry()
+    info = _REGISTRY.get(name)
+    if not info:
+        return {"status": "error", "error": f"unknown module: {name}"}
+    try:
+        result = info["loader"]()
+        _LOADED[name] = True
+        return {"status": "ok", "module": name, "result": _safe(result)}
+    except Exception as exc:
+        return {"status": "error", "module": name, "error": str(exc)}
+
+
+def load_all(force: bool = False) -> Dict[str, Any]:
+    _build_registry()
+    results: Dict[str, Any] = {"loaded": [], "errors": [], "ts": time.time()}
+    for name, info in _REGISTRY.items():
+        if not info["enabled"] and not force:
+            continue
+        if _LOADED.get(name) and not force:
+            results["loaded"].append(name)
+            continue
+        r = load_module(name)
+        if r.get("status") == "ok":
+            results["loaded"].append(name)
+        else:
+            results["errors"].append({name: r.get("error")})
+    results["count"] = len(results["loaded"])
+    results["total"] = len(_REGISTRY)
+    return results
+
+
+def _safe(obj: Any) -> Any:
+    if obj is None or isinstance(obj, (str, int, float, bool)):
+        return obj
+    if isinstance(obj, dict):
+        return {str(k): _safe(v) for k, v in list(obj.items())[:30]}
+    if isinstance(obj, (list, tuple)):
+        return [_safe(x) for x in obj[:20]]
+    if hasattr(obj, "status") and callable(obj.status):
+        try:
+            return obj.status()
+        except Exception:
+            pass
+    if hasattr(obj, "__dict__"):
+        return {"type": type(obj).__name__}
+    return str(obj)[:200]
+
+
+def resource_plan() -> Dict[str, Any]:
+    _build_registry()
+    import psutil
+    cpus = psutil.cpu_count(logical=True) or 12
+    mem = psutil.virtual_memory()
+    plan = {
+        "agents": {
+            "supervisor": max(1, cpus // 6),
+            "math-worker": max(1, cpus // 4),
+            "phil-worker": max(1, cpus // 6),
+            "info-worker": max(1, cpus // 6),
+            "general-worker": max(2, cpus // 3),
+        },
+        "gpu": {
+            "vram_target_ratio": float(os.getenv("FUSION_VRAM_TARGET_RATIO", "0.92")),
+            "compute_target_pct": float(os.getenv("FUSION_GPU_COMPUTE_TARGET_PCT", "55")),
+            "llama_gpu_layers": int(os.getenv("FUSION_LLAMA_GPU_LAYERS", "25")),
+        },
+        "cpu": {
+            "performance_ratio": float(os.getenv("FUSION_PERFORMANCE_RATIO", "1.0")),
+            "target_workers": cpus * 4,
+        },
+        "modules_enabled": sum(1 for m in _REGISTRY.values() if m["enabled"]),
+        "modules_loaded": sum(1 for v in _LOADED.values() if v),
+        "ram_available_gb": round(mem.available / (1024 ** 3), 2),
+    }
+    return plan
+
+
+def signal_health(layer: str = "full") -> Dict[str, Any]:
+    import psutil
+    base = {
+        "pulse": {"cpu": psutil.cpu_percent(), "ts": time.time()},
+        "modules": {"loaded": sum(_LOADED.values()), "total": len(_REGISTRY) or 0},
+    }
+    if layer == "pulse":
+        return base
+    base["delta"] = {"ram": psutil.virtual_memory().percent, "profile": os.getenv("FUSION_PROFILE", "admin")}
+    if layer == "delta":
+        return base
+    base["batch"] = resource_plan()
+    if layer == "batch":
+        return base
+    base["full"] = list_modules()
+    return base
