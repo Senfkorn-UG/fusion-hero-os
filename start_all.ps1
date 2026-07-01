@@ -146,6 +146,14 @@ try {
     Write-Host " FALLBACK" -ForegroundColor Yellow
 }
 
+Write-Host "[GPU] Compute-Booster (SM-Auslastung)..." -NoNewline
+try {
+    $gb = Invoke-RestMethod -Uri "$GuiUrl/api/gpu/compute/boost" -Method POST -TimeoutSec 30
+    Write-Host " OK ($($gb.action) | SM=$($gb.compute_util_pct)% -> Ziel $($gb.target_compute_pct)%)" -ForegroundColor Green
+} catch {
+    Write-Host " FALLBACK" -ForegroundColor Yellow
+}
+
 Write-Host "[Coupler] CPU+GPU+SSD gekoppelt..." -NoNewline
 try {
     $rc = Invoke-RestMethod -Uri "$GuiUrl/api/resource/coupler/run" -Method POST -TimeoutSec 15

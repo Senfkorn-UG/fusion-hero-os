@@ -13,6 +13,7 @@ import psutil
 
 from gpu_memory_allocator import probe_gpu_memory, get_gpu_allocator
 from cpu_adaptive_tuner import probe_cpu, get_cpu_tuner
+from gpu_compute_booster import get_gpu_compute_booster
 
 
 def _env_float(name: str, default: float) -> float:
@@ -49,6 +50,7 @@ class ResourceCoupler:
         self.ram_hard = _env_float("FUSION_RAM_HARD_PCT", 90.0)
         self.vram_target = _env_float("FUSION_VRAM_TARGET_RATIO", 0.92)
         self.vram_low = _env_float("FUSION_VRAM_LOW_PCT", 50.0)
+        self.compute_low = _env_float("FUSION_GPU_COMPUTE_LOW_PCT", 30.0)
         self.min_interval = _env_float("FUSION_COUPLER_MIN_INTERVAL", 2.0)
         self.max_interval = _env_float("FUSION_COUPLER_MAX_INTERVAL", 15.0)
         self.auto = os.getenv("FUSION_RESOURCE_COUPLER_AUTO", "1").lower() in (
@@ -124,6 +126,7 @@ class ResourceCoupler:
 
             ram_pct = gpu_snap.system_ram_util_pct
             vram_pct = gpu_snap.dedicated_util_pct
+            compute_pct = gpu_snap.compute_util_pct
             cpu_load = cpu_snap["load_pct"]
             cpu_temp = cpu_snap.get("temp_c")
             action = "hold"
@@ -189,6 +192,13 @@ class ResourceCoupler:
                 self.state.gpu_target_ratio = alloc.target_ratio
                 details["allocator_trim"] = alloc.rebalance_once()
 
+            elif compute_pct < self.compute_low and not ram_critical:
+                action = "boost_gpu_compute"
+                booster = get_gpu_compute_booster()
+                details["compute_boost"] = booster.boost_once()
+                if vram_pct < 70.0:
+                    details["vram_fill"] = self._boost_gpu(gpu_snap, deficit_ratio=0.05)
+
             self.state.last_action = action
             self.state.last_run = time.time()
             self.state.cpu_performance_ratio = float(
@@ -211,6 +221,7 @@ class ResourceCoupler:
                 "action": action,
                 "ram_pct": ram_pct,
                 "vram_pct": vram_pct,
+                "compute_pct": compute_pct,
                 "cpu_load_pct": cpu_load,
                 "cpu_temp_c": cpu_temp,
                 "gpu_target_ratio": self.state.gpu_target_ratio,
@@ -244,7 +255,7 @@ class ResourceCoupler:
                     "llama_gpu_layers": self.state.llama_gpu_layers,
                     "cpu_performance_ratio": self.state.cpu_performance_ratio,
                     "next_interval_s": round(self.state.next_interval_s, 2),
-                    "policy": "ram→gpu→ssd | cpu_hot→gpu | vram_low→fill",
+                    "policy": "ram→gpu→ssd | cpu_hot→gpu | compute_low→boost",
                 },
                 "memory": gpu_snap.to_dict(),
                 "cpu": cpu_snap,

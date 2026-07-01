@@ -35,6 +35,7 @@ class GPUMemorySnapshot:
     dedicated_free_mb: float = 0.0
     dedicated_used_mb: float = 0.0
     dedicated_util_pct: float = 0.0
+    compute_util_pct: float = 0.0
     system_ram_total_mb: float = 0.0
     system_ram_used_mb: float = 0.0
     system_ram_free_mb: float = 0.0
@@ -49,6 +50,9 @@ class GPUMemorySnapshot:
                 "used_mb": round(self.dedicated_used_mb, 1),
                 "free_mb": round(self.dedicated_free_mb, 1),
                 "util_pct": round(self.dedicated_util_pct, 1),
+            },
+            "compute": {
+                "util_pct": round(self.compute_util_pct, 1),
             },
             "system_ram": {
                 "total_mb": round(self.system_ram_total_mb, 1),
@@ -90,6 +94,11 @@ def probe_gpu_memory() -> GPUMemorySnapshot:
                     snap.dedicated_util_pct = (
                         snap.dedicated_used_mb / snap.dedicated_total_mb
                     ) * 100.0
+                if len(parts) >= 5 and parts[4]:
+                    try:
+                        snap.compute_util_pct = float(parts[4])
+                    except ValueError:
+                        pass
                 snap.cuda_available = True
                 return snap
     except Exception:

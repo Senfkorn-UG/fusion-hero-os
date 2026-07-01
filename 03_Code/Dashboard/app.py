@@ -67,6 +67,12 @@ except Exception:
         return None
 
 try:
+    from core.gpu_compute_booster import get_gpu_compute_booster
+except Exception:
+    def get_gpu_compute_booster():
+        return None
+
+try:
     import supabase_client as supa
     import supabase_store as supa_store
 except Exception:
@@ -377,6 +383,12 @@ async def startup_event():
               f"RAM={mem.get('util_pct')}% VRAM={vram.get('util_pct')}% "
               f"GPU-Layer={cresult.get('tuning', {}).get('llama_gpu_layers')}")
         coupler.start_background()
+    gpu_booster = get_gpu_compute_booster()
+    if gpu_booster:
+        bresult = gpu_booster.boost_once()
+        print(f"[GPU] Compute-Booster: {bresult.get('action')} | "
+              f"SM={bresult.get('compute_util_pct')}% Ziel={bresult.get('target_compute_pct')}%")
+        gpu_booster.start_background()
     print("[ALTE_Frau_95g] Heroic Core Dashboard gestartet")
     print(f"  AutoLoad Status: {autoloader.status()}")
     print(f"  Input-Faktoren: CPUs={INPUT_FACTORS.get('logical_cpus')}, HT={INPUT_FACTORS.get('hyperthreading_env')}")
@@ -703,6 +715,22 @@ async def api_resource_coupler_run():
     if not coupler:
         return {"error": "resource_coupler_unavailable"}
     return coupler.couple_once()
+
+
+@app.get("/api/gpu/compute/status")
+async def api_gpu_compute_status():
+    booster = get_gpu_compute_booster()
+    if not booster:
+        return {"error": "gpu_compute_booster_unavailable"}
+    return booster.status()
+
+
+@app.post("/api/gpu/compute/boost")
+async def api_gpu_compute_boost():
+    booster = get_gpu_compute_booster()
+    if not booster:
+        return {"error": "gpu_compute_booster_unavailable"}
+    return booster.boost_once()
 
 
 @app.get("/api/supabase/health")
