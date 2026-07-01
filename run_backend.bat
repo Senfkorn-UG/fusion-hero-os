@@ -51,6 +51,10 @@ set FUSION_LLAMA_SERVER_AUTO=1
 set FUSION_LLAMA_SERVER_PORT=8081
 set FUSION_GPU_BOOST_MODEL=C:\Users\Admin\internal_llm\models\Llama-3.2-1B-Instruct-Q4_K_M.gguf
 
+REM Alle Module freigeben
+set FUSION_ALL_MODULES=1
+set FUSION_LLM_BACKEND=llama-local
+
 REM Supabase Persistenz (swmmoxhdzarmoupyssqe)
 set FUSION_SUPABASE_SYNC=1
 set PUBLIC_SUPABASE_PROJECT_REF=swmmoxhdzarmoupyssqe

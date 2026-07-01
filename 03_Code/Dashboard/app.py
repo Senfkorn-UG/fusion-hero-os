@@ -383,6 +383,13 @@ async def startup_event():
               f"RAM={mem.get('util_pct')}% VRAM={vram.get('util_pct')}% "
               f"GPU-Layer={cresult.get('tuning', {}).get('llama_gpu_layers')}")
         coupler.start_background()
+    if os.getenv("FUSION_ALL_MODULES", "1") == "1":
+        try:
+            from core.module_registry import load_all
+            mod_result = load_all(force=False)
+            print(f"[Modules] Freigabe: {mod_result.get('count')}/{mod_result.get('total')} geladen")
+        except Exception as e:
+            print(f"[Modules] Load note: {e}")
     gpu_booster = get_gpu_compute_booster()
     if gpu_booster:
         bresult = gpu_booster.boost_once()
@@ -525,6 +532,8 @@ async def api_health(light: bool = False):
         "supabase": (
             supa.status() if supa else {"configured": False, "error": "supabase_client not loaded"}
         ),
+        "all_modules": os.getenv("FUSION_ALL_MODULES", "1") == "1",
+        "llm_backend": os.getenv("FUSION_LLM_BACKEND", "llama-local"),
     }
 
 # === Agent state and helpers (for auto load/assign) ===
@@ -606,17 +615,31 @@ async def api_input(payload: InputPayload):
 async def api_orchestrate(payload: OrchestratePayload):
     query = (payload.query or "").strip()
     normalized, cat, _, dom = classify_and_normalize(query)
-    models = payload.model_pool or ["grok-intern", "fusion-hero"]
+    try:
+        from core.local_llama import default_model_pool
+        models = payload.model_pool or default_model_pool()
+    except Exception:
+        models = payload.model_pool or ["grok-intern", "fusion-hero"]
     if dom == "Math":
-        models = ["grok-intern", "qb-qubo"]
-    return {
-        "status": "success",
-        "query": normalized,
-        "used_models": models,
-        "synthesised_response": f"[Merged v7.4/v7.5] Orchestrated with HT + agents for {dom}",
-        "category": cat,
-        "dom": dom
-    }
+        models = ["grok-intern", "qb-qubo"] + [m for m in models if m not in ("grok-intern", "qb-qubo")]
+    try:
+        from core.dynamic_orchestration_core import DynamicOrchestrationCoreModule
+        result = await asyncio.to_thread(
+            DynamicOrchestrationCoreModule().orchestrate, normalized, models,
+        )
+        result["category"] = cat
+        result["dom"] = dom
+        return result
+    except Exception as exc:
+        return {
+            "status": "success",
+            "query": normalized,
+            "used_models": models,
+            "synthesised_response": f"[Merged v7.4/v7.5] Orchestrated for {dom}",
+            "category": cat,
+            "dom": dom,
+            "error": str(exc),
+        }
 
 # Auto load on start
 _ensure_agents()
@@ -755,3 +778,11 @@ async def api_supabase_sync_metrics():
     payload = metrics if isinstance(metrics, dict) else metrics.model_dump()
     result = await asyncio.to_thread(supa_store.save_metrics, payload)
     return result
+
+
+# === Alle Module + fehlende Endpunkte freigeben ===
+try:
+    from api_extensions import router as _extensions_router
+    app.include_router(_extensions_router)
+except Exception as _ext_err:
+    print(f"[API] Extensions note: {_ext_err}")
