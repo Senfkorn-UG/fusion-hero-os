@@ -370,14 +370,21 @@ def invoke_model(
 
 
 def pick_thinker_model(pool: List[str]) -> str:
-    for pref in ("claude", "grok", "gpt"):
+    """Agent/Thinker → Llama (lokal), sonst Trinity-Fallback."""
+    if "llama-local" in pool:
+        return "llama-local"
+    for pref in ("claude", "gpt", "grok"):
         if pref in pool:
             return pref
-    return pool[0] if pool else "grok"
+    return pool[0] if pool else "llama-local"
 
 
 def pick_verifier_model(pool: List[str], thinker: str) -> str:
+    """Anti-Agent/Verifier → Grok."""
+    for pref in ("grok", "grok-intern"):
+        if pref in pool or pref == "grok-intern":
+            return "grok"
     for pref in ("grok", "claude", "gpt"):
-        if pref in pool and pref != thinker:
+        if pref in pool and pref != thinker and pref != "llama-local":
             return pref
-    return pool[-1] if pool else "grok"
+    return "grok"

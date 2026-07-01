@@ -72,6 +72,25 @@ def _check(provider: str) -> bool:
     return False
 
 
+def select_provider_for_role(role: str = "agent", task: Optional[Dict[str, Any]] = None) -> str:
+    """Agent → Llama, Anti-Agent → Grok."""
+    try:
+        from agent_backend_router import backend_for_role, is_dual_agent_enabled
+
+        if is_dual_agent_enabled():
+            backend = backend_for_role(role, task)
+            global _active_backend, _last_switch_ts
+            if _check(backend):
+                if _active_backend != backend:
+                    _last_switch_ts = time.time()
+                _active_backend = backend
+                os.environ["FUSION_LLM_BACKEND"] = backend
+                return backend
+    except Exception:
+        pass
+    return select_provider(force_probe=True)
+
+
 def select_provider_for_query(query: str, force_probe: bool = False) -> str:
     """Wählt Anbieter — Science/Heroik-Wissenschaft → claude-science (API oder Fallback)."""
     try:

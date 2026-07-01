@@ -73,6 +73,11 @@ set FUSION_CLAUDE_SCIENCE=1
 set FUSION_CLAUDE_SCIENCE_ESCALATE=1
 set FUSION_BANACH_LAMBDA=0.74
 set FUSION_LLM_BACKEND=llama-local
+REM Agent nutzt Llama, Anti-Agent nutzt Grok
+set FUSION_AGENT_BACKEND=llama-local
+set FUSION_ANTI_AGENT_BACKEND=grok-intern
+set FUSION_DUAL_AGENT=1
+set FUSION_ORCH_DUAL_AGENT=1
 set FUSION_FIRST_INSTALL_AUTO=1
 
 REM Globale Agenten-Kontrolle (Multi-Strategie: geltung, peer_review, meta, audit)

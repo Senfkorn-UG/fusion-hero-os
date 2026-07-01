@@ -389,6 +389,20 @@ def post_dispatch(task: Dict[str, Any], result: Any = None) -> ControlResult:
     if isinstance(result, dict):
         task = {**task, **{k: v for k, v in result.items() if k in ("response", "synthesised_response", "qubo_result")}}
     cr = _run_strategies(task, "post", text)
+    if os.getenv("FUSION_DUAL_AGENT", "1") == "1" and task.get("agent_kind") != "anti_agent":
+        try:
+            from agent_backend_router import invoke, is_anti_agent
+
+            if not is_anti_agent(task=task) and text.strip():
+                anti = invoke(
+                    "anti_agent",
+                    task.get("query") or task.get("original") or text[:500],
+                    task,
+                    agent_response=text,
+                )
+                task["anti_agent_review"] = anti
+        except Exception:
+            pass
     task["control_post"] = cr.to_dict()
     return cr
 
