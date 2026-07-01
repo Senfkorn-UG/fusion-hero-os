@@ -17,6 +17,12 @@ set FUSION_WINDOWS_SKIN=synthwave
 REM GPU acceleration for QUBO / Mainframe
 set FUSION_USE_GPU=1
 
+REM Adaptive VRAM-Steuerung: dedizierten Grafikspeicher fast voll, System-RAM minimal
+set FUSION_GPU_ALLOCATOR_AUTO=1
+set FUSION_VRAM_TARGET_RATIO=0.92
+set FUSION_GPU_ALLOCATOR_MIN_INTERVAL=2
+set FUSION_GPU_ALLOCATOR_MAX_INTERVAL=30
+
 REM Virtual Hyper-Threading via GPU VRAM caches (über virtuelle Caches in der GPU)
 set FUSION_VIRTUAL_HT_GPU=1
 set FUSION_VIRTUAL_THREADS=256
