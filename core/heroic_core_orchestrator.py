@@ -14,11 +14,10 @@ Es verbindet:
 Integration mit heroic_math_engine.py (Layer 1-3 mathematische Fundierung).
 """
 
-import hashlib
 import json
 import subprocess
 from dataclasses import dataclass
-from typing import Optional, Dict, Any
+from typing import Dict, Any
 
 
 # =====================================================================

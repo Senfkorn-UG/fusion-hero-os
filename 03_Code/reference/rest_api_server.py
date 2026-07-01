@@ -10,9 +10,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import uvicorn
 import os
-import json
 from datetime import datetime
-from typing import Optional, Dict, Any, List
+from typing import Dict, List
 
 # === FASTAPI APP ===
 app = FastAPI(
