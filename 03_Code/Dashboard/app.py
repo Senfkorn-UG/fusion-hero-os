@@ -407,6 +407,12 @@ async def startup_event():
         mg = mem_guard.relieve_once()
         print(f"[RAM] Memory-Guard: {mg.get('action')} | {mg.get('ram', {}).get('util_pct')}%")
         mem_guard.start_background()
+    vram_prio = get_vram_prioritizer()
+    if vram_prio and os.getenv("FUSION_VRAM_PRIORITIZER_AUTO", "1") == "1":
+        vp = vram_prio.prioritize_once()
+        b, a = vp.get("before", {}), vp.get("after", {})
+        print(f"[VRAM] Prioritizer: {vp.get('action')} | "
+              f"{b.get('vram_used_mb', 0):.0f}MB -> {a.get('vram_used_mb', 0):.0f}MB")
     gpu_booster = get_gpu_compute_booster()
     if gpu_booster:
         if os.getenv("FUSION_GPU_COMPUTE_BOOSTER_AUTO", "1") == "1":
