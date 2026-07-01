@@ -164,6 +164,21 @@ class CPUAdaptiveTuner:
 
             self._apply_hyperthreading(ratio, workers)
 
+            if os.getenv("FUSION_RESOURCE_COUPLER_AUTO", "1").lower() in ("1", "true", "yes", "on"):
+                try:
+                    from resource_coupler import get_resource_coupler
+                    coupler = get_resource_coupler()
+                    if not coupler.state.running:
+                        snap_gpu = __import__(
+                            "gpu_memory_allocator", fromlist=["probe_gpu_memory"],
+                        ).probe_gpu_memory()
+                        if snap_gpu.system_ram_util_pct >= 80.0 or (
+                            temp_hot or load > self.load_high
+                        ):
+                            coupler.couple_once()
+                except Exception:
+                    pass
+
             prev_load = self.state.history[-1]["load_pct"] if self.state.history else load
             delta = abs(load - prev_load)
             if delta >= 15:

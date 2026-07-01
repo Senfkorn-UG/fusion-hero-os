@@ -60,6 +60,12 @@ except Exception:
     def get_cpu_tuner():
         return None
 
+try:
+    from core.resource_coupler import get_resource_coupler
+except Exception:
+    def get_resource_coupler():
+        return None
+
 AGENT_STATE = {
     "loaded": False,
     "supervisor": None,
@@ -141,6 +147,13 @@ class AutoLoader:
         # Hyperthreading
         if ht:
             self.register("hyperthreading", lambda: ht.enable(True), "performance")
+
+        # CPU+GPU+SSD Resource Coupler
+        try:
+            from core.resource_coupler import get_resource_coupler
+            self.register("resource_coupler", lambda: get_resource_coupler().couple_once(), "performance")
+        except Exception:
+            pass
 
         # Agents (from heroic_orchestration)
         self.register("agents", lambda: _ensure_agents(), "orchestration")
@@ -342,6 +355,15 @@ async def startup_event():
               f"Last={snap.get('load_pct')}% Temp={snap.get('temp_c')}°C "
               f"Ratio={result.get('tuning', {}).get('ratio')}")
         cpu_tuner.start_background()
+    coupler = get_resource_coupler()
+    if coupler:
+        cresult = coupler.couple_once()
+        mem = cresult.get("memory", {}).get("system_ram", {})
+        vram = cresult.get("memory", {}).get("dedicated_vram", {})
+        print(f"[Coupler] CPU+GPU+SSD: {cresult.get('action')} | "
+              f"RAM={mem.get('util_pct')}% VRAM={vram.get('util_pct')}% "
+              f"GPU-Layer={cresult.get('tuning', {}).get('llama_gpu_layers')}")
+        coupler.start_background()
     print("[ALTE_Frau_95g] Heroic Core Dashboard gestartet")
     print(f"  AutoLoad Status: {autoloader.status()}")
     print(f"  Input-Faktoren: CPUs={INPUT_FACTORS.get('logical_cpus')}, HT={INPUT_FACTORS.get('hyperthreading_env')}")
@@ -471,6 +493,10 @@ async def api_health(light: bool = False):
         "agents": agent_info,
         "input_factors": get_input_factors(),
         "output_factors": get_output_factors(),
+        "resource_coupler": (
+            get_resource_coupler().status().get("coupler")
+            if get_resource_coupler() else {"enabled": False}
+        ),
     }
 
 # === Agent state and helpers (for auto load/assign) ===
@@ -643,3 +669,19 @@ async def api_cpu_tuner_run():
     if not tuner:
         return {"error": "cpu_tuner_unavailable"}
     return tuner.tune_once()
+
+
+@app.get("/api/resource/coupler/status")
+async def api_resource_coupler_status():
+    coupler = get_resource_coupler()
+    if not coupler:
+        return {"error": "resource_coupler_unavailable"}
+    return coupler.status()
+
+
+@app.post("/api/resource/coupler/run")
+async def api_resource_coupler_run():
+    coupler = get_resource_coupler()
+    if not coupler:
+        return {"error": "resource_coupler_unavailable"}
+    return coupler.couple_once()

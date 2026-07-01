@@ -21,3 +21,10 @@ Thumbs.db
 # Vite
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
+
+# Python
+__pycache__/
+*.py[cod]
+*.gguf
+03_Code/internal_llm/models/
+03_Code/internal_llm/output/

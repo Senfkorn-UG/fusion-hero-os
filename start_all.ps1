@@ -132,6 +132,16 @@ try {
     Write-Host " FALLBACK" -ForegroundColor Yellow
 }
 
+Write-Host "[Coupler] CPU+GPU+SSD gekoppelt..." -NoNewline
+try {
+    $rc = Invoke-RestMethod -Uri "$GuiUrl/api/resource/coupler/run" -Method POST -TimeoutSec 15
+    $ram = $rc.memory.system_ram.util_pct
+    $vram = $rc.memory.dedicated_vram.util_pct
+    Write-Host " OK ($($rc.action) | RAM=$ram% VRAM=$vram%)" -ForegroundColor Green
+} catch {
+    Write-Host " FALLBACK" -ForegroundColor Yellow
+}
+
 Write-Host "[Meta] Windows-Substrat + Meta-Layer attach..." -NoNewline
 try {
     $ml = Invoke-RestMethod -Uri "$GuiUrl/api/meta-layer/attach" -Method POST -TimeoutSec 10
