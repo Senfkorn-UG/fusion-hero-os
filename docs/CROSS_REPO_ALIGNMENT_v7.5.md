@@ -3,6 +3,14 @@
 **Date**: 2026-07-01  
 **Between**: `95guknow/fusion-hero-os` (Fusion-Hero-OS v7.5 Master Unified) and `tz-dev/PMS-RUST` (PMS Evidence Spine v0.1)
 
+> **Ehrlicher Status (2026-07-02):** Dieses Dokument beschreibt ein
+> Alignment auf KONZEPT-Ebene. In diesem Repo ist von PMS-RUST nichts
+> integriert (kein Code, kein Submodule, keine `PMS.yaml`), und
+> "hyper-threading" bezeichnet die Simulations-Variante
+> (`VirtualGPUHTCache`) — Details in `docs/01_vision/V8_STATUS_REPORT.md`.
+> Hinweis: Es existiert eine abweichende Kopie unter
+> `docs/03_integration/CROSS_REPO_ALIGNMENT_v7.5.md`.
+
 ## Summary
 
 The two primary repositories have been aligned at the architectural level:

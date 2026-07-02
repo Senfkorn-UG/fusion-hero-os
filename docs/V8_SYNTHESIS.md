@@ -1,8 +1,14 @@
 # Fusion-Hero-OS v8 – Finale Synthese
 
-**Version:** v8 (Konsolidierung)  
-**Datum:** 2026-07-01  
+**Version:** v8 (Konsolidierung)
+**Datum:** 2026-07-01 (Code-Honesty-Korrektur: 2026-07-02)
 **Ziel:** Einheitliche, kohärente Gesamtsicht aller bisherigen Arbeiten unter einem klaren Modell
+
+> **Ehrlicher Status:** Der kanonische, korrigierte Status-Stand liegt in
+> `docs/01_vision/V8_SYNTHESIS.md` und `docs/01_vision/V8_STATUS_REPORT.md`.
+> Dieses Dokument beschreibt das ZIELMODELL der Synthese; die als "Kern"
+> gelisteten technischen Elemente sind teilweise nicht implementiert
+> (Kennzeichnungen unten je Punkt).
 
 ---
 
@@ -19,12 +25,12 @@ Folgende Repositories und Versionen wurden zusammengeführt:
 
 ## 2. Was in v8 übernommen wird (Kern)
 
-### Technischer Kern (aus fusion-hero-os v7.5)
-- MasterSeed als Layer-0 Banach-Fixpunkt mit Strict Contraction
-- Hyper-Threading als natives Ausführungsmodell
-- PMS Evidence Spine als **native praxeologische Execution Layer**
-- Operator Catalog (validierte Δ–Ψ Chains)
-- PeerReview (5/6 Dimensions), SelfModify, EfficiencyDistillation, QUBO
+### Technischer Kern (aus fusion-hero-os v7.5) — Zielmodell, Ist-Stand je Punkt gekennzeichnet
+- MasterSeed als Layer-0 Banach-Fixpunkt mit Strict Contraction *(Ist: Konzept; `verify_integrity()` ist ein Stub, liefert immer True)*
+- Hyper-Threading als Ausführungsmodell *(Ist: `VirtualGPUHTCache` ist selbst-dokumentierte Simulation, nicht "nativ"; echte verifizierte Mehrkern-Parallelisierung existiert separat in `engine/mainframe.py`)*
+- PMS Evidence Spine als praxeologische Execution Layer *(Ist: NICHT implementiert — kein Kernel-Binary, keine `PMS.yaml`; jeder Aufruf endet FAIL_CLOSED)*
+- Operator Catalog *(Ist: unvalidierter Konzeptkatalog — kein Validator existiert; siehe `docs/04_execution/PMS_OPERATOR_CATALOG_v7.5.md`)*
+- PeerReview (5/6 Dimensions), SelfModify, EfficiencyDistillation, QUBO *(Ist: PeerReview/QUBO haben echten Code; SelfModify ist Hook-Registry-Stub)*
 
 ### Philosophisch-Narrative Schicht (aus heroic-fusion-os-manifest)
 - Mythos – Grund – Beweis als übergreifende Struktur
@@ -33,10 +39,10 @@ Folgende Repositories und Versionen wurden zusammengeführt:
 - Die sieben Gesetze als Verfassung
 - q b ∘ als zentraler ontologischer Operator
 
-### Execution & Validierung (aus PMS-RUST)
-- Deterministischer Kernel mit `PMS.yaml` Validierung
-- JSONL-Auditierbarkeit
-- Fail-Closed AI-Bridge Prinzip
+### Execution & Validierung (aus PMS-RUST) — geplant, NICHT integriert
+- Deterministischer Kernel mit `PMS.yaml` Validierung *(weder Kernel noch `PMS.yaml` existieren in diesem Repo)*
+- JSONL-Auditierbarkeit *(geplant)*
+- Fail-Closed AI-Bridge Prinzip *(dieses Prinzip ist im Orchestrator real umgesetzt und verifiziert)*
 
 ---
 
@@ -50,11 +56,15 @@ Folgende Repositories und Versionen wurden zusammengeführt:
 
 ## 4. Architektur-Modell v8
 
+*(Zielmodell — der Ist-Stand je Layer ist in Abschnitt 2 gekennzeichnet;
+Layer 4 existiert nicht als lauffähige Komponente, Layer 3 "Hyper-Threading"
+ist die Simulations-Variante.)*
+
 ```
 Layer 6 ω – Master Archive & Governance
 Layer 5 – Phoenix-Mode + Co-Evolutionary Closure
-Layer 4 – PMS Evidence Spine (native Execution)
-Layer 3 – Hyper-Threading + PeerReview + EfficiencyDistillation
+Layer 4 – PMS Evidence Spine (Execution)        [ZIEL: nicht integriert]
+Layer 3 – Hyper-Threading + PeerReview + EfficiencyDistillation  [HT = Simulation]
 Layer 2 – SelfModifyCore + LiveProcessTracking
 Layer 1 – Unified Modules (alte_frau_95g, mainframe_laden...)
 Layer 0 – MasterSeed (unveränderlicher Fixpunkt)

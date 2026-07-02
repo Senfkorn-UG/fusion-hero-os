@@ -86,7 +86,7 @@ Bewertungen wie "sauber", "professionell", "konsistent" sind redaktionelle Einsc
 - Weitere `.ps1` / `.bat` Skripte können noch auf v8 gebracht werden.
 - `modules/` kann mit echtem Inhalt ausgebaut werden (aktuell Platzhalter).
 - `05_reference/` und `99_archive/` sind noch teilweise leer.
-- Drei divergente Kopien von `PMS_OPERATOR_CATALOG_v7.5.md` existierten und sollten konsolidiert werden.
+- Drei divergente Kopien von `PMS_OPERATOR_CATALOG_v7.5.md` existierten; am 2026-07-02 konsolidiert: kanonische Fassung in `docs/04_execution/PMS_OPERATOR_CATALOG_v7.5.md` (als unvalidierter Konzeptkatalog gekennzeichnet), `docs/` und `docs/99_archive/` sind Redirect-Stubs.
 
 ---
 

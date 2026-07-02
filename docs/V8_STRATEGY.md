@@ -13,7 +13,7 @@ v8 ist keine inkrementelle Weiterentwicklung von v7.5, sondern eine **strukturel
 - `fusion-hero-os` wird zum einzigen aktiven Entwicklungs-Repository.
 - `heroic-fusion-os-manifest` dient als **stilistisches und philosophisches Vorbild** (besonders für README und übergreifende Narrative).
 - Alle anderen Repos unter `95guknow` gelten als **Legacy-, Ideen- oder Experiment-Quellen**.
-- Der technische Kern (MasterSeed, Hyper-Threading, PMS Evidence Spine, Operator Chains) bleibt erhalten und wird weiter ausgebaut.
+- Die technischen Kern-Konzepte (MasterSeed, Hyper-Threading, PMS Evidence Spine, Operator Chains) bleiben als Zielarchitektur erhalten und werden weiter ausgebaut. *(Ehrlicher Ist-Stand 2026-07-02: MasterSeed-Integritätsprüfung ist ein Stub, Hyper-Threading ist eine Simulation, PMS Evidence Spine ist nicht implementiert, der Operator Catalog ist unvalidiert — Details in `docs/01_vision/V8_STATUS_REPORT.md`.)*
 
 ---
 
@@ -56,7 +56,7 @@ Alte Feature-Branches nach `archive/` verschieben und `main` sauber auf v7.5 + v
 
 - `docs/` wird zum zentralen Ort für alle wichtigen Dokumente (Operator Catalog, Alignment-Dokumente, Strategie, v8-Synthese).
 - Das README von `fusion-hero-os` wird im Stil von `heroic-fusion-os-manifest` neu geschrieben (Mythos – Grund – Beweis Struktur + technische Präzision).
-- Technische Tiefe (MasterSeed, Hyper-Threading, PMS, QUBO, PeerReview) bleibt erhalten.
+- Technische Tiefe (MasterSeed, Hyper-Threading, PMS, QUBO, PeerReview) bleibt als Themenspektrum erhalten. *(Ist-Stand je Komponente: siehe `docs/01_vision/V8_STATUS_REPORT.md` — QUBO/PeerReview haben echten Code, PMS ist nicht implementiert, Hyper-Threading ist Simulation.)*
 - Philosophische und narrative Elemente aus dem Manifest werden integriert.
 
 ---
