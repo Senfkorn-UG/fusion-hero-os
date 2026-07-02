@@ -13,30 +13,66 @@ from core.agent_control import status, pre_dispatch, verify_text
 from core.heroic_orchestration import create_classified_task
 
 
-def main():
+def test_status_enabled():
     s = status()
     assert s["enabled"], "control should be enabled"
-    print("status OK:", s["strategies"], s["modules"])
 
+
+def test_pre_dispatch_good_query_passes():
     t1 = {"query": "[model] Test query mit Geltung", "dom": "Info", "geltung": "model", "id": 1}
     r1 = pre_dispatch(t1)
     assert r1.passed, "good query should pass"
-    print("pre good OK")
 
+
+def test_pre_dispatch_bad_query_blocked():
     t2 = {"query": "ohne kategorie", "dom": "General", "id": 2}
     r2 = pre_dispatch(t2)
     assert r2.blocked, "bad query should be blocked (fail-closed)"
-    print("pre bad blocked OK:", r2.reason)
 
+
+def test_classified_task_has_control_pre():
     task = create_classified_task("[cond] QUBO Optimierung test")
     assert task.get("control_pre"), "task should have control_pre"
-    print("classified task OK:", task.get("assigned_agent"))
 
-    v = verify_text(
-        "[model] Antwort mit Empfehlung und Risiko-Hinweis.",
-        {"dom": "Phil", "geltung": "model"},
+
+def test_verify_text_passes_well_formed_review():
+    """Ein Text, der wirklich >=4/5 PeerReview-Dimensionen trifft, muss passieren."""
+    text = (
+        "Laut Quelle X folgt daher die Kernaussage. Jedoch waere alternativ auch Y denkbar. "
+        "Als Handlungsempfehlung ergibt sich der naechste Schritt. Es bestehen noch offene Risiken."
     )
-    print("verify passed:", v["passed"])
+    v = verify_text(text, {"dom": "Phil", "geltung": "model"})
+    assert v["passed"], f"gut formulierter Text sollte PeerReview bestehen: {v}"
+
+
+def test_verify_text_fails_underspecified_text():
+    """Fail-closed-Beleg: ein Text mit nur 2/5 Dimensionen wird korrekt abgelehnt.
+
+    (Frueher wurde dieses Ergebnis nur geprintet, nie assertiert - die
+    urspruengliche Beispielformulierung erfuellt die PeerReview-Schwelle
+    (>=4/5) nie, unabhaengig vom Code; das ist korrektes Fail-Closed-Verhalten,
+    kein Bug.)
+    """
+    text = "[model] Antwort mit Empfehlung und Risiko-Hinweis."
+    v = verify_text(text, {"dom": "Phil", "geltung": "model"})
+    assert not v["passed"], "unterspezifizierter Text sollte NICHT bestehen (fail-closed)"
+    peer_review = next(s for s in v["post"]["strategies"] if s["strategy"] == "peer_review")
+    assert peer_review["details"]["score"] < 4
+
+
+def main():
+    test_status_enabled()
+    print("status OK")
+    test_pre_dispatch_good_query_passes()
+    print("pre good OK")
+    test_pre_dispatch_bad_query_blocked()
+    print("pre bad blocked OK")
+    test_classified_task_has_control_pre()
+    print("classified task OK")
+    test_verify_text_passes_well_formed_review()
+    print("verify (gut formuliert) passed OK")
+    test_verify_text_fails_underspecified_text()
+    print("verify (unterspezifiziert) korrekt abgelehnt OK")
     print("ALL TESTS PASSED")
 
 

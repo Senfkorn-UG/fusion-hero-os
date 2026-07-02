@@ -3,15 +3,20 @@
 FUSION HERO OS v8 - HEROIC CORE ORCHESTRATOR
 
 Ebene: Layer 0 bis Layer 5 Integration
-Status: Finale Synthese (Fail-Closed, Deterministisch)
+Status: Architektur-Geruest (Fail-Closed real, Deterministisch NICHT implementiert)
 
-Dieses Modul implementiert den zentralen Orchestrator des Fusion-Hero-OS.
-Es verbindet:
-- Layer 0: MasterSeed (unveränderlicher Banach-Fixpunkt)
-- Layer 4: PMS Evidence Spine (deterministischer Rust-Kernel)
-- Layer 5: QuadCoreBridge (Fail-Closed AI Bridge + Phoenix-Mode)
+Dieses Modul definiert das Architektur-Geruest fuer:
+- Layer 0: MasterSeed (Banach-Fixpunkt-KONZEPT; verify_integrity() ist ein
+  Stub und liefert immer True - keine echte Pruefung)
+- Layer 4: PMS Evidence Spine (SOLL einen deterministischen Rust-Kernel
+  kapseln; das Kernel-Binary './pms_rust_kernel' existiert nicht im Repo,
+  jeder echte Aufruf endet in FAIL_CLOSED)
+- Layer 5: QuadCoreBridge (Fail-Closed ist real und verifiziert; Phoenix-Mode
+  ist aktuell nur Logging, kein echter State-Reset)
 
-Integration mit heroic_math_engine.py (Layer 1-3 mathematische Fundierung).
+Details und ehrlicher Status: docs/02_architecture/HEROIC_CORE_ORCHESTRATOR.md
+Integration mit heroic_math_engine.py (mathematische Bausteine, siehe dort
+fuer den ehrlichen Stand von Knoten 1/16/19; Knoten 17/20 nicht implementiert).
 """
 
 import json
@@ -35,9 +40,16 @@ class MasterSeed:
     strict_contraction_enforced: bool = True
 
     def verify_integrity(self, current_state_hash: str) -> bool:
-        """Sichert ab, dass das System nicht in den divergenten Raum abdriftet."""
-        # Im realen Einsatz: Distanzfunktion d(D(x), D(y)) <= lambda * d(x,y)
-        return True 
+        """PLATZHALTER-STUB - noch NICHT implementiert.
+
+        Soll perspektivisch pruefen, dass das System nicht in den divergenten
+        Raum abdriftet (Banach-Fixpunkt-Distanzfunktion d(D(x), D(y)) <=
+        lambda * d(x,y)). Aktuell liefert diese Methode IMMER True, unabhaengig
+        vom uebergebenen current_state_hash - es findet keine echte Pruefung
+        statt. Nicht als Sicherheitsgarantie verwenden, bis die Distanzfunktion
+        tatsaechlich implementiert ist.
+        """
+        return True
 
 
 # =====================================================================
@@ -46,8 +58,12 @@ class MasterSeed:
 
 class PMSEvidenceSpine:
     """
-    Kapselt den deterministischen Rust-Kernel (tz-dev/PMS-RUST).
-    Verarbeitet validierte Δ-Ψ Chains.
+    SOLL den deterministischen Rust-Kernel (tz-dev/PMS-RUST) kapseln und
+    validierte Δ-Ψ Chains verarbeiten. AKTUELL NICHT VORHANDEN: das Kernel-
+    Binary existiert nirgends im Repo (kein Submodule, keine PMS.yaml). Jeder
+    reale Aufruf von execute_operator_chain() endet daher in FAIL_CLOSED -
+    das Fail-Closed-Verhalten selbst funktioniert, der dahinterliegende
+    Kernel nicht.
     """
     def __init__(self, executable_path: str = "./pms_rust_kernel"):
         self.kernel_path = executable_path
@@ -85,14 +101,19 @@ class QuadCoreBridge:
 
     def invoke_phoenix_mode(self) -> None:
         """
-        Aktiviert den Phoenix-Mode als Resilienz-Mechanismus.
-        Setzt flüchtige State-Vektoren zurück auf den MasterSeed-Schatten.
+        Schaltet den Modus auf 'PHOENIX' und loggt den Vorgang.
+
+        PLATZHALTER: setzt aktuell KEINE echten State-Vektoren zurueck - es
+        gibt keinen fluechtigen Zustand, der hier tatsaechlich geleert wird.
+        Als benannter Anknuepfungspunkt fuer ein zukuenftiges Resilienz-
+        Feature zu verstehen, nicht als bereits wirksamen Mechanismus.
         """
-        print("[LAYER 5] Phoenix-Mode aktiviert: Säubere latenten Zustand...")
+        print("[LAYER 5] Phoenix-Mode aktiviert: Saeubere latenten Zustand...")
         self.mode = "PHOENIX"
         self._flush_volatile_memory()
 
     def _flush_volatile_memory(self):
+        """PLATZHALTER: reine Log-Ausgabe, kein tatsaechliches Zustands-Reset."""
         print("[LAYER 5] Flüchtiger Speicher geleert. System kongruent.")
 
     def process_query(self, domain: str, operator_id: str, payload: Dict[str, Any]) -> Any:
