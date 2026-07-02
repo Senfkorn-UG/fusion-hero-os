@@ -44,3 +44,10 @@ Archiv_*.zip
 
 # Leerer Platzhalter
 asd.md
+
+# LLM-Modelle & Trainingsdaten
+*.gguf
+03_Code/internal_llm/models/
+03_Code/internal_llm/output/
+03_Code/internal_llm/data.jsonl
+.fusion/
