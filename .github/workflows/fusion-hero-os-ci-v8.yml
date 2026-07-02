@@ -2,9 +2,14 @@ name: Fusion-Hero-OS CI v8
 
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main
+      - develop
+      - 'feature/**'
   pull_request:
-    branches: [ main ]
+    branches:
+      - main
+      - develop
 
 jobs:
   ci:
@@ -34,3 +39,14 @@ jobs:
     - name: Check import of core modules
       run: |
         python -c "import core; print('Core modules importable')"
+
+    - name: Branch-aware status
+      run: |
+        echo "CI running on branch: ${{ github.ref_name }}"
+        if [[ "${{ github.ref_name }}" == "main" ]]; then
+          echo "Full production checks on stable main"
+        elif [[ "${{ github.ref_name }}" == "develop" ]]; then
+          echo "Full integration checks on develop"
+        else
+          echo "Feature branch checks (lighter)"
+        fi
