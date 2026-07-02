@@ -1,20 +1,31 @@
-# Fusion-Hero-OS v8
+# fusion-hero-os
 
-**Status:** v8 (Konsolidiert & Repariert)  
-**Hyper-Threading:** Native  
-**Mathematische Fundierung:** Heroic Math Engine (Knoten 16–20 repariert)
+**ALTE_Frau_95g Heroic Core v8 – Fusion Hero OS + Full Native Hyperthreading**
 
----
+Ein selbst-modifizierendes, heroic Framework für Rekonstruktivistischen Eudaimonismus und maximale intellektuelle Präzision.
 
-`fusion-hero-os` ist das primäre Repository für das **Unified ALTE_Frau_95g Heroic Core**.
+## Aktueller Stand
+- Version: v8 (Fusion Hero OS + Full Native Hyperthreading + OptimizerInsights Consolidation)
+- MasterSeed: M_0''''
+- Struktur: Verbessert (siehe docs/v8/PROJECT_STRUCTURE_v8.md)
+- Branches: Neu geordnet (siehe docs/v8/BRANCH_STRATEGY_v8.md)
 
-Es vereint eine klare Top-Down-Architektur mit mathematischer Strenge.
+## Branch Model (kurz)
+- **main** → Stabile v8-Releases (protected)
+- **develop** → Aktive Integration (wird angelegt)
+- **feature/*** → Kurzlebige Aufgaben-Branches
+- Historie → Tags + archive/-Ordner
 
-## Aktuelle Highlights (v8)
+Weitere Details: docs/v8/BRANCH_STRATEGY_v8.md
 
-- Neue Top-Down-Dokumentationsstruktur (`01_vision/` bis `99_archive/`)
-- `core/heroic_math_engine.py` – Reparierte mathematische Kernkomponenten
-- Core-Python-Module auf v8 aktualisiert
-- `modules/` neu strukturiert
+## Schnellstart
+```bash
+git clone https://github.com/95guknow/fusion-hero-os.git
+cd fusion-hero-os
+# Aktueller Stand auf main (v8 stable)
+```
 
-Siehe `docs/OVERVIEW.md` für die vollständige Struktur.
+## Core
+Der unified ALTE_Frau_95g Heroic Core wird automatisch top-down geladen.
+
+**Identity Preservation Score: 100**
