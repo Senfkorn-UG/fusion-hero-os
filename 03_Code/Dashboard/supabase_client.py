@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
-"""Supabase-Integration für das ALTE_Frau_95g Dashboard (FastAPI Backend).
+"""Supabase-Integration für das ALTE_Frau_95g / Fusion Hero OS Dashboard (FastAPI Backend).
 
 Liest die Client-Konfiguration aus Umgebungsvariablen (.env) und stellt einen
 lazy-initialisierten Supabase-Client bereit. Alle Fehler werden defensiv
 behandelt, damit das Dashboard auch ohne erreichbares Supabase startet
 (konsistent mit den optionalen Imports in app.py).
+
+Projekt: https://supabase.com/dashboard/project/swmmoxhdzarmoupyssqe
 
 Status-Reporting ist bewusst ehrlich gehalten und unterscheidet:
   - configured         : .env-Variablen vorhanden?
@@ -31,10 +33,23 @@ try:
 except Exception:
     pass
 
-SUPABASE_URL = os.getenv("PUBLIC_SUPABASE_URL", "").strip()
-SUPABASE_KEY = os.getenv("PUBLIC_SUPABASE_PUBLISHABLE_KEY", "").strip()
+
+def _env(*names: str, default: str = "") -> str:
+    """Liest die erste gesetzte Variable aus mehreren möglichen Namen (Alias-Support)."""
+    for name in names:
+        value = os.getenv(name, "").strip()
+        if value:
+            return value
+    return default
+
 
 # --- supabase-Paket optional importieren ------------------------------------
+SUPABASE_URL = _env("SUPABASE_URL", "PUBLIC_SUPABASE_URL")
+SUPABASE_KEY = _env("SUPABASE_PUBLISHABLE_KEY", "PUBLIC_SUPABASE_PUBLISHABLE_KEY")
+SUPABASE_SECRET_KEY = _env("SUPABASE_SECRET_KEY")
+SUPABASE_JWKS_URL = _env("SUPABASE_JWKS_URL")
+SUPABASE_PROJECT_REF = _env("SUPABASE_PROJECT_REF", "PUBLIC_SUPABASE_PROJECT_REF", default="swmmoxhdzarmoupyssqe")
+
 try:
     from supabase import Client, create_client  # type: ignore
     import supabase as _supabase_pkg
@@ -54,7 +69,7 @@ _client_error: str = ""
 
 
 def is_configured() -> bool:
-    """True, wenn URL und Key aus der .env vorhanden sind."""
+    """True, wenn URL und Key aus der .env vorhanden sind (beide Namensvarianten)."""
     return bool(SUPABASE_URL and SUPABASE_KEY)
 
 
@@ -71,7 +86,7 @@ def get_client() -> "Optional[Client]":
         _client_error = f"supabase package not available: {_IMPORT_ERROR}"
         return None
     if not is_configured():
-        _client_error = "missing PUBLIC_SUPABASE_URL / PUBLIC_SUPABASE_PUBLISHABLE_KEY"
+        _client_error = "missing SUPABASE_URL/PUBLIC_SUPABASE_URL oder SUPABASE_PUBLISHABLE_KEY/PUBLIC_SUPABASE_PUBLISHABLE_KEY"
         return None
     try:
         _client = create_client(SUPABASE_URL, SUPABASE_KEY)
@@ -102,6 +117,7 @@ def probe(timeout: float = 4.0) -> Dict[str, Any]:
         "http_status": None,
         "latency_ms": None,
         "error": None,
+        "project_ref": SUPABASE_PROJECT_REF,
     }
     if not is_configured():
         result["error"] = "not configured"
@@ -135,6 +151,10 @@ def status(do_probe: bool = False, timeout: float = 4.0) -> Dict[str, Any]:
         "package_available": _PACKAGE_AVAILABLE,
         "package_version": _SUPABASE_VERSION,
         "url": SUPABASE_URL or None,
+        "jwks_url": SUPABASE_JWKS_URL or None,
+        "secret_key_configured": bool(SUPABASE_SECRET_KEY),
+        "project_ref": SUPABASE_PROJECT_REF,
+        "dashboard_url": f"https://supabase.com/dashboard/project/{SUPABASE_PROJECT_REF}",
         "client_initialized": client is not None,
         "error": _client_error or None,
     }

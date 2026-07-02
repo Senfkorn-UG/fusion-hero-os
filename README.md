@@ -1,42 +1,20 @@
-# sv
+# Fusion-Hero-OS v8
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+**Status:** v8 (Konsolidiert & Repariert)  
+**Hyper-Threading:** Native  
+**Mathematische Fundierung:** Heroic Math Engine (Knoten 16–20 repariert)
 
-## Creating a project
+---
 
-If you're seeing this, you've probably already done this step. Congrats!
+`fusion-hero-os` ist das primäre Repository für das **Unified ALTE_Frau_95g Heroic Core**.
 
-```sh
-# create a new project
-npx sv create my-app
-```
+Es vereint eine klare Top-Down-Architektur mit mathematischer Strenge.
 
-To recreate this project with the same configuration:
+## Aktuelle Highlights (v8)
 
-```sh
-# recreate this project
-npx sv@0.16.1 create --template minimal --types jsdoc --no-install .
-```
+- Neue Top-Down-Dokumentationsstruktur (`01_vision/` bis `99_archive/`)
+- `core/heroic_math_engine.py` – Reparierte mathematische Kernkomponenten
+- Core-Python-Module auf v8 aktualisiert
+- `modules/` neu strukturiert
 
-## Developing
-
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
-
-```sh
-npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
-
-## Building
-
-To create a production version of your app:
-
-```sh
-npm run build
-```
-
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+Siehe `docs/OVERVIEW.md` für die vollständige Struktur.

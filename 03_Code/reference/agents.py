@@ -422,6 +422,23 @@ class Agent:
                 task.result = self.executor(self, task)
             except Exception as exc:  # Executor-Fehler werden als Ergebnis vermerkt.
                 task.result = {"error": repr(exc)}
+
+            # Globale Kontrollfunktion (Post-Check via MessageBus-Alternative)
+            if os.getenv("FUSION_AGENT_CONTROL", "1") == "1":
+                try:
+                    import sys as _sys
+                    _core = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "core"))
+                    if _core not in _sys.path:
+                        _sys.path.insert(0, _core)
+                    from agent_control import post_dispatch  # type: ignore
+                    payload = task.payload if isinstance(task.payload, dict) else {}
+                    ctrl_task = dict(payload)
+                    ctrl_task["assigned_agent"] = self.name
+                    ctrl_task["task_id"] = task.task_id
+                    post_dispatch(ctrl_task, task.result)
+                except Exception:
+                    pass
+
             task.done = True
             self.tasks_done += 1
             self.state = "running"
@@ -491,6 +508,7 @@ class Supervisor(Agent):
         self.fires = 0
         self.peak_workforce = 0
         self._idle_rounds = 0
+        self._hired_ids: set[str] = set()
 
     # ---- Hilfen -------------------------------------------------------
 
@@ -502,6 +520,7 @@ class Supervisor(Agent):
             work_seconds=self.worker_work_seconds,
         )
         self.hires += 1
+        self._hired_ids.add(worker.id)
         return worker
 
     def _fire_one_idle(self) -> bool:
@@ -639,12 +658,14 @@ class Supervisor(Agent):
 
     def report(self) -> Dict[str, Any]:
         """Erstellt den Abschlussreport (Tasks done, Peak-Belegschaft, Hires, Fires)."""
-        # Tasks done summieren wir aus dem letzten bekannten Status der (ehemaligen) Worker.
+        # Tasks done summieren wir aus dem letzten bekannten Status der (ehemaligen)
+        # Worker - aber nur fuer die von DIESEM Supervisor angestellten Worker.
+        # Sonst zaehlt ein wiederverwendeter Bus die Zahlen frueherer Laeufe mit.
         statuses = self.bus.all_status()
         worker_done = sum(
             int(s.get("tasks_done", 0))
             for aid, s in statuses.items()
-            if s.get("role") == "worker"
+            if aid in self._hired_ids
         )
         return {
             "tasks_done": worker_done,

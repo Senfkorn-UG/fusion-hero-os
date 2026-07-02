@@ -13,5 +13,8 @@ numpy>=1.26
 # Konfiguration (.env laden)
 python-dotenv>=1.0
 
+# HTTP-Client
+httpx>=0.27
+
 # Supabase-Client (Backend-Integration)
 supabase>=2.31
