@@ -43,7 +43,7 @@ jobs:
       fail-fast: false
       matrix:
         python-version: ${{ fromJSON(needs.determine-matrix.outputs.python-versions) }}
-        check-level: [${{ needs.determine-matrix.outputs.check-level }}]
+        check-level: ${{ needs.determine-matrix.outputs.check-level }}
 
     steps:
     - uses: actions/checkout@v4
@@ -56,18 +56,34 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install numpy ruff
+        pip install -r requirements.txt -r requirements-dev.txt
 
     - name: Lint with Ruff
       run: |
         ruff check core/ 03_Code/reference/rest_api_server.py || true
 
-    - name: Full validation (main + develop only)
+    - name: Heroic Math Engine Verification
       if: matrix.check-level == 'full'
       run: |
-        python -m core.heroic_math_engine || true
-        python -c "import core; print('Core modules importable')" || true
+        python -m core.heroic_math_engine
+        # Real regression gate (post Code-Honesty-Fix).
+        # Asserts on Trivialfall-Reziprozität, Monotonie-Beispiel, Sweep-Verletzungsrate (5-60%).
+        # A genuine break now fails the job — no more smoke-test masking.
+
+    - name: Core Modules Import Check
+      run: |
+        python -c "import core; print('Core modules importable')"
+
+    - name: Run root pytest suite
+      if: matrix.check-level == 'full'
+      run: |
+        pytest tests/ -v
+        # Covers engine/orchestration/methodology packages + heroic_math_engine regression watcher.
+        # 03_Code/scripts/test_*.py deliberately excluded:
+        #   - require locally installed Llama model
+        #   - Windows-specific binary paths absent on generic CI runner
+        #   (environment prerequisite, not a code defect)
 
     - name: Status Report
       run: |
-        echo "Branch: ${{ github.ref_name }} | Python: ${{ matrix.python-version }} | Level: ${{ matrix.check-level }}"
+        echo "Branch: ${{ github.ref_name }} | Python: ${{ matrix.python-version }} | Level: ${{ matrix.check-level }} | SHA: ${{ github.sha }}"
