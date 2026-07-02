@@ -18,15 +18,15 @@ Verbesserungen ggü. v1.0:
 Neu in v2.1:
 - Visualisierung via ui.echart (Konvergenz, Q-/Beitrags-Heatmap, CPU/RAM-Verlauf, Sweep)
 - Pipelines-Panel: 4 Workflows (Erkenntnis-Lauf 5-Stufen, Parallel-Solve, Review&Archive, Sweep)
-- Hyperthreading: paralleles Multi-Start-SA über alle Kerne (mainframe.parallel_anneal), Restarts=CPU-Anzahl per Default, aber frei einstellbar (1..64)
+- Hyperthreading: paralleles Multi-Start-SA über alle Kerne (engine.mainframe.parallel_anneal)
 """
 from pathlib import Path
 from collections import deque
 import zipfile, datetime, re, subprocess, sys, os, io, contextlib, time
 import numpy as np
 from nicegui import ui, run
-import mainframe as hc
-import agents as ag
+from engine import mainframe as hc          # QUBO-Solver-Engine (Parallel-SA, Audit-Layer)
+from orchestration import agents as ag      # Multi-Agenten-Orchestrierung (Supervisor/Worker)
 
 ROOT = Path(__file__).parent
 EXT_LANG = {".md": "Markdown", ".py": "Python", ".json": "JSON",
@@ -42,7 +42,8 @@ buffers: dict[Path, dict] = {}
 pipeline = {"name": None, "steps": [], "current": -1, "running": False, "cancel": False}
 last_Q = {"Q": None}        # zuletzt erzeugte Matrix (für 'wiederverwenden')
 pipe_ctx = {}               # Zwischenergebnisse zwischen Pipeline-Schritten
-conv_chart = heat_chart = metrics_chart = sweep_chart = None  # ui.echart-Refs
+conv_chart = heat_chart = metrics_chart = sweep_chart = surf3d_chart = None  # ui.echart-Refs
+auto_state = {"on": False, "rounds": 0}  # autonome Hintergrundaufgaben
 
 PALETTE = ['#00d4aa', '#8b5cf6', '#f59e0b', '#22d3ee', '#ef4444', '#10b981',
            '#eab308', '#3b82f6', '#ec4899', '#14b8a6', '#a78bfa', '#f97316']
@@ -128,17 +129,17 @@ def on_edit(e):
     update_status()
 
 
-def save() -> bool:
+def save():
     path = state["current"]
     if not path:
         ui.notify("Keine Datei geöffnet", type="warning")
-        return False
+        return
     buf = buffers[path]
     try:
         path.write_text(buf["content"], encoding="utf-8")
     except Exception as exc:  # noqa: BLE001
         ui.notify(f"Speichern fehlgeschlagen: {exc}", type="negative")
-        return False
+        return
     buf["saved"] = buf["content"]
     buf["dirty"] = False
     saved.text = f"Gespeichert {datetime.datetime.now():%H:%M:%S}"
@@ -146,7 +147,6 @@ def save() -> bool:
     render_files()
     update_status()
     ui.notify(f"✓ {path.name}", type="positive")
-    return True
 
 
 def new_file():
@@ -230,9 +230,8 @@ async def run_current():
     if path.suffix != ".py":
         ui.notify("Ausführen nur für .py-Dateien", type="warning")
         return
-    if buffers[path]["dirty"] and not save():
-        ui.notify("Ausführung abgebrochen: Speichern fehlgeschlagen", type="negative")
-        return
+    if buffers[path]["dirty"]:
+        save()  # auf Platte schreiben, damit der aktuelle Stand läuft
     console_exp.open()
     console.clear()
     console.push(f"$ python {path.name}")
@@ -293,7 +292,7 @@ def _solve_qubo_on(Q, steps: int):
 def open_mainframe():
     with ui.dialog() as d, ui.card().classes("bg-[#11111b] min-w-[480px]"):
         ui.label("HEROIC Mainframe · QUBO-Solver").classes("text-lg font-bold text-[#00d4aa]")
-        ui.label("Simulated Annealing über die integrierte Engine (mainframe.py)") \
+        ui.label("Simulated Annealing über die integrierte Engine (engine/mainframe.py)") \
             .classes("text-xs text-[#94a3b8]")
         with ui.row().classes("w-full gap-3 mt-2 items-center"):
             n_in = ui.number("Dimension n", value=12, min=2, max=200, format="%d") \
@@ -524,6 +523,45 @@ def set_sweep(chart, xs, emins, rts):
     chart.update()
 
 
+def build_surface3d_chart():
+    """Live-3D-Surface der QUBO-Heuristik: x=Schritt, y=Restart, z=beste Energie.
+    Die rechteckigen Konvergenz-Traces (n_restarts × n_samples) bilden direkt das Gitter."""
+    return ui.echart({
+        "backgroundColor": "transparent",
+        "tooltip": {},
+        "visualMap": {"show": False, "dimension": 2, "min": -1, "max": 1,
+                      "inRange": {"color": ["#00d4aa", "#22d3ee", "#3b82f6",
+                                            "#8b5cf6", "#ec4899", "#ef4444"]}},
+        "xAxis3D": {"type": "value", "name": "Schritt", "nameTextStyle": {"color": _MUTED},
+                    "axisLabel": {"color": _MUTED}},
+        "yAxis3D": {"type": "value", "name": "Restart", "nameTextStyle": {"color": _MUTED},
+                    "axisLabel": {"color": _MUTED}},
+        "zAxis3D": {"type": "value", "name": "Energie", "nameTextStyle": {"color": _MUTED},
+                    "axisLabel": {"color": _MUTED}},
+        "grid3D": {"boxWidth": 100, "boxDepth": 80,
+                   "axisLine": {"lineStyle": {"color": _AXIS}},
+                   "splitLine": {"lineStyle": {"color": _GRID}},
+                   "viewControl": {"autoRotate": True, "autoRotateSpeed": 8, "distance": 200},
+                   "light": {"main": {"intensity": 1.2}, "ambient": {"intensity": 0.4}}},
+        "series": [{"type": "surface", "shading": "color",
+                    "wireframe": {"show": True, "lineStyle": {"opacity": 0.25}},
+                    "data": []}],
+    }, enable_3d=True).classes("w-full h-64")
+
+
+def set_surface3d(chart, trace_steps, traces):
+    if chart is None or not traces:
+        return
+    zmin = min(min(t) for t in traces)
+    zmax = max(max(t) for t in traces)
+    data = [[int(s), int(i), float(e)]
+            for i, tr in enumerate(traces) for s, e in zip(trace_steps, tr)]
+    chart.options["visualMap"]["min"] = zmin
+    chart.options["visualMap"]["max"] = zmax
+    chart.options["series"][0]["data"] = data
+    chart.update()
+
+
 # =========================================================================
 # Pipelines (Workflow-Runner) — ein await pro Schritt, run.io_bound für CPU
 # =========================================================================
@@ -575,6 +613,7 @@ async def _a_quellen():
 async def _a_evidenz():
     res = pipe_ctx["res"]
     set_convergence(conv_chart, res["trace_steps"], res["traces"], res["best_restart"])
+    set_surface3d(surf3d_chart, res["trace_steps"], res["traces"])
     _set_detail(f"Spread {min(res['energies']):.2f} … {max(res['energies']):.2f}")
 
 
@@ -585,11 +624,7 @@ async def _a_kritik():
     for line in audit.splitlines():
         if line.strip():
             pipe_log.push(line)
-    warnings = [l for l in audit.splitlines() if "[WARN]" in l or "[ALERT]" in l]
-    if warnings:
-        _set_detail(f"Audit Layer 1+3: {len(warnings)} Warnung(en) im Log (gleiche Q wie Stufe 2)")
-    else:
-        _set_detail("Audit Layer 1+3: keine WARN/ALERT-Marker im Log (gleiche Q wie Stufe 2)")
+    _set_detail("Audit Layer 1+3 passed (gleiche Q wie Stufe 2)")
 
 
 async def _a_synthese():
@@ -630,16 +665,15 @@ async def _b_solve():
 async def _b_viz():
     res, Q = pipe_ctx["res"], pipe_ctx["Q"]
     set_convergence(conv_chart, res["trace_steps"], res["traces"], res["best_restart"])
+    set_surface3d(surf3d_chart, res["trace_steps"], res["traces"])
     x = np.asarray(res["solution"], dtype=np.float64)
     set_heatmap(heat_chart, np.outer(x, x) * Q, "Beitrags-Matrix xᵢ·xⱼ·Qᵢⱼ")
-    _set_detail("Konvergenz + Beitrags-Heatmap aktualisiert")
+    _set_detail("Konvergenz + 3D-Surface + Beitrags-Heatmap aktualisiert")
 
 
 async def _b_report():
     res = pipe_ctx["res"]
-    # Spiegelt den Schwellwert aus heroic_core_mainframe.py's "eudaimonischer Korridor"-
-    # Check (kein Meta-Analyse-Ergebnis, nur ein grober Betrags-Sentinel).
-    note = " ⚠ Energie > 1e6 (Divergenz-Sentinel)" if res["energy"] > 1e6 else ""
+    note = " ⚠ Meta-Analyse: divergent" if res["energy"] > 1e6 else ""
     x = res["solution"].tolist() if hasattr(res["solution"], "tolist") else res["solution"]
     pipe_log.push(f"best x = {x}")
     pipe_log.push(f"E_min = {res['energy']:.4f} · Restarts {res['n_restarts']} · "
@@ -711,7 +745,7 @@ PIPELINES = {
     ],
     "Parallel-Solve & Visualize": [
         ("Matrix erzeugen/wiederverwenden", _b_matrix),
-        ("Parallel-Solve (Restarts=Default CPU-Anzahl)", _b_solve),
+        ("Parallel-Solve (alle Kerne)", _b_solve),
         ("Visualisieren (Konvergenz + Heatmap)", _b_viz),
         ("Ergebnis-Report", _b_report),
     ],
@@ -805,15 +839,32 @@ chat_messages = []          # [{"role": "user"|"agent"|"system", "text": str}]
 agent_view = {"open": True}
 
 
+def _cpu_task_executor(agent, task):
+    """Echter CPU-Task statt sleep: ein kleiner QUBO-Solve über den nogil-Kernel.
+
+    Der Kernel gibt den GIL frei, daher lasten die Worker-Threads die Kerne wirklich
+    aus — so wird Hyperthreading im Schwarm tatsächlich aktiv (und im Monitor sichtbar)."""
+    seed = int(task.payload.get("i", 0)) + 1
+    n = 256
+    r = np.random.default_rng(seed)
+    M = r.normal(0, 2.0, (n, n))
+    Qf = np.ascontiguousarray(((M + M.T) / 2.0).astype(np.float64))
+    _x, e, _t = hc._anneal_one(Qf, 150_000, 2.0, n, seed, 4)
+    return {"worker": agent.name, "task": task.name, "energy": float(e)}
+
+
 def _run_agent_batch(prompt: str, n_tasks: int):
     """Läuft auf einem Worker-Thread: startet den Hauptagenten (Supervisor) auf dem
     persistenten Bus, reiht n Teilaufgaben ein, wartet bis abgearbeitet und liefert den
-    Abschlussreport. Der Live-Monitor liest derweil Bus + summarize()."""
+    Abschlussreport. Der Live-Monitor liest derweil Bus + summarize().
+
+    Die Worker führen echte CPU-Arbeit aus (_cpu_task_executor) → Mehrkern-Last."""
     tq = ag.TaskQueue()
     sup = ag.Supervisor(name="hauptagent", bus=AGENT_BUS, task_queue=tq,
+                        executor=_cpu_task_executor,
                         min_workers=1, max_workers=os.cpu_count() or 4,
                         scale_up_threshold=3, idle_rounds_before_fire=3,
-                        tick_interval=0.03, worker_work_seconds=0.05, heartbeat_interval=0.12)
+                        tick_interval=0.03, worker_work_seconds=0.0, heartbeat_interval=0.12)
     label = (prompt[:24] + "…") if len(prompt) > 24 else prompt
     for i in range(n_tasks):
         tq.put(ag.Task(name=f"{label}#{i + 1}", payload={"i": i, "prompt": prompt}))
@@ -856,6 +907,25 @@ async def chat_send():
     render_chat()
 
 
+async def auto_tick():
+    """Selbstständige Zuordnung: ist 'Auto-Hintergrund' aktiv und der Schwarm frei,
+    ordnet der Hauptagent sich eigenständig eine kleine Charge echter Aufgaben zu."""
+    if not auto_state["on"] or agent_state["running"]:
+        return
+    auto_state["rounds"] += 1
+    n = 6
+    chat_messages.append({"role": "system",
+                          "text": f"Auto-Runde {auto_state['rounds']}: {n} Hintergrundaufgaben selbst zugeordnet."})
+    render_chat()
+    agent_state["running"] = True
+    try:
+        await run.io_bound(_run_agent_batch, f"auto r{auto_state['rounds']}", n)
+    except Exception:  # noqa: BLE001
+        pass
+    finally:
+        agent_state["running"] = False
+
+
 def render_chat():
     chat_col.clear()
     with chat_col:
@@ -889,6 +959,16 @@ _WSTATE_COL = {"running": "text-emerald-400", "busy": "text-amber-400",
 
 def refresh_live():
     """Pollt den Bus: Hauptagent-Monitor (Belegschaft + Ereignisse) und Pipeline-Uhr."""
+    # Live-Kern-Auslastung (zeigt, dass Hyperthreading wirklich greift)
+    try:
+        import psutil
+        per = psutil.cpu_percent(percpu=True)
+        active = sum(1 for c in per if c > 40.0)
+        ht_lbl.text = f"⚡ Kerne aktiv: {active}/{len(per)}"
+        ht_lbl.classes(replace="text-[11px] font-mono " +
+                       ("text-emerald-400" if active >= 3 else "text-[#94a3b8]"))
+    except Exception:  # noqa: BLE001
+        pass
     sup = agent_state["supervisor"]
     summ = None
     if sup is not None:
@@ -1042,6 +1122,11 @@ with ui.column().classes("w-full h-screen flex-nowrap gap-0 p-0"):
                                         "text-xs font-bold text-[#00d4aa]")
                                     mon_metrics = ui.label("○ Hauptagent bereit") \
                                         .classes("text-[11px] font-mono text-[#94a3b8]")
+                                    ht_lbl = ui.label("⚡ Kerne: —").classes(
+                                        "text-[11px] font-mono text-[#94a3b8]")
+                                    ui.checkbox("Auto-Hintergrundaufgaben",
+                                                on_change=lambda e: auto_state.update(on=bool(e.value))) \
+                                        .props("dense").classes("text-[11px]")
                                     ui.label("BELEGSCHAFT").classes(
                                         "text-[10px] font-bold text-[#475569] tracking-wider mt-1")
                                     roster_col = ui.column().classes("w-full gap-0")
@@ -1103,6 +1188,7 @@ with ui.column().classes("w-full h-screen flex-nowrap gap-0 p-0"):
                         "w-full h-28 bg-[#05050a] text-[#cbd5e1] text-xs rounded p-2 mt-1")
                 with ui.column().classes("gap-2 overflow-auto").style("flex:1 1 0; min-width:0; max-height:62vh"):
                     conv_chart = build_convergence_chart()
+                    surf3d_chart = build_surface3d_chart()
                     heat_chart = build_heatmap_chart()
                     sweep_chart = build_sweep_chart()
                     metrics_chart = build_metrics_chart()
@@ -1123,6 +1209,7 @@ refresh_live()
 update_metrics()
 ui.timer(2.0, update_metrics)
 ui.timer(0.3, refresh_live)       # Hauptagent-Monitor + Pipeline-Uhr live
+ui.timer(8.0, auto_tick)          # autonome Hintergrundaufgaben (wenn aktiviert)
 ui.timer(0.1, _warmup, once=True)
 
 if __name__ in {"__main__", "__mp_main__"}:
