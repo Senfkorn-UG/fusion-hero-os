@@ -6,7 +6,7 @@ gierige Zuweisung beweisbar optimal — der Annealer MUSS sie exakt treffen.
 """
 import numpy as np
 
-from engine.mining_qubo import (
+from fusion_hero_os.engine.mining_qubo import (
     build_profit_switching_qubo,
     decode_assignment,
     assignment_profit,
