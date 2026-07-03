@@ -17,7 +17,6 @@ Zusammenführung von:
 import time
 import os
 import numpy as np
-import itertools
 from concurrent.futures import ThreadPoolExecutor
 from numba import jit
 from abc import ABC, abstractmethod
@@ -266,6 +265,7 @@ def parallel_anneal(Q, steps=8000, T0=2.0, n_restarts=None, n_samples=60,
         "n_restarts": n_restarts,
         "workers": workers,
         "runtime_seconds": runtime,
+        "backend": "numba",
     }
 
 
@@ -603,7 +603,7 @@ class QUBOIntegrationCoreModule:
                                       {"matrix_Q": Q, "timestamp": time.time()})
 
         out = parallel_anneal(Q, steps=steps, T0=T0,
-                              n_restarts=n_restarts, n_samples=n_samples)
+                              n_restarts=n_restarts, n_samples=n_samples, backend="auto")
 
         # Layer 3: Post-Solve Audit (Eudaimonia-Validierung)
         audit_result = SolverResult(solution=out["solution"], energy=out["energy"],
