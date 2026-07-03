@@ -142,6 +142,16 @@ DEFAULT_MODULES: List[ModuleSpec] = [
         "Dynamische Skill-Evolution (noch kein eigener Code, nur Platzhalter)",
         stub=True,
     ),
+    ModuleSpec(
+        "core.dispatcher", "fusion_hero_os.core.dispatcher",
+        "Zentraler Dispatcher: registriert BaseModule-Instanzen, routet dispatch()/dispatch_many()",
+    ),
+    ModuleSpec(
+        "modules.core_modules", "fusion_hero_os.modules",
+        "BaseModule-Adapter (SelfModify, PeerReview, FormalMathematics, AutomaticArchiving, "
+        "Weltraudaimonia, MER, ConversationContext, LiveProcessTracking, GenerationalEvolution, "
+        "QUBOIntegration) — siehe fusion_hero_os.core.dispatcher.build_default_dispatcher()",
+    ),
 ]
 
 

@@ -39,18 +39,58 @@ Top-Level-Ordner zu sein:
 ```
 fusion_hero_os/
 ├── __init__.py
-├── registry.py            # zentrale Modul-Registry (siehe unten)
-├── core/                   # heroic_math_engine, heroic_core_orchestrator, cec, rhe, ...
-├── engine/                 # mainframe.py (QUBO/SA-Solver), mining_qubo.py, rust_backend.py
-├── orchestration/          # agents.py — MessageBus, TaskQueue, Supervisor
-├── methodology/            # connectors.py, core_modules.py, knowledge.py
-└── modules/                # alte_frau_95g, mainframe_laden, skill_creator — aktuell Platzhalter
+├── registry.py             # Subsystem-Registry: "ist Paket X importierbar?" (siehe unten)
+├── config.py               # DispatcherConfig (max_workers, deaktivierte Module — via ENV)
+├── core/
+│   ├── heroic_math_engine.py, heroic_core_orchestrator.py, cec.py, rhe.py, ...
+│   ├── base_module.py       # BaseModule-Vertrag: process()/propose_evolution()/peer_review()
+│   └── dispatcher.py        # Dispatcher: registriert BaseModule-Instanzen, routet Anfragen
+├── engine/                  # mainframe.py (QUBO/SA-Solver), mining_qubo.py, rust_backend.py
+├── orchestration/           # agents.py — MessageBus, TaskQueue, Supervisor
+├── methodology/             # connectors.py, core_modules.py, knowledge.py
+└── modules/                 # BaseModule-Adapter (SelfModify, PeerReview, ...) + drei Platzhalter-Pakete
 ```
 
 `app.py` (NiceGUI-GUI, Root-Einstiegspunkt) bezieht `engine.mainframe` und
 `orchestration.agents` über die Registry statt per Direktimport.
 
 Installierbar via `pyproject.toml`: `pip install -e ".[dev]"`.
+
+## Dispatcher + Core-Module (BaseModule-Architektur)
+
+Zusätzlich zur Subsystem-Registry (siehe unten) gibt es eine zweite,
+komplementäre Ebene für einzelne, fachliche Core-Module:
+`fusion_hero_os/core/base_module.py` definiert den Vertrag
+(`process(payload)`, optional `propose_evolution(context)`,
+optional `peer_review(target)`), `fusion_hero_os/core/dispatcher.py`
+registriert Instanzen davon unter einem Namen und routet Anfragen dorthin
+— inklusive optionaler Parallelausführung mehrerer Anfragen über
+`ThreadPoolExecutor` (`Dispatcher.dispatch_many(..., parallel=True)`).
+
+```python
+from fusion_hero_os.core.dispatcher import build_default_dispatcher
+
+dispatcher = build_default_dispatcher()
+dispatcher.dispatch("PeerReviewCoreModule", {...})
+```
+
+Registrierte Module (`fusion_hero_os/modules/`, siehe `ALL_CORE_MODULES`):
+
+| Modul | Status | Beschreibung |
+|---|---|---|
+| `SelfModifyCoreModule` | adaptiert | Sammelt strukturierte Verbesserungsvorschläge (`EvolutionProposal`, optional als Diff-Text). Wendet **nichts** an — jeder Vorschlag landet als `pending_review` in der Historie und muss von einem Menschen/einer CI-Pipeline normal committet werden. |
+| `PeerReviewCoreModule` | neu | Code-Review-Checkliste mit 6 festen Kriterien (Korrektheit, Tests, Style, Sicherheit, Doku, Performance). Bewertet nur explizit übergebene Signale, keine automatische Code-Analyse. Zu unterscheiden von `methodology.core_modules.PeerReviewCoreModule` (Fließtext-Review, 5 Argumentationsdimensionen) — beide heißen gleich, prüfen aber unterschiedliche Dinge. |
+| `FormalMathematicsCoreModule` | adaptiert | Wrapt die reale Implementierung in `methodology/core_modules.py` (Satz/Bedingt/Modell/Fragment-Klassifikation). |
+| `AutomaticArchivingCoreModule` | adaptiert | Wrapt `methodology/core_modules.py` — erzeugt nur einen Archivierungs-Plan, schreibt/zippt nichts. |
+| `GenerationalEvolutionProtocolCoreModule` | adaptiert | Wrapt die echte (μ+λ)-Evolutionsstrategie in `engine/mainframe.py` über QUBO-Solver-Hyperparameter — kein Stub, die Elite-Fitness ist nachweislich monoton nicht-fallend. |
+| `QUBOIntegrationCoreModule` | adaptiert | Wrapt den echten, audit-gesicherten QUBO-Solver-Lauf in `engine/mainframe.py`. |
+| `WeltraudaimoniaModule` | neu | Projekt-interne, gewichtete Mehrkriterien-Bewertungsheuristik für Entscheidungen (4 Achsen). Explizit dokumentiert als In-App-Heuristik ohne Anspruch auf reale ethische Autorität. |
+| `MERModule` | neu | Projekt-interne "MER-Index"-Kennzahl (3 gewichtete Komponenten) plus Greedy-Priorisierung (`optimize()`), welche Komponente den größten Hebel hätte. Selbst definierte Metrik, keine externe Größe. |
+| `ConversationContextCoreModule` | neu | Begrenztes In-Memory-Konversationsfenster (FIFO-Eviction). |
+| `LiveProcessTrackingCoreModule` | neu | In-Memory-Status-Tracking benannter Vorgänge (start/complete/fail). |
+
+Entwickler-Utility: `python scripts/dispatcher_status.py` zeigt die
+registrierten Module ohne Testcode schreiben zu müssen.
 
 ## Zentrale Registry statt loser Verdrahtung
 
@@ -84,7 +124,8 @@ Zusammenführung beider Registries stand nicht im Scope dieses Durchgangs.
 | `src/` | JS/Svelte | SvelteKit-Frontend (eigenständig, kommuniziert nicht direkt mit dem Python-Kern im Code) |
 | `rust_engine_crate/` | Rust | PyO3-Bindings für den Solver-Kernel (experimentell, noch nicht produktiv eingebunden) |
 | `kernel/` | C/ASM | Low-Level-Prototyp (Boot-Code, Treiber-Stubs) — experimentell, nicht Teil des laufenden Systems |
-| `tests/` | Python | pytest-Suite für `fusion_hero_os/` (inkl. `test_registry.py`), von CI ausgeführt |
+| `tests/` | Python | pytest-Suite für `fusion_hero_os/` (inkl. `test_registry.py`, `test_dispatcher.py`), von CI ausgeführt |
+| `scripts/` | Python | Entwickler-Utilities, z.B. `dispatcher_status.py` (Registrierungsstatus ohne Testcode) |
 
 ## Konfiguration & Tooling
 
