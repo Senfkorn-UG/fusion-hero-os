@@ -9,12 +9,12 @@ import importlib
 import pytest
 
 LIBRARY_MODULES = [
-    "engine.mainframe",
-    "engine.mining_qubo",
-    "methodology.connectors",
-    "methodology.core_modules",
-    "methodology.knowledge",
-    "orchestration.agents",
+    "fusion_hero_os.engine.mainframe",
+    "fusion_hero_os.engine.mining_qubo",
+    "fusion_hero_os.methodology.connectors",
+    "fusion_hero_os.methodology.core_modules",
+    "fusion_hero_os.methodology.knowledge",
+    "fusion_hero_os.orchestration.agents",
 ]
 
 

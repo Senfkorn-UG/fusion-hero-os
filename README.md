@@ -14,10 +14,11 @@ Ein selbst-modifizierendes, heroic Framework für Rekonstruktivistischen Eudaimo
 ## Entwicklung lokal starten
 
 ```bash
-# Python-Backend/GUI
-pip install -r requirements.txt -r requirements-dev.txt
-python -m core.heroic_math_engine   # Sandbox-Verifikation
-pytest tests/ -v
+# Python-Backend/GUI (fusion_hero_os/ — installierbares Package, siehe pyproject.toml)
+pip install -e ".[dev]"
+python -m fusion_hero_os.registry           # Status aller Teilsysteme (Registry)
+python -m fusion_hero_os.core.heroic_math_engine   # Sandbox-Verifikation
+pytest
 
 # Frontend (SvelteKit)
 npm install

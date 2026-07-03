@@ -1,29 +1,30 @@
-# v8_core_bridge.py — Brücke zu root core/ (heroic_math_engine, heroic_core_orchestrator)
+# v8_core_bridge.py — Brücke zu fusion_hero_os.core (heroic_math_engine, heroic_core_orchestrator)
 
 from __future__ import annotations
 
-import importlib.util
+import importlib
 import sys
 from pathlib import Path
 from typing import Any, Dict, Optional
 
 _REPO_ROOT = Path(__file__).resolve().parents[2]
-_ROOT_CORE = _REPO_ROOT / "core"
+_ROOT_CORE = _REPO_ROOT / "fusion_hero_os" / "core"
 _LOADED: Dict[str, Any] = {}
 
 
 def _load_root_module(module_name: str, filename: str):
+    """Lädt ein Modul aus fusion_hero_os.core über den normalen Python-Importmechanismus
+    (statt der vorherigen manuellen ``spec_from_file_location``-Konstruktion), damit
+    relative Importe innerhalb von fusion_hero_os (z.B. core -> registry) funktionieren.
+    """
     if module_name in _LOADED:
         return _LOADED[module_name]
     path = _ROOT_CORE / filename
     if not path.exists():
         raise FileNotFoundError(f"v8 core module not found: {path}")
-    spec = importlib.util.spec_from_file_location(f"fusion_v8_{module_name}", path)
-    if spec is None or spec.loader is None:
-        raise ImportError(f"Cannot load {path}")
-    mod = importlib.util.module_from_spec(spec)
-    sys.modules[f"fusion_v8_{module_name}"] = mod
-    spec.loader.exec_module(mod)
+    if str(_REPO_ROOT) not in sys.path:
+        sys.path.insert(0, str(_REPO_ROOT))
+    mod = importlib.import_module(f"fusion_hero_os.core.{module_name}")
     _LOADED[module_name] = mod
     return mod
 
