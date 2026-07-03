@@ -605,9 +605,10 @@ async def _a_scoping():
 
 async def _a_quellen():
     Q, steps, T0, r = last_Q["Q"], int(pn_steps.value), float(pn_T0.value), int(pn_restarts.value)
-    res = await run.io_bound(hc.parallel_anneal, Q, steps, T0, r, 40)
+    res = await run.io_bound(hc.parallel_anneal, Q, steps, T0, r, 40, backend="auto")
     pipe_ctx["res"] = res
-    _set_detail(f"{r} Restarts · E_min {res['energy']:.3f} · {res['runtime_seconds'] * 1000:.0f} ms")
+    _set_detail(f"{r} Restarts · E_min {res['energy']:.3f} · {res['runtime_seconds'] * 1000:.0f} ms "
+                f"· {res.get('backend', 'numba')} / {res.get('workers', '?')} Kerne")
 
 
 async def _a_evidenz():
@@ -657,9 +658,10 @@ async def _b_matrix():
 
 async def _b_solve():
     Q, steps, T0, r = pipe_ctx["Q"], int(pn_steps.value), float(pn_T0.value), int(pn_restarts.value)
-    res = await run.io_bound(hc.parallel_anneal, Q, steps, T0, r, 40)
+    res = await run.io_bound(hc.parallel_anneal, Q, steps, T0, r, 40, backend="auto")
     pipe_ctx["res"] = res
-    _set_detail(f"E_min {res['energy']:.3f} · {res['runtime_seconds'] * 1000:.0f} ms")
+    _set_detail(f"E_min {res['energy']:.3f} · {res['runtime_seconds'] * 1000:.0f} ms "
+                f"· {res.get('backend', 'numba')} / {res.get('workers', '?')} Kerne")
 
 
 async def _b_viz():
@@ -719,7 +721,7 @@ async def _d_sweep():
     sweep = [2000, 8000, 32000]
     emins, rts = [], []
     for k, s in enumerate(sweep):
-        res = await run.io_bound(hc.parallel_anneal, Q, s, T0, r, 30)
+        res = await run.io_bound(hc.parallel_anneal, Q, s, T0, r, 30, backend="auto")
         emins.append(res["energy"])
         rts.append(res["runtime_seconds"] * 1000)
         progress.value = (k + 1) / len(sweep)
