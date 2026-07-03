@@ -223,12 +223,15 @@ def parallel_anneal(Q, steps=8000, T0=2.0, n_restarts=None, n_samples=60,
     if backend in ("rust", "auto"):
         rb = None
         try:
-            from engine import rust_backend as rb  # importiert als Paket
+            from fusion_hero_os.engine import rust_backend as rb  # Paket-Pfad (kanonisch)
         except Exception:  # noqa: BLE001
             try:
-                import rust_backend as rb           # falls als Skript aus engine/ gestartet
+                from engine import rust_backend as rb  # Legacy top-level Layout
             except Exception:  # noqa: BLE001
-                rb = None
+                try:
+                    import rust_backend as rb           # als Skript aus engine/ gestartet
+                except Exception:  # noqa: BLE001
+                    rb = None
         if rb is not None and getattr(rb, "AVAILABLE", False):
             return rb.parallel_anneal_rust(Q, steps=steps, T0=T0, n_restarts=n_restarts,
                                            n_samples=n_samples, base_seed=base_seed)
@@ -265,6 +268,7 @@ def parallel_anneal(Q, steps=8000, T0=2.0, n_restarts=None, n_samples=60,
         "n_restarts": n_restarts,
         "workers": workers,
         "runtime_seconds": runtime,
+        "backend": "numba",
     }
 
 
@@ -602,7 +606,7 @@ class QUBOIntegrationCoreModule:
                                       {"matrix_Q": Q, "timestamp": time.time()})
 
         out = parallel_anneal(Q, steps=steps, T0=T0,
-                              n_restarts=n_restarts, n_samples=n_samples)
+                              n_restarts=n_restarts, n_samples=n_samples, backend="auto")
 
         # Layer 3: Post-Solve Audit (Eudaimonia-Validierung)
         audit_result = SolverResult(solution=out["solution"], energy=out["energy"],
