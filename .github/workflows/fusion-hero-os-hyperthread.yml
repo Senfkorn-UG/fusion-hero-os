@@ -39,8 +39,9 @@ jobs:
       - name: Validate Migration Concept
         run: |
           echo "=== Checking MIGRATION_KONZEPT completeness ==="
-          if [ ! -f "MIGRATION_KONZEPT_v7.12_HardFork.md" ]; then
-            echo "::error::MIGRATION_KONZEPT_v7.12_HardFork.md is missing!"
+          MIGRATION_DOC="docs/99_archive/MIGRATION_KONZEPT_v7.12_HardFork.md"
+          if [ ! -f "$MIGRATION_DOC" ]; then
+            echo "::error::$MIGRATION_DOC is missing!"
             exit 1
           fi
 
@@ -52,7 +53,7 @@ jobs:
           )
 
           for section in "${REQUIRED_SECTIONS[@]}"; do
-            if ! grep -q "$section" "MIGRATION_KONZEPT_v7.12_HardFork.md"; then
+            if ! grep -q "$section" "$MIGRATION_DOC"; then
               echo "::warning::Missing section in Migration Concept: $section"
             fi
           done
