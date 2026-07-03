@@ -25,8 +25,11 @@ from collections import deque
 import zipfile, datetime, re, subprocess, sys, os, io, contextlib, time
 import numpy as np
 from nicegui import ui, run
-from engine import mainframe as hc          # QUBO-Solver-Engine (Parallel-SA, Audit-Layer)
-from orchestration import agents as ag      # Multi-Agenten-Orchestrierung (Supervisor/Worker)
+from fusion_hero_os.registry import get_registry
+
+_registry = get_registry()
+hc = _registry.get("engine.mainframe")      # QUBO-Solver-Engine (Parallel-SA, Audit-Layer)
+ag = _registry.get("orchestration.agents")  # Multi-Agenten-Orchestrierung (Supervisor/Worker)
 
 ROOT = Path(__file__).parent
 EXT_LANG = {".md": "Markdown", ".py": "Python", ".json": "JSON",
