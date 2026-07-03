@@ -900,6 +900,15 @@ async def api_supabase_events(limit: int = 20):
     return {"events": await asyncio.to_thread(supa_store.list_recent_events, limit)}
 
 
+@app.get("/api/supabase/tables")
+async def api_supabase_tables():
+    """Read-only: prüft, welche Ziel-Tabellen im Supabase-Projekt existieren.
+    'missing' => Schema noch nicht angewendet (supabase/schema.sql)."""
+    if supa_store is None:
+        return {"ok": False, "error": "supabase_store not loaded"}
+    return await asyncio.to_thread(supa_store.check_tables)
+
+
 @app.post("/api/llama/train")
 async def api_llama_train():
     """Heroic Llama Optimizer (QUBO+SA) — setzt llama-local nach Training."""

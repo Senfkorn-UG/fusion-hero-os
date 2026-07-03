@@ -86,13 +86,81 @@ def list_recent_events(limit: int = 20) -> List[Dict[str, Any]]:
         return []
 
 
+TARGET_TABLES = [
+    "fusion_events",
+    "fusion_metrics",
+    "fusion_jobs",
+    "heroic_llama_configs",
+]
+
+
 def store_status() -> Dict[str, Any]:
+    """Konfigurations-Status (KEIN Netzwerk). tables = Ziel-Tabellen, NICHT als
+    'existiert' zu verstehen — dafür check_tables() aufrufen."""
     return {
         "configured": is_configured(),
-        "tables": [
-            "fusion_events",
-            "fusion_metrics",
-            "fusion_jobs",
-            "heroic_llama_configs",
-        ],
+        "target_tables": TARGET_TABLES,
+        "schema_sql": "supabase/schema.sql",
+        "note": "Ziel-Tabellen; Existenz per check_tables() prüfen",
     }
+
+
+def check_tables() -> Dict[str, Any]:
+    """Read-only-Prüfung, welche Ziel-Tabellen im Projekt existieren.
+
+    select().limit(1) pro Tabelle. PostgREST-Fehler PGRST205 => Tabelle fehlt
+    (Schema noch nicht via supabase/schema.sql angewendet). Ein leeres Ergebnis
+    (RLS ohne SELECT-Policy) zählt trotzdem als 'exists', da die Anfrage 200 liefert.
+    """
+    client = get_client()
+    if not client:
+        return {
+            "ok": False,
+            "error": "supabase client unavailable",
+            "tables": {t: None for t in TARGET_TABLES},
+        }
+    tables: Dict[str, str] = {}
+    for t in TARGET_TABLES:
+        try:
+            client.table(t).select("*").limit(1).execute()
+            tables[t] = "exists"
+        except Exception as exc:
+            tables[t] = "missing" if "PGRST205" in str(exc) else f"error: {str(exc)[:120]}"
+    all_exist = all(v == "exists" for v in tables.values())
+    return {
+        "ok": all_exist,
+        "tables": tables,
+        "schema_sql": None if all_exist else "supabase/schema.sql",
+        "hint": None if all_exist else "Schema anwenden: SQL Editor -> supabase/schema.sql ausführen",
+    }
+
+
+def roundtrip_test() -> Dict[str, Any]:
+    """Schreib-Lese-Test: fügt ein markiertes Test-Event ein und liest es zurück.
+
+    ACHTUNG: schreibt eine Zeile nach fusion_events — nur bewusst aufrufen.
+    """
+    marker = f"roundtrip-{int(time.time())}"
+    ins = save_event({"id": marker, "type": "selftest", "msg": marker, "severity": "low"})
+    if not ins.get("ok"):
+        return {"ok": False, "stage": "insert", "marker": marker, **ins}
+    rows = list_recent_events(10)
+    found = any(r.get("event_id") == marker for r in rows)
+    return {"ok": found, "stage": "read", "marker": marker, "recent_count": len(rows)}
+
+
+if __name__ == "__main__":
+    import json
+    import sys
+
+    print("[supabase_store] configured:", is_configured())
+    tbl = check_tables()
+    print("[supabase_store] check_tables:")
+    print(json.dumps(tbl, indent=2, ensure_ascii=False))
+
+    if "--write" in sys.argv:
+        if tbl.get("ok"):
+            print("[supabase_store] roundtrip_test (schreibt ein Test-Event):")
+            print(json.dumps(roundtrip_test(), indent=2, ensure_ascii=False))
+        else:
+            print("[supabase_store] roundtrip übersprungen — Tabellen fehlen (Schema anwenden).")
