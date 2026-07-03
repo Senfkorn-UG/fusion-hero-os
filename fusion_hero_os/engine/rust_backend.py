@@ -58,7 +58,7 @@ def parallel_anneal_rust(Q, steps=8000, T0=2.0, n_restarts=None, n_samples=60, b
         "traces": [[float(v) for v in tr] for tr in traces],
         "trace_steps": trace_steps,
         "n_restarts": int(n_restarts),
-        "workers": os.cpu_count() or 1,
+        "workers": os.cpu_count() or 4,
         "runtime_seconds": runtime,
         "backend": "rust",
     }
