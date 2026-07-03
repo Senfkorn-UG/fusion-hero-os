@@ -11,6 +11,10 @@ node_modules
 # OS
 .DS_Store
 Thumbs.db
+*.lnk
+
+# Logs
+*.log
 
 # Env
 .env
