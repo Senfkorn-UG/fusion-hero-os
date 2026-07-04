@@ -3,12 +3,14 @@
 from __future__ import annotations
 
 import importlib
+import logging
 import os
-import socket
 import sys
 import time
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional
+
+logger = logging.getLogger(__name__)
 
 _CORE = Path(__file__).parent
 _DASH = _CORE.parent / "Dashboard"
@@ -24,7 +26,13 @@ def _try_import(path: str, attr: Optional[str] = None) -> Any:
     try:
         mod = importlib.import_module(path)
         return getattr(mod, attr) if attr else mod
-    except Exception as exc:
+    except (ImportError, AttributeError) as exc:
+        # Erwartbar: Modul/Attribut (noch) nicht vorhanden oder optionales
+        # Dependency fehlt (z.B. Hardware-/GPU-Bibliothek).
+        logger.warning("Modul %r nicht verfügbar (%s): %s", path, attr, exc)
+        return {"error": str(exc)}
+    except Exception as exc:  # noqa: BLE001 — echter Bug im Modul, nicht nur "fehlt"
+        logger.error("Modul %r ist beim Laden fehlgeschlagen (%s): %s", path, attr, exc, exc_info=True)
         return {"error": str(exc)}
 
 
@@ -35,7 +43,11 @@ def _load_code_module(module: str, attr: Optional[str] = None) -> Any:
     try:
         mod = importlib.import_module(module)
         return getattr(mod, attr) if attr else mod
-    except Exception as exc:
+    except (ImportError, AttributeError) as exc:
+        logger.warning("Code-Modul %r nicht verfügbar (%s): %s", module, attr, exc)
+        return {"error": str(exc)}
+    except Exception as exc:  # noqa: BLE001 — echter Bug im Modul, nicht nur "fehlt"
+        logger.error("Code-Modul %r ist beim Laden fehlgeschlagen (%s): %s", module, attr, exc, exc_info=True)
         return {"error": str(exc)}
 
 
@@ -208,8 +220,15 @@ def _build_registry() -> None:
     _register("foundation_gate", 0, "layer0", _foundation, "Heroic Core Foundation Gate")
 
     def _highest_layer():
-        p = Path(r"C:\Users\Admin\heroic-highest-layer")
-        if p.exists() and str(p) not in sys.path:
+        # Konfigurierbar statt hartkodiert: FUSION_HIGHEST_LAYER_PATH überschreibt
+        # den Default, damit dieses Modul nicht nur auf einer bestimmten Maschine
+        # mit exakt diesem Home-Verzeichnis funktioniert.
+        default_path = Path.home() / "heroic-highest-layer"
+        p = Path(os.getenv("FUSION_HIGHEST_LAYER_PATH", str(default_path)))
+        if not p.exists():
+            return {"error": f"heroic-highest-layer nicht gefunden unter {p} "
+                              f"(FUSION_HIGHEST_LAYER_PATH setzen, falls anderer Pfad)"}
+        if str(p) not in sys.path:
             sys.path.insert(0, str(p))
         from highest_layer import load  # type: ignore
         return load().status()
