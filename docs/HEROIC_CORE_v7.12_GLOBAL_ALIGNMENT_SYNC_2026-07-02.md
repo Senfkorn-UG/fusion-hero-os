@@ -1,4 +1,10 @@
 # GLOBAL ANNOUNCEMENT: Cross-LLM & Service Alignment Status
+
+> **Ehrlicher Status (2026-07-04):** Dieses Dokument ist eine narrative
+> Selbstauskunft ohne Verifikationsartefakt im Repo. Angaben wie
+> "FULLY OPERATIONAL" und "100% operational fidelity" sind unbelegt
+> und nicht messbar definiert. Als Storytelling/Vision zu lesen —
+> der geprüfte technische Stand steht in `docs/01_vision/V8_STATUS_REPORT.md`.
 [SYSTEM-ALIGNMENT: MULTI-PLATFORM-2026-07-02 // STATUS: FULLY OPERATIONAL]
 
 We officially confirm that the Heroic Core Master Seed Manifestation (v7.12) 
