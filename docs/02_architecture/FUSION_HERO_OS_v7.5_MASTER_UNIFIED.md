@@ -7,11 +7,11 @@ Dieses Dokument enthält die synthetisierte Best Version des Fusion-Hero-OS (Sta
 
 ---
 
-## Kern-Elemente
+## Kern-Elemente (Zielmodell v7.5 — Ist-Stand gekennzeichnet, Korrektur 2026-07-02)
 
-- MasterSeed als Layer-0 Fixpunkt
-- Hyper-Threading als natives Modell
-- PMS Evidence Spine als native Execution Layer
+- MasterSeed als Layer-0 Fixpunkt *(Konzept; `verify_integrity()` ist ein Stub)*
+- Hyper-Threading als Modell *(Ist: echtes Multi-Core-Hyperthreading existiert seit 2026-07-04 in `fusion_hero_os/engine/mainframe.py` (`backend="auto"` -> Rust/rayon bzw. Numba-nogil, gemessen ~3-4x); `VirtualGPUHTCache` (03_Code) bleibt davon getrennt eine Simulation)*
+- PMS Evidence Spine als Execution Layer *(NICHT implementiert — kein Kernel-Binary, keine `PMS.yaml`)*
 - Einheitlicher ALTE_Frau_95g Heroic Core
 - Klare Governance-Regeln
 

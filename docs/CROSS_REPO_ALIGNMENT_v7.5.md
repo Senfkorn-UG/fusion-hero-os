@@ -3,6 +3,15 @@
 **Date**: 2026-07-01  
 **Between**: `95guknow/fusion-hero-os` (Fusion-Hero-OS v7.5 Master Unified) and `tz-dev/PMS-RUST` (PMS Evidence Spine v0.1)
 
+> **Ehrlicher Status (2026-07-02):** Dieses Dokument beschreibt ein
+> Alignment auf KONZEPT-Ebene. In diesem Repo ist von PMS-RUST nichts
+> integriert (kein Code, kein Submodule, keine `PMS.yaml`), und
+> "hyper-threading" bezeichnet HIER die damalige Simulations-Variante
+> (`VirtualGPUHTCache`); echtes Multi-Core-HT existiert seit 2026-07-04 in
+> `fusion_hero_os/engine` — Details in `docs/01_vision/V8_STATUS_REPORT.md`.
+> Hinweis: Es existiert eine abweichende Kopie unter
+> `docs/03_integration/CROSS_REPO_ALIGNMENT_v7.5.md`.
+
 ## Summary
 
 The two primary repositories have been aligned at the architectural level:
@@ -10,7 +19,7 @@ The two primary repositories have been aligned at the architectural level:
 - `fusion-hero-os` provides the unified heroic core, MasterSeed, hyper-threading, governance, and high-level theory (Eudaimonismus / Heroismus).
 - `PMS-RUST` provides the deterministic Δ–Ψ praxeological execution kernel with model validation and auditability.
 
-In v7.5, the PMS Evidence Spine has been integrated as a **native first-class execution layer** inside Fusion-Hero-OS.
+In v7.5, the PMS Evidence Spine was PLANNED as a first-class execution layer inside Fusion-Hero-OS. *(Korrektur 2026-07-04: Diese Integration hat nie stattgefunden — kein Kernel, kein Submodule, keine `PMS.yaml`; die frühere Formulierung "has been integrated as a native first-class execution layer" war eine Überclaim.)*
 
 ## Key Alignment Points
 
