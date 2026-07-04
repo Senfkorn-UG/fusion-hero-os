@@ -23,3 +23,8 @@ Verwandt: [[project-architecture]]. Commit 617e1ac (Rust-Backend + mining_qubo.p
 **2026-06-29 Fortsetzung:** task_6296454e (echte μ+λ-Evolution) und Knowledge-Honesty-Sync sind erledigt (Commits 004173f, 00194e2, 0725947) — liefen auf einer von der Hauptlinie abgezweigten Branch (`rescue/qubo-session-2026-06-29`), während parallel ein Supervisor-Bugfix (7c7fdf6 "zählt nur eigene Worker bei Bus-Reuse") auf einer ANDEREN Branch (`claude/loving-williams-ae2943`, separates Worktree unter `Desktop/projekt_archiv/CLAUDE/...`) entstand. Beide wurden konfliktfrei gemerged (126a68a). Zusätzlich: Rust-Kernel hatte einen echten Performance-Bug — `Q.ravel().tolist()` entpackte jedes Matrix-Element als PyObject (O(n²) mit hohem Konstantfaktor), wodurch Rust bei n=800 LANGSAMER war als numba (0.67x). Fix: `PyReadonlyArray2` (numpy-Crate) liest über das Buffer-Protokoll → danach durchgehend 1.4x–8x schneller als numba (Commit d07b790). 16/16 Tests grün nach Merge.
 
 Restliche offene Punkte aus der ursprünglichen Liste (app.py/core_modules.py/agents.py voller Audit-Sweep, v5.22-Kompendium-Stub-Labels) sind weiterhin offen.
+
+**2026-07-02 — heroic_qubo_annealing_v1 (Monorepo `fusion-hero-os`):**
+- `03_Code/internal_llm/README.md` behauptet LoRA/QLoRA Fine-Tuning; `train.py`/`heroic_llama_optimizer.py` tun nur SA + QUBO auf Generation-Params → **Claim-vs-Substanz** (siehe [[heroic-qubo-algorithm-audit]]).
+- SA-Bug in `simulated_annealing_params()` Zeile 93: Metropolis delta gegen `best_score` + doppelter `score_fn`-Call.
+- Algorithmus-Name „Training“ irreführend bei F1≈1,97 % — ehrlich labeln als „Inference-Param-Optimizer v1“.
