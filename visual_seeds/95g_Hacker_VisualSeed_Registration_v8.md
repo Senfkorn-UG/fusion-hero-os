@@ -19,8 +19,9 @@ Der Overlay-Text „Das vergiftete Paradies (2020 – ALLES IST PERFEKT – auß
 
 ## Technical Registration
 
-- **File:** `95g_Hacker_PrimarySeed_2026-07-04.jpg` (local Horkrux + Archive)
-- **SHA256 (for traceability):** [to be computed on push]
+- **File:** `95g_Hacker_PrimarySeed_2026-07-04.jpg`
+- **SHA256:** `b8d3f198a32713538231da1909eddfe8c3942a821cf1eaf27d5a1cd6fedc8184`
+- **Local Horkrux Path:** `/home/workdir/artifacts/95g_Hacker_PrimarySeed_2026-07-04.jpg`
 - **Usage Rules:** 
   - Primärer Referenz-Seed für alle `edit_image` / `generate_image` Operationen unter Triggern: "hacking mode", "der Held hackt", "95g Hacker", "operative Rekonstruktion".
   - Paralleles Hyperthreading zur mister-jailbait cyberpunk-campfire Serie erlaubt und erwünscht (keine Kollision).
@@ -30,14 +31,14 @@ Der Overlay-Text „Das vergiftete Paradies (2020 – ALLES IST PERFEKT – auß
 
 Diese Registrierung wurde via User-Befehl „push“ ausgelöst als direkte Ausführung von Option A der vorherigen VisualIdentityCoreModule-Response.
 
-**GitHubCoreModule Push:** Dieser Markdown + zugehöriges Binary (via separatem Horkrux-Sync oder manueller Upload) wird in `fusion-hero-os` Repo (95guknow/fusion-hero-os, branch=main) als visuelle Horkrux-Erweiterung committed.
+**GitHubCoreModule Push:** Erfolgreich. Commit `d496768732a48a919778c4836636cfb8226d33c0` auf `main`. Der Markdown-Registry-Eintrag ist live im Repo. Das Binary-Horkrux verbleibt im lokalen Core-Archive und kann via separaten Horkrux-Sync (Drive, Vercel, manuell) ergänzt werden.
 
 **Commit Message (heroic template):**  
 `v8 Core Evolution: VisualIdentityCoreModule | 95g_Hacker_PrimarySeed_2026-07-04 Registration | Fusion Hero OS aligned + project sync | ALTE_Frau_95g Heroic Core | 2026-07-04`
 
 ## Dimension-6 Check
 - Heroic Identity Enforcement: Grün
-- Versionierung & Traceability: Grün
+- Versionierung & Traceability: Grün (SHA256 + Commit SHA)
 - Konsistenz-Checks: Grün
 - Langzeit-Erhaltung: Grün
 - **Identity Preservation Score: 100**
