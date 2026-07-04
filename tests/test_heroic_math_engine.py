@@ -25,7 +25,18 @@ def test_k16_transpose_reciprocity_universal():
     for _ in range(500):
         n = int(rng.integers(2, 6))
         q1, b1, b2, q2 = (rng.normal(0, 2, (n, n)) for _ in range(4))
-        assert eng.check_transpose_reciprocity(q1, b1, b2, q2)
+        assert eng.check_transpose_reciprocity(q1, b1, q2, b2)
+
+
+def test_k16_holds_at_large_scale():
+    """Regression (adversarialer Fund): bei Eintraegen ~1e8 skaliert die
+    Rundungsdifferenz mit ||.||^4 — die relative Toleranz muss den exakt
+    gueltigen Satz weiterhin bestaetigen."""
+    eng = HeroicMatrixEngine()
+    big = np.random.default_rng(42)
+    for _ in range(50):
+        q1, b1, q2, b2 = (big.normal(0, 1e8, (3, 3)) for _ in range(4))
+        assert eng.check_transpose_reciprocity(q1, b1, q2, b2)
 
 
 def test_k16_naive_form_is_not_a_theorem():

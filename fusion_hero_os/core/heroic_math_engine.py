@@ -52,7 +52,8 @@ class HeroicMatrixEngine:
         """
         lhs = np.dot(np.dot(np.dot(q1, b1), b2), q2)
         rhs = np.dot(np.dot(np.dot(q2, b2), b1), q1)
-        return bool(np.linalg.norm(lhs - rhs) < tolerance)
+        scale = max(1.0, np.linalg.norm(lhs), np.linalg.norm(rhs))
+        return bool(np.linalg.norm(lhs - rhs) < tolerance * scale)
 
     @staticmethod
     def check_transpose_reciprocity(q1, b1, q2, b2, tolerance=1e-9):
@@ -71,7 +72,12 @@ class HeroicMatrixEngine:
         """
         lhs = q1 @ b1 @ b2 @ q2
         rhs = (q2.T @ b2.T @ b1.T @ q1.T).T
-        return bool(np.linalg.norm(lhs - rhs) < tolerance)
+        # RELATIVE Toleranz: die Rundungsdifferenz der beiden Assoziations-
+        # reihenfolgen skaliert mit dem Normprodukt (~||.||^4); eine absolute
+        # Schranke wuerde den exakt gueltigen Satz bei grossen Normen
+        # faelschlich verwerfen (adversarial verifiziert mit Eintraegen ~1e8).
+        scale = max(1.0, np.linalg.norm(lhs), np.linalg.norm(rhs))
+        return bool(np.linalg.norm(lhs - rhs) < tolerance * scale)
 
 
 class OrthogonalProjector:
@@ -290,7 +296,7 @@ def run_sandbox_verification():
     for _ in range(trials):
         n = int(rng.integers(2, 6))
         q1, b1, b2, q2 = (rng.normal(0, 2, (n, n)) for _ in range(4))
-        if not engine.check_transpose_reciprocity(q1, b1, b2, q2):
+        if not engine.check_transpose_reciprocity(q1, b1, q2, b2):
             viol += 1
         if engine.check_reciprocity_condition(q1, b1, q2, b2):
             naive_holds += 1
