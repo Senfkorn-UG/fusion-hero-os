@@ -37,8 +37,8 @@ const probe = await fetch(`${url.replace(/\/$/, "")}/auth/v1/settings`, {
 console.log(
   JSON.stringify({
     configured: true,
-    package: "@supabase/server",
-    package_installed: true,
+    method: "fetch /auth/v1/settings (kein npm-Paket nötig, nur Node >=18 fetch)",
+    node_version: process.version,
     project_ref: projectRef,
     dashboard_url: `https://supabase.com/dashboard/project/${projectRef}`,
     secret_key_configured: Boolean(process.env.SUPABASE_SECRET_KEY),

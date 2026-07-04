@@ -9,7 +9,7 @@ import itertools
 
 import numpy as np
 
-from engine.mainframe import (
+from fusion_hero_os.engine.mainframe import (
     parallel_anneal,
     simulated_annealing,
     local_search,
