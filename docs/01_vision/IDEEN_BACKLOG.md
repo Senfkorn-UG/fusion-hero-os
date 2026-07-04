@@ -91,7 +91,8 @@ markiert ohne nachprüfbaren Beleg (Datei, Repo, Commit).
 
 ## D. Offene Fragen & Entscheidungen (Stand 2026-07-04, User befragt)
 
-1. **Grok-Bestand (A1/A2/A8):** User-Antwort: existieren **als Code in Grok-Projekten**. → Nächster Schritt: User exportiert die Dateien (Download/Paste), dann Integration hier. Bis dahin Status OFFEN — lokal liegt nichts davon.
+1. **Grok-Bestand (A1/A2/A8):** User-Antwort: existieren **als Code in Grok-Projekten**. → Export-Anfrage erstellt: `docs/01_vision/GROK_EXPORT_REQUEST.md` (Grok liest dieses Repo via GitHub; Zielpfade + Anforderungen je Modul definiert). Bis zum Eingang Status OFFEN — lokal liegt nichts davon.
 2. **FuHOS_pub:** User-Entscheidung: **später entscheiden**. Bleibt vorerst öffentlich; Konflikt mit Proprietär-Entscheidung bleibt dokumentiert und ungelöst.
 3. **Bridge-Port:** ENTSCHIEDEN + UMGESETZT — siehe B2.
 4. **Core-Patent (A7):** weiterhin ungeklärt — nur mit User-/Grok-Wissen klärbar.
+5. **Gerettete Trainingsdaten (2026-07-04):** Beim Sync der Zweitkopie `C:\Users\Admin\fusion-hero-os` wurden 42 lokale 4D-Matrix-v2-Trainingszeilen aus der upstream gelöschten `data.jsonl` gesichert (`03_Code/internal_llm/data.jsonl.local-backup-2026-07-04`, 507 Zeilen). Bewertung: abgeleitete Daten — die Quell-Wissensbasis existiert hier reicher (`03_Code/core/knowledge/Geisteskrankheiten_4D_Matrix_v2–v7*.md` + `ingest_v*_training.py`). Keine Reintegration nötig; Backup bleibt als Sicherung.
