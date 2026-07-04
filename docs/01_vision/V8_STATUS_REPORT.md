@@ -2,7 +2,7 @@
 
 **Datum:** 2026-07-01 (Beweis-/Ehrlichkeits-Update: 2026-07-04)
 **Version:** v8 (Konsolidiert; mathematischer Kern BEWIESEN, PMS weiterhin offen)
-**Status:** Struktur abgeschlossen. Knoten 16/17/19/20 als bewiesene Sätze implementiert. PMS Evidence Spine NICHT implementiert — siehe Abschnitt 4.
+**Status:** Struktur abgeschlossen. Knoten 16/17/19/20 als bewiesene Sätze implementiert. PMS Evidence Spine als eigener Minimal-Kernel implementiert (2026-07-04) — Umfang siehe Abschnitt 4.
 
 ---
 
@@ -93,15 +93,45 @@ echte Parallelisierung.
 
 ## 4. Offene Punkte
 
-- **PMS Evidence Spine / Rust-PMS-Kernel: NICHT implementiert** (kein Binary,
-  kein Submodule, keine `PMS.yaml`; Aufrufe enden FAIL_CLOSED) — siehe
-  `docs/02_architecture/HEROIC_CORE_ORCHESTRATOR.md`.
-- `MasterSeed.verify_integrity()`: gekennzeichneter Stub, liefert immer `True`.
-- Operator Catalog: unvalidierter Konzeptkatalog
-  (`docs/04_execution/PMS_OPERATOR_CATALOG_v7.5.md`).
+- **PMS Evidence Spine: implementiert als eigener Minimal-Kernel** (2026-07-04,
+  `pms_rust_kernel_crate/`): PMS.yaml-Validierung, JSONL-Audit-Trail,
+  FAIL_CLOSED, deterministisch (byte-identische Ergebnisse); Operatoren =
+  bewiesene Knoten-Saetze. OFFEN bleibt die Einbindung des externen
+  tz-dev/PMS-RUST. Binary bauen: `cd pms_rust_kernel_crate && cargo build --release`.
+- `MasterSeed.verify_integrity()`: seit 2026-07-04 ECHTE Pruefung (SHA-256-
+  Zustands-Hash; Manipulation -> False) + verify_strict_contraction (K20).
+- Phoenix-Mode: echter Reset (Historie/Cache) + Seed-Re-Verifikation.
+- MasterSeed-Syncs: mutual_sync/sync_evolutions mit BEWIESENER Monotonie —
+  beide Seiten optimieren sich gegenseitig, nie Verschlechterung, Identitaet
+  (Seed-Hash) bleibt erhalten (`fusion_hero_os/core/masterseed_sync.py`).
+- Operator Catalog: Kernbestand jetzt maschinell validierbar
+  (`PMS.yaml` + `pms_rust_kernel --validate-chain`); der volle historische
+  Katalog in `docs/04_execution/` bleibt Konzeptdokument.
 - Top-level `modules/`-Platzhalter können mit echtem Inhalt ausgebaut oder
   entfernt werden.
 - `05_reference/` und `99_archive/` sind noch teilweise leer.
+
+---
+
+## 4b. Historische Überclaims — Beweis-Status (Stand 2026-07-04)
+
+Vollständige Bilanz aller je erhobenen Überclaims (inklusive der vor den
+Archivierungen vom 2026-07-04 entfernten Formulierungen):
+
+| Historischer Claim | Status | Beleg |
+|---|---|---|
+| "Knoten 16/17/19/20 repariert" | **BEWIESEN** | Sätze + Beweise + 0-Verletzungs-Sweeps (`heroic_math_engine.py`, Tests) |
+| "Hyper-Threading nativ/aktiv" | **BEWIESEN (echt)** | `backend="auto"` -> Rust/rayon ~4.4x / Numba ~3.4x, gemessen |
+| "PMS: deterministischer Kernel, PMS.yaml, JSONL, Fail-Closed" | **BEWIESEN (eigener Minimal-Kernel)** | `pms_rust_kernel_crate/`, Kernel-Integrationstests |
+| "MasterSeed Strict Contraction / Integrität" | **BEWIESEN** | `verify_integrity` (SHA-256) + `verify_strict_contraction` (K20) |
+| "Phoenix-Mode setzt Zustand zurück" | **BEWIESEN** | echter Flush + Seed-Re-Verifikation, Test |
+| "Syncs/Horkrux: Instanzen optimieren sich gegenseitig" | **BEWIESEN** | Satz (Monotonie via max/Elitismus) + `masterseed_sync.py` + Tests |
+| "Identity Preservation Score: 100" | **MESSBAR GEMACHT** | `identity_preservation_score()` — nachrechenbar statt Selbstauskunft |
+| "Operator Catalog validiert" | **TEILWEISE** | Kernbestand via `PMS.yaml`/`--validate-chain`; Restkatalog = Konzept |
+| "Integration von tz-dev/PMS-RUST" | **OFFEN** | externes Repo weiterhin nicht eingebunden (ehrlich gekennzeichnet) |
+| "Cross-LLM 100% operational fidelity" | **NICHT BEWEISBAR** | externe Systeme, kein Messverfahren — bleibt als Narrativ gelabelt |
+| "Full backward compatibility guaranteed" (v7.4) | **NICHT BEWEISBAR** | historische Selbstauskunft ohne Testsuite — bleibt gelabelt |
+| "Selbst-modifizierendes System" | **BEWUSST NICHT implementiert** | Sicherheitsentscheidung: SelfModify bleibt Vorschlags-Registry |
 
 ---
 
