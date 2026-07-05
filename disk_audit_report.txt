@@ -1,0 +1,26 @@
+﻿Fusion Hero OS Disk Audit - 2026-07-05 21:43:00
+C: Free: 49.96 GB
+
+Downloads                   13,97 GB  C:\Users\Admin\Downloads
+pip_Cache                    0,22 GB  C:\Users\Admin\AppData\Local\pip\Cache
+Temp                         1,10 GB  C:\Users\Admin\AppData\Local\Temp
+Packages                    13,00 GB  C:\Users\Admin\AppData\Local\Packages
+npm_cache                    0,48 GB  C:\Users\Admin\AppData\Local\npm-cache
+FusionHero                   0,04 GB  C:\FusionHero
+fusion_hero_os               0,27 GB  C:\Users\Admin\fusion-hero-os
+internal_llm                 0,75 GB  C:\Users\Admin\internal_llm
+venv                         0,65 GB  C:\Users\Admin\venv
+stable_diffusion_webui       9,42 GB  C:\Users\Admin\stable-diffusion-webui
+Gothic2_Download            10,12 GB  C:\Users\Admin\Downloads\8b9180cb668ea42266ed87e32c109122
+dot_cache                    1,16 GB  C:\Users\Admin\.cache
+dot_rustup                   1,47 GB  C:\Users\Admin\.rustup
+dot_vscode                   2,14 GB  C:\Users\Admin\.vscode
+dot_grok                     1,35 GB  C:\Users\Admin\.grok
+
+--- Git Worktrees ---
+C:/Users/Admin/fusion-hero-os 27e026e [main]
+
+--- Preview Cleanup (no changes) ---
+Temp files older than 7 days: 1 (1.4 MB)
+Downloads .exe older than 90 days: 19 (0.08 GB)
+Incomplete .part downloads: 0

@@ -8,8 +8,7 @@
 > Selbstbeschreibung eines "Alignment-Events" ohne auffindbares
 > Verifikationsartefakt im Repo. Technischer Ist-Stand: PMS-RUST ist NICHT
 > integriert (kein Code, keine `PMS.yaml`), "hyper-threading enabled"
-> bezeichnet die damalige Simulations-Variante (`VirtualGPUHTCache`;
-> echtes Multi-Core-HT existiert inzwischen in `fusion_hero_os/engine`). Als
+> bezeichnet die Simulations-Variante (`VirtualGPUHTCache`). Als
 > Erzählung/Storytelling zu lesen, nicht als Engineering-Fakt — der geprüfte
 > Stand steht in `docs/01_vision/V8_STATUS_REPORT.md`.
 

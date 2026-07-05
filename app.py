@@ -1218,4 +1218,7 @@ ui.timer(8.0, auto_tick)          # autonome Hintergrundaufgaben (wenn aktiviert
 ui.timer(0.1, _warmup, once=True)
 
 if __name__ in {"__main__", "__mp_main__"}:
-    ui.run(port=8080, title="Fusion Hero OS", dark=True, reload=False)
+    # Port per Env übersteuerbar: 8080 ist auf diesem System oft schon belegt
+    # (Monorepo-Workspace-GUI); 8181 als kollisionsfreier Default.
+    ui.run(port=int(os.environ.get("FUSION_GUI_PORT", "8181")),
+           title="Fusion Hero OS", dark=True, reload=False)

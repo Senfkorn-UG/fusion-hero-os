@@ -25,15 +25,24 @@ _FUSION_GPU_STREAMS = int(os.getenv("FUSION_GPU_STREAMS", "8"))
 _enabled: bool = _FUSION_HT
 _logical_cpus: int = os.cpu_count() or multiprocessing.cpu_count() or 12
 
+# Spectrum support (0.0 = no HT, 1.0 = standard HT, 1.5-2.0 = aggressive virtual/oversub)
+# Self-regulating: autorgenerativ via metrics (load, cache, power, task_type)
+_HT_SPECTRUM: float = float(os.getenv("FUSION_HT_SPECTRUM", "1.0"))
+_HT_ADAPTIVE: bool = os.getenv("FUSION_HT_ADAPTIVE", "1").lower() in ("1", "true", "yes", "on")
+
 def _compute_workers() -> int:
     base = _logical_cpus
     if not _enabled:
         return max(1, base // 2)
-    # Aggressive scaling for HT + virtual
-    multiplier = 4 if _FUSION_PROFILE == "admin" else 2
+    # Spectrum-based: scale workers by spectrum value
+    spectrum = max(0.0, min(2.0, _HT_SPECTRUM))
+    multiplier = 2.0 + (spectrum * 2.0)  # 2.0 at 0.0 → 6.0 at 2.0
     if _FUSION_VHT_GPU:
-        multiplier = max(multiplier, 6)
-    return base * multiplier
+        multiplier = max(multiplier, 4.0 + (spectrum * 2.0))
+    if _FUSION_PROFILE == "admin":
+        multiplier *= 1.2
+    workers = int(base * multiplier)
+    return max(1, workers)
 
 _workers: int = _compute_workers()
 
@@ -49,6 +58,8 @@ def status() -> Dict[str, Any]:
         "virtual_threads": _FUSION_VTHREADS if _FUSION_VHT_GPU else 0,
         "gpu_streams": _FUSION_GPU_STREAMS if _FUSION_VHT_GPU else 0,
         "fusion_hyperthreading_env": _FUSION_HT,
+        "ht_spectrum": _HT_SPECTRUM,
+        "ht_adaptive": _HT_ADAPTIVE,
     }
     if _FUSION_VHT_GPU:
         try:
@@ -69,10 +80,39 @@ def status() -> Dict[str, Any]:
         pass
     return base
 
+def set_ht_spectrum(spectrum: float) -> Dict[str, Any]:
+    """Set spectrum (0.0-2.0). Used for spectrum-based control instead of binary."""
+    global _HT_SPECTRUM, _workers
+    _HT_SPECTRUM = max(0.0, min(2.0, float(spectrum)))
+    _workers = _compute_workers()
+    return status()
+
+def self_regulate_ht(metrics: Dict[str, float] = None) -> Dict[str, Any]:
+    """Autorgenerativ selbstregelnd: adjust spectrum based on runtime metrics.
+    Instead of on/off. Call periodically from resource_workflow or optimizer.
+    """
+    global _HT_SPECTRUM, _workers
+    if not _HT_ADAPTIVE:
+        return status()
+    m = metrics or {}
+    load = m.get("cpu_load", 0.5)
+    cache_miss = m.get("cache_miss_rate", 0.1)
+    power = m.get("power_factor", 1.0)
+    task_type = m.get("task_type_factor", 1.0)  # e.g. 1.2 for llm heavy
+
+    # Spectrum formula: base + adjustments, self-regulating
+    adjustment = (0.3 * (1.0 - load)) + (0.2 * (1.0 - cache_miss)) - (0.1 * (power - 1.0)) + (0.1 * (task_type - 1.0))
+    new_spectrum = max(0.0, min(2.0, _HT_SPECTRUM + adjustment * 0.1))
+    if abs(new_spectrum - _HT_SPECTRUM) > 0.05:
+        _HT_SPECTRUM = new_spectrum
+        _workers = _compute_workers()
+    return status()
+
 def enable(enabled: bool = True) -> Dict[str, Any]:
-    """Runtime toggle. Used by POST /api/hyperthreading."""
-    global _enabled, _workers
+    """Runtime toggle. Legacy binary path (maps to spectrum 0/1)."""
+    global _enabled, _HT_SPECTRUM, _workers
     _enabled = bool(enabled)
+    _HT_SPECTRUM = 1.0 if _enabled else 0.0
     _workers = _compute_workers()
     return status()
 
@@ -80,7 +120,7 @@ def disable() -> Dict[str, Any]:
     return enable(False)
 
 def is_hyperthreading_enabled() -> bool:
-    return _enabled
+    return _enabled and _HT_SPECTRUM > 0.1
 
 
 def logical_cpu_count() -> int:

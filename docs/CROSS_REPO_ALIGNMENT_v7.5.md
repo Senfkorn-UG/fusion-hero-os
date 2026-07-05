@@ -6,9 +6,8 @@
 > **Ehrlicher Status (2026-07-02):** Dieses Dokument beschreibt ein
 > Alignment auf KONZEPT-Ebene. In diesem Repo ist von PMS-RUST nichts
 > integriert (kein Code, kein Submodule, keine `PMS.yaml`), und
-> "hyper-threading" bezeichnet HIER die damalige Simulations-Variante
-> (`VirtualGPUHTCache`); echtes Multi-Core-HT existiert seit 2026-07-04 in
-> `fusion_hero_os/engine` — Details in `docs/01_vision/V8_STATUS_REPORT.md`.
+> "hyper-threading" bezeichnet die Simulations-Variante
+> (`VirtualGPUHTCache`) — Details in `docs/01_vision/V8_STATUS_REPORT.md`.
 > Hinweis: Es existiert eine abweichende Kopie unter
 > `docs/03_integration/CROSS_REPO_ALIGNMENT_v7.5.md`.
 

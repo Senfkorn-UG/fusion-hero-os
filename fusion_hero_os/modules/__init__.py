@@ -24,6 +24,10 @@ from fusion_hero_os.modules.mer import MERModule
 from fusion_hero_os.modules.qubo_integration import QUBOIntegrationCoreModule
 from fusion_hero_os.modules.self_modify import SelfModifyCoreModule
 from fusion_hero_os.modules.weltraudaimonia import WeltraudaimoniaModule
+from fusion_hero_os.modules.heroic_llm_ea import HeroicLLMEAOrchestrator
+from fusion_hero_os.modules.image_orchestrator import HeroicImageOrchestrator
+from fusion_hero_os.modules.timespace_token import TimespaceTokenCoreModule
+from fusion_hero_os.modules.phone_link import PhoneLinkCoreModule
 
 #: Alle Core-Module, die :func:`fusion_hero_os.core.dispatcher.build_default_dispatcher`
 #: standardmäßig registriert.
@@ -38,6 +42,10 @@ ALL_CORE_MODULES: List[Type[BaseModule]] = [
     LiveProcessTrackingCoreModule,
     GenerationalEvolutionProtocolCoreModule,
     QUBOIntegrationCoreModule,
+    HeroicLLMEAOrchestrator,
+    HeroicImageOrchestrator,
+    TimespaceTokenCoreModule,
+    PhoneLinkCoreModule,
 ]
 
 __all__ = [
@@ -52,4 +60,8 @@ __all__ = [
     "QUBOIntegrationCoreModule",
     "SelfModifyCoreModule",
     "WeltraudaimoniaModule",
+    "HeroicLLMEAOrchestrator",
+    "HeroicImageOrchestrator",
+    "TimespaceTokenCoreModule",
+    "PhoneLinkCoreModule",
 ]

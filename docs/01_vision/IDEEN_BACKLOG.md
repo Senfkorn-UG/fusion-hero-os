@@ -13,14 +13,14 @@ markiert ohne nachprüfbaren Beleg (Datei, Repo, Commit).
 ## A. Nicht umgesetzt (reines Konzept)
 
 ### A1. Timespace-Upgrade + geometrisches Token-Management
-- **Quelle:** `v2_beta/Timespace_Upgrade_Proposal_v2_beta.md` + `v2_beta/TokenManagementSystem.py` (beide Ein-Zeilen-Platzhalter)
-- **Befund:** Das echte `03_Code/TokenManagementSystem.py` (8,8 KB) enthält nichts Geometrisches/Timespace.
-- **Status:** OFFEN — laut User (2026-07-04) müsste eine Umsetzung **bei Grok** existieren; Import steht aus. Lokale `.grok/`-Spuren enthalten nur Skill-Prompts + User-Memory, keine Implementierung.
+- **Quelle:** `v2_beta/Timespace_Upgrade_Proposal_v2_beta.md` + `v2_beta/TokenManagementSystem.py`
+- **Befund:** Scaffold `03_Code/timespace_token_management.py` (geometrische Priorität + TMS-Brücke, 2026-07-05). Volle Zeitaum-Vision aus Grok-Projekten nicht exportiert.
+- **Status:** TEILWEISE — Minimal-Scaffold implementiert; volle Grok-Version offen.
 
 ### A2. HeroicLLM-EA Orchestrator (LLM + Evolutionary Computation)
 - **Quelle:** PDF `06_Master_Archive/04_Architecture/ALTE_Frau_95g_Neuste_Optimierungsalgorithmen_Integration_v1.0.pdf`
 - **Konzept:** LLM Proposal Engine + Evolutionary Selector + hierarchisches Mutations-Gedächtnis + autonome PeerReview-Layer; Pilot für Prompt-Variationen der Campfire-Serie.
-- **Status:** OFFEN — kein Code in fusion-hero-os oder den 10 weiteren GitHub-Repos gefunden; laut User müsste eine Fassung **bei Grok** existieren.
+- **Status:** TEILWEISE — Scaffold `fusion_hero_os/modules/heroic_llm_ea/` (Stub-LLM, echte Fitness/Memory, 2026-07-05). Echter Provider/Campfire-Pilot offen.
 
 ### A3. tz-dev/PMS-RUST-Einbindung
 - **Quelle:** V8-Strategie/Synthese
@@ -46,7 +46,7 @@ markiert ohne nachprüfbaren Beleg (Datei, Repo, Commit).
 
 ### A8. HeroicImageOrchestrator / Bildgenerierungs-Pipeline mit Rate-Limit-Orchestrator
 - **Quelle:** PDFs `ALTE_Frau_95g_Bildgenerierungs_Pipeline_Rate_Limit_Loesung_v1.0.pdf`, `ALTE_Frau_95g_Real_Foto_Integration_Pipeline_v1.0.pdf`
-- **Status:** OFFEN in diesem Repo — laut User müsste eine Fassung **bei Grok** existieren. Kandidat für externe Teil-Umsetzung: Repo `95guknow/mister-Contributor-gui` (JS/TS-GUI, Inhalt noch nicht geprüft).
+- **Status:** TEILWEISE — Scaffold `fusion_hero_os/modules/image_orchestrator/` (Dry-Run, YAML Identity, Rate-Limiter, 2026-07-05). Echte Bild-API + mister-Contributor-gui-Anbindung offen.
 
 ---
 
