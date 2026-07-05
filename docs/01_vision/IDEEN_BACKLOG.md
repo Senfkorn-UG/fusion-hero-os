@@ -96,3 +96,27 @@ markiert ohne nachprüfbaren Beleg (Datei, Repo, Commit).
 3. **Bridge-Port:** ENTSCHIEDEN + UMGESETZT — siehe B2.
 4. **Core-Patent (A7):** weiterhin ungeklärt — nur mit User-/Grok-Wissen klärbar.
 5. **Gerettete Trainingsdaten (2026-07-04):** Beim Sync der Zweitkopie `C:\Users\Admin\fusion-hero-os` wurden 42 lokale 4D-Matrix-v2-Trainingszeilen aus der upstream gelöschten `data.jsonl` gesichert (`03_Code/internal_llm/data.jsonl.local-backup-2026-07-04`, 507 Zeilen). Bewertung: abgeleitete Daten — die Quell-Wissensbasis existiert hier reicher (`03_Code/core/knowledge/Geisteskrankheiten_4D_Matrix_v2–v7*.md` + `ingest_v*_training.py`). Keine Reintegration nötig; Backup bleibt als Sicherung.
+
+---
+
+## E. Ideenrunde 2026-07-05 — Claude-Sweep + Gemini-Synthese v9
+
+**Quellen:** Repo-Sweep 2026-07-05 (8 Claude-Vorschläge aus Backlog + verworfenen
+Ansätzen), Gemini-Deep-Research-Formalisierung („Hero Space", CRDT/Gossip,
+proof_registry) — Review mit Verdicts: `docs/01_vision/GEMINI_SYNTHESIS_v9_REVIEW.md`.
+**Maschinelle Verankerung:** `proof_registry.yaml` + `scripts/check_proof_registry.py` (CI-Gate).
+
+| # | Idee | Status | Registry-Claim |
+|---|------|--------|----------------|
+| E1 | Beweis-Registry + CI-Gate | **UMGESETZT 2026-07-05** (21 Claims, 15 BEWIESEN ↔ 29 Tests) | — (ist die Registry selbst) |
+| E2 | Sync-Kern als Join-Halbverband (CvRDT, paarweise) | **UMGESETZT 2026-07-05** (`tests/test_masterseed_semilattice.py`) | SYNC-SEMILATTICE ✅ |
+| E3 | Horkrux-Gossip-Netz (N Knoten, O(log N)-Konvergenz) | OFFEN — nächster Schritt: `fusion_hero_os/core/horkrux_gossip.py` + Runden-Property-Test | GOSSIP-LOGN |
+| E4 | QUBO-Scheduler für Supervisor (Pipeline TaskGraph→QUBO-Builder→parallel_anneal) | OFFEN — Benchmark vs. Heuristik ist das Erfolgskriterium; KEIN Quanten-Backend (Gemini-QPU-Teil abgelehnt) | QUBO-SCHEDULER-NUTZEN |
+| E5 | Performance-Orakel (Benchmark-JSONL + Regression statt CNN) | OFFEN — liefert B4-Benchmarks mit | ORACLE-PREDICT |
+| E6 | Timespace-Token-Management als MMR-QUBO (lokal, ohne Grok-Wartezeit) | OFFEN — bei Grok-Eingang (A1) gegeneinander benchmarken | TIMESPACE-QUBO |
+| E7 | Ehrlicher LoRA-Track (erst versiegeltes Holdout + deterministische Eval, dann Training) | OFFEN — Ziel F1 ≥ 10 % (von 1,97 %) | LORA-F1 |
+| E8 | Hörbarer Schwarm (MessageBus → tts_router, Piper-Backend) | OFFEN — Demo-Kandidat; tts_router seit 2026-07-05 importierbar | — |
+
+**Abgelehnt (ehrlich dokumentiert, nicht vergessen):** D-Wave/QPU-Integration,
+CNN/GP-Surrogate als Startpunkt, BFT-Behauptung aus CRDT allein (heruntergestuft
+auf OFFEN: BFT-ROBUSTHEIT), DPP-Formalismus für v1.
