@@ -20,23 +20,37 @@ Usage:
 import os
 import shutil
 import argparse
+import platform
 from datetime import datetime, timedelta
 from pathlib import Path
 
 # ==================== CONFIGURATION ====================
 CORE_BASE = Path.home() / "ALTE_Frau_95g_Core"
+FUSION_HERO_BASE = Path("C:/FusionHero")
+DOWNLOADS = Path.home() / "Downloads"
 
 # Folders
 ARCHIVE_DIR = CORE_BASE / "10_Archiv"
 TEMP_DIR = CORE_BASE / "99_Temp"
 
 # Age thresholds (in days)
-IMAGE_ARCHIVE_AGE = 30          # Move images older than this to archive
-ZIP_DELETE_AGE = 60             # Delete ZIPs older than this
-LOG_DELETE_AGE = 14             # Delete logs older than this
+IMAGE_ARCHIVE_AGE = 30
+ZIP_DELETE_AGE = 60
+LOG_DELETE_AGE = 14
+TEMP_DELETE_AGE = 7
+INSTALLER_DELETE_AGE = 90
 
-DRY_RUN = True                  # Safety default
+DRY_RUN = True
 # =======================================================
+
+
+def _windows_temp_dir() -> Path:
+    local = os.environ.get("LOCALAPPDATA", "")
+    return Path(local) / "Temp" if local else Path.home() / "AppData" / "Local" / "Temp"
+
+
+def _pip_cache_dir() -> Path:
+    return Path(os.environ.get("PIP_CACHE_DIR", _windows_temp_dir().parent / "pip" / "Cache"))
 
 
 def log(message):
@@ -98,15 +112,90 @@ def cleanup_zips(dry_run=True):
 def cleanup_logs(dry_run=True):
     log("=== Cleaning up old log files ===")
     log_count = 0
-    for log_file in Path("/tmp").glob("alte_frau_*.log"):
-        if get_file_age_days(log_file) > LOG_DELETE_AGE:
-            if dry_run:
-                log(f"  [DRY] Would delete: {log_file.name}")
-            else:
-                log_file.unlink()
-                log(f"  Deleted: {log_file.name}")
-            log_count += 1
+    log_dirs = [_windows_temp_dir()]
+    if platform.system() != "Windows":
+        log_dirs.append(Path("/tmp"))
+    for log_dir in log_dirs:
+        if not log_dir.exists():
+            continue
+        for log_file in log_dir.glob("alte_frau_*.log"):
+            if get_file_age_days(log_file) > LOG_DELETE_AGE:
+                if dry_run:
+                    log(f"  [DRY] Would delete: {log_file.name}")
+                else:
+                    log_file.unlink()
+                    log(f"  Deleted: {log_file.name}")
+                log_count += 1
     log(f"Log files processed: {log_count}")
+
+
+def cleanup_temp_files(dry_run=True):
+    log("=== Cleaning up old temp files ===")
+    temp_dir = _windows_temp_dir()
+    if not temp_dir.exists():
+        log(f"  Temp dir missing: {temp_dir}")
+        return
+    removed = 0
+    for item in temp_dir.iterdir():
+        if not item.is_file():
+            continue
+        if get_file_age_days(item) <= TEMP_DELETE_AGE:
+            continue
+        if dry_run:
+            log(f"  [DRY] Would delete: {item.name}")
+        else:
+            item.unlink(missing_ok=True)
+            log(f"  Deleted: {item.name}")
+        removed += 1
+    log(f"Temp files processed: {removed}")
+
+
+def cleanup_old_download_installers(dry_run=True):
+    log("=== Cleaning up old download installers ===")
+    if not DOWNLOADS.exists():
+        return
+    removed = 0
+    for exe in DOWNLOADS.glob("*.exe"):
+        if get_file_age_days(exe) <= INSTALLER_DELETE_AGE:
+            continue
+        if dry_run:
+            log(f"  [DRY] Would delete: {exe.name}")
+        else:
+            exe.unlink(missing_ok=True)
+            log(f"  Deleted: {exe.name}")
+        removed += 1
+    for part in DOWNLOADS.glob("*.part"):
+        if dry_run:
+            log(f"  [DRY] Would delete: {part.name}")
+        else:
+            part.unlink(missing_ok=True)
+            log(f"  Deleted: {part.name}")
+        removed += 1
+    log(f"Installer/part files processed: {removed}")
+
+
+def cleanup_fusion_hero_caches(dry_run=True):
+    log("=== Cleaning FusionHero cache folders ===")
+    cache_dirs = [
+        FUSION_HERO_BASE / "LongTermCache",
+        FUSION_HERO_BASE / "QuboCache",
+    ]
+    removed = 0
+    for cache_dir in cache_dirs:
+        if not cache_dir.exists():
+            continue
+        for item in cache_dir.rglob("*"):
+            if not item.is_file():
+                continue
+            if get_file_age_days(item) <= 30:
+                continue
+            if dry_run:
+                log(f"  [DRY] Would delete: {item}")
+            else:
+                item.unlink(missing_ok=True)
+                log(f"  Deleted: {item}")
+            removed += 1
+    log(f"FusionHero cache files processed: {removed}")
 
 
 def show_disk_usage():
@@ -138,6 +227,10 @@ def main():
     cleanup_images(DRY_RUN)
     cleanup_zips(DRY_RUN)
     cleanup_logs(DRY_RUN)
+    if platform.system() == "Windows":
+        cleanup_temp_files(DRY_RUN)
+        cleanup_old_download_installers(DRY_RUN)
+        cleanup_fusion_hero_caches(DRY_RUN)
     show_disk_usage()
 
     log("Cleanup finished.")
