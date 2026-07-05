@@ -536,6 +536,82 @@ async def api_bridge_ipc_dispatch(payload: dict = None):
     return await asyncio.to_thread(ipc_dispatch, module, payload.get("payload"))
 
 
+@router.get("/api/phone-link/status")
+async def api_phone_link_status():
+    from fusion_hero_os.integrations.phone_link import phone_link_status
+
+    return await asyncio.to_thread(phone_link_status)
+
+
+@router.get("/api/settings/schema")
+async def api_settings_schema():
+    from fusion_settings import get_schema
+    return get_schema()
+
+
+@router.get("/api/settings")
+async def api_settings_get():
+    from fusion_settings import get_values
+    return get_values()
+
+
+@router.post("/api/settings")
+async def api_settings_set(payload: dict = None):
+    from fusion_settings import apply_settings
+    payload = payload or {}
+    updates = payload.get("settings") or payload
+    return await asyncio.to_thread(apply_settings, updates, payload.get("set_by", "api"))
+
+
+@router.post("/api/settings/reset")
+async def api_settings_reset():
+    from fusion_settings import reset_defaults
+    return await asyncio.to_thread(reset_defaults)
+
+
+@router.post("/api/watch/room")
+async def api_watch_create_room(payload: dict = None):
+    from watch_party import get_watch_manager
+
+    payload = payload or {}
+    mgr = get_watch_manager()
+    room = mgr.create_room(payload.get("url", ""))
+    base = payload.get("base_url", "http://127.0.0.1:8000")
+    return mgr.room_info(room.room_id, base_url=base)
+
+
+@router.get("/api/watch/room/{room_id}")
+async def api_watch_room_info(room_id: str):
+    from watch_party import get_watch_manager
+
+    return get_watch_manager().room_info(room_id)
+
+
+@router.get("/api/watch/network")
+async def api_watch_network():
+    from watch_party import local_network_base
+
+    base = local_network_base()
+    return {"lan_base": base, "hint": "QR/Link fürs Handy im gleichen WLAN"}
+
+
+@router.get("/api/watch/room/{room_id}/qr")
+async def api_watch_room_qr(room_id: str, size: int = 240):
+    from urllib.parse import quote
+
+    from fastapi.responses import RedirectResponse
+
+    from watch_party import get_watch_manager
+
+    info = get_watch_manager().room_info(room_id)
+    if not info.get("ok"):
+        return {"ok": False, "error": "room_not_found"}
+    join = info["join_url"]
+    dim = max(120, min(512, int(size)))
+    img = f"https://api.qrserver.com/v1/create-qr-code/?size={dim}x{dim}&data={quote(join)}"
+    return RedirectResponse(url=img)
+
+
 @router.get("/api/viz/geisterjagd-banach")
 async def api_viz_geisterjagd_banach(tick: bool = True):
     from core.geisterjagd_banach_viz import get_viz, build_hints_from_system

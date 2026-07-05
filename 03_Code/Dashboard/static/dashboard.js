@@ -4,8 +4,12 @@
   const WS_URL = `${proto}//${location.host}/ws`;
   let ws;
   const events = [];
-  const maxEvents = 500;
+  let maxEvents = 500;
   let latestViz = null;
+  let settingsSchema = null;
+  let settingsDraft = { env: {}, ui: {} };
+  let settingsActiveTab = 'performance';
+  const pollTimers = { metrics: null, bridge: null, phone: null, viz: null };
 
   const LAYER_NAMES = ['L0 Seed', 'L1 Review', 'L2 α', 'L3 Audit', 'L4 PMS', 'L5 Quad', 'L6 ω'];
 
@@ -381,21 +385,255 @@
     }
   }
 
+  function setPollTimer(name, fn, ms) {
+    if (pollTimers[name]) clearInterval(pollTimers[name]);
+    pollTimers[name] = setInterval(fn, ms);
+  }
+
+  function applyUiSettings(ui) {
+    ui = ui || {};
+    const bridgePanel = document.getElementById('bridge-panel');
+    const phonePanel = document.getElementById('phone-panel');
+    if (bridgePanel) bridgePanel.classList.toggle('panel-hidden', ui.bridge_panel === false);
+    if (phonePanel) phonePanel.classList.toggle('panel-hidden', ui.phone_link_panel === false);
+    if (ui.event_stream_max) maxEvents = parseInt(ui.event_stream_max, 10) || 500;
+    const bridgeMs = parseInt(ui.poll_bridge_ms, 10) || 4000;
+    const phoneMs = parseInt(ui.poll_phone_ms, 10) || 8000;
+    const metricsMs = parseInt(ui.poll_metrics_ms, 10) || 1200;
+    setPollTimer('bridge', fetchBridgeStatus, bridgeMs);
+    setPollTimer('phone', fetchPhoneLinkStatus, phoneMs);
+    setPollTimer('metrics', fetchMetrics, metricsMs);
+    fetchBridgeStatus();
+    fetchPhoneLinkStatus();
+    fetchMetrics();
+  }
+
   function initBridgeUI() {
     const dispatchBtn = document.getElementById('bridge-dispatch-btn');
     const refreshBtn = document.getElementById('bridge-refresh-btn');
     if (dispatchBtn) dispatchBtn.addEventListener('click', runBridgeDispatch);
     if (refreshBtn) refreshBtn.addEventListener('click', fetchBridgeStatus);
-    fetchBridgeStatus();
-    setInterval(fetchBridgeStatus, 4000);
+  }
+
+  async function fetchPhoneLinkStatus() {
+    const dot = document.getElementById('phone-status-dot');
+    const badge = document.getElementById('phone-status-badge');
+    const feed = document.getElementById('phone-feed');
+    const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+    try {
+      const r = await fetch('/api/phone-link/status');
+      const st = await r.json();
+      const ok = st.connected === true;
+      if (dot) dot.className = ok ? 'status-online' : (st.host_running ? 'status-warning' : 'status-offline');
+      if (badge) badge.textContent = ok ? 'VERBUNDEN' : (st.host_running ? 'HOST' : 'OFFLINE');
+      set('phone-msg-count', st.message_count ?? '--');
+      set('phone-conv-count', st.conversation_count ?? '--');
+      set('phone-unread', st.unread_total ?? '--');
+      if (feed) {
+        const msgs = st.recent_messages || [];
+        if (!msgs.length) {
+          feed.innerHTML = '<div class="phone-feed-empty">Keine gespiegelten Nachrichten.</div>';
+        } else {
+          feed.innerHTML = msgs.map((m) => {
+            const ts = m.timestamp ? new Date(m.timestamp).toLocaleString('de-DE') : '';
+            const from = m.from_masked || m.from || '?';
+            const body = (m.body_preview || '').replace(/</g, '&lt;');
+            return `<div class="phone-feed-item"><span class="phone-feed-from">${from}</span><span class="phone-feed-ts">${ts}</span><div class="phone-feed-body">${body}</div></div>`;
+          }).join('');
+        }
+      }
+      return st;
+    } catch (err) {
+      if (dot) dot.className = 'status-offline';
+      if (feed) feed.textContent = `Phone Link offline: ${err.message}`;
+      return null;
+    }
+  }
+
+  function initPhoneLinkUI() { /* polling via applyUiSettings */ }
+
+  function getDraftValue(key, spec) {
+    const scope = spec.scope === 'ui' ? 'ui' : 'env';
+    const store = settingsDraft[scope] || {};
+    const uiKey = key.startsWith('ui.') ? key.slice(3) : key;
+    const lookup = scope === 'ui' ? (store[uiKey] !== undefined ? store[uiKey] : store[key]) : store[key];
+    if (lookup !== undefined) return lookup;
+    if (spec.type === 'bool') return false;
+    if (spec.type === 'multi_enum') return [];
+    return spec.default || '';
+  }
+
+  function renderSettingsGroup(groupId) {
+    const body = document.getElementById('settings-body');
+    if (!body || !settingsSchema) return;
+    const specs = settingsSchema.settings.filter((s) => s.group === groupId);
+    body.innerHTML = `<div class="settings-group active" data-group="${groupId}">` +
+      specs.map((spec) => {
+        const val = getDraftValue(spec.key, spec);
+        let control = '';
+        if (spec.type === 'bool') {
+          const on = val === true || val === '1' || val === 1;
+          control = `<label class="settings-toggle"><input type="checkbox" data-key="${spec.key}" ${on ? 'checked' : ''}><span class="settings-toggle-slider"></span></label>`;
+        } else if (spec.type === 'enum') {
+          const opts = (spec.options || []).map((o) =>
+            `<option value="${o.value}"${String(val) === String(o.value) ? ' selected' : ''}>${o.label}</option>`
+          ).join('');
+          control = `<select class="settings-select" data-key="${spec.key}">${opts}</select>`;
+        } else if (spec.type === 'multi_enum') {
+          const selected = Array.isArray(val) ? val : String(val || '').split(',').filter(Boolean);
+          control = `<div class="settings-multi">${(spec.options || []).map((o) => {
+            const chk = selected.includes(o.value) ? ' checked' : '';
+            return `<label><input type="checkbox" data-key="${spec.key}" data-multi value="${o.value}"${chk}> ${o.label}</label>`;
+          }).join('')}</div>`;
+        }
+        return `<div class="settings-row"><div><div class="settings-label">${spec.label}</div><div class="settings-desc">${spec.description || ''}</div></div><div class="settings-control">${control}</div></div>`;
+      }).join('') + '</div>';
+
+    body.querySelectorAll('input[data-key]:not([data-multi])').forEach((el) => {
+      el.addEventListener('change', () => {
+        const spec = settingsSchema.settings.find((s) => s.key === el.dataset.key);
+        const scope = spec.scope === 'ui' ? 'ui' : 'env';
+        const uiKey = el.dataset.key.startsWith('ui.') ? el.dataset.key.slice(3) : el.dataset.key;
+        settingsDraft[scope][uiKey] = el.checked;
+      });
+    });
+    body.querySelectorAll('select[data-key]').forEach((el) => {
+      el.addEventListener('change', () => {
+        const spec = settingsSchema.settings.find((s) => s.key === el.dataset.key);
+        const scope = spec.scope === 'ui' ? 'ui' : 'env';
+        const uiKey = el.dataset.key.startsWith('ui.') ? el.dataset.key.slice(3) : el.dataset.key;
+        settingsDraft[scope][uiKey] = el.value;
+      });
+    });
+    body.querySelectorAll('input[data-multi]').forEach((el) => {
+      el.addEventListener('change', () => {
+        const key = el.dataset.key;
+        const spec = settingsSchema.settings.find((s) => s.key === key);
+        const scope = spec.scope === 'ui' ? 'ui' : 'env';
+        const checked = [...body.querySelectorAll(`input[data-multi][data-key="${key}"]:checked`)].map((c) => c.value);
+        settingsDraft[scope][key] = checked;
+      });
+    });
+  }
+
+  function renderSettingsTabs() {
+    const tabs = document.getElementById('settings-tabs');
+    if (!tabs || !settingsSchema) return;
+    tabs.innerHTML = settingsSchema.groups.map((g) =>
+      `<button type="button" class="settings-tab${g.id === settingsActiveTab ? ' active' : ''}" data-tab="${g.id}">${g.label}</button>`
+    ).join('');
+    tabs.querySelectorAll('[data-tab]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        settingsActiveTab = btn.dataset.tab;
+        tabs.querySelectorAll('.settings-tab').forEach((t) => t.classList.toggle('active', t.dataset.tab === settingsActiveTab));
+        renderSettingsGroup(settingsActiveTab);
+      });
+    });
+    renderSettingsGroup(settingsActiveTab);
+  }
+
+  async function openSettings() {
+    const overlay = document.getElementById('settings-overlay');
+    const status = document.getElementById('settings-status');
+    if (!overlay) return;
+    if (status) status.textContent = 'Lade…';
+    try {
+      const [schema, values] = await Promise.all([
+        fetch('/api/settings/schema').then((r) => r.json()),
+        fetch('/api/settings').then((r) => r.json()),
+      ]);
+      settingsSchema = schema;
+      settingsDraft = { env: { ...values.env }, ui: { ...values.ui } };
+      renderSettingsTabs();
+      overlay.hidden = false;
+      if (status) status.textContent = '';
+    } catch (err) {
+      if (status) status.textContent = `Fehler: ${err.message}`;
+    }
+  }
+
+  function closeSettings() {
+    const overlay = document.getElementById('settings-overlay');
+    if (overlay) overlay.hidden = true;
+  }
+
+  async function saveSettings() {
+    const status = document.getElementById('settings-status');
+    if (status) status.textContent = 'Speichern…';
+    const payload = {};
+    (settingsSchema.settings || []).forEach((spec) => {
+      const scope = spec.scope === 'ui' ? 'ui' : 'env';
+      const uiKey = spec.key.startsWith('ui.') ? spec.key.slice(3) : spec.key;
+      const v = settingsDraft[scope][uiKey] !== undefined ? settingsDraft[scope][uiKey] : settingsDraft[scope][spec.key];
+      if (v !== undefined) payload[spec.key] = v;
+    });
+    try {
+      const res = await fetch('/api/settings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ settings: payload }),
+      });
+      const data = await res.json();
+      if (data.values) {
+        settingsDraft = { env: { ...data.values.env }, ui: { ...data.values.ui } };
+        applyUiSettings(data.values.ui);
+      }
+      if (status) status.textContent = `Gespeichert (${(data.applied_env || []).length} env, ${(data.applied_ui || []).length} ui)`;
+      events.unshift({ type: 'settings', msg: 'Einstellungen aktualisiert' });
+      renderEvents();
+      setTimeout(closeSettings, 600);
+    } catch (err) {
+      if (status) status.textContent = `Fehler: ${err.message}`;
+    }
+  }
+
+  async function resetSettings() {
+    const status = document.getElementById('settings-status');
+    if (status) status.textContent = 'Setze Standard…';
+    try {
+      const data = await fetch('/api/settings/reset', { method: 'POST' }).then((r) => r.json());
+      if (data.values) {
+        settingsDraft = { env: { ...data.values.env }, ui: { ...data.values.ui } };
+        applyUiSettings(data.values.ui);
+        renderSettingsTabs();
+      }
+      if (status) status.textContent = 'Standard wiederhergestellt';
+    } catch (err) {
+      if (status) status.textContent = `Fehler: ${err.message}`;
+    }
+  }
+
+  function initSettingsUI() {
+    const openBtn = document.getElementById('settings-open-btn');
+    const closeBtn = document.getElementById('settings-close-btn');
+    const cancelBtn = document.getElementById('settings-cancel-btn');
+    const saveBtn = document.getElementById('settings-save-btn');
+    const resetBtn = document.getElementById('settings-reset-btn');
+    const overlay = document.getElementById('settings-overlay');
+    if (openBtn) openBtn.addEventListener('click', openSettings);
+    if (closeBtn) closeBtn.addEventListener('click', closeSettings);
+    if (cancelBtn) cancelBtn.addEventListener('click', closeSettings);
+    if (saveBtn) saveBtn.addEventListener('click', saveSettings);
+    if (resetBtn) resetBtn.addEventListener('click', resetSettings);
+    if (overlay) overlay.addEventListener('click', (e) => { if (e.target === overlay) closeSettings(); });
+  }
+
+  async function bootSettings() {
+    try {
+      const values = await fetch('/api/settings').then((r) => r.json());
+      applyUiSettings(values.ui);
+    } catch (_) {
+      applyUiSettings({ bridge_panel: true, phone_link_panel: true, poll_bridge_ms: '4000', poll_phone_ms: '8000', poll_metrics_ms: '1200' });
+    }
   }
 
   connect();
-  setInterval(fetchMetrics, 1200);
-  setInterval(pollViz, 1800);
+  setPollTimer('viz', pollViz, 1800);
   pollViz();
-  fetchMetrics();
   initBridgeUI();
+  initPhoneLinkUI();
+  initSettingsUI();
+  bootSettings();
 
   // Init layer placeholders
   const initLayers = {};
