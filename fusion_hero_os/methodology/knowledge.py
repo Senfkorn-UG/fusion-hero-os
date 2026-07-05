@@ -8,7 +8,7 @@ Entscheidungs- und Umgebungs-Fakten als *Daten* (keine Prosa), damit andere
 Werkzeuge sie programmatisch abfragen können.
 
 Verwendung:
-    from methodology.knowledge import KNOWLEDGE, get_decision, list_modules, as_markdown
+    from fusion_hero_os.methodology.knowledge import KNOWLEDGE, get_decision, list_modules, as_markdown
     print(get_decision("visualization").rationale)
     print(as_markdown())
 
