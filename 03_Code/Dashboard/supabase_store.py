@@ -7,11 +7,43 @@ from typing import Any, Dict, List, Optional
 
 from supabase_client import get_client, is_configured
 
+# --- Tables-Ready-Gate -------------------------------------------------------
+# Ohne angewendetes Schema (supabase/schema.sql) existieren die Ziel-Tabellen
+# nicht -> jeder Insert wäre ein fehlschlagender Netzwerk-Aufruf. Da emit() bei
+# jedem Event einen save_event() feuert, würde das Supabase dauerhaft mit
+# aussichtslosen Requests fluten. Deshalb wird die Existenz EINMAL geprüft und
+# gecacht; solange die Tabellen fehlen, werden Inserts lokal übersprungen.
+# check_tables() aktualisiert den Cache — nach dem Anwenden des Schemas genügt
+# ein Aufruf (z.B. GET /api/supabase/tables), um die Persistenz scharf zu schalten.
+_TABLES_READY: Optional[bool] = None  # None = noch nicht geprüft
+
+
+def _ensure_ready() -> bool:
+    """Einmalige, gecachte Prüfung, ob die Ziel-Tabellen existieren."""
+    global _TABLES_READY
+    if _TABLES_READY is None:
+        if not is_configured() or get_client() is None:
+            _TABLES_READY = False
+        else:
+            _TABLES_READY = bool(check_tables().get("ok"))  # setzt Cache selbst
+    return bool(_TABLES_READY)
+
+
+def refresh_ready() -> bool:
+    """Cache invalidieren und neu prüfen (z.B. nachdem das Schema angewendet wurde)."""
+    global _TABLES_READY
+    _TABLES_READY = None
+    return _ensure_ready()
+
 
 def _insert(table: str, row: Dict[str, Any]) -> Dict[str, Any]:
     client = get_client()
     if not client:
         return {"ok": False, "error": "supabase client unavailable"}
+    if not _ensure_ready():
+        # Schema nicht angewendet -> nicht sinnlos gegen fehlende Tabellen schreiben
+        return {"ok": False, "skipped": True, "table": table,
+                "reason": "tables not ready (schema not applied)"}
     try:
         resp = client.table(table).insert(row).execute()
         return {"ok": True, "table": table, "count": len(resp.data or [])}
@@ -127,6 +159,10 @@ def check_tables() -> Dict[str, Any]:
         except Exception as exc:
             tables[t] = "missing" if "PGRST205" in str(exc) else f"error: {str(exc)[:120]}"
     all_exist = all(v == "exists" for v in tables.values())
+    # Gate-Cache aktualisieren: nach Anwenden des Schemas schaltet dieser Aufruf
+    # (z.B. via GET /api/supabase/tables) die Persistenz ohne Neustart scharf.
+    global _TABLES_READY
+    _TABLES_READY = all_exist
     return {
         "ok": all_exist,
         "tables": tables,
