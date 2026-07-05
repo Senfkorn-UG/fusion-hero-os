@@ -1,6 +1,8 @@
 # fusion-hero-os
 
-**ALTE_Frau_95g Heroic Core v8 – Fusion Hero OS + echtes Multi-Core-Hyperthreading**
+**Status:** v8 (Doku/Struktur konsolidiert; Kernfunktionalität teilweise/aspirational)  
+**Hyper-Threading:** `VirtualGPUHTCache` ist Simulation; echte verifizierte Mehrkern-Parallelisierung separat in `engine/mainframe.py` (numba nogil + ThreadPoolExecutor)  
+**Mathematische Fundierung:** Heroic Math Engine integriert, aber nicht abgeschlossen (Knoten 16 = Fragment, 19 = Modell mit ~29 % Monotonie-Verletzungen im Sweep, 17/20 nicht implementiert)
 
 Ein heroic Framework für Rekonstruktivistischen Eudaimonismus und maximale intellektuelle Präzision.
 
@@ -21,40 +23,13 @@ Ein heroic Framework für Rekonstruktivistischen Eudaimonismus und maximale inte
 - Branches: siehe [docs/v8/BRANCH_STRATEGY_v8.md](docs/v8/BRANCH_STRATEGY_v8.md)
 - CI: `ci.yml` + `fusion-hero-os-hyperthread.yml` (grün auf `main`); redundante/kaputte Workflows entfernt
 
-## Entwicklung lokal starten
+Es bietet eine klare Top-Down-Dokumentationsarchitektur (real fertiggestellt); die mathematische Strenge ist erklärtes Ziel, nicht erreichter Stand — siehe `docs/01_vision/V8_STATUS_REPORT.md`.
 
-```bash
-# Python-Backend/GUI (fusion_hero_os/ — installierbares Package, siehe pyproject.toml)
-pip install -e ".[dev]"
-python -m fusion_hero_os.registry           # Status aller Teilsysteme (Registry)
-python -m fusion_hero_os.core.heroic_math_engine   # Sandbox-Verifikation
-pytest
+## Aktueller Stand (v8)
 
-# Frontend (SvelteKit)
-npm install
-npm run dev
-```
+- Neue Top-Down-Dokumentationsstruktur (`01_vision/` bis `99_archive/`) — real und verifiziert
+- `core/heroic_math_engine.py` – läuft mit echten Asserts (`tests/test_heroic_math_engine.py`); die frühere Behauptung "Knoten 16–20 repariert" war eine Überclaim und ist zurückgenommen
+- Core-Python-Module mit v8-Headern versehen (kosmetisch, kein funktionales Rework)
+- `modules/` neu strukturiert — `alte_frau_95g/`, `mainframe_laden/`, `skill_creator/` sind derzeit leere Platzhalter
 
-Details zu Endpunkten und alternativen Startwegen: [.REST_API_CONFIG](.REST_API_CONFIG).
-
-## Branch Model (kurz)
-- **main** → Stabile v8-Releases (protected)
-- **develop** → Aktive Integration (wird angelegt)
-- **feature/*** → Kurzlebige Aufgaben-Branches
-- Historie → Tags + archive/-Ordner
-
-Weitere Details: docs/v8/BRANCH_STRATEGY_v8.md
-
-## Schnellstart
-```bash
-git clone https://github.com/95guknow/fusion-hero-os.git
-cd fusion-hero-os
-# Aktueller Stand auf main (v8 stable)
-```
-
-## Core
-Der unified ALTE_Frau_95g Heroic Core wird über die Registry
-(`python -m fusion_hero_os.registry`) geladen.
-
-*(Die frühere Angabe "Identity Preservation Score: 100" war eine unbelegte
-Selbstauskunft ohne Messverfahren und wurde entfernt.)*
+Siehe `docs/OVERVIEW.md` für die vollständige Struktur.

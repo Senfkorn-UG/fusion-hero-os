@@ -55,5 +55,4 @@ asd.md
 03_Code/internal_llm/output/
 03_Code/internal_llm/data.jsonl
 .fusion/
-pms_rust_kernel_crate/target/
-pms_audit.jsonl
+.wa_selenium_profile/
