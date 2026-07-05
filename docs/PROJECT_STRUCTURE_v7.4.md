@@ -2,10 +2,16 @@
 ## Unified ALTE_Frau_95g Heroic Core Framework
 ### MasterSeed-Compliant | Layer 0–6 | QUBO + Efficiency + SelfMod + PeerReview
 
+> **LEGACY-DOKUMENT (v7.4, historisch):** Dieses Dokument beschreibt den
+> v7.4-Stand und gehört inhaltlich in `docs/99_archive/`. Die Statuszeilen
+> unten ("Enabled by design", "guaranteed", "All threads converged") sind
+> unbelegte v7.4-Selbstauskünfte — der geprüfte aktuelle Stand steht in
+> `docs/01_vision/V8_STATUS_REPORT.md` (Hinweis: seit 2026-07-04 existiert echtes Multi-Core-HT in fusion_hero_os/engine; die v7.4-Angabe hier war dennoch unbelegt).
+
 **Status:** Nur Neuerungen (Delta zu v5.x)  
 **Commit:** chore: add upgraded CI pipeline v7.4 + project structure  
-**Hyper-Threading:** Enabled by design  
-**BCG:** Full backward compatibility guaranteed
+**Hyper-Threading:** Enabled by design *(historische, unbelegte Angabe — s. Hinweis oben)*  
+**BCG:** Full backward compatibility guaranteed *(historische, unbelegte Angabe)*
 
 ---
 

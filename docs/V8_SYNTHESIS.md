@@ -1,8 +1,14 @@
 # Fusion-Hero-OS v8 – Finale Synthese
 
-**Version:** v8 (Konsolidierung)  
-**Datum:** 2026-07-01  
+**Version:** v8 (Konsolidierung)
+**Datum:** 2026-07-01 (Code-Honesty-Korrektur: 2026-07-02)
 **Ziel:** Einheitliche, kohärente Gesamtsicht aller bisherigen Arbeiten unter einem klaren Modell
+
+> **Ehrlicher Status:** Der kanonische, korrigierte Status-Stand liegt in
+> `docs/01_vision/V8_SYNTHESIS.md` und `docs/01_vision/V8_STATUS_REPORT.md`.
+> Dieses Dokument beschreibt das ZIELMODELL der Synthese; der Ist-Stand ist
+> je Punkt gekennzeichnet (Stand 2026-07-04: Kern-Elemente implementiert bzw.
+> bewiesen, verbleibende Luecken explizit benannt).
 
 ---
 
@@ -19,12 +25,12 @@ Folgende Repositories und Versionen wurden zusammengeführt:
 
 ## 2. Was in v8 übernommen wird (Kern)
 
-### Technischer Kern (aus fusion-hero-os v7.5)
-- MasterSeed als Layer-0 Banach-Fixpunkt mit Strict Contraction
-- Hyper-Threading als natives Ausführungsmodell
-- PMS Evidence Spine als **native praxeologische Execution Layer**
-- Operator Catalog (validierte Δ–Ψ Chains)
-- PeerReview (5/6 Dimensions), SelfModify, EfficiencyDistillation, QUBO
+### Technischer Kern (aus fusion-hero-os v7.5) — Zielmodell, Ist-Stand je Punkt gekennzeichnet
+- MasterSeed als Layer-0 Banach-Fixpunkt mit Strict Contraction *(Ist: verify_integrity() ECHT seit 2026-07-04 — SHA-256-Zustands-Hash + gemessener Kontraktions-Check ||A||_2<1 nach Satz K20)*
+- Hyper-Threading als Ausführungsmodell *(Ist: echtes Multi-Core-Hyperthreading existiert seit 2026-07-04 in `fusion_hero_os/engine/mainframe.py` (`backend="auto"` -> Rust/rayon bzw. Numba-nogil, gemessen ~3-4x); `VirtualGPUHTCache` (03_Code) bleibt davon getrennt eine Simulation)*
+- PMS Evidence Spine als praxeologische Execution Layer *(Ist: eigener deterministischer Minimal-Kernel `pms_rust_kernel` implementiert (2026-07-04): PMS.yaml-Validierung, JSONL-Audit, FAIL_CLOSED; Operatoren = die vier bewiesenen Knoten-Saetze. Das externe tz-dev/PMS-RUST bleibt NICHT eingebunden)*
+- Operator Catalog *(Ist: Kernbestand maschinell validierbar via `PMS.yaml` + `pms_rust_kernel --validate-chain`; der volle historische Katalog in `docs/04_execution/PMS_OPERATOR_CATALOG_v7.5.md` bleibt Konzeptdokument)*
+- PeerReview (5/6 Dimensions), SelfModify, EfficiencyDistillation, QUBO *(Ist: PeerReview/QUBO haben echten Code; SelfModify ist Hook-Registry-Stub)*
 
 ### Philosophisch-Narrative Schicht (aus heroic-fusion-os-manifest)
 - Mythos – Grund – Beweis als übergreifende Struktur
@@ -33,10 +39,10 @@ Folgende Repositories und Versionen wurden zusammengeführt:
 - Die sieben Gesetze als Verfassung
 - q b ∘ als zentraler ontologischer Operator
 
-### Execution & Validierung (aus PMS-RUST)
-- Deterministischer Kernel mit `PMS.yaml` Validierung
-- JSONL-Auditierbarkeit
-- Fail-Closed AI-Bridge Prinzip
+### Execution & Validierung — eigener Minimal-Kernel (tz-dev/PMS-RUST weiterhin extern)
+- Deterministischer Kernel mit `PMS.yaml` Validierung *(ECHT seit 2026-07-04: `pms_rust_kernel_crate/` + `PMS.yaml` in diesem Repo)*
+- JSONL-Auditierbarkeit *(ECHT: SHA-256-Audit-Trail je Aufruf)*
+- Fail-Closed AI-Bridge Prinzip *(dieses Prinzip ist im Orchestrator real umgesetzt und verifiziert)*
 
 ---
 
@@ -50,11 +56,15 @@ Folgende Repositories und Versionen wurden zusammengeführt:
 
 ## 4. Architektur-Modell v8
 
+*(Zielmodell — der Ist-Stand je Layer ist in Abschnitt 2 gekennzeichnet;
+Layer 4 laeuft seit 2026-07-04 als eigener Minimal-Kernel (pms_rust_kernel); Layer 3 "Hyper-Threading"
+ist seit 2026-07-04 echt implementiert — fusion_hero_os/engine, backend="auto".)*
+
 ```
 Layer 6 ω – Master Archive & Governance
 Layer 5 – Phoenix-Mode + Co-Evolutionary Closure
-Layer 4 – PMS Evidence Spine (native Execution)
-Layer 3 – Hyper-Threading + PeerReview + EfficiencyDistillation
+Layer 4 – PMS Evidence Spine (Execution)        [ECHT seit 2026-07-04: eigener Minimal-Kernel]
+Layer 3 – Hyper-Threading + PeerReview + EfficiencyDistillation  [HT = ECHT seit 2026-07-04]
 Layer 2 – SelfModifyCore + LiveProcessTracking
 Layer 1 – Unified Modules (alte_frau_95g, mainframe_laden...)
 Layer 0 – MasterSeed (unveränderlicher Fixpunkt)
