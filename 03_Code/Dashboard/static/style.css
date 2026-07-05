@@ -156,3 +156,123 @@ body {
   50% { opacity: 0.5; }
 }
 .pulse { animation: pulse 2s infinite; }
+
+.bridge-panel {
+  border-color: #38bdf8;
+  box-shadow: 0 0 18px rgba(56, 189, 248, 0.12);
+}
+
+.bridge-badge {
+  font-size: 9px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  background: rgba(56, 189, 248, 0.15);
+  color: #38bdf8;
+  letter-spacing: 0.06em;
+}
+
+.bridge-metrics {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.bridge-metric-label {
+  display: block;
+  font-size: 9px;
+  color: var(--accent-slate);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.bridge-metric-value {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #38bdf8;
+}
+
+.bridge-modules-label {
+  font-size: 9px;
+  color: var(--accent-slate);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 0.35rem;
+}
+
+.bridge-modules {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  max-height: 72px;
+  overflow-y: auto;
+  margin-bottom: 0.75rem;
+}
+
+.bridge-module-chip {
+  font-size: 9px;
+  padding: 3px 6px;
+  border-radius: 3px;
+  border: 1px solid rgba(56, 189, 248, 0.35);
+  background: rgba(56, 189, 248, 0.08);
+  color: #bae6fd;
+}
+
+.bridge-module-chip.deep {
+  border-color: rgba(0, 212, 170, 0.5);
+  background: rgba(0, 212, 170, 0.12);
+  color: var(--accent-teal);
+}
+
+.bridge-dispatch-row {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 0.5rem;
+}
+
+.bridge-select {
+  flex: 1;
+  min-width: 140px;
+  background: #111;
+  border: 1px solid #334155;
+  color: var(--text-primary);
+  border-radius: 4px;
+  padding: 6px 8px;
+  font-size: 11px;
+  font-family: inherit;
+}
+
+.bridge-btn {
+  background: linear-gradient(135deg, #0284c7, #38bdf8);
+  color: #0a0a0f;
+  border: none;
+  border-radius: 4px;
+  padding: 6px 12px;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.bridge-btn:hover { filter: brightness(1.1); }
+
+.bridge-btn-secondary {
+  background: #1e293b;
+  color: #94a3b8;
+  border: 1px solid #334155;
+}
+
+.bridge-result {
+  font-size: 10px;
+  background: #08080c;
+  border: 1px solid #1e293b;
+  border-radius: 4px;
+  padding: 8px;
+  max-height: 140px;
+  overflow: auto;
+  margin: 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+  color: #94a3b8;
+}

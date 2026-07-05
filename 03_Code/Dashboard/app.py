@@ -407,6 +407,12 @@ async def heroic_core_event_loop():
 
 @app.on_event("startup")
 async def startup_event():
+    fast_boot = os.getenv("FUSION_AUTO_LOAD", "1") == "0"
+    if fast_boot:
+        print("[Startup] Fast boot (FUSION_AUTO_LOAD=0) — Bridge UI sofort verfügbar")
+        asyncio.create_task(heroic_core_event_loop())
+        return
+
     # Generelles AutoLoad + Faktenerkennung ZU BEGINN DES OS STARTS
     autoloader.run(phase="staged", attach_meta=True)
     detect_input_factors()
