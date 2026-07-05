@@ -17,6 +17,7 @@ import os
 import sys
 sys.path.insert(0, os.path.dirname(__file__))  # allow sibling imports for core modules
 import json
+import re
 from typing import Any, Dict, List, Optional, Tuple
 
 # --- Paths ---
@@ -60,6 +61,105 @@ def load_guide() -> List[Dict[str, Any]]:
     return _GUIDE_CACHE or []
 
 
+# Sprach-bewusste Schlüsselwörter je Domäne/Modus (Deutsch + Englisch).
+# Bewusst editierbar/erweiterbar — die "feinere Einstellung" der Domänen-Erkennung.
+# Greift nur als Fallback, wenn weder claude_science noch der HERO-GUIDE eine
+# Domäne zuweisen; überschreibt diese also nie.
+DOMAIN_KEYWORDS: Dict[str, List[str]] = {
+    "Math": [
+        "mathe", "mathematik", "gleichung", "beweis", "formel", "matrix",
+        "optimierung", "qubo", "ising", "annealing", "algorithmus", "wahrscheinlichkeit",
+        "math", "equation", "proof", "formula", "optimization", "algorithm", "probability",
+    ],
+    "Phil": [
+        "philosoph", "ethik", "moral", "tugend", "sinn", "bewusstsein",
+        "gerechtigkeit", "eudaimonie", "heroisch", "existenz",
+        "philosophy", "ethic", "virtue", "meaning", "consciousness", "justice",
+    ],
+    "Info": [
+        "information", "quelle", "recherche", "fakt", "beleg", "referenz", "wissen",
+        "definition", "erkläre", "erklär",
+        "source", "research", "fact", "reference", "knowledge", "explain",
+    ],
+}
+
+
+_DOMAIN_KEYWORDS_CACHE: Optional[Dict[str, List[str]]] = None
+
+
+def _domain_keywords_file() -> str:
+    """Pfad der optionalen Laufzeit-Override-Datei (JSON)."""
+    env = os.getenv("FUSION_DOMAIN_KEYWORDS_FILE", "").strip()
+    if env:
+        return env
+    state = os.getenv("FUSION_META_STATE", os.path.join(os.path.expanduser("~"), ".fusion-hero-os"))
+    return os.path.join(state, "domain_keywords.json")
+
+
+def get_domain_keywords(reload: bool = False) -> Dict[str, List[str]]:
+    """Effektive Domänen-Keywords = Builtins + optionale JSON-Overrides (gemerged).
+
+    Laufzeit-Konfiguration OHNE Code-Änderung: eine JSON-Datei (Pfad via env
+    FUSION_DOMAIN_KEYWORDS_FILE, sonst <FUSION_META_STATE>/domain_keywords.json)
+    erweitert die Builtins. Format: {"Math": ["..."], "NeuerModus": ["..."]}.
+    Pro Domäne werden die Keywords zu den Builtins hinzugefügt (dedupliziert,
+    lowercased); komplett neue Domänen/Modi sind erlaubt. Top-Level
+    "__replace__": true ersetzt die Builtins vollständig durch die Datei.
+    Fehlt oder defekt die Datei, gelten nur die Builtins (defensiv, kein Crash).
+    """
+    global _DOMAIN_KEYWORDS_CACHE
+    if _DOMAIN_KEYWORDS_CACHE is not None and not reload:
+        return _DOMAIN_KEYWORDS_CACHE
+    eff: Dict[str, List[str]] = {d: list(kws) for d, kws in DOMAIN_KEYWORDS.items()}
+    path = _domain_keywords_file()
+    try:
+        if os.path.exists(path):
+            with open(path, "r", encoding="utf-8") as fh:
+                data = json.load(fh)
+            if isinstance(data, dict):
+                if data.pop("__replace__", False):
+                    eff = {}
+                for d, kws in data.items():
+                    if not isinstance(kws, list):
+                        continue
+                    lows = [str(k).lower() for k in kws if str(k).strip()]
+                    base = eff.get(d, [])
+                    seen = set(base)
+                    eff[d] = base + [k for k in lows if k not in seen]
+    except Exception:
+        pass  # defekte Datei -> nur Builtins
+    _DOMAIN_KEYWORDS_CACHE = eff
+    return eff
+
+
+def reload_domain_keywords() -> Dict[str, List[str]]:
+    """Override-Datei neu einlesen (nach Änderung zur Laufzeit)."""
+    return get_domain_keywords(reload=True)
+
+
+def _kw_matches(kw: str, text: str) -> bool:
+    """Treffer, wenn kw an mind. einer Wortgrenze steht.
+
+    Fängt deutsche Komposita ("Differentialgleichung" -> "gleichung",
+    "QUBO-Optimierung" -> "optimierung") UND vermeidet Mid-Word-Fehltreffer
+    wie "fact" in "refactor" (dort steht "fact" an keiner Wortgrenze).
+    """
+    esc = re.escape(kw)
+    return re.search(r'\b' + esc + r'|' + esc + r'\b', text) is not None
+
+
+def detect_domain_by_language(q_lower: str) -> Tuple[str, int]:
+    """Sprach-bewusste Domänen-Erkennung (DE+EN) per get_domain_keywords().
+
+    Gibt (Domäne, Treffer-Anzahl) zurück; ("General", 0) wenn nichts passt.
+    Die Domäne mit den meisten (wortgrenzen-)Treffern gewinnt.
+    """
+    kw = get_domain_keywords()
+    scores = {d: sum(1 for k in kws if _kw_matches(k, q_lower)) for d, kws in kw.items()}
+    best = max(scores, key=scores.get) if scores else "General"
+    return (best, scores[best]) if scores and scores[best] > 0 else ("General", 0)
+
+
 def classify_and_normalize(query: str) -> Tuple[str, str, Optional[Dict], str]:
     """Eingabe IMMER prüfen + auto-tag + dom detection (HERO-GUIDE)."""
     query = (query or "").strip()
@@ -100,6 +200,13 @@ def classify_and_normalize(query: str) -> Tuple[str, str, Optional[Dict], str]:
             if not science_dom:
                 dom = entry.get('dom', 'General')
             break
+
+    # Sprach-bewusster Fallback: nur wenn oben nichts zugewiesen wurde.
+    # Macht deutsche Eingaben ohne HERO-GUIDE-Treffer modus-fähig (Math/Phil/Info).
+    if dom == "General" and not science_dom:
+        lang_dom, hits = detect_domain_by_language(q_lower)
+        if hits > 0:
+            dom = lang_dom
 
     normalized = query
     if not has_geltung:
