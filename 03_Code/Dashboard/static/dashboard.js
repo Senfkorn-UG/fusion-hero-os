@@ -97,6 +97,25 @@
     }).join('');
   }
 
+  function resizeVizCanvases() {
+    ['canvas-geisterjagd', 'canvas-banach'].forEach((id) => {
+      const canvas = document.getElementById(id);
+      if (!canvas) return;
+      const cell = canvas.closest('.viz-cell') || canvas.parentElement;
+      const w = Math.max(240, (cell?.clientWidth || 520) - 12);
+      const h = Math.max(160, Math.min(300, Math.round(w * 0.48)));
+      if (canvas.width !== w || canvas.height !== h) {
+        canvas.width = w;
+        canvas.height = h;
+      }
+    });
+    if (latestViz) {
+      renderGeisterjagd(latestViz);
+      renderBanach(latestViz);
+      updateVizMetrics(latestViz);
+    }
+  }
+
   function updateVizMetrics(snap) {
     const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
     const latent = (snap.ghosts || []).filter((g) => !g.manifest).length;
@@ -396,6 +415,7 @@
     const phonePanel = document.getElementById('phone-panel');
     if (bridgePanel) bridgePanel.classList.toggle('panel-hidden', ui.bridge_panel === false);
     if (phonePanel) phonePanel.classList.toggle('panel-hidden', ui.phone_link_panel === false);
+    window.dispatchEvent(new CustomEvent('fusion-panels-visibility-change'));
     if (ui.event_stream_max) maxEvents = parseInt(ui.event_stream_max, 10) || 500;
     const bridgeMs = parseInt(ui.poll_bridge_ms, 10) || 4000;
     const phoneMs = parseInt(ui.poll_phone_ms, 10) || 8000;
@@ -679,6 +699,14 @@
     }
   }
 
+  if (window.FusionResponsiveLayout) {
+    window.FusionResponsiveLayout.init('#dashboard-grid');
+    window.addEventListener('fusion-layout-change', resizeVizCanvases);
+    window.addEventListener('fusion-panels-visibility-change', () => {
+      if (window.FusionResponsiveLayout?.relayout) window.FusionResponsiveLayout.relayout();
+    });
+  }
+
   connect();
   setPollTimer('viz', pollViz, 1800);
   pollViz();
@@ -687,6 +715,7 @@
   initConnectivityUI();
   initSettingsUI();
   bootSettings();
+  resizeVizCanvases();
 
   // Init layer placeholders
   const initLayers = {};
