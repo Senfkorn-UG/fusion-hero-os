@@ -22,7 +22,12 @@ DASHBOARD = Path(__file__).resolve().parent
 FOUNDATION_ROOT = Path(os.getenv("HEROIC_FOUNDATION", r"C:\Users\Admin\heroic-core-foundation"))
 HIGHEST_LAYER_ROOT = Path(os.getenv("HEROIC_HIGHEST_LAYER", r"C:\Users\Admin\heroic-highest-layer"))
 AGENTS_DIR = Path(os.getenv("FUSION_AGENTS_DIR", r"C:\Users\Admin\.config\kilo\agents"))
-MEDIENSERVER = Path(os.getenv("FUSION_MEDIENSERVER", r"G:\Meine Ablage\Fusion_Hero_OS_v1.2"))
+try:
+    from core.medienserver_bridge import medienserver_path as _medienserver_path
+
+    MEDIENSERVER = _medienserver_path()
+except Exception:
+    MEDIENSERVER = Path(os.getenv("FUSION_MEDIENSERVER", r"G:\Meine Ablage\Fusion_Hero_OS_v1.2"))
 
 for p in (CODE_ROOT, DASHBOARD, FOUNDATION_ROOT, HIGHEST_LAYER_ROOT, ROOT):
     if p.exists() and str(p) not in sys.path:

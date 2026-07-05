@@ -10,7 +10,23 @@ from pathlib import Path
 from typing import Any, Dict, Optional
 
 ROOT = Path(__file__).resolve().parents[2]
-MEDIENSERVER = Path(os.getenv("FUSION_MEDIENSERVER", r"G:\Meine Ablage\Fusion_Hero_OS_v1.2"))
+def _medienserver_path() -> Path:
+    env = os.getenv("FUSION_MEDIENSERVER")
+    if env:
+        return Path(env)
+    home = Path.home()
+    rel = "Fusion_Hero_OS_v1.2"
+    for parent in (
+        Path(r"G:\Meine Ablage"),
+        home / "Google Drive-Streaming" / "Meine Ablage",
+        home / "Google Drive" / "Meine Ablage",
+    ):
+        if parent.exists():
+            return parent / rel
+    return Path(r"G:\Meine Ablage") / rel
+
+
+MEDIENSERVER = _medienserver_path()
 MANIFEST = MEDIENSERVER / "GROK_ONLINE_MANIFEST.json"
 
 FAST_BOOT_STEPS = int(os.getenv("FUSION_FAST_BOOT_STEPS", "600"))
