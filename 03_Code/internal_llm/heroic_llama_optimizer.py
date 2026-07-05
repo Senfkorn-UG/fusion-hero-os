@@ -79,8 +79,9 @@ def simulated_annealing_params(
     """SA über Generation-Parameter."""
     rng = np.random.default_rng(42)
     current = {"temperature": 0.7, "top_p": 0.9, "repeat_penalty": 1.1}
+    current_score = score_fn(current)
     best = dict(current)
-    best_score = score_fn(current)
+    best_score = current_score
     T = t0
 
     for step in range(steps):
@@ -90,13 +91,16 @@ def simulated_annealing_params(
             "repeat_penalty": float(np.clip(current["repeat_penalty"] + rng.normal(0, 0.05), 1.0, 1.5)),
         }
         s = score_fn(cand)
-        delta = s - best_score if s > best_score else s - score_fn(current)
+        # Metropolis: Delta immer gegen den Score des AKTUELLEN Zustands,
+        # ohne score_fn(current) erneut auszuwerten (teuer bei LLM-Evaluation).
+        delta = s - current_score
         accept = delta > 0 or rng.random() < math.exp(delta / max(T, 1e-6))
         if accept:
             current = cand
+            current_score = s
             if s > best_score:
                 best_score = s
-                best = cand
+                best = dict(cand)
         T *= 1.0 - 1.0 / steps
 
     best["score"] = best_score
