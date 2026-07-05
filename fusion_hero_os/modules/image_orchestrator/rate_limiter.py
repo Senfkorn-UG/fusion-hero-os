@@ -1,11 +1,11 @@
-"""Separat testbarer Rate-Limiter für Bildgenerierungs-Jobs."""
+"""Dual-Bucket Rate-Limiter (default + burst) für Bildgenerierung."""
 
 from __future__ import annotations
 
 import time
 from collections import deque
 from dataclasses import dataclass
-from typing import Deque, Tuple
+from typing import Deque, Dict, Tuple
 
 
 @dataclass
@@ -15,7 +15,7 @@ class RateLimitConfig:
 
 
 class TokenBucketRateLimiter:
-    """Sliding-window Rate-Limiter — rein lokal, kein Netzwerk."""
+    """Sliding-window Rate-Limiter — rein lokal."""
 
     def __init__(self, config: RateLimitConfig | None = None) -> None:
         self.config = config or RateLimitConfig()
@@ -43,3 +43,23 @@ class TokenBucketRateLimiter:
             "max": self.config.max_requests,
             "window_seconds": self.config.window_seconds,
         }
+
+
+class DualRateLimiter:
+    """Default + Burst — beide müssen erlauben."""
+
+    def __init__(self, default: RateLimitConfig, burst: RateLimitConfig) -> None:
+        self.default = TokenBucketRateLimiter(default)
+        self.burst = TokenBucketRateLimiter(burst)
+
+    def allow(self, now: float | None = None) -> Tuple[bool, float, str]:
+        ok_d, wait_d = self.default.allow(now)
+        if not ok_d:
+            return False, wait_d, "default"
+        ok_b, wait_b = self.burst.allow(now)
+        if not ok_b:
+            return False, wait_b, "burst"
+        return True, 0.0, "ok"
+
+    def status(self) -> Dict[str, dict]:
+        return {"default": self.default.status(), "burst": self.burst.status()}

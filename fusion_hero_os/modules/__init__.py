@@ -26,6 +26,7 @@ from fusion_hero_os.modules.self_modify import SelfModifyCoreModule
 from fusion_hero_os.modules.weltraudaimonia import WeltraudaimoniaModule
 from fusion_hero_os.modules.heroic_llm_ea import HeroicLLMEAOrchestrator
 from fusion_hero_os.modules.image_orchestrator import HeroicImageOrchestrator
+from fusion_hero_os.modules.timespace_token import TimespaceTokenCoreModule
 
 #: Alle Core-Module, die :func:`fusion_hero_os.core.dispatcher.build_default_dispatcher`
 #: standardmäßig registriert.
@@ -42,6 +43,7 @@ ALL_CORE_MODULES: List[Type[BaseModule]] = [
     QUBOIntegrationCoreModule,
     HeroicLLMEAOrchestrator,
     HeroicImageOrchestrator,
+    TimespaceTokenCoreModule,
 ]
 
 __all__ = [
@@ -58,4 +60,5 @@ __all__ = [
     "WeltraudaimoniaModule",
     "HeroicLLMEAOrchestrator",
     "HeroicImageOrchestrator",
+    "TimespaceTokenCoreModule",
 ]

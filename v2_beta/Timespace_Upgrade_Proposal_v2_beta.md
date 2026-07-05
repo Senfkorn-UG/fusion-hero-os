@@ -10,17 +10,19 @@ Token-Budgets nicht nur nach Kosten (TMS v1.0), sondern nach **Zeit-Raum-Positio
 im evolutionären Stack verteilen: Layer-0-Nähe = höhere Priorität; entfernte
 Meme-/Sisyphos-Tracks werden bei Knappheit geometrisch komprimiert.
 
-## Implementiert (Minimal)
+## Implementiert (vertieft 2026-07-05)
 
-- `TimespaceCoordinate(time_index, space_depth)` — 2D-Koordinaten
-- `TimespaceTokenManager` — geometrische Priorität × TMS-Bottleneck-Adaptation
-- Brücke zu `TokenManagementSystem.allocate_tokens`
+- `TimespaceManifold` — Layer-Ursprünge + Multi-Scale (`micro`/`meso`/`macro`)
+- `TimespaceTokenManager.allocate_with_report()` — voller Allokations-Report
+- QUBO-Hint: `build_competition_qubo` + `greedy_bottleneck_assignment` + Energie-Metrik
+- 3×-Fidelity für Meme/Coevolution nahe Layer-Ursprung
+- Nachbarschafts-Kompression bei dichten Tracks
+- `TimespaceTokenCoreModule` (BaseModule + Dispatcher)
 
 ## Offen (Konzept)
 
-- Mehrdimensionale Zeitaum-Manifolds (v2_beta-Vision)
-- QUBO-gestützte Bottleneck-Vorhersage über Zeitskalen
-- 3×-Fidelity-Regel über geometrische Nachbarschaft
+- Volle Zeitaum-Manifold-Geometrie (>2D, gekrümmt)
+- Echter QUBO-Solver (qb_qubo/parallel_anneal) statt Greedy-Hint
 
 ## Code-Honesty
 

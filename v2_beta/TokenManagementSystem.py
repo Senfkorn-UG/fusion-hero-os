@@ -1,35 +1,36 @@
 """
-v2_beta Timespace TMS — verweist auf kanonische Implementierungen.
-
-- Basis: 03_Code/TokenManagementSystem.py (TMS v1.0, implementiert)
-- Geometrie: 03_Code/timespace_token_management.py (Scaffold, 2026-07-05)
-
-Der frühere Ein-Zeilen-Platzhalter wurde durch echten Code ersetzt.
+v2_beta Timespace TMS — Re-Export des vertieften fusion_hero_os-Moduls.
 """
 
-from pathlib import Path
+from fusion_hero_os.modules.timespace_token import (
+    Timescale,
+    TimespaceCoordinate,
+    TimespaceManifold,
+    TimespaceTokenManager,
+    TimespaceTrack,
+)
+from fusion_hero_os.modules.timespace_token.bottleneck import (
+    build_competition_qubo,
+    greedy_bottleneck_assignment,
+)
+
 import sys
+from pathlib import Path
 
 _CODE = Path(__file__).resolve().parents[1] / "03_Code"
 if str(_CODE) not in sys.path:
     sys.path.insert(0, str(_CODE))
-
-from TokenManagementSystem import (  # noqa: E402
-    ResourceState,
-    TokenManagementSystem,
-    TransformationType,
-)
-from timespace_token_management import (  # noqa: E402
-    TimespaceCoordinate,
-    TimespaceTokenManager,
-    TimespaceTrack,
-)
+from TokenManagementSystem import ResourceState, TokenManagementSystem, TransformationType  # noqa: E402
 
 __all__ = [
     "ResourceState",
     "TokenManagementSystem",
     "TransformationType",
+    "Timescale",
     "TimespaceCoordinate",
+    "TimespaceManifold",
     "TimespaceTokenManager",
     "TimespaceTrack",
+    "build_competition_qubo",
+    "greedy_bottleneck_assignment",
 ]

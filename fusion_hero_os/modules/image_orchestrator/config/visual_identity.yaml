@@ -21,6 +21,17 @@ rate_limits:
     max_requests: 3
     window_seconds: 10.0
 
+character_bible:
+  constraints:
+    - "Keine hardcodierten Personen ohne Consent"
+    - "Meme-Theory-Tags aus style_tags ableiten"
+    - "primary_seed für Konsistenz über Sessions"
+
 pipeline:
   mode: dry_run
+  stages:
+    - validate_identity
+    - rate_limit
+    - build_prompt
+    - render
   note: "Echte Provider-Aufrufe erfordern explizites User-Opt-in (connectors-Pattern)."
