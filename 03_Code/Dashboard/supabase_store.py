@@ -379,13 +379,37 @@ def check_tables() -> Dict[str, Any]:
 
 
 def sync_status() -> Dict[str, Any]:
-    return {
+    status: Dict[str, Any] = {
         "cloud_sync": cloud_sync_enabled(),
         "device_id": device_id(),
         "metrics_interval_sec": int(os.getenv("FUSION_SUPABASE_METRICS_INTERVAL_SEC", "30")),
         "phone_link_interval_sec": int(os.getenv("FUSION_PHONE_LINK_SNAPSHOT_INTERVAL_SEC", "300")),
         "settings_cloud_pull": os.getenv("FUSION_SETTINGS_CLOUD_PULL", "0") == "1",
     }
+    try:
+        from watch_sync_server import (
+            get_realtime_client_config,
+            realtime_enabled,
+            server_sync_enabled,
+        )
+
+        status["watch_server_sync"] = server_sync_enabled()
+        status["watch_realtime"] = realtime_enabled()
+        status["watch_realtime_config"] = get_realtime_client_config()
+        status["schema_migration_v3"] = (
+            "supabase/schema_migration_v3_realtime.sql"
+            if realtime_enabled()
+            else None
+        )
+    except Exception as exc:
+        status["watch_realtime_error"] = str(exc)[:120]
+    try:
+        tables = check_tables()
+        status["tables_ok"] = tables.get("ok")
+        status["tables"] = tables.get("tables")
+    except Exception:
+        pass
+    return status
 
 
 def roundtrip_test() -> Dict[str, Any]:
