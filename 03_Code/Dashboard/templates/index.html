@@ -54,6 +54,37 @@
         <div class="text-[10px] text-[#94a3b8] mt-3">Immutable Foundation L0 + Transfinite L5-L6 (Banach Fixed-Point)</div>
       </div>
 
+      <!-- IPC Bridge Panel -->
+      <div class="hud-panel bridge-panel" id="bridge-panel">
+        <h2 class="text-[#38bdf8] text-sm mb-3 tracking-widest flex items-center gap-2 flex-wrap">
+          C↔PYTHON IPC BRIDGE
+          <span id="bridge-transport-badge" class="bridge-badge">--</span>
+          <span id="bridge-status-dot" class="status-offline">●</span>
+        </h2>
+        <div class="bridge-metrics">
+          <div><span class="bridge-metric-label">Module</span><span id="bridge-module-count" class="bridge-metric-value">--</span></div>
+          <div><span class="bridge-metric-label">Transport</span><span id="bridge-transport" class="bridge-metric-value">--</span></div>
+          <div><span class="bridge-metric-label">Ping</span><span id="bridge-ping" class="bridge-metric-value">--</span></div>
+        </div>
+        <div class="bridge-modules-wrap">
+          <div class="bridge-modules-label">Registrierte Module</div>
+          <div id="bridge-modules" class="bridge-modules"></div>
+        </div>
+        <div class="bridge-dispatch">
+          <label class="bridge-modules-label" for="bridge-module-select">Test-Dispatch</label>
+          <div class="bridge-dispatch-row">
+            <select id="bridge-module-select" class="bridge-select">
+              <option value="TimespaceTokenCoreModule">TimespaceTokenCoreModule</option>
+              <option value="HeroicLLMEAOrchestrator">HeroicLLMEAOrchestrator</option>
+              <option value="HeroicImageOrchestrator">HeroicImageOrchestrator</option>
+            </select>
+            <button type="button" id="bridge-dispatch-btn" class="bridge-btn">Dispatch</button>
+            <button type="button" id="bridge-refresh-btn" class="bridge-btn bridge-btn-secondary">Refresh</button>
+          </div>
+          <pre id="bridge-dispatch-result" class="bridge-result">Warte auf Bridge-Status…</pre>
+        </div>
+      </div>
+
       <!-- Event Stream -->
       <div class="hud-panel col-span-1">
         <h2 class="text-[#fbbf24] text-sm mb-3 tracking-widest">LIVE EVENT STREAM</h2>

@@ -281,11 +281,121 @@
     ctx.fillText(`λ=${(snap.lambda || 0).toFixed(3)}`, chartX, chartY + chartH + 12);
   }
 
+  const DEEP_MODULES = new Set([
+    'TimespaceTokenCoreModule',
+    'HeroicLLMEAOrchestrator',
+    'HeroicImageOrchestrator',
+  ]);
+
+  const DISPATCH_PRESETS = {
+    TimespaceTokenCoreModule: {
+      tracks: [{
+        name: 'layer0',
+        coordinate: { time_index: 0, space_depth: 0, timescale: 'macro' },
+        state: {
+          stability: 0.85, latent_tension: 0.2, depth: 1,
+          fluctuation_severity: 0.1, bottleneck_risk: 0.15,
+        },
+        transformation: 'meme_synthesis',
+      }],
+    },
+    HeroicLLMEAOrchestrator: {
+      action: 'propose',
+      prompt: 'cyberpunk campfire synthesis',
+      n_proposals: 2,
+      theme: 'campfire',
+    },
+    HeroicImageOrchestrator: {
+      action: 'submit',
+      prompt: 'cyberpunk campfire ALTE_Frau_95g',
+    },
+  };
+
+  async function fetchBridgeStatus() {
+    const dot = document.getElementById('bridge-status-dot');
+    const badge = document.getElementById('bridge-transport-badge');
+    try {
+      const r = await fetch('/api/bridge/ipc/status');
+      const st = await r.json();
+      const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+      const ok = st.ok !== false;
+      if (dot) {
+        dot.className = ok ? 'status-online' : 'status-warning';
+      }
+      const transport = st.transport || 'unknown';
+      set('bridge-transport', transport);
+      if (badge) badge.textContent = transport.toUpperCase();
+      set('bridge-module-count', st.module_count ?? (st.modules || []).length ?? '--');
+      const ping = st.ping || {};
+      set('bridge-ping', ping.pong ? 'pong' : (ok ? 'ok' : 'fail'));
+
+      const modulesEl = document.getElementById('bridge-modules');
+      const modules = st.modules || [];
+      if (modulesEl) {
+        modulesEl.innerHTML = modules.map((m) => {
+          const deep = DEEP_MODULES.has(m) ? ' deep' : '';
+          return `<span class="bridge-module-chip${deep}">${m}</span>`;
+        }).join('');
+      }
+
+      const select = document.getElementById('bridge-module-select');
+      if (select && modules.length) {
+        const current = select.value;
+        select.innerHTML = modules.map((m) =>
+          `<option value="${m}"${DEEP_MODULES.has(m) ? ' selected' : ''}>${m}</option>`
+        ).join('');
+        if (modules.includes(current)) select.value = current;
+      }
+      return st;
+    } catch (err) {
+      if (dot) dot.className = 'status-offline';
+      const res = document.getElementById('bridge-dispatch-result');
+      if (res) res.textContent = `Bridge offline: ${err.message}`;
+      return null;
+    }
+  }
+
+  async function runBridgeDispatch() {
+    const select = document.getElementById('bridge-module-select');
+    const resultEl = document.getElementById('bridge-dispatch-result');
+    const btn = document.getElementById('bridge-dispatch-btn');
+    if (!select || !resultEl) return;
+    const module = select.value;
+    const payload = DISPATCH_PRESETS[module] || {};
+    if (btn) btn.disabled = true;
+    resultEl.textContent = `Dispatching ${module}…`;
+    try {
+      const r = await fetch('/api/bridge/ipc/dispatch', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ module, payload }),
+      });
+      const data = await r.json();
+      resultEl.textContent = JSON.stringify(data, null, 2);
+      events.unshift({ type: 'bridge_dispatch', msg: `${module} → ${data.ok !== false ? 'ok' : 'fail'}` });
+      renderEvents();
+    } catch (err) {
+      resultEl.textContent = `Error: ${err.message}`;
+    } finally {
+      if (btn) btn.disabled = false;
+    }
+  }
+
+  function initBridgeUI() {
+    const dispatchBtn = document.getElementById('bridge-dispatch-btn');
+    const refreshBtn = document.getElementById('bridge-refresh-btn');
+    if (dispatchBtn) dispatchBtn.addEventListener('click', runBridgeDispatch);
+    if (refreshBtn) refreshBtn.addEventListener('click', fetchBridgeStatus);
+    fetchBridgeStatus();
+    setInterval(fetchBridgeStatus, 4000);
+  }
+
   connect();
   setInterval(fetchMetrics, 1200);
   setInterval(pollViz, 1800);
   pollViz();
   fetchMetrics();
+  initBridgeUI();
 
   // Init layer placeholders
   const initLayers = {};

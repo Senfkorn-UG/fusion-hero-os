@@ -147,10 +147,17 @@ def start_dashboard(manager: ProcessManager) -> Optional[subprocess.Popen]:
         logger.warning("Dashboard script not found. Skipping.")
         return None
     logger.info("Starting Dashboard (%s)...", script.name)
+    env = os.environ.copy()
+    env["FUSION_AUTO_LOAD"] = "0"
+    env["FUSION_ALL_MODULES"] = "0"
+    py_path = str(PROJECT_ROOT)
+    code_path = str(PROJECT_ROOT / "03_Code")
+    env["PYTHONPATH"] = f"{py_path}{os.pathsep}{code_path}"
     try:
         proc = subprocess.Popen(
             [sys.executable, "-m", "uvicorn", "app:app", "--host", "127.0.0.1", "--port", "8000"],
             cwd=DASHBOARD_DIR,
+            env=env,
         )
         manager.add(proc)
         logger.info("Dashboard started (PID: %s) → http://127.0.0.1:8000", proc.pid)
