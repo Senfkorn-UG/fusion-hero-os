@@ -1,0 +1,161 @@
+# ============================================================================
+# PROOF REGISTRY — einzige autoritative Quelle fuer System-Claims
+# ============================================================================
+# Regel (Code-Honesty, maschinell erzwungen durch scripts/check_proof_registry.py):
+#   * status: BEWIESEN  -> MUSS >=1 existierenden pytest-Knoten in proofs listen.
+#                          Der Checker verifiziert die Existenz via pytest-Collection;
+#                          die CI fuehrt die Suite aus -> gruen == Claim gedeckt.
+#   * status: OFFEN     -> Hypothese. proofs darf leer sein. Docs duerfen den
+#                          Claim NUR als offen/Hypothese zitieren.
+#   * status: WIDERLEGT -> Gegenbeispiel dokumentieren (notes), proofs zeigt
+#                          auf den Test, der das Gegenbeispiel verankert.
+# Herkunft: Idee 4 des Repo-Sweeps 2026-07-05, formalisiert nach
+# Gemini-Synthese v9 (docs/01_vision/GEMINI_SYNTHESIS_v9_REVIEW.md).
+# ============================================================================
+version: 1
+
+claims:
+  # ---- Mathematischer Kern (Knoten-Saetze) ---------------------------------
+  - id: K16
+    statement: "Transponierten-Reziprozitaet gilt universell in relativer Toleranz (die naive absolute Form ist KEIN Satz)."
+    status: BEWIESEN
+    proofs:
+      - tests/test_heroic_math_engine.py::test_k16_transpose_reciprocity_universal
+      - tests/test_heroic_math_engine.py::test_k16_holds_at_large_scale
+      - tests/test_heroic_math_engine.py::test_k16_naive_form_is_not_a_theorem
+
+  - id: K17
+    statement: "Projektor-Eigenschaften (Idempotenz etc.) des K17-Operators."
+    status: BEWIESEN
+    proofs:
+      - tests/test_heroic_math_engine.py::test_k17_projector_properties
+
+  - id: K19
+    statement: "Monotone Fusion im bewiesenen Definitionsbereich; ausserhalb (eta, negatives lambda) wird abgelehnt."
+    status: BEWIESEN
+    proofs:
+      - tests/test_heroic_math_engine.py::test_k19_monotone_fusion_in_proven_domain
+      - tests/test_heroic_math_engine.py::test_k19_eta_leaves_proven_domain
+      - tests/test_heroic_math_engine.py::test_k19_negative_lambda_rejected
+
+  - id: K20
+    statement: "Banach-Fixpunkt mit geometrischer Konvergenz; Nicht-Kontraktionen werden abgelehnt."
+    status: BEWIESEN
+    proofs:
+      - tests/test_heroic_math_engine.py::test_k20_banach_fixpoint_and_geometric_convergence
+      - tests/test_heroic_math_engine.py::test_k20_non_contraction_rejected
+
+  - id: ISING-BRIDGE
+    statement: "qubo_to_ising/ising_energy: E_QUBO(x) == E_Ising(s) fuer symmetrische Q unter x=(1+s)/2."
+    status: BEWIESEN
+    proofs:
+      - tests/test_qubo_ising_bridge.py::test_ising_bridge_energy_identity_property_sweep
+      - tests/test_qubo_ising_bridge.py::test_ising_bridge_exhaustive_small_n
+
+  - id: QBQUBO-KOPIEN-SYNC
+    statement: "Die drei qb_qubo.py-Kopien (root, 02_Mathematik, 03_Code/tools) sind byte-identisch (Konsolidierung 2026-07-05)."
+    status: BEWIESEN
+    proofs:
+      - tests/test_qubo_ising_bridge.py::test_all_three_copies_are_content_identical
+      - tests/test_qubo_ising_bridge.py::test_make_q_submodular_offdiagonal_nonpositive
+
+  # ---- Solver / Engine ------------------------------------------------------
+  - id: SOLVER-KORREKT
+    statement: "parallel_anneal erreicht auf kleinen Instanzen das Brute-Force-Optimum; Diagonal-QUBOs exakt."
+    status: BEWIESEN
+    proofs:
+      - tests/test_solver.py::test_parallel_anneal_matches_bruteforce
+      - tests/test_solver.py::test_diagonal_ground_state_is_exact
+
+  - id: EVO-MONOTONIE
+    statement: "(mu+lambda)-Evolution: best_fitness ist ueber Generationen monoton nicht-fallend (Elitismus)."
+    status: BEWIESEN
+    proofs:
+      - tests/test_dispatcher.py::test_generational_evolution_fitness_is_monotonic_non_decreasing
+
+  - id: SA-SINGLE-EVAL
+    statement: "internal_llm-SA: score_fn wird exakt 1x pro Schritt aufgerufen; Metropolis-Delta gegen current_score (Fix 2026-07-05)."
+    status: BEWIESEN
+    proofs:
+      - tests/test_internal_llm_sa.py::test_sa_calls_score_fn_exactly_once_per_step
+      - tests/test_internal_llm_sa.py::test_sa_best_score_is_max_of_all_evaluations
+
+  # ---- Sync / CRDT-Kern -----------------------------------------------------
+  - id: SYNC-MONOTONIE
+    statement: "mutual_sync: beide Seiten enden bei max(f_A,f_B); keine Seite wird schlechter."
+    status: BEWIESEN
+    proofs:
+      - tests/test_masterseed_sync.py::test_mutual_sync_never_degrades_either_side_property_sweep
+      - tests/test_masterseed_sync.py::test_sync_evolutions_mutually_improves_both_sides
+
+  - id: SYNC-IDENTITY
+    statement: "Sync veraendert nie die Seed-Identitaet (state_hash konstant, Identity-Score 100)."
+    status: BEWIESEN
+    proofs:
+      - tests/test_masterseed_sync.py::test_mutual_sync_preserves_identity_hashes
+      - tests/test_masterseed_sync.py::test_identity_score_drops_below_100_after_tamper
+
+  - id: SYNC-FAILCLOSED
+    statement: "Manipulierte Partner werden fail-closed abgewiesen (ValueError, kein Merge)."
+    status: BEWIESEN
+    proofs:
+      - tests/test_masterseed_sync.py::test_mutual_sync_fail_closed_on_tampered_side
+
+  - id: SYNC-SEMILATTICE
+    statement: "Der Sync-Merge ist ein Join-Halbverband auf der Elite-Fitness: kommutativ, assoziativ, idempotent (CvRDT-Kern, paarweise)."
+    status: BEWIESEN
+    proofs:
+      - tests/test_masterseed_semilattice.py::test_join_is_commutative_property_sweep
+      - tests/test_masterseed_semilattice.py::test_join_is_idempotent
+      - tests/test_masterseed_semilattice.py::test_join_is_associative_via_pairwise_chaining
+      - tests/test_masterseed_semilattice.py::test_join_payload_follows_the_winning_fitness
+
+  # ---- Sicherheits-/Architektur-Entscheidungen als Claims --------------------
+  - id: SELFMOD-PROPOSAL-ONLY
+    statement: "SelfModify wendet NIE selbst an, sondern registriert nur Vorschlaege (Sicherheitsentscheidung)."
+    status: BEWIESEN
+    proofs:
+      - tests/test_dispatcher.py::test_self_modify_never_applies_only_records_proposal
+
+  - id: CONNECTOR-DRYRUN
+    statement: "Externe Connectoren sind per Default dry-run (kein ungefragter Netz-/Geldeffekt)."
+    status: BEWIESEN
+    proofs:
+      - tests/test_mining_qubo.py::test_excavator_connector_is_dry_run_by_default
+
+  # ---- OFFENE Hypothesen (Gemini-Synthese v9 + Ideen-Backlog) ----------------
+  - id: GOSSIP-LOGN
+    statement: "N-Knoten-Gossip ueber mutual_sync konvergiert in erwartet O(log N) Runden zum globalen Fitness-Max."
+    status: OFFEN
+    proofs: []
+    notes: "Wird erst BEWIESEN mit fusion_hero_os/core/horkrux_gossip.py + Property-Test (Rundenzaehlung vs. log2(N)-Schranke). Paarweiser Kern ist via SYNC-SEMILATTICE gedeckt."
+
+  - id: BFT-ROBUSTHEIT
+    statement: "Das Sync-Netz ist robust gegen byzantinische Knoten (Aequivokation/Omission)."
+    status: OFFEN
+    proofs: []
+    notes: "Gemini-Claim, HERUNTERGESTUFT: CRDT-Monotonie allein ist KEIN BFT. Bewiesen ist nur fail-closed gegen Hash-Manipulation (SYNC-FAILCLOSED). Volle Aussage braeuchte Signaturen + eigenes Adversarial-Testmodell."
+
+  - id: QUBO-SCHEDULER-NUTZEN
+    statement: "QUBO-basierte Task-Zuweisung schlaegt die Supervisor-Heuristik messbar (Durchsatz/Wartezeit auf synthetischen Workloads)."
+    status: OFFEN
+    proofs: []
+    notes: "Pipeline Supervisor -> TaskGraph -> QUBO-Builder -> parallel_anneal. Kein Quanten-Backend: parallel_anneal ist SA (numba/Rust) — die D-Wave/QPU-Passagen der Gemini-Synthese gelten hier NICHT."
+
+  - id: ORACLE-PREDICT
+    statement: "Ein aus Benchmarks gefittetes Kostenmodell prognostiziert parallel_anneal-Laufzeiten gut genug fuer die Backend-Wahl (numba vs. rust)."
+    status: OFFEN
+    proofs: []
+    notes: "Start mit log-linearer Regression auf (n, steps, restarts, backend); CNN/GP-Surrogate aus der Gemini-Synthese erst pruefen, wenn die einfache Basislinie nachweislich nicht reicht."
+
+  - id: TIMESPACE-QUBO
+    statement: "Kontext-/Token-Auswahl als MMR-QUBO (E = -lambda*Nutzen + (1-lambda)*Redundanz) liefert besseren Kontext als Recency-Heuristik."
+    status: OFFEN
+    proofs: []
+    notes: "Formel deckungsgleich mit make_diversity_qubo-Struktur; Benchmark-Design noetig (Cache-Hit vs. Kosten). Grok-Export weiterhin ausstehend — bei Eingang gegeneinander benchmarken."
+
+  - id: LORA-F1
+    statement: "LoRA/SFT auf QUBO-selektierten Samples hebt Token-F1 von ~2% auf >=10%."
+    status: OFFEN
+    proofs: []
+    notes: "Depriorisiert bis Daten-Pipeline steht: versionierter Datensatz, deterministische Eval, versiegeltes Holdout (SHA-256). Reihenfolge aus Gemini-Synthese v9 uebernommen — deckt sich mit Audit-Prio."
