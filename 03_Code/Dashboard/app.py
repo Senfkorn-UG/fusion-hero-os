@@ -439,7 +439,11 @@ async def _start_supabase_background() -> None:
         info = start_background_tasks(get_metrics)
         if info.get("started"):
             msg = f"[Supabase] Auto-sync aktiv: Metriken alle {info['metrics_interval_sec']}s"
-            if info.get("watch_sync_interval_sec"):
+            if info.get("watch_sync_mode") == "realtime":
+                msg += ", Watch-Realtime aktiv"
+                if info.get("watch_sync_interval_sec"):
+                    msg += f" (Poll-Fallback {info['watch_sync_interval_sec']}s)"
+            elif info.get("watch_sync_interval_sec"):
                 msg += f", Watch-Server alle {info['watch_sync_interval_sec']}s"
             print(msg)
     except Exception as exc:

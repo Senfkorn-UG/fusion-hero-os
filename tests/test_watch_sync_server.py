@@ -14,7 +14,9 @@ if str(_DASHBOARD) not in sys.path:
 from watch_party import WatchPartyManager, WatchRoom
 from watch_sync_server import (
     get_authoritative_state,
+    get_realtime_client_config,
     merge_row_into_room,
+    row_to_watch_state,
     server_sync_enabled,
 )
 
@@ -76,6 +78,33 @@ def test_watch_room_state_api():
     data = r.json()
     assert data["ok"] is True
     assert "state" in data
+
+
+def test_row_to_watch_state_playing():
+    row = {
+        "room_id": "abc",
+        "video_id": "vid12345678",
+        "position": 10.0,
+        "playing": True,
+        "updated_at": time.time() - 2,
+    }
+    st = row_to_watch_state(row)
+    assert st["playing"] is True
+    assert st["position"] >= 11.5
+    assert st["sync_source"] == "realtime"
+
+
+def test_realtime_config_api():
+    from fastapi.testclient import TestClient
+
+    from app import app
+
+    client = TestClient(app)
+    r = client.get("/api/watch/realtime/config")
+    assert r.status_code == 200
+    data = r.json()
+    assert "enabled" in data
+    assert "url" in data
 
 
 def test_watch_room_cmd_api():

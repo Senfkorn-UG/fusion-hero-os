@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import os
 import time
-from typing import Any, Dict, Optional, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Dict, Optional
 
 if TYPE_CHECKING:
     from watch_party import WatchPartyManager, WatchRoom
@@ -26,11 +26,88 @@ def server_sync_enabled() -> bool:
         return False
 
 
+def realtime_enabled() -> bool:
+    return server_sync_enabled() and os.getenv("FUSION_WATCH_REALTIME", "1") == "1"
+
+
 def server_poll_interval_sec() -> float:
+    """Poll-Intervall: Fallback wenn Realtime aus oder als Backup."""
+    if realtime_enabled():
+        try:
+            return float(os.getenv("FUSION_WATCH_POLL_FALLBACK_SEC", "30"))
+        except ValueError:
+            return 30.0
     try:
         return float(os.getenv("FUSION_WATCH_SERVER_POLL_SEC", "2"))
     except ValueError:
         return 2.0
+
+
+def poll_fallback_only() -> bool:
+    return realtime_enabled()
+
+
+def get_realtime_client_config() -> Dict[str, Any]:
+    from supabase_client import SUPABASE_KEY, SUPABASE_URL, is_configured
+
+    return {
+        "enabled": realtime_enabled() and is_configured(),
+        "url": SUPABASE_URL or "",
+        "anon_key": SUPABASE_KEY or "",
+        "table": "watch_rooms",
+        "schema": "public",
+    }
+
+
+def extract_realtime_row(payload: Any) -> Optional[Dict[str, Any]]:
+    if payload is None:
+        return None
+    if isinstance(payload, dict):
+        row = payload.get("new") or payload.get("record")
+        if row:
+            return row
+        data = payload.get("data")
+        if isinstance(data, dict):
+            return data.get("record") or data.get("new")
+        return None
+    for attr in ("new", "record"):
+        if hasattr(payload, attr):
+            val = getattr(payload, attr)
+            if val:
+                return dict(val) if not isinstance(val, dict) else val
+    return None
+
+
+def row_to_watch_state(row: Dict[str, Any]) -> Dict[str, Any]:
+    now = time.time()
+    position = float(row.get("position") or 0)
+    updated_at = float(row.get("updated_at") or now)
+    playing = bool(row.get("playing"))
+    if playing:
+        position += max(0.0, now - updated_at)
+    return {
+        "type": "watch_state",
+        "room_id": row.get("room_id", ""),
+        "video_id": row.get("video_id") or "",
+        "position": round(position, 2),
+        "playing": playing,
+        "server_time": now,
+        "updated_at": updated_at,
+        "title": row.get("title") or "",
+        "sync_authority": "server",
+        "sync_source": "realtime",
+    }
+
+
+def apply_realtime_payload(mgr: "WatchPartyManager", payload: Any) -> Optional[str]:
+    row = extract_realtime_row(payload)
+    if not row or not row.get("room_id"):
+        return None
+    room_id = str(row["room_id"])
+    room = mgr.ensure_room(room_id)
+    if merge_row_into_room(room, row):
+        return room_id
+    return None
 
 
 def merge_row_into_room(room: "WatchRoom", row: Dict[str, Any]) -> bool:
