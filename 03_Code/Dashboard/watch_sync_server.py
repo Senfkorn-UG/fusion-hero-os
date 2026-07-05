@@ -8,7 +8,6 @@ Supabase. Lokaler Speicher ist nur Cache; Konflikte gewinnt der Server-Stand.
 from __future__ import annotations
 
 import os
-import threading
 import time
 from typing import TYPE_CHECKING, Any, Dict, Optional
 
@@ -35,11 +34,19 @@ def server_poll_interval_sec() -> float:
     """Poll-Intervall: Fallback wenn Realtime aus oder als Backup."""
     if realtime_enabled():
         try:
-            return float(os.getenv("FUSION_WATCH_POLL_FALLBACK_SEC", "30"))
+            return float(os.getenv("FUSION_WATCH_POLL_FALLBACK_SEC", "3"))
         except ValueError:
-            return 30.0
+            return 3.0
     try:
         return float(os.getenv("FUSION_WATCH_SERVER_POLL_SEC", "2"))
+    except ValueError:
+        return 2.0
+
+
+def active_poll_interval_sec() -> float:
+    """Server-Broadcast-Schleife für aktive Räume (immer schnell genug für Sync)."""
+    try:
+        return float(os.getenv("FUSION_WATCH_ACTIVE_POLL_SEC", "2"))
     except ValueError:
         return 2.0
 
@@ -86,6 +93,7 @@ def row_to_watch_state(row: Dict[str, Any]) -> Dict[str, Any]:
     playing = bool(row.get("playing"))
     if playing:
         position += max(0.0, now - updated_at)
+    payload = row.get("payload") or {}
     return {
         "type": "watch_state",
         "room_id": row.get("room_id", ""),
@@ -94,6 +102,7 @@ def row_to_watch_state(row: Dict[str, Any]) -> Dict[str, Any]:
         "playing": playing,
         "server_time": now,
         "updated_at": updated_at,
+        "revision": int(payload.get("revision") or row.get("revision") or 0),
         "title": row.get("title") or "",
         "sync_authority": "server",
         "sync_source": "realtime",
@@ -114,7 +123,11 @@ def apply_realtime_payload(mgr: "WatchPartyManager", payload: Any) -> Optional[s
 def merge_row_into_room(room: "WatchRoom", row: Dict[str, Any]) -> bool:
     """Überschreibt lokalen Cache wenn Supabase neuer ist."""
     server_ts = float(row.get("updated_at") or 0)
-    if server_ts <= room.updated_at + 0.001:
+    server_rev = int((row.get("payload") or {}).get("revision") or 0)
+    local_rev = int(getattr(room, "revision", 0) or 0)
+    if server_rev > 0 and local_rev > 0 and server_rev < local_rev:
+        return False
+    if server_rev <= local_rev and server_ts <= room.updated_at + 0.001:
         return False
     room.video_id = row.get("video_id") or ""
     room.position = float(row.get("position") or 0)
@@ -123,6 +136,8 @@ def merge_row_into_room(room: "WatchRoom", row: Dict[str, Any]) -> bool:
     room.title = row.get("title") or ""
     if row.get("created_at"):
         room.created_at = float(row.get("created_at"))
+    if server_rev > 0:
+        room.revision = server_rev
     return True
 
 
@@ -155,18 +170,15 @@ def push_room_to_server(room: "WatchRoom") -> Dict[str, Any]:
                 "title": room.title,
                 "updated_at": room.updated_at,
                 "created_at": room.created_at,
-                "payload": {"sync_authority": "server", "pushed_at": time.time()},
+                "payload": {
+                    "sync_authority": "server",
+                    "pushed_at": time.time(),
+                    "revision": int(getattr(room, "revision", 0) or 0),
+                },
             }
         )
     except Exception as exc:
         return {"ok": False, "error": str(exc)[:120]}
-
-
-def _push_room_async(room: "WatchRoom") -> None:
-    try:
-        push_room_to_server(room)
-    except Exception:
-        pass
 
 
 def low_latency_enabled() -> bool:
@@ -174,14 +186,13 @@ def low_latency_enabled() -> bool:
 
 
 def finalize_command(mgr: "WatchPartyManager", room: "WatchRoom") -> "WatchRoom":
-    """Nach lokaler Berechnung: Supabase schreiben (async bei Low-Latency)."""
+    """Nach lokaler Berechnung: Supabase synchron schreiben (Sync muss zuverlässig sein)."""
     if server_sync_enabled():
-        if low_latency_enabled():
-            threading.Thread(target=_push_room_async, args=(room,), daemon=True).start()
-            return room
         push_room_to_server(room)
-        refreshed = refresh_room_from_server(mgr, room.room_id)
-        return refreshed or room
+        if not low_latency_enabled():
+            refreshed = refresh_room_from_server(mgr, room.room_id)
+            return refreshed or room
+        return room
     mgr._persist_room(room)
     return room
 

@@ -24,12 +24,22 @@ class WatchRoom:
     updated_at: float = field(default_factory=time.time)
     title: str = ""
     created_at: float = field(default_factory=time.time)
+    revision: int = 0
 
     def current_position(self, now: Optional[float] = None) -> float:
         now = now or time.time()
         if self.playing:
             return self.position + max(0.0, now - self.updated_at)
         return self.position
+
+    def bump_revision(self, now: Optional[float] = None) -> float:
+        """Monotone Zeit + Revisionszähler für konfliktfreien Multi-Device-Sync."""
+        ts = now or time.time()
+        if ts <= self.updated_at:
+            ts = self.updated_at + 0.001
+        self.updated_at = ts
+        self.revision += 1
+        return ts
 
     def to_state(self) -> Dict[str, Any]:
         now = time.time()
@@ -41,6 +51,7 @@ class WatchRoom:
             "playing": self.playing,
             "server_time": now,
             "updated_at": self.updated_at,
+            "revision": self.revision,
             "title": self.title,
             "sync_authority": "server",
         }
@@ -101,6 +112,7 @@ class WatchPartyManager:
             rid = row.get("room_id")
             if not rid or rid in self._rooms:
                 continue
+            payload = row.get("payload") or {}
             self._rooms[rid] = WatchRoom(
                 room_id=rid,
                 video_id=row.get("video_id") or "",
@@ -109,6 +121,7 @@ class WatchPartyManager:
                 updated_at=float(row.get("updated_at") or time.time()),
                 title=row.get("title") or "",
                 created_at=float(row.get("created_at") or time.time()),
+                revision=int(payload.get("revision") or 0),
             )
             self._subscribers.setdefault(rid, set())
             loaded += 1
@@ -176,28 +189,28 @@ class WatchPartyManager:
             room.video_id = vid
             room.position = 0.0
             room.playing = False
-            room.updated_at = now
+            room.bump_revision(now)
             return self._finalize_command(room)
 
         if cmd == "seek":
             if position is None:
                 return None
             room.position = max(0.0, float(position))
-            room.updated_at = now
             if playing is not None:
                 room.playing = bool(playing)
+            room.bump_revision(now)
             return self._finalize_command(room)
 
         if cmd == "play":
             room.position = room.current_position(now) if position is None else max(0.0, float(position))
             room.playing = True
-            room.updated_at = now
+            room.bump_revision(now)
             return self._finalize_command(room)
 
         if cmd == "pause":
             room.position = room.current_position(now) if position is None else max(0.0, float(position))
             room.playing = False
-            room.updated_at = now
+            room.bump_revision(now)
             return self._finalize_command(room)
 
         return None
