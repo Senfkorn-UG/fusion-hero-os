@@ -3,10 +3,15 @@
 
   const roomId = window.WATCH_ROOM_ID || '';
   const initialVideoId = window.WATCH_VIDEO_ID || '';
+  const serverSync = window.WATCH_SERVER_SYNC === true;
+  const pollMs = Number(window.WATCH_POLL_MS) || 2000;
   let ws = null;
   let player = null;
   let suppressEvents = false;
   let reconnectTimer = null;
+  let pollTimer = null;
+  let lastServerRevision = 0;
+  let cmdInFlight = false;
 
   const $ = (id) => document.getElementById(id);
 
@@ -35,6 +40,9 @@
     const roomInput = $('room-id');
     if (roomInput) roomInput.value = roomId;
     renderRoomQr();
+    if (serverSync) {
+      setStatus('Server-Sync aktiv (Supabase) — Geräte folgen zentralem Stand');
+    }
   }
 
   async function renderRoomQr() {
@@ -60,20 +68,48 @@
     }
   }
 
-  function sendCmd(cmd, extra) {
+  async function sendCmd(cmd, extra) {
+    const body = { cmd, ...extra };
+    if (serverSync) {
+      if (cmdInFlight) return;
+      cmdInFlight = true;
+      try {
+        const r = await fetch(`/api/watch/room/${roomId}/cmd`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body),
+        });
+        const data = await r.json();
+        if (data.ok && data.state) {
+          lastServerRevision = data.state.updated_at || lastServerRevision;
+          syncFromServer(data.state);
+        }
+      } catch (err) {
+        setStatus(`Server-Cmd Fehler: ${err.message}`);
+      } finally {
+        cmdInFlight = false;
+      }
+      return;
+    }
     if (!ws || ws.readyState !== WebSocket.OPEN) return;
     ws.send(JSON.stringify({ action: 'watch_cmd', cmd, ...extra }));
   }
 
   function syncFromServer(st) {
     if (!player || !st) return;
+    const rev = st.updated_at || 0;
+    if (serverSync && rev > 0 && rev <= lastServerRevision && cmdInFlight) return;
+    if (serverSync && rev > lastServerRevision) lastServerRevision = rev;
+
     suppressEvents = true;
     try {
       if (st.video_id && st.video_id !== getCurrentVideoId()) {
         player.loadVideoById(st.video_id, st.position || 0);
       } else {
         const local = player.getCurrentTime();
-        if (Math.abs(local - (st.position || 0)) > 1.2) {
+        const drift = Math.abs(local - (st.position || 0));
+        const threshold = serverSync ? 0.8 : 1.2;
+        if (drift > threshold) {
           player.seekTo(st.position || 0, true);
         }
         const state = player.getPlayerState();
@@ -84,7 +120,7 @@
         }
       }
     } finally {
-      setTimeout(() => { suppressEvents = false; }, 400);
+      setTimeout(() => { suppressEvents = false; }, serverSync ? 500 : 400);
     }
   }
 
@@ -95,15 +131,18 @@
   }
 
   function onPlayerReady() {
-    setStatus('Verbunden — warte auf Video…');
+    setStatus(serverSync ? 'Player bereit — Server steuert Sync' : 'Verbunden — warte auf Video…');
     if (initialVideoId) {
       player.loadVideoById(initialVideoId, 0);
     }
-    ws.send(JSON.stringify({ action: 'watch_join' }));
+    if (ws && ws.readyState === WebSocket.OPEN) {
+      ws.send(JSON.stringify({ action: 'watch_join' }));
+    }
+    if (serverSync) pollServerState();
   }
 
   function onPlayerStateChange(event) {
-    if (suppressEvents || !player) return;
+    if (suppressEvents || !player || cmdInFlight) return;
     const pos = player.getCurrentTime();
     if (event.data === YT.PlayerState.PLAYING) {
       sendCmd('play', { position: pos });
@@ -145,30 +184,59 @@
       },
     });
 
-    let seekTimer = null;
-    setInterval(() => {
-      if (suppressEvents || !player || player.getPlayerState() !== YT.PlayerState.PLAYING) return;
-      clearTimeout(seekTimer);
-      seekTimer = setTimeout(() => {
-        sendCmd('seek', { position: player.getCurrentTime(), playing: true });
-      }, 800);
-    }, 2000);
+    if (!serverSync) {
+      let seekTimer = null;
+      setInterval(() => {
+        if (suppressEvents || !player || player.getPlayerState() !== YT.PlayerState.PLAYING) return;
+        clearTimeout(seekTimer);
+        seekTimer = setTimeout(() => {
+          sendCmd('seek', { position: player.getCurrentTime(), playing: true });
+        }, 800);
+      }, 2000);
+    }
+  }
+
+  async function pollServerState() {
+    if (!serverSync || !roomId) return;
+    try {
+      const r = await fetch(`/api/watch/room/${roomId}/state`);
+      const data = await r.json();
+      if (data.ok && data.state) {
+        const rev = data.state.updated_at || 0;
+        if (rev > lastServerRevision || !lastServerRevision) {
+          syncFromServer(data.state);
+        }
+      }
+    } catch (_) { /* retry next tick */ }
+  }
+
+  function startServerPoll() {
+    if (!serverSync) return;
+    clearInterval(pollTimer);
+    pollTimer = setInterval(pollServerState, pollMs);
   }
 
   function connectWs() {
     const proto = location.protocol === 'https:' ? 'wss:' : 'ws:';
     ws = new WebSocket(`${proto}//${location.host}/ws/watch/${roomId}`);
-    ws.onopen = () => setStatus('Raum verbunden — Play/Pause synchronisiert');
+    ws.onopen = () => {
+      if (!serverSync) setStatus('Raum verbunden — Play/Pause synchronisiert');
+      ws.send(JSON.stringify({ action: 'watch_join' }));
+    };
     ws.onclose = () => {
-      setStatus('Verbindung getrennt — reconnect…');
-      clearTimeout(reconnectTimer);
-      reconnectTimer = setTimeout(connectWs, 2000);
+      if (!serverSync) {
+        setStatus('Verbindung getrennt — reconnect…');
+        clearTimeout(reconnectTimer);
+        reconnectTimer = setTimeout(connectWs, 2000);
+      }
     };
     ws.onmessage = (e) => {
       try {
         const msg = JSON.parse(e.data);
         if (msg.type === 'watch_state') {
-          syncFromServer(msg);
+          if (!serverSync || (msg.updated_at || 0) >= lastServerRevision) {
+            syncFromServer(msg);
+          }
         } else if (msg.type === 'watch_meta') {
           const badge = $('viewer-count');
           if (badge) badge.textContent = `${msg.viewers || 0} Zuschauer`;
@@ -206,6 +274,7 @@
     await loadYouTubeApi();
     initPlayer();
     connectWs();
+    startServerPoll();
   }
 
   boot();

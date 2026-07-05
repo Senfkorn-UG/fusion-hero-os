@@ -11,7 +11,7 @@
   <header class="watch-header">
     <div>
       <h1>WATCH TOGETHER</h1>
-      <p class="watch-sub">YouTube synchron · PC stumm · Ton über Handy-Kopfhörer</p>
+      <p class="watch-sub">YouTube synchron · Server-Sync (Supabase) · PC stumm · Ton über Handy</p>
     </div>
     <a href="/" class="watch-back">← Dashboard</a>
   </header>
@@ -56,6 +56,8 @@
     window.WATCH_ROOM_ID = {{ room_id|tojson }};
     window.WATCH_VIDEO_ID = {{ video_id|tojson }};
     window.WATCH_LAN_BASE = {{ lan_base|tojson }};
+    window.WATCH_SERVER_SYNC = {{ watch_server_sync|tojson }};
+    window.WATCH_POLL_MS = {{ watch_poll_ms|tojson }};
   </script>
   <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.4/build/qrcode.min.js"></script>
   <script src="/static/watch_party.js"></script>

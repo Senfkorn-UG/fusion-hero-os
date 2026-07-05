@@ -135,6 +135,27 @@ def save_watch_room(room: Dict[str, Any]) -> Dict[str, Any]:
     return _upsert("watch_rooms", row, on_conflict="room_id")
 
 
+def load_watch_room(room_id: str) -> Optional[Dict[str, Any]]:
+    """Einzelnen Watch-Raum von Supabase laden (Server-Quelle der Wahrheit)."""
+    if not cloud_sync_enabled():
+        return None
+    client = get_client()
+    if not client:
+        return None
+    try:
+        resp = (
+            client.table("watch_rooms")
+            .select("*")
+            .eq("room_id", room_id)
+            .limit(1)
+            .execute()
+        )
+        rows = resp.data or []
+        return rows[0] if rows else None
+    except Exception:
+        return None
+
+
 def load_watch_rooms(max_age_hours: float = 48.0, limit: int = 50) -> List[Dict[str, Any]]:
     if not cloud_sync_enabled():
         return []
