@@ -4,7 +4,7 @@ QUBO-Architektur der q/b-Beziehung  —  Optimierte Version
 ===========================================================
 Optimierungen:
   1. make_Q: vollstaendig vektorisiert mit NumPy-Broadcasting
-  2. brute_force_min: Batch-Auswertung via np.einsum (BLAS-beschleunigt)
+  2. brute_force_min: Batch-Auswertung via (X @ Q * X).sum(axis=1) (BLAS-beschleunigt)
   3. greedy_fix: Integer-Masken, keine Float-Konvertierung im Hot-Loop
   4. local_search: Energie-Delta-Analytik (O(n) pro Iteration statt O(n^2))
   5. simulated_annealing: Integer-Operationen, fewer copies
@@ -71,10 +71,7 @@ def make_Q(n, submodular=False, scale=1.0):
     Q += (r + r.T) / 2.0          # symmetrisch
     np.fill_diagonal(Q, rng.normal(0, scale, size=n))
     if submodular:
-        Q -= np.abs(Q)            # Off-Diagonale <= 0 => submodular
-        np.fill_diagonal(Q, np.abs(np.diag(Q)))  # Diagonalen wieder positiv belassen? Original macht das nicht.
-        # Original: v = -abs(v) fuer Off-Diagonale. Diagonalen bleiben normal.
-        # Daher korrigieren wir nur Off-Diagonale:
+        # Off-Diagonale <= 0 erzwingen (submodular); Diagonale bleibt unveraendert.
         off = np.ones_like(Q) - np.eye(n)
         Q = np.where(off, -np.abs(Q), Q)
     return Q
