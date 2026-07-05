@@ -39,8 +39,12 @@ venv/
 *.nbc
 *.nbi
 
-# Rust-Build-Artefakte (PyO3-Crate)
+# Rust-Build-Artefakte (PyO3-/Kernel-Crates)
 rust_engine_crate/target/
+pms_rust_kernel_crate/target/
+
+# Laufzeit-Audit-Log (pms-Kernel, waechst pro Lauf)
+pms_audit.jsonl
 
 # Generierte Pipeline-Artefakte
 Archiv_*.zip
