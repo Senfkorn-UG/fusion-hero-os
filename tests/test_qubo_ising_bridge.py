@@ -6,6 +6,7 @@ Hier wird sie zum CI-gepruefen Beweis: Fuer symmetrische Q gilt
 E_QUBO(x) == E_Ising(s) unter x = (1+s)/2, fuer alle Belegungen.
 """
 import importlib.util
+import sys
 from pathlib import Path
 
 import numpy as np
@@ -16,6 +17,7 @@ _ROOT = Path(__file__).resolve().parent.parent
 def _load_qb(path: Path):
     spec = importlib.util.spec_from_file_location("qb_" + path.parent.name, path)
     mod = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = mod  # vor exec_module, fuer dataclass/pickle-Kompatibilitaet
     spec.loader.exec_module(mod)
     return mod
 

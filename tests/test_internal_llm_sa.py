@@ -7,6 +7,7 @@ current_score gerechnet, score_fn wird pro Schritt EXAKT einmal aufgerufen
 bei LLM-Bewertungen).
 """
 import importlib.util
+import sys
 from pathlib import Path
 
 _OPT_PATH = (
@@ -15,6 +16,8 @@ _OPT_PATH = (
 
 spec = importlib.util.spec_from_file_location("heroic_llama_optimizer_test", _OPT_PATH)
 opt = importlib.util.module_from_spec(spec)
+# Registrierung VOR exec_module: @dataclass loest sys.modules[cls.__module__] auf.
+sys.modules[spec.name] = opt
 spec.loader.exec_module(opt)
 
 

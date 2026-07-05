@@ -71,6 +71,17 @@ jobs:
       run: |
         pytest tests/ -v
 
+    - name: Proof-Registry Gate (Claims <-> Beweise)
+      # Kein BEWIESEN-Claim ohne existierenden Test-Knoten. Auf 'full' deckt die
+      # pytest-Suite die Ausfuehrung bereits ab (nur Strukturpruefung); auf
+      # 'light' fuehrt --run die Beweis-Knoten zusaetzlich aus.
+      run: |
+        if [[ "${{ matrix.check-level }}" == "full" ]]; then
+          python scripts/check_proof_registry.py
+        else
+          python scripts/check_proof_registry.py --run
+        fi
+
     - name: Status Report
       run: |
         echo "Branch: ${{ github.ref_name }} | Python: ${{ matrix.python-version }} | Level: ${{ matrix.check-level }} | SHA: ${{ github.sha }}"

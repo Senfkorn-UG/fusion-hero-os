@@ -41,8 +41,10 @@ def load_claims() -> list[dict]:
 
 def collect_test_nodes() -> set[str]:
     """Alle existierenden pytest-Knoten-IDs (relativ zum Repo-Root, '/'-Pfade)."""
+    # -o addopts= neutralisiert das "-q" aus pyproject.toml — sonst wird die
+    # Collection zu -qq (nur Datei-Zaehler) und enthaelt keine Knoten-IDs mehr.
     proc = subprocess.run(
-        [sys.executable, "-m", "pytest", "tests/", "--collect-only", "-q"],
+        [sys.executable, "-m", "pytest", "tests/", "--collect-only", "-q", "-o", "addopts="],
         cwd=ROOT, capture_output=True, text=True,
     )
     if proc.returncode not in (0, 5):  # 5 = keine Tests gefunden
