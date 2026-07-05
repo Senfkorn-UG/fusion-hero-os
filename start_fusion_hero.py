@@ -36,6 +36,8 @@ DASHBOARD_SCRIPT = DASHBOARD_DIR / "app.py"
 ARCHIVE_DIR = PROJECT_ROOT / "06_Master_Archive"
 SOCKET_PATH = "/tmp/fusion_hero_ipc.sock"
 TCP_PORT = 19753
+DASHBOARD_HOST = os.getenv("FUSION_BACKEND_HOST", "0.0.0.0")
+DASHBOARD_PORT = int(os.getenv("FUSION_BACKEND_PORT", "8000"))
 
 logging.basicConfig(
     level=logging.INFO,
@@ -155,12 +157,26 @@ def start_dashboard(manager: ProcessManager) -> Optional[subprocess.Popen]:
     env["PYTHONPATH"] = f"{py_path}{os.pathsep}{code_path}"
     try:
         proc = subprocess.Popen(
-            [sys.executable, "-m", "uvicorn", "app:app", "--host", "127.0.0.1", "--port", "8000"],
+            [
+                sys.executable,
+                "-m",
+                "uvicorn",
+                "app:app",
+                "--host",
+                DASHBOARD_HOST,
+                "--port",
+                str(DASHBOARD_PORT),
+            ],
             cwd=DASHBOARD_DIR,
             env=env,
         )
         manager.add(proc)
-        logger.info("Dashboard started (PID: %s) → http://127.0.0.1:8000", proc.pid)
+        logger.info(
+            "Dashboard started (PID: %s) → http://127.0.0.1:%d (LAN: host=%s)",
+            proc.pid,
+            DASHBOARD_PORT,
+            DASHBOARD_HOST,
+        )
         return proc
     except Exception as e:
         logger.error("Failed to start Dashboard: %s", e)

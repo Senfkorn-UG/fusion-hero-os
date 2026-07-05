@@ -407,6 +407,14 @@ async def heroic_core_event_loop():
 
 @app.on_event("startup")
 async def startup_event():
+    launcher_fast_boot = os.getenv("FUSION_AUTO_LOAD") == "0"
+    try:
+        from fusion_settings import boot_load
+        boot_load()
+    except Exception as _settings_err:
+        print(f"[Startup] Settings note: {_settings_err}")
+    if launcher_fast_boot:
+        os.environ["FUSION_AUTO_LOAD"] = "0"
     fast_boot = os.getenv("FUSION_AUTO_LOAD", "1") == "0"
     if fast_boot:
         print("[Startup] Fast boot (FUSION_AUTO_LOAD=0) — Bridge UI sofort verfügbar")
@@ -513,6 +521,21 @@ async def index():
     return FileResponse(BASE / "templates" / "index.html")
 
 
+@app.get("/watch", response_class=HTMLResponse)
+async def watch_create_redirect():
+    from watch_party import get_watch_manager
+    room = get_watch_manager().create_room()
+    return RedirectResponse(url=f"/watch/{room.room_id}", status_code=302)
+
+
+@app.get("/watch/{room_id}", response_class=HTMLResponse)
+async def watch_room(room_id: str):
+    from watch_party import get_watch_manager, local_network_base, render_watch_page
+    mgr = get_watch_manager()
+    room = mgr.get_room(room_id) or mgr.ensure_room(room_id)
+    return HTMLResponse(render_watch_page(room.room_id, room.video_id, lan_base=local_network_base()))
+
+
 @app.get("/api/gui/status")
 async def api_gui_status():
     return {
@@ -589,6 +612,48 @@ async def websocket_endpoint(ws: WebSocket):
         pass
     finally:
         subscribers.discard(ws)
+
+
+@app.websocket("/ws/watch/{room_id}")
+async def watch_party_ws(ws: WebSocket, room_id: str):
+    from watch_party import broadcast_room_state, get_watch_manager
+
+    mgr = get_watch_manager()
+    mgr.ensure_room(room_id)
+    await ws.accept()
+    mgr.register_ws(room_id, ws)
+    room = mgr.get_room(room_id)
+    if room:
+        await ws.send_json(room.to_state())
+        await ws.send_json({"type": "watch_meta", "viewers": len(mgr.subscribers(room_id))})
+    try:
+        async for data in ws.iter_text():
+            try:
+                msg = json.loads(data)
+            except json.JSONDecodeError:
+                continue
+            action = msg.get("action")
+            if action == "watch_join":
+                await broadcast_room_state(mgr, room_id)
+                continue
+            if action != "watch_cmd":
+                continue
+            cmd = msg.get("cmd", "")
+            updated = mgr.apply_command(
+                room_id,
+                cmd,
+                video_id=msg.get("video_id"),
+                position=msg.get("position"),
+                playing=msg.get("playing"),
+            )
+            if updated:
+                await broadcast_room_state(mgr, room_id)
+    except WebSocketDisconnect:
+        pass
+    finally:
+        mgr.unregister_ws(room_id, ws)
+        await broadcast_room_state(mgr, room_id)
+
 
 # Mount static (keep at end)
 app.mount("/static", StaticFiles(directory=str(BASE / "static")), name="static")
