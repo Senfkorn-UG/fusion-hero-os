@@ -2,10 +2,20 @@
 """Persistenz-Layer: Fusion Hero OS → Supabase (swmmoxhdzarmoupyssqe)."""
 from __future__ import annotations
 
+import os
+import socket
 import time
 from typing import Any, Dict, List, Optional
 
 from supabase_client import get_client, is_configured
+
+
+def cloud_sync_enabled() -> bool:
+    return os.getenv("FUSION_SUPABASE_SYNC", "1") == "1" and os.getenv("FUSION_SUPABASE_CLOUD_SYNC", "1") == "1"
+
+
+def device_id() -> str:
+    return os.getenv("FUSION_DEVICE_ID", socket.gethostname() or "fusion-pc")
 
 
 def _insert(table: str, row: Dict[str, Any]) -> Dict[str, Any]:
@@ -14,6 +24,17 @@ def _insert(table: str, row: Dict[str, Any]) -> Dict[str, Any]:
         return {"ok": False, "error": "supabase client unavailable"}
     try:
         resp = client.table(table).insert(row).execute()
+        return {"ok": True, "table": table, "count": len(resp.data or [])}
+    except Exception as exc:
+        return {"ok": False, "table": table, "error": str(exc)}
+
+
+def _upsert(table: str, row: Dict[str, Any], on_conflict: str) -> Dict[str, Any]:
+    client = get_client()
+    if not client:
+        return {"ok": False, "error": "supabase client unavailable"}
+    try:
+        resp = client.table(table).upsert(row, on_conflict=on_conflict).execute()
         return {"ok": True, "table": table, "count": len(resp.data or [])}
     except Exception as exc:
         return {"ok": False, "table": table, "error": str(exc)}
@@ -91,7 +112,172 @@ TARGET_TABLES = [
     "fusion_metrics",
     "fusion_jobs",
     "heroic_llama_configs",
+    "watch_rooms",
+    "fusion_settings_cloud",
+    "fusion_agent_audit",
+    "phone_link_snapshots",
 ]
+
+
+def save_watch_room(room: Dict[str, Any]) -> Dict[str, Any]:
+    if not cloud_sync_enabled():
+        return {"ok": False, "skipped": True}
+    row = {
+        "room_id": room["room_id"],
+        "video_id": room.get("video_id", ""),
+        "position": float(room.get("position", 0)),
+        "playing": bool(room.get("playing", False)),
+        "title": room.get("title", ""),
+        "updated_at": float(room.get("updated_at", time.time())),
+        "created_at": float(room.get("created_at", time.time())),
+        "payload": room.get("payload", {}),
+    }
+    return _upsert("watch_rooms", row, on_conflict="room_id")
+
+
+def load_watch_rooms(max_age_hours: float = 48.0, limit: int = 50) -> List[Dict[str, Any]]:
+    if not cloud_sync_enabled():
+        return []
+    client = get_client()
+    if not client:
+        return []
+    cutoff = time.time() - max_age_hours * 3600
+    try:
+        resp = (
+            client.table("watch_rooms")
+            .select("*")
+            .gte("updated_at", cutoff)
+            .order("updated_at", desc=True)
+            .limit(limit)
+            .execute()
+        )
+        return resp.data or []
+    except Exception:
+        return []
+
+
+def save_settings_cloud(values: Dict[str, Any], set_by: str = "api") -> Dict[str, Any]:
+    if not cloud_sync_enabled():
+        return {"ok": False, "skipped": True}
+    row = {
+        "device_id": device_id(),
+        "env": values.get("env") or {},
+        "ui": values.get("ui") or {},
+        "updated_at": float(values.get("updated_at") or time.time()),
+        "set_by": set_by,
+    }
+    return _upsert("fusion_settings_cloud", row, on_conflict="device_id")
+
+
+def load_settings_cloud(target_device: Optional[str] = None) -> Optional[Dict[str, Any]]:
+    if not cloud_sync_enabled():
+        return None
+    client = get_client()
+    if not client:
+        return None
+    did = target_device or device_id()
+    try:
+        resp = client.table("fusion_settings_cloud").select("*").eq("device_id", did).limit(1).execute()
+        rows = resp.data or []
+        return rows[0] if rows else None
+    except Exception:
+        return None
+
+
+def pull_settings_from_cloud(merge_if_newer: bool = True) -> Dict[str, Any]:
+    """Lädt Cloud-Einstellungen für dieses Gerät (optional Merge in lokale Datei)."""
+    cloud = load_settings_cloud()
+    if not cloud:
+        return {"ok": False, "reason": "no_cloud_row"}
+    if not merge_if_newer:
+        return {"ok": True, "cloud": cloud, "merged": False}
+    try:
+        from fusion_settings import SETTINGS_SCHEMA, _read_file, apply_settings
+
+        local = _read_file()
+        local_ts = float(local.get("updated_at") or 0)
+        cloud_ts = float(cloud.get("updated_at") or 0)
+        if cloud_ts <= local_ts:
+            return {"ok": True, "merged": False, "reason": "local_newer"}
+        schema_keys = {s["key"]: s for s in SETTINGS_SCHEMA}
+        clean: Dict[str, Any] = {}
+        for k, v in (cloud.get("env") or {}).items():
+            if k in schema_keys:
+                clean[k] = v
+        for k, v in (cloud.get("ui") or {}).items():
+            for candidate in (k, f"ui.{k}"):
+                if candidate in schema_keys:
+                    clean[candidate] = v
+                    break
+        if clean:
+            apply_settings(clean, set_by="cloud_pull")
+        return {"ok": True, "merged": bool(clean), "keys": list(clean.keys())}
+    except Exception as exc:
+        return {"ok": False, "error": str(exc)}
+
+
+def save_agent_audit(
+    action: str,
+    *,
+    job_id: Optional[str] = None,
+    agent: Optional[str] = None,
+    dom: Optional[str] = None,
+    category: Optional[str] = None,
+    status: str = "ok",
+    query: Optional[str] = None,
+    payload: Optional[Dict[str, Any]] = None,
+) -> Dict[str, Any]:
+    if not cloud_sync_enabled():
+        return {"ok": False, "skipped": True}
+    row = {
+        "job_id": job_id,
+        "action": action,
+        "agent": agent,
+        "dom": dom,
+        "category": category,
+        "status": status,
+        "query": (query or "")[:2000] if query else None,
+        "ts": time.time(),
+        "payload": payload or {},
+    }
+    return _insert("fusion_agent_audit", row)
+
+
+def save_phone_link_snapshot(snapshot: Dict[str, Any]) -> Dict[str, Any]:
+    if not cloud_sync_enabled():
+        return {"ok": False, "skipped": True}
+    row = {
+        "connected": bool(snapshot.get("connected")),
+        "host_running": bool(snapshot.get("host_running")),
+        "conversation_count": int(snapshot.get("conversation_count") or 0),
+        "message_count": int(snapshot.get("message_count") or 0),
+        "unread_total": int(snapshot.get("unread_total") or 0),
+        "notification_count": int(snapshot.get("notification_count") or 0),
+        "ts": time.time(),
+        "payload": {
+            "database_found": snapshot.get("database_found"),
+            "limitations": snapshot.get("limitations"),
+            "recent_messages_count": len(snapshot.get("recent_messages") or []),
+        },
+    }
+    return _insert("phone_link_snapshots", row)
+
+
+def list_recent_agent_audit(limit: int = 20) -> List[Dict[str, Any]]:
+    client = get_client()
+    if not client:
+        return []
+    try:
+        resp = (
+            client.table("fusion_agent_audit")
+            .select("*")
+            .order("ts", desc=True)
+            .limit(limit)
+            .execute()
+        )
+        return resp.data or []
+    except Exception:
+        return []
 
 
 def store_status() -> Dict[str, Any]:
@@ -130,8 +316,18 @@ def check_tables() -> Dict[str, Any]:
     return {
         "ok": all_exist,
         "tables": tables,
-        "schema_sql": None if all_exist else "supabase/schema.sql",
-        "hint": None if all_exist else "Schema anwenden: SQL Editor -> supabase/schema.sql ausführen",
+        "schema_sql": None if all_exist else "supabase/schema.sql + supabase/schema_migration_v2.sql",
+        "hint": None if all_exist else "Schema: schema.sql dann schema_migration_v2.sql im SQL Editor",
+    }
+
+
+def sync_status() -> Dict[str, Any]:
+    return {
+        "cloud_sync": cloud_sync_enabled(),
+        "device_id": device_id(),
+        "metrics_interval_sec": int(os.getenv("FUSION_SUPABASE_METRICS_INTERVAL_SEC", "30")),
+        "phone_link_interval_sec": int(os.getenv("FUSION_PHONE_LINK_SNAPSHOT_INTERVAL_SEC", "300")),
+        "settings_cloud_pull": os.getenv("FUSION_SETTINGS_CLOUD_PULL", "0") == "1",
     }
 
 

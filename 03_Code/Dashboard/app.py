@@ -405,6 +405,25 @@ async def heroic_core_event_loop():
             except Exception:
                 pass
 
+def _schedule_agent_audit(action: str, **fields) -> None:
+    if not supa_store:
+        return
+    asyncio.create_task(asyncio.to_thread(supa_store.save_agent_audit, action, **fields))
+
+
+async def _start_supabase_background() -> None:
+    if not supa_store:
+        return
+    try:
+        from supabase_background import start_background_tasks
+
+        info = start_background_tasks(get_metrics)
+        if info.get("started"):
+            print(f"[Supabase] Auto-sync aktiv: Metriken alle {info['metrics_interval_sec']}s")
+    except Exception as exc:
+        print(f"[Supabase] Background sync note: {exc}")
+
+
 @app.on_event("startup")
 async def startup_event():
     launcher_fast_boot = os.getenv("FUSION_AUTO_LOAD") == "0"
@@ -413,6 +432,7 @@ async def startup_event():
         boot_load()
     except Exception as _settings_err:
         print(f"[Startup] Settings note: {_settings_err}")
+    await _start_supabase_background()
     if launcher_fast_boot:
         os.environ["FUSION_AUTO_LOAD"] = "0"
     fast_boot = os.getenv("FUSION_AUTO_LOAD", "1") == "0"
@@ -777,6 +797,15 @@ async def api_agents_assign(payload: dict):
     dom = payload.get("dom", "General")
     agent_map = {"Math": "math-worker", "Phil": "phil-worker", "Info": "info-worker"}
     agent = agent_map.get(dom, "general-worker")
+    _schedule_agent_audit(
+        "assign",
+        job_id=payload.get("job_id"),
+        agent=agent,
+        dom=dom,
+        category=payload.get("category"),
+        query=payload.get("query"),
+        payload=payload,
+    )
     return {"status": "ok", "agent": agent}
 
 @app.post("/api/input")
@@ -786,11 +815,22 @@ async def api_input(payload: InputPayload):
         return {"status": "error", "msg": "empty query"}
     normalized, cat, _, dom = classify_and_normalize(query)
     job_id = str(uuid.uuid4())[:8]
-    job = {"id": job_id, "query": normalized, "category": cat, "dom": dom, "status": "received"}
+    agent_map = {"Math": "math-worker", "Phil": "phil-worker", "Info": "info-worker"}
+    agent = agent_map.get(dom, "general-worker")
+    job = {"id": job_id, "query": normalized, "category": cat, "dom": dom, "status": "received", "agent": agent}
     JOBS[job_id] = job
     TASK_QUEUE.append(job)
     if supa_store:
         asyncio.create_task(asyncio.to_thread(supa_store.save_job, dict(job)))
+    _schedule_agent_audit(
+        "job_received",
+        job_id=job_id,
+        agent=agent,
+        dom=dom,
+        category=cat,
+        query=normalized,
+        payload=job,
+    )
     await emit({"type": "task_input", "msg": f"Input auto-checked + agent assigned: {normalized[:60]}"})
     return {"status": "ok", "job_id": job_id, "normalized": normalized, "category": cat}
 
@@ -812,8 +852,24 @@ async def api_orchestrate(payload: OrchestratePayload):
         )
         result["category"] = cat
         result["dom"] = dom
+        _schedule_agent_audit(
+            "orchestrate",
+            dom=dom,
+            category=cat,
+            query=normalized,
+            status=str(result.get("status", "ok")),
+            payload={"used_models": models, "result_keys": list(result.keys())[:12]},
+        )
         return result
     except Exception as exc:
+        _schedule_agent_audit(
+            "orchestrate_error",
+            dom=dom,
+            category=cat,
+            query=normalized,
+            status="error",
+            payload={"error": str(exc), "models": models},
+        )
         return {
             "status": "success",
             "query": normalized,
@@ -1055,6 +1111,27 @@ async def api_supabase_sync_metrics():
     payload = metrics if isinstance(metrics, dict) else metrics.model_dump()
     result = await asyncio.to_thread(supa_store.save_metrics, payload)
     return result
+
+
+@app.get("/api/supabase/sync/status")
+async def api_supabase_sync_status():
+    if supa_store is None:
+        return {"error": "supabase_store not loaded"}
+    return await asyncio.to_thread(supa_store.sync_status)
+
+
+@app.get("/api/supabase/audit")
+async def api_supabase_audit(limit: int = 20):
+    if supa_store is None:
+        return {"entries": [], "error": "supabase_store not loaded"}
+    return {"entries": await asyncio.to_thread(supa_store.list_recent_agent_audit, limit)}
+
+
+@app.post("/api/supabase/settings/pull")
+async def api_supabase_settings_pull():
+    if supa_store is None:
+        return {"error": "supabase_store not loaded"}
+    return await asyncio.to_thread(supa_store.pull_settings_from_cloud, True)
 
 
 # === Alle Module + fehlende Endpunkte freigeben ===
