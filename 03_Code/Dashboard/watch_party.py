@@ -48,6 +48,55 @@ class WatchPartyManager:
     def __init__(self) -> None:
         self._rooms: Dict[str, WatchRoom] = {}
         self._subscribers: Dict[str, Set[Any]] = {}
+        self._hydrated = False
+
+    def _room_row(self, room: WatchRoom) -> Dict[str, Any]:
+        return {
+            "room_id": room.room_id,
+            "video_id": room.video_id,
+            "position": room.position,
+            "playing": room.playing,
+            "title": room.title,
+            "updated_at": room.updated_at,
+            "created_at": room.created_at,
+        }
+
+    def _persist_room(self, room: WatchRoom) -> None:
+        try:
+            import supabase_store as store
+
+            if store.cloud_sync_enabled():
+                store.save_watch_room(self._room_row(room))
+        except Exception:
+            pass
+
+    def hydrate_from_cloud(self) -> int:
+        if self._hydrated:
+            return 0
+        self._hydrated = True
+        try:
+            import supabase_store as store
+
+            rows = store.load_watch_rooms()
+        except Exception:
+            return 0
+        loaded = 0
+        for row in rows:
+            rid = row.get("room_id")
+            if not rid or rid in self._rooms:
+                continue
+            self._rooms[rid] = WatchRoom(
+                room_id=rid,
+                video_id=row.get("video_id") or "",
+                position=float(row.get("position") or 0),
+                playing=bool(row.get("playing")),
+                updated_at=float(row.get("updated_at") or time.time()),
+                title=row.get("title") or "",
+                created_at=float(row.get("created_at") or time.time()),
+            )
+            self._subscribers.setdefault(rid, set())
+            loaded += 1
+        return loaded
 
     @staticmethod
     def extract_video_id(url_or_id: str) -> Optional[str]:
@@ -66,6 +115,7 @@ class WatchPartyManager:
         room = WatchRoom(room_id=room_id, video_id=video_id)
         self._rooms[room_id] = room
         self._subscribers.setdefault(room_id, set())
+        self._persist_room(room)
         return room
 
     def get_room(self, room_id: str) -> Optional[WatchRoom]:
@@ -77,6 +127,7 @@ class WatchPartyManager:
             room = WatchRoom(room_id=room_id, video_id="")
             self._rooms[room_id] = room
             self._subscribers.setdefault(room_id, set())
+            self._persist_room(room)
         return room
 
     def register_ws(self, room_id: str, ws: Any) -> None:
@@ -110,6 +161,7 @@ class WatchPartyManager:
             room.position = 0.0
             room.playing = False
             room.updated_at = now
+            self._persist_room(room)
             return room
 
         if cmd == "seek":
@@ -119,18 +171,21 @@ class WatchPartyManager:
             room.updated_at = now
             if playing is not None:
                 room.playing = bool(playing)
+            self._persist_room(room)
             return room
 
         if cmd == "play":
             room.position = room.current_position(now) if position is None else max(0.0, float(position))
             room.playing = True
             room.updated_at = now
+            self._persist_room(room)
             return room
 
         if cmd == "pause":
             room.position = room.current_position(now) if position is None else max(0.0, float(position))
             room.playing = False
             room.updated_at = now
+            self._persist_room(room)
             return room
 
         return None
@@ -163,6 +218,7 @@ def get_watch_manager() -> WatchPartyManager:
     global _manager
     if _manager is None:
         _manager = WatchPartyManager()
+        _manager.hydrate_from_cloud()
     return _manager
 
 

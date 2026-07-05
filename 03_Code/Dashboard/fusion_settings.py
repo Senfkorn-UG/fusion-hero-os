@@ -498,17 +498,32 @@ def apply_settings(values: Dict[str, Any], set_by: str = "api") -> Dict[str, Any
 
     _write_file({"env": env_store, "ui": ui_store, "set_by": set_by})
     side = _apply_side_effects(env_updates)
+    values = get_values()
+    try:
+        import supabase_store as store
+
+        if store.cloud_sync_enabled():
+            store.save_settings_cloud(values, set_by=set_by)
+    except Exception:
+        pass
     return {
         "status": "ok",
         "applied_env": list(env_updates.keys()),
         "applied_ui": list(ui_updates.keys()),
         "side_effects": side,
-        "values": get_values(),
+        "values": values,
     }
 
 
 def boot_load() -> Dict[str, Any]:
     """Beim Dashboard-Start gespeicherte Einstellungen laden."""
+    if os.getenv("FUSION_SETTINGS_CLOUD_PULL", "0") == "1":
+        try:
+            import supabase_store as store
+
+            store.pull_settings_from_cloud(merge_if_newer=True)
+        except Exception:
+            pass
     stored = _read_file()
     env_store = stored.get("env") or {}
     for spec in SETTINGS_SCHEMA:
