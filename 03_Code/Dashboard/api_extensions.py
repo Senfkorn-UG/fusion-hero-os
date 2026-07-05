@@ -520,6 +520,233 @@ async def api_v8_orchestrator_query(payload: dict = None):
     return await asyncio.to_thread(process_query, domain, operator_id, payload.get("payload"))
 
 
+@router.get("/api/bridge/ipc/status")
+async def api_bridge_ipc_status():
+    from core.v8_core_bridge import ipc_status
+
+    return await asyncio.to_thread(ipc_status)
+
+
+@router.post("/api/bridge/ipc/dispatch")
+async def api_bridge_ipc_dispatch(payload: dict = None):
+    from core.v8_core_bridge import ipc_dispatch
+
+    payload = payload or {}
+    module = payload.get("module", "")
+    return await asyncio.to_thread(ipc_dispatch, module, payload.get("payload"))
+
+
+@router.get("/api/phone-link/status")
+async def api_phone_link_status():
+    from fusion_hero_os.integrations.phone_link import phone_link_status
+
+    return await asyncio.to_thread(phone_link_status)
+
+
+@router.get("/api/phone-link/messages")
+async def api_phone_link_messages(limit: int = 20):
+    from fusion_hero_os.integrations.phone_link.reader import PhoneLinkReader
+
+    lim = max(1, min(100, int(limit)))
+
+    def _read():
+        reader = PhoneLinkReader()
+        return {
+            "ok": reader.database_path is not None,
+            "database_found": reader.database_path is not None,
+            "messages": reader.recent_messages(lim),
+        }
+
+    return await asyncio.to_thread(_read)
+
+
+@router.get("/api/phone-link/conversations")
+async def api_phone_link_conversations(limit: int = 20):
+    from fusion_hero_os.integrations.phone_link.reader import PhoneLinkReader
+
+    lim = max(1, min(100, int(limit)))
+
+    def _read():
+        reader = PhoneLinkReader()
+        return {
+            "ok": reader.database_path is not None,
+            "database_found": reader.database_path is not None,
+            "conversations": reader.recent_conversations(lim),
+        }
+
+    return await asyncio.to_thread(_read)
+
+
+@router.get("/api/discovery")
+async def api_discovery():
+    from connectivity import build_discovery
+
+    return build_discovery()
+
+
+@router.get("/api/connectivity")
+async def api_connectivity():
+    from connectivity import build_connectivity_summary
+
+    return await asyncio.to_thread(build_connectivity_summary)
+
+
+@router.post("/api/settings/sync")
+async def api_settings_sync(payload: dict = None):
+    """Push lokale Settings in die Cloud und optional Pull (Merge wenn Cloud neuer)."""
+    from fusion_settings import SETTINGS_SCHEMA, apply_settings, get_values
+
+    payload = payload or {}
+    pull = payload.get("pull", True)
+    push = payload.get("push", True)
+    result: Dict[str, Any] = {"status": "ok", "pushed": False, "pulled": False}
+    if push:
+        vals = get_values()
+        flat: Dict[str, Any] = {}
+        for spec in SETTINGS_SCHEMA:
+            key = spec["key"]
+            if spec.get("scope") == "ui":
+                ui_key = key[3:] if key.startswith("ui.") else key
+                if ui_key in vals.get("ui", {}):
+                    flat[key] = vals["ui"][ui_key]
+            elif key in vals.get("env", {}):
+                flat[key] = vals["env"][key]
+        result["push"] = apply_settings(flat, "sync")
+        result["pushed"] = True
+    if pull:
+        try:
+            import supabase_store as store
+
+            result["pull"] = store.pull_settings_from_cloud(merge_if_newer=True)
+            result["pulled"] = True
+        except Exception as exc:
+            result["pull_error"] = str(exc)[:200]
+    result["values"] = get_values()
+    return result
+
+
+@router.get("/api/settings/schema")
+async def api_settings_schema():
+    from fusion_settings import get_schema
+    return get_schema()
+
+
+@router.get("/api/settings")
+async def api_settings_get():
+    from fusion_settings import get_values
+    return get_values()
+
+
+@router.post("/api/settings")
+async def api_settings_set(payload: dict = None):
+    from fusion_settings import apply_settings
+    payload = payload or {}
+    updates = payload.get("settings") or payload
+    return await asyncio.to_thread(apply_settings, updates, payload.get("set_by", "api"))
+
+
+@router.post("/api/settings/reset")
+async def api_settings_reset():
+    from fusion_settings import reset_defaults
+    return await asyncio.to_thread(reset_defaults)
+
+
+@router.post("/api/watch/room")
+async def api_watch_create_room(payload: dict = None):
+    from watch_party import get_watch_manager
+
+    payload = payload or {}
+    mgr = get_watch_manager()
+    room = mgr.create_room(payload.get("url", ""))
+    base = payload.get("base_url", "http://127.0.0.1:8000")
+    return mgr.room_info(room.room_id, base_url=base)
+
+
+@router.get("/api/watch/room/{room_id}")
+async def api_watch_room_info(room_id: str):
+    from watch_party import get_watch_manager
+
+    return get_watch_manager().room_info(room_id)
+
+
+@router.get("/api/watch/room/{room_id}/state")
+async def api_watch_room_state(room_id: str):
+    """Autoritativer Raumzustand — Supabase als Sync-Server."""
+    from watch_party import get_watch_manager
+    from watch_sync_server import get_authoritative_state
+
+    mgr = get_watch_manager()
+    return await asyncio.to_thread(get_authoritative_state, room_id, mgr)
+
+
+@router.post("/api/watch/room/{room_id}/cmd")
+async def api_watch_room_cmd(room_id: str, payload: dict = None):
+    """Befehl an Server — Play/Pause/Seek/Load werden in Supabase persistiert."""
+    from watch_party import broadcast_room_state, get_watch_manager
+    from watch_sync_server import get_authoritative_state
+
+    payload = payload or {}
+    mgr = get_watch_manager()
+    updated = mgr.apply_command(
+        room_id,
+        payload.get("cmd", ""),
+        video_id=payload.get("video_id"),
+        position=payload.get("position"),
+        playing=payload.get("playing"),
+    )
+    if not updated:
+        return {"ok": False, "error": "invalid_command"}
+    await broadcast_room_state(mgr, room_id)
+    from watch_sync_server import low_latency_enabled, state_response
+
+    if low_latency_enabled():
+        return state_response(updated, sync_source="local_fast")
+    return await asyncio.to_thread(get_authoritative_state, room_id, mgr)
+
+
+@router.get("/api/watch/network")
+async def api_watch_network():
+    from watch_party import local_network_base
+
+    base = local_network_base()
+    return {"lan_base": base, "hint": "QR/Link fürs Handy im gleichen WLAN"}
+
+
+@router.get("/api/watch/realtime/config")
+async def api_watch_realtime_config():
+    from watch_sync_server import get_realtime_client_config
+
+    return get_realtime_client_config()
+
+
+@router.get("/api/watch/room/{room_id}/qr")
+async def api_watch_room_qr(room_id: str, size: int = 240):
+    from io import BytesIO
+    from urllib.parse import quote
+
+    from fastapi.responses import RedirectResponse, Response
+
+    from watch_party import get_watch_manager
+
+    info = get_watch_manager().room_info(room_id)
+    if not info.get("ok"):
+        return {"ok": False, "error": "room_not_found"}
+    join = info["join_url"]
+    dim = max(120, min(512, int(size)))
+    try:
+        import qrcode
+
+        qr = qrcode.QRCode(version=1, box_size=max(4, dim // 25), border=2)
+        qr.add_data(join)
+        qr.make(fit=True)
+        buf = BytesIO()
+        qr.make_image(fill_color="black", back_color="white").save(buf, format="PNG")
+        return Response(content=buf.getvalue(), media_type="image/png")
+    except Exception:
+        img = f"https://api.qrserver.com/v1/create-qr-code/?size={dim}x{dim}&data={quote(join)}"
+        return RedirectResponse(url=img)
+
+
 @router.get("/api/viz/geisterjagd-banach")
 async def api_viz_geisterjagd_banach(tick: bool = True):
     from core.geisterjagd_banach_viz import get_viz, build_hints_from_system
@@ -560,6 +787,18 @@ async def api_viz_geisterjagd_banach(tick: bool = True):
 async def api_signal_health(layer: str = "full"):
     from core.module_registry import signal_health
     return signal_health(layer)
+
+
+@router.get("/api/jobs")
+async def api_jobs_list(limit: int = 20):
+    from app import JOBS, TASK_QUEUE
+
+    lim = max(1, min(200, int(limit)))
+    jobs = list(JOBS.values())
+    jobs.sort(key=lambda j: j.get("created_at", 0), reverse=True)
+    queued = [j for j in TASK_QUEUE if j.get("id") not in {x.get("id") for x in jobs}]
+    combined = (queued + jobs)[:lim]
+    return {"status": "ok", "count": len(combined), "jobs": combined, "queue_len": len(TASK_QUEUE)}
 
 
 @router.get("/api/jobs/{job_id}")

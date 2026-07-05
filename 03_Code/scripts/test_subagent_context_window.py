@@ -48,8 +48,16 @@ def test_orchestration_wiring():
 
 
 def test_llama_subagent_context():
+    # llama_config_valid wurde bewusst NICHT verwendet: es erfordert einen echten
+    # HeroicLlamaOptimizer-Trainingslauf (heroic_llama_config.json wird erst von
+    # train.py geschrieben), der pro Generation >180s CLI-Subprocess-Zeit braucht
+    # (kein llama-cpp-python installiert -> CLI-Fallback). Das würde diesen Test
+    # von einer langsamen, hardwareabhängigen LLM-Generierung abhängig machen,
+    # obwohl er eigentlich nur die Subagent-Kontextfenster-Verdrahtung prüft.
+    # llama_cli_binary prüft stattdessen schnell + deterministisch (reine
+    # Dateisystem-Prüfung) einen dritten, unabhängigen Subagenten-Kanal.
     result = llama_run(
-        subagents=["llama_status", "llama_model_file", "llama_config_valid"],
+        subagents=["llama_status", "llama_model_file", "llama_cli_binary"],
         include_generate=False,
         seed_context="Llama-Kontextfenster-Test",
     )

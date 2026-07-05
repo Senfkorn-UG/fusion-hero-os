@@ -1,7 +1,7 @@
 # Fusion-Hero-OS v8 – Repository Overview
 
 **Version:** v8 (Konsolidiert)  
-**Status:** Doku-/Strukturebene abgeschlossen. Mathematischer Kern seit 2026-07-04 BEWIESEN: Knoten 16/17/19/20 sind Sätze mit Beweisen, 0-Verletzungs-Sweeps und Regressionstests (`fusion_hero_os/core/heroic_math_engine.py`). PMS Evidence Spine dagegen weiterhin NICHT implementiert. Verbindlicher Detailstand: `docs/01_vision/V8_STATUS_REPORT.md`.
+**Status:** Doku-/Strukturebene abgeschlossen. Kernfunktionalität teilweise implementiert bzw. aspirational — die mathematische Fundierung ist **nicht** abgeschlossen (Knoten 16 = Fragment, Knoten 19 = Modell mit ~29 % Monotonie-Verletzungen im Sweep, Knoten 17/20 nicht implementiert). Verbindlicher Detailstand: `docs/01_vision/V8_STATUS_REPORT.md`.
 
 ## Aktuelle Top-Down-Struktur
 
@@ -21,15 +21,13 @@ docs/
 ## Wesentliche v8-Änderungen
 
 - Neue klare 6-Layer-Dokumentationsstruktur
-- `fusion_hero_os/core/heroic_math_engine.py` als mathematische Kernkomponente: Knoten 16/17/19/20 als bewiesene Sätze (Details `V8_STATUS_REPORT.md`, Abschnitt 2.3; die frühere bloße Behauptung "repariert" ist damit durch echte Beweise ersetzt)
-- `fusion_hero_os/core/heroic_core_orchestrator.py` als zentraler Layer 0/4/5 Orchestrator hinzugefügt (Fail-Closed + Phoenix-Mode; PMS Evidence Spine / Rust-Kernel dagegen NICHT implementiert — kein Binary, keine `PMS.yaml`, kein Validator)
+- `core/heroic_math_engine.py` als mathematische Kernkomponente integriert (läuft; ehrlicher Stand der Knoten 16/17/19/20 siehe `V8_STATUS_REPORT.md`, Abschnitt 2.3 — die frühere Behauptung "Knoten 16–20 repariert" war eine zurückgenommene Überclaim)
+- `core/heroic_core_orchestrator.py` als zentraler Layer 0/4/5 Orchestrator hinzugefügt (Fail-Closed + Phoenix-Mode; PMS Evidence Spine / Rust-Kernel dagegen NICHT implementiert — kein Binary, keine `PMS.yaml`, kein Validator)
 - Core-Python-Module auf v8 gebracht (v8-Header/Versionshinweise, kein funktionales Rework)
 - `modules/` neu strukturiert
 - Alte v7.x-Dateien in `99_archive/` verschoben
 
-## Ehrlicher Stand von top-level `modules/` (Platzhalter)
-
-*(Die lauffähigen Module liegen im Paket `fusion_hero_os/modules/` — Registry/Dispatcher-Adapter. Das hier beschriebene top-level `modules/` ist davon getrennt.)*
+## Ehrlicher Stand von `modules/` (Platzhalter)
 
 `modules/alte_frau_95g/`, `modules/mainframe_laden/` und `modules/skill_creator/` sind derzeit **leere `__init__.py`-Platzhalter ohne Funktionalität** (nur Docstrings, kein lauffähiger Code) — Status: **nicht gestartet**. Die im `modules/README.md` zusätzlich genannten Ordner `deep_research_5_stage/` und `mister_jailbait_image/` existieren aktuell gar nicht im Dateisystem.
 

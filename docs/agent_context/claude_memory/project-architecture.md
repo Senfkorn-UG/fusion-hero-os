@@ -25,3 +25,12 @@ GUI verification is import-build + server-200 + headless function tests; click-t
 **Hyperthreading:** `parallel_anneal` genuinely uses all cores (~3.4x, ~10/12 cores busy — verified). The live agent swarm now uses a REAL compute executor (`_cpu_task_executor` in app.py → nogil kernel) so the Hauptagent visibly loads cores; the Monitor shows "⚡ Kerne aktiv: N/12".
 
 **Gotcha:** cloning `fusion-hero-os` on Windows fails (`exit 128`) on deeply-nested `04_Buch_und_Archiv/...` paths (>260 chars). Never `git add -A` after a partial clone — it stages phantom deletions. Use index-only ops (reset --soft) or only touch the subfolder.
+
+**2026-07-02 — Monorepo Runtime (aktiver Pfad `C:\Users\Admin\fusion-hero-os`):**
+- **Dashboard API:** `03_Code/Dashboard/app.py` — FastAPI v8 auf **:8000** (uvicorn), nicht mehr nur v5.3-Monitor.
+- **Workspace GUI:** `workspace.py` — NiceGUI auf **:8080** (`ui.monaco`).
+- **Lokales Llama:** `03_Code/internal_llm/` — `heroic_qubo_annealing_v1` via `train.py`; Modell unter `C:\Users\Admin\internal_llm\models\`.
+- **Claude Science Bridge:** `03_Code/core/claude_science.py` — API-Key in `Dashboard/.env`; Llama-only-Starter deaktiviert Science.
+- **Desktop Llama-only:** `C:\Users\Admin\Desktop\FusionHero_LlamaLocal\` — Start.ps1 + backend.bat; Boot mit `FUSION_AUTO_LOAD=0`, Autoload per API.
+- **Agent-Routing:** `agent_backend_router.py` — Agent→llama-local, Anti-Agent→Grok (im Llama-only-Modus beides llama-local).
+- Siehe [[heroic-qubo-algorithm-audit]] für Trainings-Algorithmus-Details.

@@ -13,8 +13,8 @@ Dieses Modul bildet den **zentralen Orchestrator** des Fusion-Hero-OS. Es defini
 
 | Layer | Komponente          | Verantwortung                                    | Status |
 |-------|---------------------|---------------------------------------------------|--------|
-| 0     | `MasterSeed`         | Unveränderlicher Banach-Fixpunkt         | `verify_integrity()` ECHT seit 2026-07-04: SHA-256-Zustands-Hash, Manipulation -> `False`; + `verify_strict_contraction` (K20) |
-| 4     | `PMSEvidenceSpine`   | Kapselt den EIGENEN deterministischen Minimal-Kernel | `pms_rust_kernel_crate/` (seit 2026-07-04): PMS.yaml-Validierung, JSONL-Audit, FAIL_CLOSED; ohne gebautes Binary weiterhin sauberes `FAIL_CLOSED` |
+| 0     | `MasterSeed`         | Unveränderlicher Banach-Fixpunkt (Konzept)         | `verify_integrity()` ist ein Stub, liefert immer `True` |
+| 4     | `PMSEvidenceSpine`   | Soll einen deterministischen Rust-Kernel (PMS) kapseln | Kernel-Binary (`./pms_rust_kernel`) existiert nicht im Repo — jeder Aufruf endet in `FAIL_CLOSED` |
 | 5     | `QuadCoreBridge`     | Fail-Closed-Routing + Phoenix-Mode                 | Fail-Closed ist real; Phoenix-Mode ist aktuell nur Logging (kein echter State-Reset) |
 
 ## Kernprinzipien
@@ -34,7 +34,7 @@ response = heroic_core.process_query(
     operator_id="OP_Q_B_CIRC",
     payload={"action": "verify_reciprocity"}
 )
-# ohne gebautes Binary: {"status": "FAIL_CLOSED", ...}; mit Binary: {"status": "SUCCESS", "result": {...}}
+# response == {"status": "FAIL_CLOSED", "error": "PMS-RUST Kernel nicht gefunden."}
 # solange kein ./pms_rust_kernel-Binary vorhanden ist (aktuell immer der Fall).
 ```
 
@@ -42,18 +42,18 @@ response = heroic_core.process_query(
 
 Das Orchestrator-Modul ist konzeptionell komplementär zur `heroic_math_engine.py` gedacht:
 
-- `heroic_math_engine.py` → Knoten 16/17/19/20 als BEWIESENE Sätze
-  (Beweise in Docstrings, 0-Verletzungs-Sweeps, Regressionstests —
-  Stand 2026-07-04, siehe `docs/01_vision/V8_STATUS_REPORT.md` 2.3)
+- `heroic_math_engine.py` → mathematische Bausteine, Knoten 1/16/19 haben Code
+  (16 als Fragment, 19 als unbewiesenes Modell — siehe Modul-Docstring); Knoten
+  17/20 existieren nicht.
 - `heroic_core_orchestrator.py` → Architektur-Gerüst für systemweite
-  Koordination; deterministische Ausführung seit 2026-07-04 real (eigener Minimal-Kernel).
+  Koordination; deterministische Ausführung ist geplant, nicht implementiert.
 
 Beide zusammen bilden das v8-Architektur-**Gerüst** — nicht eine vollständige, lauffähige Core-Schicht.
 
 ## Status
 
-- **Deterministisch**: Ja — eigener Minimal-Kernel `pms_rust_kernel` (byte-identische Ergebnisse, Kernel-Integrationstests in `tests/test_heroic_core_orchestrator.py`); das externe tz-dev/PMS-RUST bleibt nicht eingebunden.
+- **Deterministisch**: Nein — der PMS-RUST-Kernel existiert nicht im Repo (kein Binary, kein Submodule, keine `PMS.yaml`). Jede reale Ausführung endet in `FAIL_CLOSED`.
 - **Fail-Closed**: Ja — verifiziert, funktioniert wie beschrieben.
-- **Phoenix-Resilient**: Ja — echter Reset des flüchtigen Zustands (Query-Historie + Response-Cache) mit anschließender Seed-Re-Verifikation (seit 2026-07-04).
+- **Phoenix-Resilient**: Teilweise — der Modus-Wechsel und die Log-Ausgabe funktionieren; ein echter State-Reset ist nicht implementiert.
 
 **Teil der 02_architecture Schicht.**

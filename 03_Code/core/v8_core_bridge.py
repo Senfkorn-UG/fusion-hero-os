@@ -95,6 +95,33 @@ def bootstrap_orchestrator() -> Dict[str, Any]:
         return {"ok": False, "error": str(exc)}
 
 
+def _ensure_repo_path() -> None:
+    if str(_REPO_ROOT) not in sys.path:
+        sys.path.insert(0, str(_REPO_ROOT))
+
+
+def ipc_status() -> Dict[str, Any]:
+    """Kernel C↔Python IPC Bridge status (TCP / in-process)."""
+    try:
+        _ensure_repo_path()
+        from fusion_hero_os.bridge.gateway import get_ipc_gateway
+
+        return get_ipc_gateway().status()
+    except Exception as exc:
+        return {"ok": False, "error": str(exc)}
+
+
+def ipc_dispatch(module: str, payload: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+    """Dispatch a fusion_hero_os BaseModule via IPC gateway."""
+    try:
+        _ensure_repo_path()
+        from fusion_hero_os.bridge.gateway import get_ipc_gateway
+
+        return get_ipc_gateway().dispatch(module, payload)
+    except Exception as exc:
+        return {"ok": False, "error": str(exc)}
+
+
 def process_query(domain: str, operator_id: str, payload: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
     try:
         mod = _load_root_module("heroic_core_orchestrator", "heroic_core_orchestrator.py")

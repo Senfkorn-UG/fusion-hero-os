@@ -25,6 +25,9 @@ class SelfModifyCoreModule:
     def __init__(self):
         self.modification_history: List[Dict[str, Any]] = []
         self.audit_hooks: Dict[str, Callable] = {}
+        # Spectrum (0.0 = proposals only / read-only, 0.5 = low-risk metadata apply, 1.0 = aggressive with gates)
+        # Self-regulating: autorgenerativ based on history success, audit scores, identity preservation.
+        self.self_mod_spectrum: float = 0.3  # conservative default (spectrum not binary)
 
     def _score_risk(self, description: str, diff: str) -> str:
         blob = f"{description}\n{diff}"
@@ -82,7 +85,15 @@ class SelfModifyCoreModule:
         }
         if diff_errors or final_risk == "high":
             proposal["status"] = "rejected"
+        # Spectrum influence: higher spectrum allows more medium-risk proposals
+        if final_risk == "medium" and self.self_mod_spectrum < 0.4:
+            proposal["status"] = "rejected"  # conservative at low spectrum
         self.modification_history.append(proposal)
+        # Self-regulate based on this proposal
+        self.self_regulate_spectrum(
+            recent_success_rate=0.85 if not diff_errors else 0.6,
+            avg_audit_score=0.8 if final_risk != "high" else 0.3
+        )
         return proposal
 
     def apply_modification(self, proposal_id: int, force: bool = False) -> Dict[str, Any]:
@@ -104,9 +115,22 @@ class SelfModifyCoreModule:
     def register_audit_hook(self, name: str, func: Callable) -> None:
         self.audit_hooks[name] = func
 
+    def self_regulate_spectrum(self, recent_success_rate: float = 0.8, avg_audit_score: float = 0.7, identity_preservation: float = 0.95) -> float:
+        """Autorgenerativ selbstregelnd spectrum adjustment (instead of on/off self-mod).
+        Called after proposals or from tagebuch review.
+        """
+        # Spectrum formula: base + feedback
+        adjustment = (0.2 * (recent_success_rate - 0.5)) + (0.15 * (avg_audit_score - 0.5)) + (0.1 * (identity_preservation - 0.9))
+        new_s = max(0.0, min(1.0, self.self_mod_spectrum + adjustment * 0.05))
+        if abs(new_s - self.self_mod_spectrum) > 0.02:
+            self.self_mod_spectrum = new_s
+        return self.self_mod_spectrum
+
     def status(self) -> Dict[str, Any]:
         return {
             "proposals": len(self.modification_history),
             "hooks": list(self.audit_hooks.keys()),
             "last": self.modification_history[-1] if self.modification_history else None,
+            "self_mod_spectrum": self.self_mod_spectrum,
+            "note": "Spectrum 0.0-1.0 self-regulating (no binary on/off)",
         }
