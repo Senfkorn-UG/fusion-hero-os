@@ -6,6 +6,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import math
 import os
 import re
 import time
@@ -21,6 +22,22 @@ _MAX_ROOT_TOKENS = int(os.getenv("FUSION_CONTEXT_ROOT_MAX_TOKENS", "12000"))
 _STORE = Path(__file__).resolve().parent.parent / "internal_llm" / "output" / "conversation_context.json"
 
 _TASK_WEIGHTS = {"light": 0.65, "medium": 1.0, "heavy": 1.45}
+
+# --- Faden-Stärke (Kontext-Erinnerungs-Fäden): selbstadaptive Gewichtung ------
+# Jeder Kontext-Faden (root/subagent-Fenster) erhält eine Stärke 0..1 aus
+# Aktualität (Zeit-Decay), Engagement (feedback/revision) und Task-Gewicht.
+# Stärkere Fäden bekommen mehr Kontext-Budget; schwache+veraltete werden
+# heruntergefahren/geprunt. "Selbstadaptiv": die Aktualität zerfällt von selbst,
+# jede (Re-)Allokation liest die aktuellen Stärken -> orientiert sich neu.
+# Bewusst eine TRANSPARENTE Heuristik, KEIN gelerntes Modell (Code-Honesty).
+_STRENGTH_HALFLIFE = float(os.getenv("FUSION_CONTEXT_STRENGTH_HALFLIFE_S", "1800"))  # 30 min
+_STRENGTH_W_RECENCY = float(os.getenv("FUSION_CONTEXT_STRENGTH_W_RECENCY", "0.5"))
+_STRENGTH_W_ENGAGE = float(os.getenv("FUSION_CONTEXT_STRENGTH_W_ENGAGE", "0.3"))
+_STRENGTH_W_WEIGHT = float(os.getenv("FUSION_CONTEXT_STRENGTH_W_WEIGHT", "0.2"))
+_STRENGTH_ENGAGE_SAT = float(os.getenv("FUSION_CONTEXT_STRENGTH_ENGAGE_SAT", "12"))  # Sättigung
+_STRENGTH_PRUNE = float(os.getenv("FUSION_CONTEXT_STRENGTH_PRUNE", "0.08"))
+_STRENGTH_PRUNE_MIN_AGE_S = float(os.getenv("FUSION_CONTEXT_STRENGTH_PRUNE_MIN_AGE_S", "3600"))
+_WEIGHT_NORM = {"light": 0.4, "medium": 0.7, "heavy": 1.0}
 
 
 def _approx_tokens(text: str) -> int:
@@ -339,7 +356,14 @@ class ConversationContextCore:
             parent = init["root"]["window_id"]
 
         root = self.windows[parent]
-        alloc = self.adaptive_token_budget(task_weight, subagent_name)
+        # Selbstadaptiv: existiert schon ein Faden für diesen Subagenten, moduliert
+        # dessen aktuelle Stärke die Priorität (starker Faden -> mehr Budget).
+        prior = [w for w in self.windows.values() if w.role == "subagent" and w.subagent_name == subagent_name]
+        boost = 1.0
+        if prior:
+            latest = max(prior, key=lambda w: w.updated_ts)
+            boost = 0.5 + self.thread_strength(latest)["strength"]
+        alloc = self.adaptive_token_budget(task_weight, subagent_name, priority=boost)
         wid = f"sub-{hashlib.md5(subagent_name.encode()).hexdigest()[:10]}-{int(time.time()) % 100000}"
         bridge = (
             f"[Subagent {subagent_name}] Ausgangspunkt — Start-Kontext: "
@@ -488,6 +512,81 @@ class ConversationContextCore:
 
         return self.feedback(wid, text, {"task_id": task.get("id"), "dom": task.get("dom")})
 
+    def thread_strength(self, win: "ContextWindow", now: Optional[float] = None) -> Dict[str, Any]:
+        """Stärke eines Kontext-Fadens (0..1): Aktualität × Engagement × Gewicht.
+
+        Transparente Heuristik (kein gelerntes Modell):
+          recency = 0.5 ** (Alter / Halbwertszeit)        -> zerfällt von selbst
+          engage  = min(1, log1p(feedback+revision)/log1p(SAT))
+          weight  = {light:0.4, medium:0.7, heavy:1.0}
+          score   = gewichteter, normierter Mittelwert (Gewichte env-tunbar)
+        """
+        now = now if now is not None else time.time()
+        age = max(0.0, now - win.updated_ts)
+        recency = 0.5 ** (age / _STRENGTH_HALFLIFE) if _STRENGTH_HALFLIFE > 0 else 1.0
+        engage = (min(1.0, math.log1p(win.feedback_count + win.revision) / math.log1p(_STRENGTH_ENGAGE_SAT))
+                  if _STRENGTH_ENGAGE_SAT > 1 else 0.0)
+        weight = _WEIGHT_NORM.get(win.task_weight, 0.7)
+        wsum = _STRENGTH_W_RECENCY + _STRENGTH_W_ENGAGE + _STRENGTH_W_WEIGHT
+        wsum = wsum if wsum > 0 else 1.0
+        score = (_STRENGTH_W_RECENCY * recency + _STRENGTH_W_ENGAGE * engage
+                 + _STRENGTH_W_WEIGHT * weight) / wsum
+        return {
+            "window_id": win.window_id,
+            "subagent_name": win.subagent_name,
+            "role": win.role,
+            "strength": round(score, 4),
+            "recency": round(recency, 4),
+            "engagement": round(engage, 4),
+            "weight": weight,
+            "age_s": round(age, 1),
+        }
+
+    def strength_report(self) -> List[Dict[str, Any]]:
+        now = time.time()
+        rep = [self.thread_strength(w, now) for w in self.windows.values()]
+        rep.sort(key=lambda r: r["strength"], reverse=True)
+        return rep
+
+    def rebalance_by_strength(self, prune: bool = True) -> Dict[str, Any]:
+        """Selbstadaptive Neuverteilung: Budgets ~ Faden-Stärke; schwach+alt -> prune.
+
+        Die Stärke moduliert die Priorität in adaptive_token_budget (stark -> mehr
+        Budget). Subagent-Fäden unter _STRENGTH_PRUNE UND älter als
+        _STRENGTH_PRUNE_MIN_AGE_S werden entfernt (Root-Fenster nie).
+        """
+        now = time.time()
+        changed: List[Dict[str, Any]] = []
+        pruned: List[str] = []
+        for wid, win in list(self.windows.items()):
+            if win.role != "subagent":
+                continue
+            s = self.thread_strength(win, now)
+            strength = s["strength"]
+            # Prune-Kriterium ist Veraltung (recency), nicht die kombinierte Stärke:
+            # ein alter, ungenutzter Faden soll unabhängig vom Task-Gewicht wegfallen.
+            if prune and s["recency"] < _STRENGTH_PRUNE and s["age_s"] > _STRENGTH_PRUNE_MIN_AGE_S:
+                del self.windows[wid]
+                pruned.append(wid)
+                continue
+            alloc = self.adaptive_token_budget(win.task_weight, win.subagent_name, priority=0.5 + strength)
+            old = win.token_budget
+            win.token_budget = alloc["token_budget"]
+            if win.token_budget != old:
+                changed.append({
+                    "window_id": wid, "subagent": win.subagent_name,
+                    "strength": strength, "budget_old": old, "budget_new": win.token_budget,
+                })
+        if changed or pruned:
+            self._persist()
+        return {
+            "ok": True,
+            "rebalanced": len(changed),
+            "pruned": pruned,
+            "changes": changed[:20],
+            "strengths": self.strength_report()[:12],
+        }
+
     def status(self) -> Dict[str, Any]:
         root = self.windows.get(self.root_id) if self.root_id else None
         subagents = [w.to_dict() for w in self.windows.values() if w.role == "subagent"]
@@ -505,6 +604,7 @@ class ConversationContextCore:
             "base_tokens": _BASE_TOKENS,
             "resource_scale": scale,
             "resource_reason": reason,
+            "thread_strengths": self.strength_report()[:12],
             "store_path": str(_STORE),
             "store_exists": _STORE.exists(),
         }
@@ -554,6 +654,17 @@ def feedback_from_task(task: Dict[str, Any], result: Any = None) -> Optional[Dic
     if not is_enabled():
         return None
     return get_context().feedback_from_task_result(task, result)
+
+
+def rebalance_by_strength(prune: bool = True) -> Dict[str, Any]:
+    """Selbstadaptive Budget-Neuverteilung entlang der Kontext-Faden-Stärken."""
+    if not is_enabled():
+        return {"ok": False, "disabled": True}
+    return get_context().rebalance_by_strength(prune)
+
+
+def strength_report() -> List[Dict[str, Any]]:
+    return get_context().strength_report()
 
 
 def status() -> Dict[str, Any]:
