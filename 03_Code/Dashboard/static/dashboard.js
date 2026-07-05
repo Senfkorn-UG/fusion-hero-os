@@ -9,7 +9,7 @@
   let settingsSchema = null;
   let settingsDraft = { env: {}, ui: {} };
   let settingsActiveTab = 'performance';
-  const pollTimers = { metrics: null, bridge: null, phone: null, viz: null };
+  const pollTimers = { metrics: null, bridge: null, phone: null, connectivity: null, viz: null };
 
   const LAYER_NAMES = ['L0 Seed', 'L1 Review', 'L2 α', 'L3 Audit', 'L4 PMS', 'L5 Quad', 'L6 ω'];
 
@@ -399,12 +399,15 @@
     if (ui.event_stream_max) maxEvents = parseInt(ui.event_stream_max, 10) || 500;
     const bridgeMs = parseInt(ui.poll_bridge_ms, 10) || 4000;
     const phoneMs = parseInt(ui.poll_phone_ms, 10) || 8000;
+    const connMs = parseInt(ui.poll_connectivity_ms, 10) || 8000;
     const metricsMs = parseInt(ui.poll_metrics_ms, 10) || 1200;
     setPollTimer('bridge', fetchBridgeStatus, bridgeMs);
     setPollTimer('phone', fetchPhoneLinkStatus, phoneMs);
+    setPollTimer('connectivity', fetchConnectivity, connMs);
     setPollTimer('metrics', fetchMetrics, metricsMs);
     fetchBridgeStatus();
     fetchPhoneLinkStatus();
+    fetchConnectivity();
     fetchMetrics();
   }
 
@@ -451,6 +454,55 @@
   }
 
   function initPhoneLinkUI() { /* polling via applyUiSettings */ }
+
+  async function fetchConnectivity() {
+    const dot = document.getElementById('connectivity-status-dot');
+    const badge = document.getElementById('connectivity-status-badge');
+    const grid = document.getElementById('conn-access-grid');
+    const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+    try {
+      const [disc, conn] = await Promise.all([
+        fetch('/api/discovery').then((r) => r.json()),
+        fetch('/api/connectivity').then((r) => r.json()),
+      ]);
+      set('conn-lan-ip', disc.lan_ip || '--');
+      set('conn-device-id', (disc.device_id || '--').slice(0, 16));
+      set('conn-port', disc.port ?? '--');
+      const watchLink = document.getElementById('conn-watch-link');
+      if (watchLink && disc.watch_url) watchLink.href = disc.watch_url;
+      const allOk = conn.all_ok === true;
+      if (dot) dot.className = allOk ? 'status-online' : 'status-warning';
+      if (badge) badge.textContent = allOk ? 'VERBUNDEN' : 'TEILWEISE';
+      if (grid && conn.access_points) {
+        grid.innerHTML = Object.entries(conn.access_points).map(([name, st]) => {
+          const ok = st && st.ok === true;
+          const detail = st.transport || st.cloud_sync || st.message_count || st.rooms || st.queue_len;
+          const detailTxt = detail !== undefined && detail !== null ? ` · ${detail}` : '';
+          return `<div class="conn-ap-row ${ok ? 'ok' : 'warn'}"><span>${name}</span><span>${ok ? 'OK' : '—'}${detailTxt}</span></div>`;
+        }).join('');
+      }
+      return { disc, conn };
+    } catch (err) {
+      if (dot) dot.className = 'status-offline';
+      if (grid) grid.textContent = `Connectivity offline: ${err.message}`;
+      return null;
+    }
+  }
+
+  function initConnectivityUI() {
+    const copyBtn = document.getElementById('conn-copy-lan-btn');
+    if (copyBtn) {
+      copyBtn.addEventListener('click', async () => {
+        try {
+          const disc = await fetch('/api/discovery').then((r) => r.json());
+          const url = disc.lan_base || disc.watch_url || location.origin;
+          await navigator.clipboard.writeText(url);
+          copyBtn.textContent = 'Kopiert!';
+          setTimeout(() => { copyBtn.textContent = 'LAN kopieren'; }, 1500);
+        } catch (_) { /* ignore */ }
+      });
+    }
+  }
 
   function getDraftValue(key, spec) {
     const scope = spec.scope === 'ui' ? 'ui' : 'env';
@@ -632,6 +684,7 @@
   pollViz();
   initBridgeUI();
   initPhoneLinkUI();
+  initConnectivityUI();
   initSettingsUI();
   bootSettings();
 

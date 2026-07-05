@@ -87,6 +87,25 @@
         </div>
       </div>
 
+      <!-- Connectivity / Access Points -->
+      <div class="hud-panel connectivity-panel" id="connectivity-panel">
+        <h2 class="text-[#34d399] text-sm mb-3 tracking-widest flex items-center gap-2 flex-wrap">
+          ACCESS POINTS
+          <span id="connectivity-status-badge" class="bridge-badge">--</span>
+          <span id="connectivity-status-dot" class="status-offline">●</span>
+        </h2>
+        <div class="bridge-metrics">
+          <div><span class="bridge-metric-label">LAN IP</span><span id="conn-lan-ip" class="bridge-metric-value">--</span></div>
+          <div><span class="bridge-metric-label">Gerät</span><span id="conn-device-id" class="bridge-metric-value">--</span></div>
+          <div><span class="bridge-metric-label">Port</span><span id="conn-port" class="bridge-metric-value">--</span></div>
+        </div>
+        <div class="connectivity-links">
+          <a id="conn-watch-link" href="/watch" class="watch-header-btn" target="_blank" rel="noopener">▶ Watch LAN</a>
+          <button type="button" id="conn-copy-lan-btn" class="bridge-btn bridge-btn-secondary">LAN kopieren</button>
+        </div>
+        <div id="conn-access-grid" class="conn-access-grid">Lade Access Points…</div>
+      </div>
+
       <!-- Phone Link Panel -->
       <div class="hud-panel phone-panel" id="phone-panel">
         <h2 class="text-[#a78bfa] text-sm mb-3 tracking-widest flex items-center gap-2 flex-wrap">
