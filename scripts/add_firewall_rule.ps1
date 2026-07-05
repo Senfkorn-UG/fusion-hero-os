@@ -12,6 +12,6 @@ netsh advfirewall firewall add rule name="$ruleName" dir=in action=allow protoco
 if ($LASTEXITCODE -eq 0) {
     Write-Host "Firewall rule added: TCP 8000 (private, domain)."
 } else {
-    Write-Error "Failed — run this script as Administrator."
+    Write-Error "Failed - run this script as Administrator."
     exit 1
 }
