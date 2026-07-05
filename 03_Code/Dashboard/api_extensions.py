@@ -669,6 +669,37 @@ async def api_watch_room_info(room_id: str):
     return get_watch_manager().room_info(room_id)
 
 
+@router.get("/api/watch/room/{room_id}/state")
+async def api_watch_room_state(room_id: str):
+    """Autoritativer Raumzustand — Supabase als Sync-Server."""
+    from watch_party import get_watch_manager
+    from watch_sync_server import get_authoritative_state
+
+    mgr = get_watch_manager()
+    return await asyncio.to_thread(get_authoritative_state, room_id, mgr)
+
+
+@router.post("/api/watch/room/{room_id}/cmd")
+async def api_watch_room_cmd(room_id: str, payload: dict = None):
+    """Befehl an Server — Play/Pause/Seek/Load werden in Supabase persistiert."""
+    from watch_party import broadcast_room_state, get_watch_manager
+    from watch_sync_server import get_authoritative_state
+
+    payload = payload or {}
+    mgr = get_watch_manager()
+    updated = mgr.apply_command(
+        room_id,
+        payload.get("cmd", ""),
+        video_id=payload.get("video_id"),
+        position=payload.get("position"),
+        playing=payload.get("playing"),
+    )
+    if not updated:
+        return {"ok": False, "error": "invalid_command"}
+    await broadcast_room_state(mgr, room_id)
+    return await asyncio.to_thread(get_authoritative_state, room_id, mgr)
+
+
 @router.get("/api/watch/network")
 async def api_watch_network():
     from watch_party import local_network_base

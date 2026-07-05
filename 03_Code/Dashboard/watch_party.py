@@ -40,7 +40,9 @@ class WatchRoom:
             "position": round(self.current_position(now), 2),
             "playing": self.playing,
             "server_time": now,
+            "updated_at": self.updated_at,
             "title": self.title,
+            "sync_authority": "server",
         }
 
 
@@ -63,12 +65,26 @@ class WatchPartyManager:
 
     def _persist_room(self, room: WatchRoom) -> None:
         try:
+            from watch_sync_server import push_room_to_server, server_sync_enabled
+
+            if server_sync_enabled():
+                push_room_to_server(room)
+                return
             import supabase_store as store
 
             if store.cloud_sync_enabled():
                 store.save_watch_room(self._room_row(room))
         except Exception:
             pass
+
+    def _finalize_command(self, room: WatchRoom) -> WatchRoom:
+        try:
+            from watch_sync_server import finalize_command
+
+            return finalize_command(self, room)
+        except Exception:
+            self._persist_room(room)
+            return room
 
     def hydrate_from_cloud(self) -> int:
         if self._hydrated:
@@ -161,8 +177,7 @@ class WatchPartyManager:
             room.position = 0.0
             room.playing = False
             room.updated_at = now
-            self._persist_room(room)
-            return room
+            return self._finalize_command(room)
 
         if cmd == "seek":
             if position is None:
@@ -171,22 +186,19 @@ class WatchPartyManager:
             room.updated_at = now
             if playing is not None:
                 room.playing = bool(playing)
-            self._persist_room(room)
-            return room
+            return self._finalize_command(room)
 
         if cmd == "play":
             room.position = room.current_position(now) if position is None else max(0.0, float(position))
             room.playing = True
             room.updated_at = now
-            self._persist_room(room)
-            return room
+            return self._finalize_command(room)
 
         if cmd == "pause":
             room.position = room.current_position(now) if position is None else max(0.0, float(position))
             room.playing = False
             room.updated_at = now
-            self._persist_room(room)
-            return room
+            return self._finalize_command(room)
 
         return None
 
@@ -208,7 +220,17 @@ class WatchPartyManager:
             "qr_url": f"/api/watch/room/{room.room_id}/qr",
             "state": room.to_state(),
             "viewers": len(self.subscribers(room_id)),
+            "server_sync": _server_sync_flag(),
         }
+
+
+def _server_sync_flag() -> bool:
+    try:
+        from watch_sync_server import server_sync_enabled
+
+        return server_sync_enabled()
+    except Exception:
+        return False
 
 
 _manager: Optional[WatchPartyManager] = None
@@ -249,6 +271,14 @@ def render_watch_page(
     html = html.replace("{{ room_id|tojson }}", json.dumps(room_id))
     html = html.replace("{{ video_id|tojson }}", json.dumps(video_id))
     html = html.replace("{{ lan_base|tojson }}", json.dumps(base))
+    html = html.replace("{{ watch_server_sync|tojson }}", json.dumps(_server_sync_flag()))
+    try:
+        from watch_sync_server import server_poll_interval_sec
+
+        poll_ms = int(server_poll_interval_sec() * 1000)
+    except Exception:
+        poll_ms = 2000
+    html = html.replace("{{ watch_poll_ms|tojson }}", json.dumps(poll_ms))
     return html
 
 

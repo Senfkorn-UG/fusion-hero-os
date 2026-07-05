@@ -438,7 +438,10 @@ async def _start_supabase_background() -> None:
 
         info = start_background_tasks(get_metrics)
         if info.get("started"):
-            print(f"[Supabase] Auto-sync aktiv: Metriken alle {info['metrics_interval_sec']}s")
+            msg = f"[Supabase] Auto-sync aktiv: Metriken alle {info['metrics_interval_sec']}s"
+            if info.get("watch_sync_interval_sec"):
+                msg += f", Watch-Server alle {info['watch_sync_interval_sec']}s"
+            print(msg)
     except Exception as exc:
         print(f"[Supabase] Background sync note: {exc}")
 
@@ -661,6 +664,13 @@ async def watch_party_ws(ws: WebSocket, room_id: str):
     mgr.ensure_room(room_id)
     await ws.accept()
     mgr.register_ws(room_id, ws)
+    try:
+        from watch_sync_server import refresh_room_from_server, server_sync_enabled
+
+        if server_sync_enabled():
+            await asyncio.to_thread(refresh_room_from_server, mgr, room_id)
+    except Exception:
+        pass
     room = mgr.get_room(room_id)
     if room:
         await ws.send_json(room.to_state())
