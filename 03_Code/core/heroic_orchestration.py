@@ -544,6 +544,14 @@ def create_classified_task(raw_query: str, **extra) -> Dict[str, Any]:
         if is_enabled():
             root = init_root(raw_query, {"dom": dom, "geltung": cat, "task_weight": extra.get("task_weight", "medium")})
             task["start_context_window"] = root.get("root")
+            # Selbstadaptiv: Kontext-Fäden nach aktueller Stärke neu gewichten +
+            # veraltete Fäden prunen (orientiert an den Faden-Stärken).
+            try:
+                from conversation_context_core import rebalance_by_strength
+                rb = rebalance_by_strength(prune=True)
+                task["context_rebalance"] = {"rebalanced": rb.get("rebalanced"), "pruned": len(rb.get("pruned", []))}
+            except Exception:
+                pass
     except Exception:
         pass
 
