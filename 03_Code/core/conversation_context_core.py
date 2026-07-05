@@ -52,6 +52,58 @@ def _resource_scale() -> Tuple[float, str]:
         return 1.0, "fallback"
 
 
+def _faden_auto_save_enabled() -> bool:
+    return os.getenv("FUSION_FADEN_AUTO_SAVE", "1") == "1"
+
+
+def _persist_faden_from_merge(
+    *,
+    lam: float,
+    subagent_id: str,
+    subagent_name: Optional[str],
+    root_id: Optional[str],
+    natural: str,
+    sub_revision: int,
+    root_revision: int,
+    metadata: Optional[Dict[str, Any]] = None,
+) -> Optional[Dict[str, Any]]:
+    """Banach-Rückkopplung als Faden-Thread persistieren (Stärke aus λ)."""
+    if not _faden_auto_save_enabled():
+        return None
+    try:
+        import sys
+
+        dash = Path(__file__).resolve().parents[1] / "Dashboard"
+        if str(dash) not in sys.path:
+            sys.path.insert(0, str(dash))
+        from faden_store import get_faden_store, strength_from_lambda
+
+        anchor = root_id or "root"
+        thread_id = hashlib.sha256(f"banach:{anchor}:{subagent_id}".encode()).hexdigest()[:12]
+        meta = metadata or {}
+        return get_faden_store().upsert(
+            {
+                "thread_id": thread_id,
+                "lambda_contract": float(lam),
+                "strength": strength_from_lambda(float(lam)),
+                "label": f"Banach {subagent_name or subagent_id} → Root",
+                "source": "conversation_context_core",
+                "layer": int(meta.get("layer") or 2),
+                "fixpoint_id": anchor,
+                "state": {
+                    "subagent_id": subagent_id,
+                    "subagent_name": subagent_name,
+                    "revision": sub_revision,
+                    "root_revision": root_revision,
+                    "delta_preview": _clip(natural, 80),
+                    "metadata": {k: v for k, v in meta.items() if k != "raw"},
+                },
+            }
+        )
+    except Exception:
+        return None
+
+
 def _banach_merge(target: str, current: str, lam: float = _LAMBDA) -> str:
     """s_{n+1} = s* + λ(s_n − s*) — textuelle Kontraktion zum Ziel-Fixpunkt."""
     if not current.strip():
@@ -413,6 +465,7 @@ class ConversationContextCore:
 
         root_id = sub.parent_id or self.root_id
         root_update: Optional[Dict[str, Any]] = None
+        root_revision = 0
         if root_id and root_id in self.windows:
             root = self.windows[root_id]
             contracted = _banach_merge(root.executive_summary, natural, _LAMBDA)
@@ -421,7 +474,19 @@ class ConversationContextCore:
             root.feedback_count += 1
             root.revision += 1
             root.updated_ts = time.time()
+            root_revision = root.revision
             root_update = root.to_dict()
+
+        faden_result = _persist_faden_from_merge(
+            lam=_LAMBDA,
+            subagent_id=subagent_id,
+            subagent_name=sub.subagent_name,
+            root_id=root_id,
+            natural=natural,
+            sub_revision=sub.revision,
+            root_revision=root_revision,
+            metadata=meta,
+        )
 
         entry = {
             "ts": time.time(),
@@ -435,7 +500,7 @@ class ConversationContextCore:
         self.feedback_log.append(entry)
         self._persist()
 
-        return {
+        out: Dict[str, Any] = {
             "ok": True,
             "feedback": entry,
             "subagent_window": sub.to_dict(),
@@ -443,6 +508,13 @@ class ConversationContextCore:
             "banach_formula": "s_{n+1} = s* + λ(s_n − s*)",
             "lambda": _LAMBDA,
         }
+        if faden_result:
+            out["faden"] = {
+                "thread_id": faden_result.get("thread", {}).get("thread_id"),
+                "strength": faden_result.get("thread", {}).get("strength"),
+                "cloud": faden_result.get("cloud"),
+            }
+        return out
 
     def feedback_from_task_result(
         self,
@@ -495,6 +567,7 @@ class ConversationContextCore:
         return {
             "module": "conversation_context_core",
             "enabled": os.getenv("FUSION_CONTEXT_WINDOW", "1") == "1",
+            "faden_auto_save": _faden_auto_save_enabled(),
             "root_id": self.root_id,
             "root_window": root.to_dict() if root else None,
             "subagent_windows": subagents[-12:],
