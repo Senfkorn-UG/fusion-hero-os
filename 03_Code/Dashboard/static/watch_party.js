@@ -6,15 +6,22 @@
   const serverSync = window.WATCH_SERVER_SYNC === true;
   const pollMs = Number(window.WATCH_POLL_MS) || 2000;
   const rtConfig = window.WATCH_REALTIME_CONFIG || {};
+  const DRIFT_SEEK = 0.35;
+  const SUPPRESS_MS = 100;
+  const EXTRAPOLATE_MS = 200;
+
   let ws = null;
   let player = null;
   let suppressEvents = false;
+  let suppressTimer = null;
   let reconnectTimer = null;
   let pollTimer = null;
+  let extrapolateTimer = null;
   let lastServerRevision = 0;
   let cmdInFlight = false;
   let realtimeConnected = false;
   let realtimeChannel = null;
+  let lastPlaybackState = null;
 
   const $ = (id) => document.getElementById(id);
 
@@ -35,6 +42,21 @@
     return `${location.origin}/watch/${roomId}`;
   }
 
+  function setSuppress(ms) {
+    suppressEvents = true;
+    clearTimeout(suppressTimer);
+    suppressTimer = setTimeout(() => { suppressEvents = false; }, ms);
+  }
+
+  function expectedPosition(st) {
+    if (!st) return 0;
+    const now = Date.now() / 1000;
+    const base = Number(st.position) || 0;
+    if (!st.playing) return base;
+    const updatedAt = Number(st.updated_at) || now;
+    return base + Math.max(0, now - updatedAt);
+  }
+
   function updateJoinDisplay() {
     const joinEl = $('join-url');
     if (joinEl) joinEl.textContent = joinUrl();
@@ -52,9 +74,9 @@
 
   function rowToWatchState(row) {
     const now = Date.now() / 1000;
-    let position = Number(row.position) || 0;
     const updatedAt = Number(row.updated_at) || now;
     const playing = !!row.playing;
+    let position = Number(row.position) || 0;
     if (playing) position += Math.max(0, now - updatedAt);
     return {
       type: 'watch_state',
@@ -66,6 +88,22 @@
       updated_at: updatedAt,
       sync_authority: 'server',
       sync_source: 'realtime',
+    };
+  }
+
+  function shouldApplyState(st) {
+    const rev = st.updated_at || 0;
+    if (rev > 0 && rev < lastServerRevision) return false;
+    if (rev > 0 && rev === lastServerRevision && cmdInFlight) return false;
+    return true;
+  }
+
+  function rememberPlaybackState(st) {
+    lastPlaybackState = {
+      playing: !!st.playing,
+      position: Number(st.position) || 0,
+      updated_at: Number(st.updated_at) || Date.now() / 1000,
+      video_id: st.video_id || '',
     };
   }
 
@@ -86,16 +124,17 @@
         },
         (payload) => {
           if (!payload.new) return;
-          syncFromServer(rowToWatchState(payload.new));
+          const st = rowToWatchState(payload.new);
+          if (shouldApplyState(st)) syncFromServer(st);
         }
       );
       realtimeChannel.subscribe((status) => {
         if (status === 'SUBSCRIBED') {
           realtimeConnected = true;
-          setStatus('Supabase Realtime verbunden — Live-Sync aktiv');
+          setStatus('Realtime + WS — Low-Latency Sync');
         } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT' || status === 'CLOSED') {
           realtimeConnected = false;
-          setStatus('Realtime offline — Poll-Fallback aktiv');
+          setStatus('Realtime offline — WS/Poll aktiv');
         }
       });
       return true;
@@ -120,7 +159,7 @@
         if (fallback) fallback.hidden = true;
         return;
       }
-    } catch (_) { /* fallback below */ }
+    } catch (_) { /* fallback */ }
     if (fallback) {
       fallback.src = `/api/watch/room/${roomId}/qr?size=220`;
       fallback.hidden = false;
@@ -142,7 +181,7 @@
         const data = await r.json();
         if (data.ok && data.state) {
           lastServerRevision = data.state.updated_at || lastServerRevision;
-          syncFromServer(data.state);
+          syncFromServer(data.state, { localEcho: true });
         }
       } catch (err) {
         setStatus(`Server-Cmd Fehler: ${err.message}`);
@@ -155,33 +194,32 @@
     ws.send(JSON.stringify({ action: 'watch_cmd', cmd, ...extra }));
   }
 
-  function syncFromServer(st) {
+  function syncFromServer(st, opts) {
     if (!player || !st) return;
-    const rev = st.updated_at || 0;
-    if (serverSync && rev > 0 && rev <= lastServerRevision && cmdInFlight) return;
-    if (serverSync && rev > lastServerRevision) lastServerRevision = rev;
+    if (!shouldApplyState(st)) return;
 
-    suppressEvents = true;
+    const rev = st.updated_at || 0;
+    if (rev > lastServerRevision) lastServerRevision = rev;
+    rememberPlaybackState(st);
+
+    const targetPos = expectedPosition(st);
+    setSuppress(opts && opts.localEcho ? 60 : SUPPRESS_MS);
     try {
       if (st.video_id && st.video_id !== getCurrentVideoId()) {
-        player.loadVideoById(st.video_id, st.position || 0);
-      } else {
-        const local = player.getCurrentTime();
-        const drift = Math.abs(local - (st.position || 0));
-        const threshold = serverSync ? 0.8 : 1.2;
-        if (drift > threshold) {
-          player.seekTo(st.position || 0, true);
-        }
-        const state = player.getPlayerState();
-        if (st.playing && state !== YT.PlayerState.PLAYING) {
-          player.playVideo();
-        } else if (!st.playing && state === YT.PlayerState.PLAYING) {
-          player.pauseVideo();
-        }
+        player.loadVideoById(st.video_id, targetPos);
+        return;
       }
-    } finally {
-      setTimeout(() => { suppressEvents = false; }, serverSync ? 500 : 400);
-    }
+      const state = player.getPlayerState();
+      if (st.playing && state !== YT.PlayerState.PLAYING) {
+        player.playVideo();
+      } else if (!st.playing && state === YT.PlayerState.PLAYING) {
+        player.pauseVideo();
+      }
+      const local = player.getCurrentTime();
+      if (Math.abs(local - targetPos) > DRIFT_SEEK) {
+        player.seekTo(targetPos, true);
+      }
+    } catch (_) { /* player not ready */ }
   }
 
   function getCurrentVideoId() {
@@ -190,15 +228,27 @@
     return (data && data.video_id) || '';
   }
 
+  function startExtrapolation() {
+    clearInterval(extrapolateTimer);
+    extrapolateTimer = setInterval(() => {
+      if (!player || suppressEvents || cmdInFlight || !lastPlaybackState?.playing) return;
+      const expected = expectedPosition(lastPlaybackState);
+      const local = player.getCurrentTime();
+      if (Math.abs(local - expected) > DRIFT_SEEK) {
+        setSuppress(60);
+        player.seekTo(expected, true);
+      }
+    }, EXTRAPOLATE_MS);
+  }
+
   function onPlayerReady() {
-    setStatus(serverSync ? 'Player bereit — Server steuert Sync' : 'Verbunden — warte auf Video…');
-    if (initialVideoId) {
-      player.loadVideoById(initialVideoId, 0);
-    }
+    setStatus(serverSync ? 'Player bereit — Low-Latency Sync' : 'Verbunden — warte auf Video…');
+    if (initialVideoId) player.loadVideoById(initialVideoId, 0);
     if (ws && ws.readyState === WebSocket.OPEN) {
       ws.send(JSON.stringify({ action: 'watch_join' }));
     }
     if (serverSync && !realtimeConnected) pollServerState();
+    startExtrapolation();
   }
 
   function onPlayerStateChange(event) {
@@ -233,27 +283,12 @@
       height: '100%',
       width: '100%',
       videoId: initialVideoId || undefined,
-      playerVars: {
-        autoplay: 0,
-        rel: 0,
-        modestbranding: 1,
-      },
+      playerVars: { autoplay: 0, rel: 0, modestbranding: 1 },
       events: {
         onReady: onPlayerReady,
         onStateChange: onPlayerStateChange,
       },
     });
-
-    if (!serverSync) {
-      let seekTimer = null;
-      setInterval(() => {
-        if (suppressEvents || !player || player.getPlayerState() !== YT.PlayerState.PLAYING) return;
-        clearTimeout(seekTimer);
-        seekTimer = setTimeout(() => {
-          sendCmd('seek', { position: player.getCurrentTime(), playing: true });
-        }, 800);
-      }, 2000);
-    }
   }
 
   async function pollServerState() {
@@ -261,21 +296,21 @@
     try {
       const r = await fetch(`/api/watch/room/${roomId}/state`);
       const data = await r.json();
-      if (data.ok && data.state) {
-        const rev = data.state.updated_at || 0;
-        if (rev > lastServerRevision || !lastServerRevision) {
-          syncFromServer(data.state);
-        }
+      if (data.ok && data.state && shouldApplyState(data.state)) {
+        syncFromServer(data.state);
       }
-    } catch (_) { /* retry next tick */ }
+    } catch (_) { /* retry */ }
   }
 
   function startServerPoll() {
     if (!serverSync) return;
     clearInterval(pollTimer);
     pollTimer = setInterval(() => {
-      if (realtimeConnected && pollMs < 15000) return;
-      pollServerState();
+      if (realtimeConnected && pollMs >= 15000) {
+        pollServerState();
+        return;
+      }
+      if (!realtimeConnected) pollServerState();
     }, pollMs);
   }
 
@@ -283,23 +318,17 @@
     const proto = location.protocol === 'https:' ? 'wss:' : 'ws:';
     ws = new WebSocket(`${proto}//${location.host}/ws/watch/${roomId}`);
     ws.onopen = () => {
-      if (!serverSync) setStatus('Raum verbunden — Play/Pause synchronisiert');
       ws.send(JSON.stringify({ action: 'watch_join' }));
     };
     ws.onclose = () => {
-      if (!serverSync) {
-        setStatus('Verbindung getrennt — reconnect…');
-        clearTimeout(reconnectTimer);
-        reconnectTimer = setTimeout(connectWs, 2000);
-      }
+      clearTimeout(reconnectTimer);
+      reconnectTimer = setTimeout(connectWs, 1500);
     };
     ws.onmessage = (e) => {
       try {
         const msg = JSON.parse(e.data);
-        if (msg.type === 'watch_state') {
-          if (!serverSync || (msg.updated_at || 0) >= lastServerRevision) {
-            syncFromServer(msg);
-          }
+        if (msg.type === 'watch_state' && shouldApplyState(msg)) {
+          syncFromServer(msg);
         } else if (msg.type === 'watch_meta') {
           const badge = $('viewer-count');
           if (badge) badge.textContent = `${msg.viewers || 0} Zuschauer`;
@@ -313,12 +342,11 @@
       const url = joinUrl();
       try {
         await navigator.clipboard.writeText(url);
-        setStatus('WLAN-Link kopiert — oder QR mit Redmi scannen');
+        setStatus('WLAN-Link kopiert');
       } catch (_) {
         setStatus(url);
       }
     });
-
     $('load-video-btn')?.addEventListener('click', () => {
       const url = ($('video-url')?.value || '').trim();
       if (!url) return;
@@ -334,10 +362,10 @@
     }
     updateJoinDisplay();
     bindUi();
-    await loadYouTubeApi();
-    initPlayer();
     connectWs();
     await initRealtime();
+    await loadYouTubeApi();
+    initPlayer();
     startServerPoll();
   }
 
