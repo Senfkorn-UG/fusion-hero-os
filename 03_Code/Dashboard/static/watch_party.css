@@ -175,9 +175,17 @@
 #player {
   width: 100%;
   aspect-ratio: 16 / 9;
+  min-height: 220px;
   background: #000;
   border-radius: 8px;
   overflow: hidden;
+}
+
+#player iframe {
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 220px;
+  display: block;
 }
 
 .watch-hints {
