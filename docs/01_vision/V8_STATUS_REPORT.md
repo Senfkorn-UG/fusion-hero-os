@@ -1,8 +1,8 @@
 # Fusion-Hero-OS v8 – Statusbericht
 
-**Datum:** 2026-07-01 (Beweis-/Ehrlichkeits-Update: 2026-07-04)
-**Version:** v8 (Konsolidiert; mathematischer Kern BEWIESEN, PMS weiterhin offen)
-**Status:** Struktur abgeschlossen. Knoten 16/17/19/20 als bewiesene Sätze implementiert. PMS Evidence Spine als eigener Minimal-Kernel implementiert (2026-07-04) — Umfang siehe Abschnitt 4.
+**Datum:** 2026-07-01 (Code-Honesty-Korrektur: 2026-07-02)
+**Version:** v8 (Doku/Struktur konsolidiert; Kernfunktionalität teilweise/aspirational)
+**Status:** Struktur abgeschlossen. Core-Module mit v8-Headern versehen (kosmetisch, kein funktionales Rework). Mathematische Fundierung: NICHT abgeschlossen — siehe Abschnitt 2.3.
 
 ---
 
@@ -37,24 +37,30 @@ Das Repository `fusion-hero-os` sollte in einen professionellen, klar strukturie
 
 ### 2.2 Code-Updates (Python)
 
-**Kanonische Code-Struktur ist das Paket `fusion_hero_os/`** (Registry, Dispatcher,
-BaseModule-Adapter, `core/`, `engine/`, `methodology/`, `orchestration/`, `modules/`):
+**Core-Module mit v8-Header versehen (Versionsstring in Docstring/Kommentar,
+keine funktionale Überarbeitung):**
+- `core/__init__.py`
+- `core/cec.py`
+- `core/rhe.py`
+- `core/psycholysis_trigger.py`
+- `core/heroic_math_engine.py` (neu integriert — siehe 2.3 für den ehrlichen Stand)
 
-- `fusion_hero_os/core/heroic_math_engine.py` — mathematischer Kern (siehe 2.3)
-- `fusion_hero_os/engine/mainframe.py` — QUBO-Solver mit echtem Multi-Core-Pfad
-- `fusion_hero_os/core/heroic_core_orchestrator.py` — Architektur-Gerüst
-  (Fail-Closed real; PMS-/Integritäts-Teile sind gekennzeichnete Stubs)
+**Dashboard:**
+- `core/dashboard/` (`orchestration.py`, `workspace.py`, `__init__.py`, `README.md`) trägt jetzt einen v8-Versionshinweis. "Vollständig auf v8 gebracht" bezieht sich auf diese Header-Kennzeichnung, nicht auf eine funktionale Neuentwicklung.
 
-**Hinweis:** Das top-level `modules/`-Verzeichnis (`alte_frau_95g/`,
-`mainframe_laden/`, `skill_creator/`) besteht aus leeren Platzhaltern; die
-lauffähigen Module liegen in `fusion_hero_os/modules/`.
+**Modules:**
+- `modules/` neu strukturiert mit `README.md`
+- `alte_frau_95g/`, `mainframe_laden/`, `skill_creator/` sind leere `__init__.py`-Platzhalter (ehrlich als solche zu behandeln — siehe `docs/OVERVIEW.md`)
 
-### 2.3 Mathematische Fundierung — BEWIESEN (Stand 2026-07-04)
+### 2.3 Mathematische Fundierung — EHRLICHER STAND (Code-Honesty-Korrektur)
 
-Die Knoten 16, 17, 19 und 20 sind in `fusion_hero_os/core/heroic_math_engine.py`
-als **bewiesene Sätze** implementiert — jeweils mit Beweis im Docstring,
-numerischer Verifikation mit 0 Verletzungen (`run_sandbox_verification()`,
-CI-Gate) und Regressionstests (`tests/test_heroic_math_engine.py`):
+- `core/heroic_math_engine.py` wurde als neue Komponente integriert und läuft (echte Asserts, siehe `tests/test_heroic_math_engine.py`).
+- Die ursprüngliche Behauptung "Reparatur der Knoten 16, 17, 19 und 20" war eine **Überclaim** und wurde zurückgenommen:
+  - **Knoten 1** (Kommutator) — reine Demonstration, keine Behauptung.
+  - **Knoten 16** ("Universelle Reziprozität") — **FRAGMENT**: die geprüfte Bedingung gilt nachweislich nur im Trivialfall Q1=Q2, nicht allgemein.
+  - **Knoten 19** (Monotonie) — **MODELL, nicht bewiesen**: ein Sweep über 500 Zufallspaare zeigt ca. 15–30 % Verletzungen; das dokumentierte Einzelbeispiel hält, ist aber kein allgemeiner Satz.
+  - **Knoten 17, 20** — **nicht implementiert**, kein Code vorhanden.
+- `docs/02_architecture/HEROIC_MATH_ENGINE.md` als Erklärungsdokument angelegt (Status dort ebenfalls korrigiert).
 
 - **Knoten 16** — Transpositions-Reziprozität: `Q1B1B2Q2 = (Q2^T B2^T B1^T Q1^T)^T`
   für ALLE reellen Matrizen (Satz; die frühere naive Form ohne Transposition
@@ -68,82 +74,35 @@ CI-Gate) und Regressionstests (`tests/test_heroic_math_engine.py`):
 - **Knoten 20** — Banach-Kontraktion `T(x)=Ax+c, ||A||<1`: eindeutiger Fixpunkt,
   geometrische Konvergenz (Satz; präzisiert das MasterSeed-Layer-0-Modell).
 
-`docs/02_architecture/HEROIC_MATH_ENGINE.md` dient als Erklärungsdokument.
-
-### 2.4 Hyper-Threading — ECHT (Stand 2026-07-04)
-
-`parallel_anneal(backend="auto")` in `fusion_hero_os/engine/mainframe.py` nutzt
-den Rust/rayon-Kernel (falls gebaut, `rust_engine_crate/`), sonst den
-Numba-`nogil`-Multicore-Pfad. Gemessen auf 12 logischen Kernen: ~3.4x (Numba)
-bzw. ~4.4x (Rust) gegenüber seriell; die GUI zeigt Backend + Kernzahl an.
-Davon zu unterscheiden: `03_Code/core/virtual_gpu_hyperthreading.py`
-(`VirtualGPUHTCache`) ist eine selbst-dokumentierte **Simulation** und keine
-echte Parallelisierung.
+- Wichtige `.ps1` Skripte (z. B. `start_all.ps1`, `sync_grok_intern.ps1`) mit v8-Headern aktualisiert (kosmetisch, wie 2.2).
 
 ---
 
 ## 3. Aktueller Zustand
 
 - Klare Trennung von Strategie, Architektur und Umsetzung in der Doku-Struktur (real).
-- Mathematischer Kern mit bewiesenen Sätzen und CI-verankerten Regressionstests (real, siehe 2.3).
-- Echte Mehrkern-Parallelisierung im Solver-Pfad (real, gemessen, siehe 2.4).
+- Mathematische Bausteine vorhanden, aber **keine bewiesene mathematische Strenge** — Knoten 16/19 sind Fragment bzw. Modell, nicht Satz (siehe 2.3).
 - Navigation über `docs/OVERVIEW.md` vorhanden.
+
+Bewertungen wie "sauber", "professionell", "konsistent" sind redaktionelle Einschätzungen der Doku-Struktur, keine gemessenen Fakten über die Codequalität insgesamt.
 
 ---
 
 ## 4. Offene Punkte
 
-- **PMS Evidence Spine: implementiert als eigener Minimal-Kernel** (2026-07-04,
-  `pms_rust_kernel_crate/`): PMS.yaml-Validierung, JSONL-Audit-Trail,
-  FAIL_CLOSED, deterministisch (byte-identische Ergebnisse); Operatoren =
-  bewiesene Knoten-Saetze. OFFEN bleibt die Einbindung des externen
-  tz-dev/PMS-RUST. Binary bauen: `cd pms_rust_kernel_crate && cargo build --release`.
-- `MasterSeed.verify_integrity()`: seit 2026-07-04 ECHTE Pruefung (SHA-256-
-  Zustands-Hash; Manipulation -> False) + verify_strict_contraction (K20).
-- Phoenix-Mode: echter Reset (Historie/Cache) + Seed-Re-Verifikation.
-- MasterSeed-Syncs: mutual_sync/sync_evolutions mit BEWIESENER Monotonie —
-  beide Seiten optimieren sich gegenseitig, nie Verschlechterung, Identitaet
-  (Seed-Hash) bleibt erhalten (`fusion_hero_os/core/masterseed_sync.py`).
-- Operator Catalog: Kernbestand jetzt maschinell validierbar
-  (`PMS.yaml` + `pms_rust_kernel --validate-chain`); der volle historische
-  Katalog in `docs/04_execution/` bleibt Konzeptdokument.
-- Top-level `modules/`-Platzhalter können mit echtem Inhalt ausgebaut oder
-  entfernt werden.
+- PMS Evidence Spine / Rust-Kernel: nicht implementiert (kein Binary, kein Submodule, keine `PMS.yaml`) — siehe `docs/02_architecture/HEROIC_CORE_ORCHESTRATOR.md`.
+- `MasterSeed.verify_integrity()`: Stub, liefert immer `True`.
+- Knoten 16/17/19/20: siehe 2.3 — echte mathematische Arbeit steht noch aus, falls gewünscht.
+- Weitere `.ps1` / `.bat` Skripte können noch auf v8 gebracht werden.
+- `modules/` kann mit echtem Inhalt ausgebaut werden (aktuell Platzhalter).
 - `05_reference/` und `99_archive/` sind noch teilweise leer.
-
----
-
-## 4b. Historische Überclaims — Beweis-Status (Stand 2026-07-04)
-
-Vollständige Bilanz aller je erhobenen Überclaims (inklusive der vor den
-Archivierungen vom 2026-07-04 entfernten Formulierungen):
-
-| Historischer Claim | Status | Beleg |
-|---|---|---|
-| "Knoten 16/17/19/20 repariert" | **BEWIESEN** | Sätze + Beweise + 0-Verletzungs-Sweeps (`heroic_math_engine.py`, Tests) |
-| "Hyper-Threading nativ/aktiv" | **BEWIESEN (echt)** | `backend="auto"` -> Rust/rayon ~4.4x / Numba ~3.4x, gemessen |
-| "PMS: deterministischer Kernel, PMS.yaml, JSONL, Fail-Closed" | **BEWIESEN (eigener Minimal-Kernel)** | `pms_rust_kernel_crate/`, Kernel-Integrationstests |
-| "MasterSeed Strict Contraction / Integrität" | **BEWIESEN** | `verify_integrity` (SHA-256) + `verify_strict_contraction` (K20) |
-| "Phoenix-Mode setzt Zustand zurück" | **BEWIESEN** | echter Flush + Seed-Re-Verifikation, Test |
-| "Syncs/Horkrux: Instanzen optimieren sich gegenseitig" | **BEWIESEN** | Satz (Monotonie via max/Elitismus) + `masterseed_sync.py` + Tests |
-| "Identity Preservation Score: 100" | **MESSBAR GEMACHT** | `identity_preservation_score()` — nachrechenbar statt Selbstauskunft |
-| "Operator Catalog validiert" | **TEILWEISE** | Kernbestand via `PMS.yaml`/`--validate-chain`; Restkatalog = Konzept |
-| "Integration von tz-dev/PMS-RUST" | **OFFEN** | externes Repo weiterhin nicht eingebunden (ehrlich gekennzeichnet) |
-| "Cross-LLM 100% operational fidelity" | **NICHT BEWEISBAR** | externe Systeme, kein Messverfahren — bleibt als Narrativ gelabelt |
-| "Full backward compatibility guaranteed" (v7.4) | **NICHT BEWEISBAR** | historische Selbstauskunft ohne Testsuite — bleibt gelabelt |
-| "Selbst-modifizierendes System" | **BEWUSST NICHT implementiert** | Sicherheitsentscheidung: SelfModify bleibt Vorschlags-Registry |
+- Drei divergente Kopien von `PMS_OPERATOR_CATALOG_v7.5.md` existierten; am 2026-07-02 konsolidiert: kanonische Fassung in `docs/04_execution/PMS_OPERATOR_CATALOG_v7.5.md` (als unvalidierter Konzeptkatalog gekennzeichnet), `docs/` und `docs/99_archive/` sind Redirect-Stubs.
 
 ---
 
 ## 5. Fazit
 
-Struktur und mathematischer Kern von v8 sind real fertiggestellt — die früher
-nur behauptete "Reparatur der Knoten" ist seit 2026-07-04 durch Beweise,
-0-Verletzungs-Sweeps und Regressionstests gedeckt. Der PMS-Execution-Layer
-bleibt dagegen offene, zukünftige Arbeit und ist überall entsprechend
-gekennzeichnet.
+Die Dokumentations-/Strukturebene von v8 ist real fertiggestellt und eine solide Navigationsbasis. Die zuvor behauptete "abgeschlossene mathematische Fundierung" und der "native PMS-Execution-Layer" sind es **nicht** — beides ist als offene, zukünftige Arbeit zu behandeln, nicht als erledigt.
 
-**Hyper-Threading Status:** Echt implementiert und gemessen
-(`fusion_hero_os/engine`, `backend="auto"` -> Rust/rayon bzw. Numba-nogil);
-`VirtualGPUHTCache` bleibt davon getrennt eine Simulation.
-**Richtung:** Weitere Vertiefung und Ausbau — Implementierung vor Dokumentations-Vorgriff.
+**Hyper-Threading Status:** In `03_Code/core/virtual_gpu_hyperthreading.py` (`VirtualGPUHTCache`) selbst-dokumentiert als **Simulation** ("Simulates hyper-parallel threads"), keine native Hardware-Fähigkeit. Ein separates, tatsächlich verifiziertes Mehrkern-Parallelisierungssystem existiert unabhängig davon im Python-Engine-Paket (`engine/mainframe.py`, numba `nogil` + `ThreadPoolExecutor`, gemessener Speedup) — die beiden Systeme sollten nicht verwechselt werden.
+**Richtung:** Weitere Vertiefung und Ausbau, mit Fokus auf echte Implementierung statt Dokumentations-Vorgriff.

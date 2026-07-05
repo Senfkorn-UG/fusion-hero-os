@@ -7,9 +7,8 @@ Dieses Dokument beschreibt den Abgleich zwischen `fusion-hero-os` und `tz-dev/PM
 
 > **Ehrlicher Status (2026-07-02):** Der Abgleich existiert auf Konzept-Ebene.
 > In diesem Repo ist von PMS-RUST nichts integriert (kein Code, kein Submodule,
-> keine `PMS.yaml`); "Hyper-Threading" bezeichnet hier die damalige
-> Simulations-Variante — echtes Multi-Core-HT existiert seit 2026-07-04 in
-> `fusion_hero_os/engine`. Details: `docs/01_vision/V8_STATUS_REPORT.md`.
+> keine `PMS.yaml`); "Hyper-Threading" bezeichnet die Simulations-Variante —
+> Details in `docs/01_vision/V8_STATUS_REPORT.md`.
 
 ---
 
