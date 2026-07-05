@@ -24,6 +24,12 @@ Verwandt: [[project-architecture]]. Commit 617e1ac (Rust-Backend + mining_qubo.p
 
 Restliche offene Punkte aus der ursprünglichen Liste (app.py/core_modules.py/agents.py voller Audit-Sweep, v5.22-Kompendium-Stub-Labels) sind weiterhin offen.
 
+**2026-07-05 — Grok-intern Nachholung:**
+- Dashboard `03_Code/Dashboard/app.py`: Header auf v8 + Demo-Event-Hinweis (Code-Honesty).
+- GROK_EXPORT_REQUEST: 3 Module als ehrliche Scaffolds + Tests (`test_grok_export_modules.py`).
+- Root `Cargo.toml` Workspace für CI cargo build.
+- Globaler Grok-Skill + Core-Skills gespiegelt nach `~/.grok/skills/`.
+
 **2026-07-02 — heroic_qubo_annealing_v1 (Monorepo `fusion-hero-os`):**
 - `03_Code/internal_llm/README.md` behauptet LoRA/QLoRA Fine-Tuning; `train.py`/`heroic_llama_optimizer.py` tun nur SA + QUBO auf Generation-Params → **Claim-vs-Substanz** (siehe [[heroic-qubo-algorithm-audit]]).
 - SA-Bug in `simulated_annealing_params()` Zeile 93: Metropolis delta gegen `best_score` + doppelter `score_fn`-Call.
