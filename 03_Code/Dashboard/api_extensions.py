@@ -697,6 +697,10 @@ async def api_watch_room_cmd(room_id: str, payload: dict = None):
     if not updated:
         return {"ok": False, "error": "invalid_command"}
     await broadcast_room_state(mgr, room_id)
+    from watch_sync_server import low_latency_enabled, state_response
+
+    if low_latency_enabled():
+        return state_response(updated, sync_source="local_fast")
     return await asyncio.to_thread(get_authoritative_state, room_id, mgr)
 
 

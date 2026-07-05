@@ -8,6 +8,7 @@ Supabase. Lokaler Speicher ist nur Cache; Konflikte gewinnt der Server-Stand.
 from __future__ import annotations
 
 import os
+import threading
 import time
 from typing import TYPE_CHECKING, Any, Dict, Optional
 
@@ -161,9 +162,23 @@ def push_room_to_server(room: "WatchRoom") -> Dict[str, Any]:
         return {"ok": False, "error": str(exc)[:120]}
 
 
+def _push_room_async(room: "WatchRoom") -> None:
+    try:
+        push_room_to_server(room)
+    except Exception:
+        pass
+
+
+def low_latency_enabled() -> bool:
+    return os.getenv("FUSION_WATCH_LOW_LATENCY", "1") == "1"
+
+
 def finalize_command(mgr: "WatchPartyManager", room: "WatchRoom") -> "WatchRoom":
-    """Nach lokaler Berechnung: Supabase schreiben und Server-Stand zurücklesen."""
+    """Nach lokaler Berechnung: Supabase schreiben (async bei Low-Latency)."""
     if server_sync_enabled():
+        if low_latency_enabled():
+            threading.Thread(target=_push_room_async, args=(room,), daemon=True).start()
+            return room
         push_room_to_server(room)
         refreshed = refresh_room_from_server(mgr, room.room_id)
         return refreshed or room
@@ -171,21 +186,32 @@ def finalize_command(mgr: "WatchPartyManager", room: "WatchRoom") -> "WatchRoom"
     return room
 
 
-def get_authoritative_state(room_id: str, mgr: "WatchPartyManager") -> Dict[str, Any]:
-    if server_sync_enabled():
-        refresh_room_from_server(mgr, room_id)
-    room = mgr.get_room(room_id)
-    if not room:
-        return {"ok": False, "error": "room_not_found"}
+def state_response(room: "WatchRoom", *, sync_source: str = "memory") -> Dict[str, Any]:
     state = room.to_state()
     state["updated_at"] = room.updated_at
     state["sync_authority"] = "server" if server_sync_enabled() else "local"
     return {
         "ok": True,
         "state": state,
-        "sync_source": "supabase" if server_sync_enabled() else "memory",
+        "sync_source": sync_source,
         "server_sync": server_sync_enabled(),
+        "low_latency": low_latency_enabled(),
     }
+
+
+def get_authoritative_state(
+    room_id: str,
+    mgr: "WatchPartyManager",
+    *,
+    refresh: bool = True,
+) -> Dict[str, Any]:
+    if refresh and server_sync_enabled():
+        refresh_room_from_server(mgr, room_id)
+    room = mgr.get_room(room_id)
+    if not room:
+        return {"ok": False, "error": "room_not_found"}
+    src = "supabase" if server_sync_enabled() and refresh else "memory"
+    return state_response(room, sync_source=src)
 
 
 def active_room_ids(mgr: "WatchPartyManager") -> list[str]:
