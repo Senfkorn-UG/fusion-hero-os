@@ -520,6 +520,22 @@ async def api_v8_orchestrator_query(payload: dict = None):
     return await asyncio.to_thread(process_query, domain, operator_id, payload.get("payload"))
 
 
+@router.get("/api/bridge/ipc/status")
+async def api_bridge_ipc_status():
+    from core.v8_core_bridge import ipc_status
+
+    return await asyncio.to_thread(ipc_status)
+
+
+@router.post("/api/bridge/ipc/dispatch")
+async def api_bridge_ipc_dispatch(payload: dict = None):
+    from core.v8_core_bridge import ipc_dispatch
+
+    payload = payload or {}
+    module = payload.get("module", "")
+    return await asyncio.to_thread(ipc_dispatch, module, payload.get("payload"))
+
+
 @router.get("/api/viz/geisterjagd-banach")
 async def api_viz_geisterjagd_banach(tick: bool = True):
     from core.geisterjagd_banach_viz import get_viz, build_hints_from_system
