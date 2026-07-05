@@ -102,11 +102,23 @@ def start_background_tasks(
 
     asyncio.create_task(metrics_loop(get_metrics, m_int))
     asyncio.create_task(phone_link_snapshot_loop(p_int))
+    watch_mode = "poll"
     try:
-        from watch_sync_server import server_sync_enabled
+        from watch_sync_server import poll_fallback_only, server_sync_enabled
 
         if server_sync_enabled():
-            asyncio.create_task(watch_server_sync_loop(w_int))
+            try:
+                from watch_realtime_server import start_watch_realtime_task
+
+                rt = start_watch_realtime_task()
+                if rt.get("started"):
+                    watch_mode = "realtime"
+            except Exception:
+                pass
+            if poll_fallback_only() and watch_mode == "realtime":
+                asyncio.create_task(watch_server_sync_loop(w_int))
+            elif watch_mode == "poll":
+                asyncio.create_task(watch_server_sync_loop(w_int))
     except Exception:
         pass
     _running = True
@@ -115,4 +127,5 @@ def start_background_tasks(
         "metrics_interval_sec": m_int,
         "phone_link_interval_sec": p_int,
         "watch_sync_interval_sec": w_int,
+        "watch_sync_mode": watch_mode,
     }

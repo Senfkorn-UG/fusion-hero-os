@@ -11,7 +11,7 @@
   <header class="watch-header">
     <div>
       <h1>WATCH TOGETHER</h1>
-      <p class="watch-sub">YouTube synchron · Server-Sync (Supabase) · PC stumm · Ton über Handy</p>
+      <p class="watch-sub">YouTube synchron · Supabase Realtime · PC stumm · Ton über Handy</p>
     </div>
     <a href="/" class="watch-back">← Dashboard</a>
   </header>
@@ -58,7 +58,9 @@
     window.WATCH_LAN_BASE = {{ lan_base|tojson }};
     window.WATCH_SERVER_SYNC = {{ watch_server_sync|tojson }};
     window.WATCH_POLL_MS = {{ watch_poll_ms|tojson }};
+    window.WATCH_REALTIME_CONFIG = {{ watch_realtime_config|tojson }};
   </script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.4/build/qrcode.min.js"></script>
   <script src="/static/watch_party.js"></script>
 </body>

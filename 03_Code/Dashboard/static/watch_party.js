@@ -5,6 +5,7 @@
   const initialVideoId = window.WATCH_VIDEO_ID || '';
   const serverSync = window.WATCH_SERVER_SYNC === true;
   const pollMs = Number(window.WATCH_POLL_MS) || 2000;
+  const rtConfig = window.WATCH_REALTIME_CONFIG || {};
   let ws = null;
   let player = null;
   let suppressEvents = false;
@@ -12,6 +13,8 @@
   let pollTimer = null;
   let lastServerRevision = 0;
   let cmdInFlight = false;
+  let realtimeConnected = false;
+  let realtimeChannel = null;
 
   const $ = (id) => document.getElementById(id);
 
@@ -40,8 +43,65 @@
     const roomInput = $('room-id');
     if (roomInput) roomInput.value = roomId;
     renderRoomQr();
-    if (serverSync) {
-      setStatus('Server-Sync aktiv (Supabase) — Geräte folgen zentralem Stand');
+    if (serverSync && rtConfig.enabled) {
+      setStatus('Supabase Realtime wird verbunden…');
+    } else if (serverSync) {
+      setStatus('Server-Sync aktiv (Supabase Poll)');
+    }
+  }
+
+  function rowToWatchState(row) {
+    const now = Date.now() / 1000;
+    let position = Number(row.position) || 0;
+    const updatedAt = Number(row.updated_at) || now;
+    const playing = !!row.playing;
+    if (playing) position += Math.max(0, now - updatedAt);
+    return {
+      type: 'watch_state',
+      room_id: row.room_id,
+      video_id: row.video_id || '',
+      position: Math.round(position * 100) / 100,
+      playing,
+      server_time: now,
+      updated_at: updatedAt,
+      sync_authority: 'server',
+      sync_source: 'realtime',
+    };
+  }
+
+  async function initRealtime() {
+    if (!serverSync || !rtConfig.enabled || !rtConfig.url || !rtConfig.anon_key) return false;
+    const lib = window.supabase;
+    if (!lib || typeof lib.createClient !== 'function') return false;
+    try {
+      const sb = lib.createClient(rtConfig.url, rtConfig.anon_key);
+      realtimeChannel = sb.channel(`watch-room-${roomId}`);
+      realtimeChannel.on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: rtConfig.schema || 'public',
+          table: rtConfig.table || 'watch_rooms',
+          filter: `room_id=eq.${roomId}`,
+        },
+        (payload) => {
+          if (!payload.new) return;
+          syncFromServer(rowToWatchState(payload.new));
+        }
+      );
+      realtimeChannel.subscribe((status) => {
+        if (status === 'SUBSCRIBED') {
+          realtimeConnected = true;
+          setStatus('Supabase Realtime verbunden — Live-Sync aktiv');
+        } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT' || status === 'CLOSED') {
+          realtimeConnected = false;
+          setStatus('Realtime offline — Poll-Fallback aktiv');
+        }
+      });
+      return true;
+    } catch (err) {
+      setStatus(`Realtime Fehler: ${err.message}`);
+      return false;
     }
   }
 
@@ -138,7 +198,7 @@
     if (ws && ws.readyState === WebSocket.OPEN) {
       ws.send(JSON.stringify({ action: 'watch_join' }));
     }
-    if (serverSync) pollServerState();
+    if (serverSync && !realtimeConnected) pollServerState();
   }
 
   function onPlayerStateChange(event) {
@@ -213,7 +273,10 @@
   function startServerPoll() {
     if (!serverSync) return;
     clearInterval(pollTimer);
-    pollTimer = setInterval(pollServerState, pollMs);
+    pollTimer = setInterval(() => {
+      if (realtimeConnected && pollMs < 15000) return;
+      pollServerState();
+    }, pollMs);
   }
 
   function connectWs() {
@@ -274,6 +337,7 @@
     await loadYouTubeApi();
     initPlayer();
     connectWs();
+    await initRealtime();
     startServerPoll();
   }
 

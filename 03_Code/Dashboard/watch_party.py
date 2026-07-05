@@ -273,12 +273,15 @@ def render_watch_page(
     html = html.replace("{{ lan_base|tojson }}", json.dumps(base))
     html = html.replace("{{ watch_server_sync|tojson }}", json.dumps(_server_sync_flag()))
     try:
-        from watch_sync_server import server_poll_interval_sec
+        from watch_sync_server import get_realtime_client_config, server_poll_interval_sec
 
         poll_ms = int(server_poll_interval_sec() * 1000)
+        rt_cfg = get_realtime_client_config()
     except Exception:
         poll_ms = 2000
+        rt_cfg = {"enabled": False}
     html = html.replace("{{ watch_poll_ms|tojson }}", json.dumps(poll_ms))
+    html = html.replace("{{ watch_realtime_config|tojson }}", json.dumps(rt_cfg))
     return html
 
 

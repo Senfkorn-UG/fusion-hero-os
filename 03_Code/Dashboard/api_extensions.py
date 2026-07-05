@@ -708,6 +708,13 @@ async def api_watch_network():
     return {"lan_base": base, "hint": "QR/Link fürs Handy im gleichen WLAN"}
 
 
+@router.get("/api/watch/realtime/config")
+async def api_watch_realtime_config():
+    from watch_sync_server import get_realtime_client_config
+
+    return get_realtime_client_config()
+
+
 @router.get("/api/watch/room/{room_id}/qr")
 async def api_watch_room_qr(room_id: str, size: int = 240):
     from io import BytesIO
