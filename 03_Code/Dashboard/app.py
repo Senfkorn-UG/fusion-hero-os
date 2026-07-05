@@ -578,6 +578,13 @@ async def watch_create_redirect():
 async def watch_room(room_id: str):
     from watch_party import get_watch_manager, local_network_base, render_watch_page
     mgr = get_watch_manager()
+    try:
+        from watch_sync_server import refresh_room_from_server, server_sync_enabled
+
+        if server_sync_enabled():
+            await asyncio.to_thread(refresh_room_from_server, mgr, room_id)
+    except Exception:
+        pass
     room = mgr.get_room(room_id) or mgr.ensure_room(room_id)
     return HTMLResponse(render_watch_page(room.room_id, room.video_id, lan_base=local_network_base()))
 
