@@ -40,7 +40,16 @@ def test_local_network_base_uses_port_env(monkeypatch):
     assert base.endswith(":9001")
 
 
-@pytest.mark.parametrize("path", ["/api/discovery", "/api/connectivity", "/api/jobs?limit=5"])
+@pytest.mark.parametrize(
+    "path",
+    [
+        "/api/discovery",
+        "/api/connectivity",
+        "/api/jobs?limit=5",
+        "/api/faden/status",
+        "/api/faden/threads",
+    ],
+)
 def test_connectivity_routes_exist(path):
     from fastapi.testclient import TestClient
 

@@ -9,10 +9,27 @@ from typing import Any, Dict, List, Optional
 
 _REPO = Path(__file__).resolve().parents[2]
 _DEFAULT_MS = Path(r"G:\Meine Ablage\Fusion_Hero_OS_v1.2")
+_RELATIVE_MS = "Fusion_Hero_OS_v1.2"
+
+
+def _resolve_default_medienserver() -> Path:
+    env = os.getenv("FUSION_MEDIENSERVER")
+    if env:
+        return Path(env)
+    home = Path.home()
+    candidates = [
+        Path(r"G:\Meine Ablage") / _RELATIVE_MS,
+        home / "Google Drive-Streaming" / "Meine Ablage" / _RELATIVE_MS,
+        home / "Google Drive" / "Meine Ablage" / _RELATIVE_MS,
+    ]
+    for c in candidates:
+        if c.parent.exists():
+            return c
+    return _DEFAULT_MS
 
 
 def medienserver_path() -> Path:
-    return Path(os.getenv("FUSION_MEDIENSERVER", str(_DEFAULT_MS)))
+    return _resolve_default_medienserver()
 
 
 def manifest() -> Dict[str, Any]:
@@ -20,7 +37,7 @@ def manifest() -> Dict[str, Any]:
     if not path.exists():
         return {"exists": False, "path": str(path)}
     try:
-        data = json.loads(path.read_text(encoding="utf-8"))
+        data = json.loads(path.read_text(encoding="utf-8-sig"))
         data["exists"] = True
         data["path"] = str(path)
         return data

@@ -114,6 +114,8 @@ def build_discovery() -> Dict[str, Any]:
             "bridge_ipc": f"{base}/api/bridge/ipc/status",
             "phone_link": f"{base}/api/phone-link/status",
             "settings": f"{base}/api/settings",
+            "faden_status": f"{base}/api/faden/status",
+            "faden_threads": f"{base}/api/faden/threads",
         },
         "hint": "Handy im gleichen WLAN — QR auf /watch scannen",
     }
@@ -191,6 +193,19 @@ def build_connectivity_summary() -> Dict[str, Any]:
         }
     except Exception:
         out["access_points"]["jobs"] = {"ok": True, "queue_len": 0, "jobs_len": 0}
+
+    try:
+        from faden_store import get_faden_store
+
+        st = get_faden_store().status()
+        out["access_points"]["faden_store"] = {
+            "ok": True,
+            "total": st.get("total", 0),
+            "by_strength": st.get("by_strength", {}),
+            "path": st.get("path"),
+        }
+    except Exception as exc:
+        out["access_points"]["faden_store"] = {"ok": False, "error": str(exc)[:120]}
 
     ap_ok = [v.get("ok") for v in out["access_points"].values() if isinstance(v, dict)]
     out["all_ok"] = all(ap_ok) if ap_ok else False

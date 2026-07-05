@@ -22,7 +22,12 @@ DASHBOARD = Path(__file__).resolve().parent
 FOUNDATION_ROOT = Path(os.getenv("HEROIC_FOUNDATION", r"C:\Users\Admin\heroic-core-foundation"))
 HIGHEST_LAYER_ROOT = Path(os.getenv("HEROIC_HIGHEST_LAYER", r"C:\Users\Admin\heroic-highest-layer"))
 AGENTS_DIR = Path(os.getenv("FUSION_AGENTS_DIR", r"C:\Users\Admin\.config\kilo\agents"))
-MEDIENSERVER = Path(os.getenv("FUSION_MEDIENSERVER", r"G:\Meine Ablage\Fusion_Hero_OS_v1.2"))
+try:
+    from core.medienserver_bridge import medienserver_path as _medienserver_path
+
+    MEDIENSERVER = _medienserver_path()
+except Exception:
+    MEDIENSERVER = Path(os.getenv("FUSION_MEDIENSERVER", r"G:\Meine Ablage\Fusion_Hero_OS_v1.2"))
 
 for p in (CODE_ROOT, DASHBOARD, FOUNDATION_ROOT, HIGHEST_LAYER_ROOT, ROOT):
     if p.exists() and str(p) not in sys.path:
@@ -81,6 +86,7 @@ class FusionRegistry:
             ("peer_review", "5-Dim PeerReview", "1", "/api/mod/validate"),
             ("hero_guide", "HERO-GUIDE Geltungs-Werkbank", "0", "/api/hero-guide/status"),
             ("knowledge_graph", "Epistemischer Wissensgraph", "1", "/api/knowledge-graph/status"),
+            ("faden_store", "Faden-Speicher (Stärke-Stufen)", "2", "/api/faden/status"),
             ("medienserver", "Medienserver Sync", "archive", "/api/v12/sync"),
             ("grok", "Grok-intern Bridge", "1", "/api/grok/status"),
             ("meta_layer", "Windows Meta-Layer Host", "3", "/api/meta-layer/status"),

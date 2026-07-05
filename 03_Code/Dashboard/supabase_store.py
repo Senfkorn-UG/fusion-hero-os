@@ -148,6 +148,7 @@ TARGET_TABLES = [
     "fusion_settings_cloud",
     "fusion_agent_audit",
     "phone_link_snapshots",
+    "fusion_faden_threads",
 ]
 
 
@@ -314,6 +315,57 @@ def save_phone_link_snapshot(snapshot: Dict[str, Any]) -> Dict[str, Any]:
         },
     }
     return _insert("phone_link_snapshots", row)
+
+
+def save_faden_thread(thread: Dict[str, Any]) -> Dict[str, Any]:
+    """Faden-Thread nach Stärke in Supabase persistieren (stark/fixpunkt)."""
+    if not cloud_sync_enabled():
+        return {"ok": False, "skipped": True}
+    row = {
+        "thread_id": thread["thread_id"],
+        "device_id": thread.get("device_id") or device_id(),
+        "strength": thread.get("strength", "mittel"),
+        "label": thread.get("label", ""),
+        "source": thread.get("source", ""),
+        "layer": int(thread.get("layer") or 0),
+        "lambda_contract": float(thread.get("lambda_contract") or 0.74),
+        "fixpoint_id": thread.get("fixpoint_id", ""),
+        "state": thread.get("state") or {},
+        "created_at": float(thread.get("created_at") or time.time()),
+        "updated_at": float(thread.get("updated_at") or time.time()),
+        "expires_at": thread.get("expires_at"),
+        "payload": {
+            "cloud_synced": bool(thread.get("cloud_synced")),
+            "source_meta": thread.get("source"),
+        },
+    }
+    return _upsert("fusion_faden_threads", row, on_conflict="thread_id")
+
+
+def load_faden_threads(
+    *,
+    strength: Optional[str] = None,
+    fixpoint_id: Optional[str] = None,
+    target_device: Optional[str] = None,
+    limit: int = 50,
+) -> List[Dict[str, Any]]:
+    """Cloud-Fäden laden (optional nach Stärke / Fixpunkt gefiltert)."""
+    if not cloud_sync_enabled():
+        return []
+    client = get_client()
+    if not client:
+        return []
+    try:
+        q = client.table("fusion_faden_threads").select("*")
+        if strength:
+            q = q.eq("strength", strength.lower())
+        if fixpoint_id:
+            q = q.eq("fixpoint_id", fixpoint_id)
+        q = q.eq("device_id", target_device or device_id())
+        resp = q.order("updated_at", desc=True).limit(max(1, limit)).execute()
+        return resp.data or []
+    except Exception:
+        return []
 
 
 def list_recent_agent_audit(limit: int = 20) -> List[Dict[str, Any]]:
