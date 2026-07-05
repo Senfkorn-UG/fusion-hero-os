@@ -147,5 +147,5 @@ class TTSRouter:
 
 
 # Factory function for easy integration
- def get_tts_router(intent_bus: Any = None, qubo_engine: Any = None) -> TTSRouter:
+def get_tts_router(intent_bus: Any = None, qubo_engine: Any = None) -> TTSRouter:
     return TTSRouter(intent_bus=intent_bus, qubo_engine=qubo_engine)
