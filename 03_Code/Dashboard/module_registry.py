@@ -86,6 +86,7 @@ class FusionRegistry:
             ("peer_review", "5-Dim PeerReview", "1", "/api/mod/validate"),
             ("hero_guide", "HERO-GUIDE Geltungs-Werkbank", "0", "/api/hero-guide/status"),
             ("knowledge_graph", "Epistemischer Wissensgraph", "1", "/api/knowledge-graph/status"),
+            ("faden_store", "Faden-Speicher (Stärke-Stufen)", "2", "/api/faden/status"),
             ("medienserver", "Medienserver Sync", "archive", "/api/v12/sync"),
             ("grok", "Grok-intern Bridge", "1", "/api/grok/status"),
             ("meta_layer", "Windows Meta-Layer Host", "3", "/api/meta-layer/status"),
