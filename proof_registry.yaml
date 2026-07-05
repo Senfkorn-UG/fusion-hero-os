@@ -123,7 +123,53 @@ claims:
     proofs:
       - tests/test_mining_qubo.py::test_excavator_connector_is_dry_run_by_default
 
+  # ---- Quantenkognition / QPT (Grok-Export v8, 2026-07-05) -------------------
+  - id: QPT-BORN-COMPLETENESS
+    statement: "Bornsche Regel: p_i = ||P_i psi||^2 einer vollstaendigen orthogonalen Projektor-Familie summiert zu 1 (Pythagoras)."
+    status: BEWIESEN
+    proofs:
+      - tests/test_quantum_cognition.py::test_born_rule_probabilities_sum_to_one_property_sweep
+
+  - id: QPT-QQ-EQUALITY
+    statement: "QQ-Equality (Wang/Busemeyer): p(AyBy)+p(AnBn) = p(ByAy)+p(BnAn) fuer ALLE Zustaende und Projektorpaare — einzelne Ordnungseffekte bleiben dabei i.A. != 0."
+    status: BEWIESEN
+    proofs:
+      - tests/test_quantum_cognition.py::test_qq_equality_holds_for_all_states_and_projectors_property_sweep
+      - tests/test_quantum_cognition.py::test_individual_order_effects_are_generally_nonzero_control
+
+  - id: QPT-ORDER-COMMUTE
+    statement: "Kommutierende Projektoren haben exakt 0 Ordnungseffekt fuer jeden Zustand."
+    status: BEWIESEN
+    proofs:
+      - tests/test_quantum_cognition.py::test_commuting_projectors_have_zero_order_effect_property_sweep
+
+  - id: QPT-INTERFERENZ-ZERLEGUNG
+    statement: "Exakte Interferenz-Zerlegung: p_direkt - p_klassisch = 2*sum Re-Kreuzterme; delta = 0 wenn F mit der Partition kommutiert (klassischer Grenzfall)."
+    status: BEWIESEN
+    proofs:
+      - tests/test_quantum_cognition.py::test_interference_decomposition_is_exact_property_sweep
+      - tests/test_quantum_cognition.py::test_interference_vanishes_when_final_commutes_with_partition
+
+  - id: QPT-2LEVEL-OSZILLATION
+    statement: "2-Level-Oszillator H=omega*X: U(t)=cos(wt)I - i sin(wt)X (unitaer), Uebergangswahrscheinlichkeit exakt sin^2(wt)."
+    status: BEWIESEN
+    proofs:
+      - tests/test_quantum_cognition.py::test_two_level_closed_form_matches_spectral_and_is_unitary_property_sweep
+      - tests/test_quantum_cognition.py::test_two_level_transition_probability_is_sin_squared
+
+  - id: PSYCHOLYSE-SOMATIC-PFLICHT
+    statement: "psycholysis_trigger v8.1: Session-Abschluss ist ohne vollstaendige somatische Integrationsphase unmoeglich (Pflichtphase aus v8-Integrationsdokument)."
+    status: BEWIESEN
+    proofs:
+      - tests/test_psycholysis_trigger.py::test_complete_session_blocked_until_somatic_phase_done
+
   # ---- OFFENE Hypothesen (Gemini-Synthese v9 + Ideen-Backlog) ----------------
+  - id: QPT-SISYPHOS-FIT
+    statement: "QPT-Modelle (Oszillation/Interferenz) beschreiben reale Sisyphos-Zyklen bzw. Psycholyse-Uebergaenge empirisch besser als klassische Markov-Modelle."
+    status: OFFEN
+    proofs: []
+    notes: "Die QPT-Mathematik ist bewiesen (QPT-*), ihre PSYCHOLOGISCHE Passung nicht — braeuchte Entscheidungs-/Verlaufsdaten (z.B. Juenger-Feldexperiment) + Modellvergleich (AIC/BIC gegen Markov-Basislinie). Ohne Daten bleibt der Claim offen."
+
   - id: GOSSIP-LOGN
     statement: "N-Knoten-Gossip ueber mutual_sync konvergiert in erwartet O(log N) Runden zum globalen Fitness-Max."
     status: OFFEN
