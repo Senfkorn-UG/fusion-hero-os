@@ -123,6 +123,31 @@ claims:
     proofs:
       - tests/test_mining_qubo.py::test_excavator_connector_is_dry_run_by_default
 
+  # ---- Inference-Scheduling + MCP (Peer-Review-Iteration 2026-07-05) ---------
+  - id: SCHED-QUBO-ENCODING-EXAKT
+    statement: "Scheduling-QUBO: x^T Q x + offset == H(x) (Einzelkosten + CPU/NPU-Contention) fuer alle Zuweisungen; Q symmetrisch (Solver-Kontrakt)."
+    status: BEWIESEN
+    proofs:
+      - tests/test_inference_scheduler_qubo.py::test_qubo_encoding_matches_direct_cost_property_sweep
+      - tests/test_inference_scheduler_qubo.py::test_qubo_encoding_exhaustive_small_n
+
+  - id: SCHED-QUBO-NIE-SCHLECHTER-GREEDY
+    statement: "solve_schedule ist BY CONSTRUCTION nie schlechter als die Greedy-Supervisor-Heuristik (waehlt min(SA, Greedy)); strikte Verbesserungen kommen vor, sind aber nicht garantiert."
+    status: BEWIESEN
+    proofs:
+      - tests/test_inference_scheduler_qubo.py::test_solver_never_worse_than_greedy_property_sweep
+      - tests/test_inference_scheduler_qubo.py::test_sa_reaches_bruteforce_optimum_small_n
+      - tests/test_inference_scheduler_qubo.py::test_sa_strictly_beats_greedy_on_some_instances
+
+  - id: MCP-SPEC-KONFORM
+    statement: "fhero_mcp_server nutzt ausschliesslich Spec-Methoden (initialize, tools/list, tools/call, ping); tools/register existiert nicht und wird mit -32601 abgelehnt."
+    status: BEWIESEN
+    proofs:
+      - tests/test_fhero_mcp_server.py::test_initialize_handshake_is_spec_conform
+      - tests/test_fhero_mcp_server.py::test_tools_register_does_not_exist
+      - tests/test_fhero_mcp_server.py::test_tools_list_exposes_tools_with_input_schema
+      - tests/test_fhero_mcp_server.py::test_tools_call_layer0_verify_reports_registry
+
   # ---- Quantenkognition / QPT (Grok-Export v8, 2026-07-05) -------------------
   - id: QPT-BORN-COMPLETENESS
     statement: "Bornsche Regel: p_i = ||P_i psi||^2 einer vollstaendigen orthogonalen Projektor-Familie summiert zu 1 (Pythagoras)."
@@ -186,7 +211,7 @@ claims:
     statement: "QUBO-basierte Task-Zuweisung schlaegt die Supervisor-Heuristik messbar (Durchsatz/Wartezeit auf synthetischen Workloads)."
     status: OFFEN
     proofs: []
-    notes: "Pipeline Supervisor -> TaskGraph -> QUBO-Builder -> parallel_anneal. Kein Quanten-Backend: parallel_anneal ist SA (numba/Rust) — die D-Wave/QPU-Passagen der Gemini-Synthese gelten hier NICHT."
+    notes: "Pipeline Supervisor -> TaskGraph -> QUBO-Builder -> parallel_anneal. Kein Quanten-Backend: parallel_anneal ist SA (numba/Rust) — die D-Wave/QPU-Passagen der Gemini-Synthese gelten hier NICHT. Teilfortschritt 2026-07-05: inference_scheduler_qubo.py liefert exakte Kodierung + Nie-schlechter-als-Greedy (SCHED-QUBO-*) auf SYNTHETISCHEN Kostenmodellen; der Claim hier bleibt OFFEN, bis reale Workload-Messungen (Latenz/Durchsatz) vorliegen."
 
   - id: ORACLE-PREDICT
     statement: "Ein aus Benchmarks gefittetes Kostenmodell prognostiziert parallel_anneal-Laufzeiten gut genug fuer die Backend-Wahl (numba vs. rust)."
