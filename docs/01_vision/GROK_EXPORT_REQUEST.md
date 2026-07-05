@@ -39,9 +39,9 @@ Bitte exportiere die folgenden drei Module vollständig (Code + ggf. Config/Date
 
 | Modul | Status | Datum | Anmerkung |
 |---|---|---|---|
-| Timespace/Token-Management | SCAFFOLD | 2026-07-05 | `03_Code/timespace_token_management.py` + v2_beta-Docs; volle Grok-Vision offen |
-| HeroicLLM-EA Orchestrator | SCAFFOLD | 2026-07-05 | `fusion_hero_os/modules/heroic_llm_ea/` — Stub-LLM, echte Fitness/Memory |
-| HeroicImageOrchestrator | SCAFFOLD | 2026-07-05 | `fusion_hero_os/modules/image_orchestrator/` — Dry-Run + YAML + Rate-Limit |
+| Timespace/Token-Management | VERTIEFT | 2026-07-05 | Manifold, Multi-Scale, QUBO-Hint, 3x-Fidelity, BaseModule |
+| HeroicLLM-EA Orchestrator | VERTIEFT | 2026-07-05 | (μ+λ)-Evolution, PeerReview-Fitness, Campfire-Templates, Lineage-Memory |
+| HeroicImageOrchestrator | VERTIEFT | 2026-07-05 | 4-Stage-Pipeline, Dual-Rate-Limit, Job-Queue, Prompt-Builder |
 
 **Hinweis (2026-07-05):** Vollständiger Code-Export aus Grok-Projekten war nicht verfügbar.
 Stattdessen ehrliche Minimal-Scaffolds mit Code-Honesty-Labels und Tests
