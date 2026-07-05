@@ -139,7 +139,10 @@
         <div class="viz-dual-grid">
           <div class="viz-cell">
             <div class="viz-label">Phoenix_Mode / Geisterjagd — latente → manifest</div>
-            <canvas id="canvas-geisterjagd" class="viz-canvas" width="520" height="260"></canvas>
+            <p id="gj-caption" class="viz-caption">Demo-Loop lädt…</p>
+            <div class="viz-canvas-wrap">
+              <canvas id="canvas-geisterjagd" class="viz-canvas" aria-label="Geisterjagd Demo"></canvas>
+            </div>
             <div class="viz-metrics" id="metrics-geisterjagd">
               <span>Ghosts: <b id="gj-ghosts">--</b></span>
               <span>Emergenz: <b id="gj-emerged">--</b></span>
@@ -148,7 +151,10 @@
           </div>
           <div class="viz-cell">
             <div class="viz-label">Banach-Kontraktion — d(s<sub>n</sub>, s*) → 0</div>
-            <canvas id="canvas-banach" class="viz-canvas" width="520" height="260"></canvas>
+            <p id="bn-caption" class="viz-caption">Demo-Loop lädt…</p>
+            <div class="viz-canvas-wrap">
+              <canvas id="canvas-banach" class="viz-canvas" aria-label="Banach Demo"></canvas>
+            </div>
             <div class="viz-metrics" id="metrics-banach">
               <span>λ: <b id="bn-lambda">--</b></span>
               <span>d<sub>n</sub>: <b id="bn-distance">--</b></span>
@@ -156,9 +162,9 @@
             </div>
           </div>
         </div>
-        <p class="text-[10px] text-[#94a3b8] mt-2">
-          Latente Aktivierungen akkumulieren über Heuristik-Feld (Events, Queue, CPU) und emergieren manifest.
-          Parallel kontrahiert der Zustand s<sub>n</sub> unter λ &lt; 1 zum Fixpunkt s* (MasterSeed / Z*).
+        <p class="text-[10px] text-[#94a3b8] mt-2 viz-principle-text">
+          <strong class="text-[#c084fc]">Geisterjagd:</strong> Latente Spuren sammeln sich im Heuristik-Feld, akkumulieren Aktivierung und emergieren manifest (Phoenix_Mode).
+          <strong class="text-[#00d4aa] ml-2">Banach:</strong> Jeder Schritt zieht s<sub>n</sub> mit λ&nbsp;&lt;&nbsp;1 zum Fixpunkt s* — der Abstand schrumpft garantiert.
         </p>
       </div>
     </div>
@@ -188,6 +194,7 @@
   </div>
 
   <script src="/static/responsive_layout.js"></script>
+  <script src="/static/viz_demo_loop.js"></script>
   <script src="/static/dashboard.js"></script>
 </body>
 </html>
