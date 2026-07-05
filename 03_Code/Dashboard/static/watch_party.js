@@ -5,6 +5,8 @@
   const initialVideoId = window.WATCH_VIDEO_ID || '';
   const serverSync = window.WATCH_SERVER_SYNC === true;
   const pollMs = Number(window.WATCH_POLL_MS) || 2000;
+  const pollActiveMs = 2000;
+  const realtimeStaleMs = 6000;
   const rtConfig = window.WATCH_REALTIME_CONFIG || {};
   const DRIFT_SEEK = 0.35;
   const SUPPRESS_MS = 100;
@@ -22,8 +24,11 @@
   let pollTimer = null;
   let extrapolateTimer = null;
   let lastServerRevision = 0;
+  let lastServerRev = 0;
+  let lastAppliedKey = '';
   let cmdInFlight = false;
   let realtimeConnected = false;
+  let lastRealtimeAt = 0;
   let realtimeChannel = null;
   let lastPlaybackState = null;
   let videoRetryTimer = null;
@@ -99,6 +104,7 @@
     const playing = !!row.playing;
     let position = Number(row.position) || 0;
     if (playing) position += Math.max(0, now - updatedAt);
+    const payload = row.payload || {};
     return {
       type: 'watch_state',
       room_id: row.room_id,
@@ -107,15 +113,33 @@
       playing,
       server_time: now,
       updated_at: updatedAt,
+      revision: Number(payload.revision || row.revision || 0),
       sync_authority: 'server',
       sync_source: 'realtime',
     };
   }
 
+  function stateFingerprint(st) {
+    return [
+      st.video_id || '',
+      st.playing ? 1 : 0,
+      Math.round((Number(st.position) || 0) * 10),
+      Number(st.updated_at) || 0,
+      Number(st.revision) || 0,
+    ].join('|');
+  }
+
   function shouldApplyState(st) {
-    const rev = st.updated_at || 0;
-    if (rev > 0 && rev < lastServerRevision) return false;
-    if (rev > 0 && rev === lastServerRevision && cmdInFlight) return false;
+    const ts = Number(st.updated_at) || 0;
+    const rev = Number(st.revision) || 0;
+    const fp = stateFingerprint(st);
+    if (fp === lastAppliedKey) return false;
+    if (rev > 0 && rev < lastServerRev) return false;
+    if (rev <= lastServerRev && ts < lastServerRevision - 0.001) return false;
+    if (ts < lastServerRevision - 0.001) return false;
+    if (cmdInFlight && st.sync_source === 'local_fast' && ts <= lastServerRevision && rev <= lastServerRev) {
+      return false;
+    }
     return true;
   }
 
@@ -204,8 +228,11 @@
       return;
     }
 
-    const rev = st.updated_at || 0;
+    const rev = Number(st.updated_at) || 0;
+    const revision = Number(st.revision) || 0;
     if (rev > lastServerRevision) lastServerRevision = rev;
+    if (revision > lastServerRev) lastServerRev = revision;
+    lastAppliedKey = stateFingerprint(st);
     rememberPlaybackState(st);
 
     const targetPos = expectedPosition(st);
@@ -263,13 +290,16 @@
         },
         (payload) => {
           if (!payload.new) return;
+          lastRealtimeAt = Date.now();
           syncFromServer(rowToWatchState(payload.new));
         }
       );
       realtimeChannel.subscribe((status) => {
         if (status === 'SUBSCRIBED') {
           realtimeConnected = true;
+          lastRealtimeAt = Date.now();
           setStatus('Realtime + WS — Sync aktiv');
+          fetchAndApplyServerState();
         } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT' || status === 'CLOSED') {
           realtimeConnected = false;
           setStatus('Realtime offline — WS/Poll aktiv');
@@ -318,8 +348,8 @@
         });
         const data = await r.json();
         if (data.ok && data.state) {
-          lastServerRevision = data.state.updated_at || lastServerRevision;
-          syncFromServer(data.state, { localEcho: true });
+          const st = { ...data.state, sync_source: data.sync_source || 'local_fast' };
+          syncFromServer(st, { localEcho: true });
         }
       } catch (err) {
         setStatus(`Server-Cmd Fehler: ${err.message}`);
@@ -440,12 +470,13 @@
     if (!serverSync) return;
     clearInterval(pollTimer);
     pollTimer = setInterval(() => {
-      if (realtimeConnected && pollMs >= 15000) {
+      const staleRealtime = realtimeConnected && (Date.now() - lastRealtimeAt > realtimeStaleMs);
+      if (!realtimeConnected || staleRealtime) {
         pollServerState();
         return;
       }
-      if (!realtimeConnected) pollServerState();
-    }, pollMs);
+      if (pollMs >= pollActiveMs) pollServerState();
+    }, pollActiveMs);
   }
 
   function connectWs() {
@@ -462,7 +493,7 @@
       try {
         const msg = JSON.parse(e.data);
         if (msg.type === 'watch_state') {
-          syncFromServer(msg);
+          syncFromServer({ ...msg, sync_source: msg.sync_source || 'websocket' });
         } else if (msg.type === 'watch_meta') {
           const badge = $('viewer-count');
           if (badge) badge.textContent = `${msg.viewers || 0} Zuschauer`;
