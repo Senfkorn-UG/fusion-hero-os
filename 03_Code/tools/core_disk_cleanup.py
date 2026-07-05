@@ -174,6 +174,46 @@ def cleanup_old_download_installers(dry_run=True):
     log(f"Installer/part files processed: {removed}")
 
 
+def cleanup_dev_caches(dry_run=True):
+    """Phase 3: pip/npm/huggingface/puppeteer caches (safe regenerable)."""
+    log("=== Cleaning dev tool caches (Phase 3) ===")
+    home = Path.home()
+    targets = [
+        _pip_cache_dir(),
+        home / "AppData" / "Local" / "npm-cache",
+        home / ".cache" / "huggingface",
+        home / ".cache" / "puppeteer",
+        home / ".cache" / "gdown",
+    ]
+    removed = 0
+    freed = 0
+    for cache_dir in targets:
+        if not cache_dir.exists():
+            continue
+        for item in cache_dir.rglob("*"):
+            if not item.is_file():
+                continue
+            size = item.stat().st_size
+            if dry_run:
+                removed += 1
+                freed += size
+            else:
+                try:
+                    item.unlink(missing_ok=True)
+                    removed += 1
+                    freed += size
+                except OSError:
+                    pass
+        if not dry_run:
+            for sub in sorted(cache_dir.rglob("*"), reverse=True):
+                if sub.is_dir():
+                    try:
+                        sub.rmdir()
+                    except OSError:
+                        pass
+    log(f"Dev cache files processed: {removed} ({freed / (1024 * 1024):.1f} MB)")
+
+
 def cleanup_fusion_hero_caches(dry_run=True):
     log("=== Cleaning FusionHero cache folders ===")
     cache_dirs = [
@@ -230,6 +270,7 @@ def main():
     if platform.system() == "Windows":
         cleanup_temp_files(DRY_RUN)
         cleanup_old_download_installers(DRY_RUN)
+        cleanup_dev_caches(DRY_RUN)
         cleanup_fusion_hero_caches(DRY_RUN)
     show_disk_usage()
 
