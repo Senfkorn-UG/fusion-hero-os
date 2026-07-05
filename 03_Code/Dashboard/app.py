@@ -35,6 +35,25 @@ app = FastAPI(title="Fusion Hero OS v8 — ALTE_Frau_95g Heroic Core Dashboard")
 
 # === Consolidated imports for agents + hyperthreading + task orchestration (from heroic_orchestration merge) ===
 import sys, os
+
+_cors_origins = [
+    o.strip()
+    for o in os.getenv(
+        "FUSION_CORS_ORIGINS",
+        "http://127.0.0.1:8000,http://localhost:8000",
+    ).split(",")
+    if o.strip()
+]
+if _cors_origins:
+    from fastapi.middleware.cors import CORSMiddleware
+
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=_cors_origins,
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
 if '03_Code' not in sys.path:
     sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 try:
@@ -680,8 +699,8 @@ app.mount("/static", StaticFiles(directory=str(BASE / "static")), name="static")
 
 # Health endpoint (kept for compatibility + our v7.5 autonomous + HT + agents)
 @app.get("/api/health")
-async def api_health(light: bool = False):
-    if light:
+async def api_health(light: bool = False, full: bool = False):
+    if light and not full:
         return {"status": "ok", "backend": "online"}
 
     ht_info = {"enabled": False, "logical_cpus": os.cpu_count() or 12, "workers": 1}
@@ -698,14 +717,20 @@ async def api_health(light: bool = False):
     except:
         pass
 
-    return {
+    payload: Dict[str, Any] = {
+        "status": "ok",
         "backend": "online",
         "fusion_os": "v7.5 MasterSeed (merged with v7.4 WS/HT)",
         "core": "ALTE_Frau_95g v7.4 + v7.5",
         "mainframe": {"loaded": True, "version": "v7.4/v7.5", "boot_phase": "full"},
         "hyperthreading": ht_info,
         "ws_endpoint": "/ws",
-        "tasks": {"autonomous": False, "queue_len": len(TASK_QUEUE) if 'TASK_QUEUE' in globals() else 0, "support": "POST /api/input appends to TASK_QUEUE; nothing currently consumes/assigns from it"},
+        "tasks": {
+            "autonomous": False,
+            "queue_len": len(TASK_QUEUE) if "TASK_QUEUE" in globals() else 0,
+            "jobs_len": len(JOBS) if "JOBS" in globals() else 0,
+            "support": "POST /api/input appends to TASK_QUEUE; GET /api/jobs lists recent jobs",
+        },
         "agents": agent_info,
         "supabase": (supa.status() if supa else {"configured": False, "error": "supabase_client module not loaded"}),
         "input_factors": get_input_factors(),
@@ -713,9 +738,6 @@ async def api_health(light: bool = False):
         "resource_coupler": (
             get_resource_coupler().status().get("coupler")
             if get_resource_coupler() else {"enabled": False}
-        ),
-        "supabase": (
-            supa.status() if supa else {"configured": False, "error": "supabase_client not loaded"}
         ),
         "all_modules": os.getenv("FUSION_ALL_MODULES", "1") == "1",
         "llm_backend": os.getenv("FUSION_LLM_BACKEND", "llama-local"),
@@ -730,6 +752,15 @@ async def api_health(light: bool = False):
             else {"enabled": False}
         ),
     }
+    if full:
+        try:
+            from connectivity import build_connectivity_summary, build_discovery
+
+            payload["discovery"] = build_discovery()
+            payload["connectivity"] = build_connectivity_summary()
+        except Exception as exc:
+            payload["connectivity_error"] = str(exc)[:200]
+    return payload
 
 @app.get("/api/supabase/health")
 async def api_supabase_health(probe: bool = False):

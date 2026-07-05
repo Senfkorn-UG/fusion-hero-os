@@ -619,3 +619,30 @@ body {
 .settings-btn:hover { filter: brightness(1.1); }
 
 .panel-hidden { display: none !important; }
+
+.connectivity-links {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 8px 0 10px;
+}
+
+.conn-access-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 10px;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.conn-ap-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 4px 8px;
+  border-radius: 4px;
+  background: rgba(30, 41, 59, 0.5);
+  border: 1px solid #1e293b;
+}
+
+.conn-ap-row.ok { border-color: rgba(0, 212, 170, 0.35); }
+.conn-ap-row.warn { border-color: rgba(245, 158, 11, 0.35); }

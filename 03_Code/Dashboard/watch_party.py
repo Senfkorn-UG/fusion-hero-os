@@ -222,18 +222,11 @@ def get_watch_manager() -> WatchPartyManager:
     return _manager
 
 
-def local_network_base(port: int = 8000) -> str:
-    """Basis-URL für Handy im WLAN (nicht 127.0.0.1)."""
-    import socket
+def local_network_base(port: Optional[int] = None) -> str:
+    """Basis-URL für Handy im WLAN (bevorzugt 192.168.x, nicht Docker/WSL)."""
+    from connectivity import local_network_base as _lan_base
 
-    try:
-        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        sock.connect(("8.8.8.8", 80))
-        ip = sock.getsockname()[0]
-        sock.close()
-        return f"http://{ip}:{port}"
-    except Exception:
-        return f"http://127.0.0.1:{port}"
+    return _lan_base(port)
 
 
 def join_url_for_room(room_id: str, base_url: Optional[str] = None, port: int = 8000) -> str:
