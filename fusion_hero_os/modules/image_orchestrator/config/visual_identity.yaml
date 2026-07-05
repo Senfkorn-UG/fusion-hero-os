@@ -1,0 +1,26 @@
+# Visual Identity / Character Bible — Daten, nicht in Code eingebacken.
+# Quelle: ALTE_Frau_95g Bildgenerierungs-Pipeline (Archiv-PDFs, 2026)
+
+identity:
+  name: "ALTE_Frau_95g"
+  primary_seed: "95g_Hacker_PrimarySeed_2026-07-04"
+  style_tags:
+    - cyberpunk
+    - campfire
+    - meme-theory
+  palette:
+    primary: "#00ff9f"
+    accent: "#ff3366"
+    background: "#0a0a12"
+
+rate_limits:
+  default:
+    max_requests: 8
+    window_seconds: 60.0
+  burst:
+    max_requests: 3
+    window_seconds: 10.0
+
+pipeline:
+  mode: dry_run
+  note: "Echte Provider-Aufrufe erfordern explizites User-Opt-in (connectors-Pattern)."
