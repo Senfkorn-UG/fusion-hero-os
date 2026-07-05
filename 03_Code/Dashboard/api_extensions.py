@@ -651,6 +651,56 @@ async def api_settings_reset():
     return await asyncio.to_thread(reset_defaults)
 
 
+@router.get("/api/faden/status")
+async def api_faden_status():
+    from faden_store import get_faden_store
+
+    return await asyncio.to_thread(get_faden_store().status)
+
+
+@router.get("/api/faden/threads")
+async def api_faden_threads(
+    strength: Optional[str] = None,
+    fixpoint_id: Optional[str] = None,
+    limit: int = 50,
+):
+    from faden_store import get_faden_store
+
+    threads = await asyncio.to_thread(
+        get_faden_store().list_threads,
+        strength=strength,
+        fixpoint_id=fixpoint_id,
+        limit=limit,
+    )
+    return {"ok": True, "threads": threads, "count": len(threads)}
+
+
+@router.post("/api/faden/threads")
+async def api_faden_upsert(payload: dict = None):
+    from faden_store import get_faden_store
+
+    payload = payload or {}
+    sync_cloud = payload.get("sync_cloud")
+    if sync_cloud is not None:
+        sync_cloud = bool(sync_cloud)
+    return await asyncio.to_thread(get_faden_store().upsert, payload, sync_cloud=sync_cloud)
+
+
+@router.delete("/api/faden/threads/{thread_id}")
+async def api_faden_delete(thread_id: str):
+    from faden_store import get_faden_store
+
+    return await asyncio.to_thread(get_faden_store().delete, thread_id)
+
+
+@router.post("/api/faden/prune")
+async def api_faden_prune():
+    from faden_store import get_faden_store
+
+    result = await asyncio.to_thread(get_faden_store().prune)
+    return {"ok": True, **result}
+
+
 @router.post("/api/watch/room")
 async def api_watch_create_room(payload: dict = None):
     from watch_party import get_watch_manager
