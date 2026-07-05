@@ -1,0 +1,32 @@
+version: v8
+last_updated: 2026-07-05
+core: ALTE_Frau_95g Heroic Core + Fusion Hero OS
+
+Ehrlichkeits_Punkte:
+  - id: CLAIM_001_to_006
+    status: BEWIESEN
+    category: "reine Mathematik bzw. erzwungenes Verhalten (definitorisch / axiomatisch / forciert durch Core-Architektur)"
+    note: "Innerhalb des formalen Systems (FormalMathematicsCoreModule + Layer-0 Invarianten) bewiesen. Keine empirische Behauptung."
+
+  - id: QPT-SISYPHOS-FIT
+    status: OFFEN
+    category: "Modell (empirisch)"
+    description: "Ob QPT reale Sisyphos-Zyklen empirisch besser beschreibt als klassische Modelle."
+    requirement: "Verlaufsdaten (longitudinal) + quantitativer Modellvergleich (z.B. via QUBOIntegrationCoreModule + AuditAgent + GenerationalEvolutionProtocolCoreModule) erforderlich."
+    note: "Kein Dokument kann dies per Dekret beweisen. Bleibt als offenes Forschungsitem in Roadmap registriert."
+
+roadmap_offen:
+  - punkt_1: EudaimoniaGuard-Metriken (ERM + Dimension-6 Score Integration)
+  - punkt_4: Meme-Modules (Erweiterung MemeCampfireCoreModule + PhotoRealMemeCoreModule + VisualIdentityCoreModule)
+  - punkt_5: Dashboard-Tracking (LiveProcessTrackingCoreModule + AutonomousGraphicsEmbeddingCoreModule)
+  - punkt_6: Knowledge-Templates (PseudocodeAndDictionaryCoreModule + V3.3StructureCoreModule)
+
+missing_grok_code_modules:
+  - TimespaceCoreModule: "Zeit-Raum-Modellierung für Sisyphos-Zyklen + Quantenkognition (Layer 2/3)"
+  - HeroicLLM-EACoreModule: "Evolutionary Algorithm + Hyperthreading für HeroicLLM (GenerationalEvolutionProtocolCoreModule Erweiterung)"
+  - ImageOrchestratorCoreModule: "Orchestrierung mister-Contributor / cyberpunk-campfire + photo-real + Dimension-6 Validator (VisualIdentityCoreModule + CanvaCoreModule)"
+
+policy:
+  - "Keine stillen Aufwertungen von Modellen zu Sätzen."
+  - "Alle empirischen Fit-Behauptungen bleiben explizit als OFFEN markiert bis Daten vorliegen."
+  - "proof_registry.yaml ist Single Source of Truth für alle Exports und Audits."
