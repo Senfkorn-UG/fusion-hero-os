@@ -32,7 +32,7 @@ import time
 import uuid
 from collections import defaultdict, deque
 from dataclasses import dataclass, field
-from typing import Any, Deque, Dict, List, Optional, Tuple
+from typing import Any, Callable, Deque, Dict, List, Optional, Tuple
 
 
 # --------------------------------------------------------------------------- #
@@ -73,6 +73,10 @@ Reaction = Tuple[str, str, str, float]
 class NodeSpec:
     name: str
     reactions: List[Reaction] = field(default_factory=list)
+    # Live-Knoten: statt deklarativer Reaktionen ein echter Handler, der reale
+    # Methoden aufruft und selbst bus.emit(...) mit realen Magnituden macht.
+    handler: Optional[Callable[["EntwicklungsquantBus", "Entwicklungsquant"], None]] = None
+    live: bool = False
 
 
 # --------------------------------------------------------------------------- #
@@ -89,13 +93,32 @@ class EntwicklungsquantBus:
         self.received: Dict[str, float] = defaultdict(float)   # Entwicklung je Knoten
         self.edges: Dict[Tuple[str, str], float] = defaultdict(float)  # (src,dst)->Σweight (Konnektivität)
 
-    def register(self, name: str, reactions: Optional[List[Reaction]] = None) -> None:
-        self.nodes[name] = NodeSpec(name=name, reactions=list(reactions or []))
+    def register(self, name: str, reactions: Optional[List[Reaction]] = None,
+                 handler: Optional[Callable] = None, live: bool = False) -> None:
+        self.nodes[name] = NodeSpec(name=name, reactions=list(reactions or []), handler=handler, live=live)
         for (on_t, emit_t, to, w) in (reactions or []):
             # Kante src=name -> dst (aggregierte Kopplung) für die Konnektivitäts-Metrik
             targets = [to] if to != "*" else [n for n in self.nodes if n != name]
             for d in targets:
                 self.edges[(name, d)] += w
+
+    def deregister(self, name: str) -> bool:
+        """Knoten abmelden: entfernt Knoten + seine Kanten aus dem Netz."""
+        if name not in self.nodes:
+            return False
+        del self.nodes[name]
+        for key in [k for k in self.edges if k[0] == name or k[1] == name]:
+            del self.edges[key]
+        return True
+
+    def registered(self) -> List[str]:
+        return sorted(self.nodes.keys())
+
+    def reset(self) -> None:
+        """Metriken/Log/Queue zurücksetzen (Netzstruktur + Knoten bleiben)."""
+        self.queue.clear()
+        self.log.clear()
+        self.received.clear()
 
     def emit(self, source: str, target: str, quant_type: str,
              magnitude: float, layer: int = 0, payload: Optional[Dict[str, Any]] = None) -> Optional[Entwicklungsquant]:
@@ -118,6 +141,13 @@ class EntwicklungsquantBus:
             if not node:
                 continue
             self.received[tname] += q.magnitude
+            if node.handler is not None:
+                # Live-Knoten: echter Handler ruft reale Methoden + emittiert selbst.
+                try:
+                    node.handler(self, q)
+                except Exception:
+                    pass
+                continue
             for (on_t, emit_t, to, w) in node.reactions:
                 if on_t != q.quant_type:
                     continue
