@@ -9,28 +9,28 @@
   <style> @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap'); </style>
 </head>
 <body class="bg-[#0a0a0f] text-[#e2e8f0]">
-  <div class="max-w-[1600px] mx-auto">
-    <!-- Heroic Header with Campfire Fusion -->
-    <header class="hud-panel m-4 p-4 flex items-center justify-between campfire-glow">
-      <div class="flex items-center gap-4">
-        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-[#00d4aa] to-[#f59e0b] flex items-center justify-center text-black font-bold text-xl">A95</div>
+  <div class="dashboard-shell">
+    <header class="hud-panel dashboard-header m-4 p-4 campfire-glow">
+      <div class="dashboard-header-brand">
+        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-[#00d4aa] to-[#f59e0b] flex items-center justify-center text-black font-bold text-xl shrink-0">A95</div>
         <div>
-          <h1 class="text-2xl font-bold tracking-[3px]">ALTE_Frau_95g HEROIC CORE</h1>
-          <p class="text-xs text-[#94a3b8]">FUSION HERO OS v8 • PORT 8000 STANDARD-GUI • HYPER-THREADING • LAYER 0-6</p>
+          <h1 class="text-xl sm:text-2xl font-bold tracking-[2px] sm:tracking-[3px]">ALTE_Frau_95g HEROIC CORE</h1>
+          <p class="text-xs text-[#94a3b8] header-subline">FUSION HERO OS v8 • PORT 8000 • HYPER-THREADING • LAYER 0-6</p>
         </div>
       </div>
-      <div class="flex items-center gap-6 text-sm">
+      <div class="dashboard-header-meta">
         <div><span class="status-online">●</span> MAINFRAME ONLINE</div>
         <div id="event-count" class="font-mono">--</div>
-        <a href="/watch" class="watch-header-btn" title="YouTube synchron PC + Handy">▶ WATCH TOGETHER</a>
-        <button type="button" id="settings-open-btn" class="settings-gear-btn" title="Einstellungen">⚙ EINSTELLUNGEN</button>
-        <div class="text-[#f59e0b]">REKONSTRUKTIVISTISCHER EUDAIMONISMUS</div>
+        <a href="/watch" class="watch-header-btn" title="YouTube synchron PC + Handy">▶ WATCH</a>
+        <button type="button" id="settings-open-btn" class="settings-gear-btn" title="Einstellungen">⚙</button>
+        <div class="header-tagline text-[#f59e0b]">REKONSTRUKTIVISTISCHER EUDAIMONISMUS</div>
+        <div id="layout-mode-indicator" class="layout-mode-indicator" aria-live="polite">Layout: …</div>
       </div>
     </header>
 
-    <div class="dashboard-grid">
+    <div id="dashboard-grid" class="dashboard-grid" data-responsive-grid>
       <!-- System Metrics -->
-      <div class="hud-panel">
+      <div class="hud-panel" data-panel-id="core-metrics" data-panel-zone="metrics">
         <h2 class="text-[#00d4aa] text-sm mb-3 tracking-widest">CORE METRICS</h2>
         <div class="grid grid-cols-2 gap-4 text-center">
           <div><div class="text-3xl font-bold" id="cpu">--</div><div class="text-xs text-[#94a3b8]">CPU LOAD</div></div>
@@ -41,7 +41,7 @@
       </div>
 
       <!-- Hyper-Threading Visualizer -->
-      <div class="hud-panel">
+      <div class="hud-panel" data-panel-id="hyper-threading" data-panel-zone="metrics">
         <h2 class="text-[#7c3aed] text-sm mb-3 tracking-widest flex items-center gap-2">
           HYPER-THREADING SIM <span class="text-[10px] px-1.5 py-0.5 bg-[#7c3aed]/20 rounded">L0-6 PARALLEL</span>
         </h2>
@@ -50,14 +50,14 @@
       </div>
 
       <!-- Layer Status Grid -->
-      <div class="hud-panel">
+      <div class="hud-panel" data-panel-id="layer-architecture" data-panel-zone="metrics">
         <h2 class="text-[#00d4aa] text-sm mb-3 tracking-widest">LAYER ARCHITECTURE (0 → ω)</h2>
         <div id="layer-grid" class="layer-grid"></div>
         <div class="text-[10px] text-[#94a3b8] mt-3">Immutable Foundation L0 + Transfinite L5-L6 (Banach Fixed-Point)</div>
       </div>
 
       <!-- IPC Bridge Panel -->
-      <div class="hud-panel bridge-panel" id="bridge-panel">
+      <div class="hud-panel bridge-panel panel-output" id="bridge-panel" data-panel-id="bridge" data-panel-zone="integration">
         <h2 class="text-[#38bdf8] text-sm mb-3 tracking-widest flex items-center gap-2 flex-wrap">
           C↔PYTHON IPC BRIDGE
           <span id="bridge-transport-badge" class="bridge-badge">--</span>
@@ -88,7 +88,7 @@
       </div>
 
       <!-- Connectivity / Access Points -->
-      <div class="hud-panel connectivity-panel" id="connectivity-panel">
+      <div class="hud-panel connectivity-panel panel-output" id="connectivity-panel" data-panel-id="connectivity" data-panel-zone="integration">
         <h2 class="text-[#34d399] text-sm mb-3 tracking-widest flex items-center gap-2 flex-wrap">
           ACCESS POINTS
           <span id="connectivity-status-badge" class="bridge-badge">--</span>
@@ -107,7 +107,7 @@
       </div>
 
       <!-- Phone Link Panel -->
-      <div class="hud-panel phone-panel" id="phone-panel">
+      <div class="hud-panel phone-panel panel-output" id="phone-panel" data-panel-id="phone-link" data-panel-zone="integration">
         <h2 class="text-[#a78bfa] text-sm mb-3 tracking-widest flex items-center gap-2 flex-wrap">
           PHONE LINK
           <span id="phone-status-badge" class="phone-badge">--</span>
@@ -124,13 +124,13 @@
       </div>
 
       <!-- Event Stream -->
-      <div class="hud-panel col-span-1">
+      <div class="hud-panel panel-output" data-panel-id="event-stream" data-panel-zone="output">
         <h2 class="text-[#fbbf24] text-sm mb-3 tracking-widest">LIVE EVENT STREAM</h2>
-        <div id="event-stream" class="font-mono text-xs leading-snug bg-[#111113] p-3 rounded h-[280px] overflow-auto"></div>
+        <div id="event-stream" class="output-surface font-mono text-xs leading-snug bg-[#111113] p-3 rounded overflow-auto"></div>
       </div>
 
       <!-- Geisterjagd + Banach Live Viz -->
-      <div class="hud-panel viz-panel-wide">
+      <div class="hud-panel viz-panel-wide" data-panel-id="viz-banach" data-panel-zone="viz">
         <h2 class="text-[#c084fc] text-sm mb-2 tracking-widest flex items-center gap-2 flex-wrap">
           GEISTERJAGD &amp; BANACH-KONTRAKTION
           <span class="text-[10px] px-1.5 py-0.5 bg-[#7c3aed]/25 rounded text-[#e9d5ff]">HEURISTIK → EMERGENZ</span>
@@ -139,7 +139,10 @@
         <div class="viz-dual-grid">
           <div class="viz-cell">
             <div class="viz-label">Phoenix_Mode / Geisterjagd — latente → manifest</div>
-            <canvas id="canvas-geisterjagd" class="viz-canvas" width="520" height="260"></canvas>
+            <p id="gj-caption" class="viz-caption">Demo-Loop lädt…</p>
+            <div class="viz-canvas-wrap">
+              <canvas id="canvas-geisterjagd" class="viz-canvas" aria-label="Geisterjagd Demo"></canvas>
+            </div>
             <div class="viz-metrics" id="metrics-geisterjagd">
               <span>Ghosts: <b id="gj-ghosts">--</b></span>
               <span>Emergenz: <b id="gj-emerged">--</b></span>
@@ -148,7 +151,10 @@
           </div>
           <div class="viz-cell">
             <div class="viz-label">Banach-Kontraktion — d(s<sub>n</sub>, s*) → 0</div>
-            <canvas id="canvas-banach" class="viz-canvas" width="520" height="260"></canvas>
+            <p id="bn-caption" class="viz-caption">Demo-Loop lädt…</p>
+            <div class="viz-canvas-wrap">
+              <canvas id="canvas-banach" class="viz-canvas" aria-label="Banach Demo"></canvas>
+            </div>
             <div class="viz-metrics" id="metrics-banach">
               <span>λ: <b id="bn-lambda">--</b></span>
               <span>d<sub>n</sub>: <b id="bn-distance">--</b></span>
@@ -156,9 +162,9 @@
             </div>
           </div>
         </div>
-        <p class="text-[10px] text-[#94a3b8] mt-2">
-          Latente Aktivierungen akkumulieren über Heuristik-Feld (Events, Queue, CPU) und emergieren manifest.
-          Parallel kontrahiert der Zustand s<sub>n</sub> unter λ &lt; 1 zum Fixpunkt s* (MasterSeed / Z*).
+        <p class="text-[10px] text-[#94a3b8] mt-2 viz-principle-text">
+          <strong class="text-[#c084fc]">Geisterjagd:</strong> Latente Spuren sammeln sich im Heuristik-Feld, akkumulieren Aktivierung und emergieren manifest (Phoenix_Mode).
+          <strong class="text-[#00d4aa] ml-2">Banach:</strong> Jeder Schritt zieht s<sub>n</sub> mit λ&nbsp;&lt;&nbsp;1 zum Fixpunkt s* — der Abstand schrumpft garantiert.
         </p>
       </div>
     </div>
@@ -187,6 +193,8 @@
     </div>
   </div>
 
+  <script src="/static/responsive_layout.js"></script>
+  <script src="/static/viz_demo_loop.js"></script>
   <script src="/static/dashboard.js"></script>
 </body>
 </html>

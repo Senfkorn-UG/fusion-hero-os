@@ -94,11 +94,11 @@ def start_background_tasks(
     w_int = watch_sync_interval
     if w_int is None:
         try:
-            from watch_sync_server import server_poll_interval_sec
+            from watch_sync_server import active_poll_interval_sec
 
-            w_int = server_poll_interval_sec()
+            w_int = active_poll_interval_sec()
         except Exception:
-            w_int = float(os.getenv("FUSION_WATCH_SERVER_POLL_SEC", "2"))
+            w_int = float(os.getenv("FUSION_WATCH_ACTIVE_POLL_SEC", "2"))
 
     asyncio.create_task(metrics_loop(get_metrics, m_int))
     asyncio.create_task(phone_link_snapshot_loop(p_int))

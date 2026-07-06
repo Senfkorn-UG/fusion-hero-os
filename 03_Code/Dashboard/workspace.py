@@ -329,9 +329,9 @@ def build_workspace():
     # Heroisches Theme (Amber/Cyan auf Dark)
     ui.query("body").classes('bg-[#0a0a0f] text-[#e2e8f0]')
     
-    with ui.row().classes('w-full h-screen'):
+    with ui.row().classes('w-full min-h-screen flex-wrap lg:flex-nowrap'):
         # Linke Spalte: Tabs for Status + Full HERO-GUIDE (correct naming: heo-guide inspired)
-        with ui.column().classes('w-1/4 h-full p-4 border-r border-[#1e1e2e]'):
+        with ui.column().classes('w-full lg:w-1/4 lg:h-screen p-4 border-b lg:border-b-0 lg:border-r border-[#1e1e2e]'):
             with ui.tabs().classes('w-full') as tabs:
                 tab_status = ui.tab('Status')
                 tab_guide = ui.tab('HERO-GUIDE')
@@ -498,7 +498,7 @@ def heroic_modifikation():
             ui.button('Heroic Template', on_click=insert_heroic_template).classes('mt-2 text-xs bg-[#fbbf24] text-black')
 
         # Rechte Spalte: Editor & Interaktion (Die operative Hand)
-        with ui.column().classes('w-3/4 h-full p-4'):
+        with ui.column().classes('w-full lg:w-3/4 lg:h-screen p-4 min-h-[50vh]'):
             ui.label('Mainframe Editor - Heroische Meta-Modifikation').classes('text-md mb-2')
             
             # Code Editor (Codemirror - Heroic compatible)
