@@ -4,13 +4,12 @@ Heroic Math Engine - v8 (bewiesene Fassung)
 Mathematische Kernkomponenten des Fusion-Hero-OS.
 Orientiert an der Strenge von Kompendium V3.3 & V4.0.
 
-Repariert zentrale mathematische Schwaechen (Knoten 16, 17, 19, 20) — jetzt
-mit BEWEIS statt Behauptung. "Repariert" heisst hier: die urspruenglich
-behauptete, aber falsche bzw. fehlende Aussage wurde durch einen KORREKTEN,
-allgemein gueltigen Satz ersetzt, der (a) analytisch bewiesen (Beweis im
-jeweiligen Docstring), (b) implementiert und (c) numerisch mit 0 Verletzungen
-ueber grosse Zufalls-Sweeps verifiziert ist (siehe run_sandbox_verification()
-und tests/test_heroic_math_engine.py).
+Behandelt die Knoten-Aussagen ehrlich nach tatsaechlichem Stand — mit
+Einschraenkungen statt pauschaler Reparatur-Behauptung. Nur Knoten 1/16/19
+haben ueberhaupt Code, und davon nur eingeschraenkt (Fragment- bzw. Modell-
+Status). Knoten 17 und 20 sind NICHT IMPLEMENTIERT (kein Code, kein Test) —
+bewusst offen statt behauptet. Verifiziert wird genau der tatsaechliche Stand
+in tests/test_heroic_math_engine.py.
 
   - Knoten 16 (Reziprozitaet): Die naive Gleichung Q1B1B2Q2 = Q2B2B1Q1 ist
     FALSCH (Gegenbeispiele existieren fuer fast alle Q1 != Q2). Der korrekte
