@@ -1,15 +1,21 @@
 # auto_save.ps1
 # Fusion Hero OS - Automatisches Speichern aller Neuerungen
-# Speichert (git add + commit) Änderungen.
+# Speichert (git add + commit) Änderungen; mit -Push zusätzlich Push zu GitHub.
 # Aufruf-Beispiele:
 #   powershell -ExecutionPolicy Bypass -File auto_save.ps1 -Once
-#   powershell -ExecutionPolicy Bypass -File auto_save.ps1
+#   powershell -ExecutionPolicy Bypass -File auto_save.ps1 -Once -Push
+#   powershell -ExecutionPolicy Bypass -File auto_save.ps1 -Push        # Loop + Push
+#
+# -Push pusht jeden (Worktree-)Branch zu seinem Upstream-Remote (bzw. dem ersten
+# konfigurierten Remote). Secrets sind über .gitignore (.env, .env.*) geschützt
+# und werden von 'git add -A' nicht erfasst.
 
 param(
     [switch]$Once,
     [int]$IntervalSec = 45,
     [switch]$AllWorktrees = $true,
-    [string]$MessagePrefix = "auto-save"
+    [string]$MessagePrefix = "auto-save",
+    [switch]$Push
 )
 
 $ErrorActionPreference = "Continue"
@@ -57,6 +63,35 @@ function CommitChanges($Path, $BranchName) {
     }
 }
 
+function PushBranch($Path, $BranchName) {
+    Push-Location $Path
+    try {
+        # Upstream-Remote der Branch, sonst erstes konfiguriertes Remote (hier: fusion-hero-os)
+        $remoteName = git rev-parse --abbrev-ref --symbolic-full-name '@{u}' 2>$null
+        if ($remoteName) {
+            $remoteName = ($remoteName -split '/')[0]
+        } else {
+            $remoteName = (git remote 2>$null | Select-Object -First 1)
+        }
+        if (-not $remoteName) {
+            Write-Host ("[" + (Split-Path $Path -Leaf) + "] kein Remote - Push uebersprungen") -ForegroundColor Yellow
+            return $false
+        }
+        git push $remoteName ("HEAD:" + $BranchName) 2>$null
+        if ($LASTEXITCODE -eq 0) {
+            Write-Host ("[" + (Split-Path $Path -Leaf) + "] PUSHED -> " + $remoteName + "/" + $BranchName) -ForegroundColor Green
+            return $true
+        }
+        Write-Host ("[" + (Split-Path $Path -Leaf) + "] Push fehlgeschlagen (Exit " + $LASTEXITCODE + ")") -ForegroundColor Red
+        return $false
+    } catch {
+        Write-Host ("[" + (Split-Path $Path -Leaf) + "] PUSH-ERROR: " + $_) -ForegroundColor Red
+        return $false
+    } finally {
+        Pop-Location | Out-Null
+    }
+}
+
 Write-Host "=== Fusion Hero OS - Auto-Save aller Neuerungen ===" -ForegroundColor Cyan
 
 $targets = @()
@@ -72,6 +107,7 @@ $didSomething = $false
 if ($Once) {
     foreach ($t in $targets) {
         if (CommitChanges $t.path $t.branch) { $didSomething = $true }
+        if ($Push) { PushBranch $t.path $t.branch | Out-Null }
     }
     if ($didSomething) {
         Write-Host "Auto-Save fertig." -ForegroundColor Cyan
@@ -80,10 +116,12 @@ if ($Once) {
 }
 
 # Continuous loop
-Write-Host ("Loop-Modus gestartet. Intervall: " + $IntervalSec + "s  (Strg+C = Stop)")
+$pushNote = if ($Push) { " + Push" } else { "" }
+Write-Host ("Loop-Modus gestartet" + $pushNote + ". Intervall: " + $IntervalSec + "s  (Strg+C = Stop)")
 while ($true) {
     foreach ($t in $targets) {
         CommitChanges $t.path $t.branch | Out-Null
+        if ($Push) { PushBranch $t.path $t.branch | Out-Null }
     }
     Start-Sleep -Seconds $IntervalSec
 }
