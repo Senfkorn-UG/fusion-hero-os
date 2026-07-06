@@ -235,6 +235,49 @@ def _build_registry() -> None:
 
     _register("highest_layer", 4, "layer4", _highest_layer, "Heroic Highest Layer Roadmap")
 
+    _SUITE = _CORE.parent / "suite"
+
+    def _suite_status(label: str, rel: str) -> Dict[str, Any]:
+        path = _SUITE / rel
+        py_files = len(list(path.glob("*.py"))) if path.is_dir() else (1 if path.exists() else 0)
+        return {"suite": label, "path": str(path), "py_files": py_files, "available": path.exists()}
+
+    _register(
+        "suite_layers",
+        2,
+        "suite",
+        lambda: _suite_status("layers", "layers"),
+        "Cherry-picked 8-layer COEVO pipeline (private-hacking-suite)",
+    )
+    _register(
+        "suite_qubo",
+        2,
+        "suite",
+        lambda: _suite_status("qubo", "qubo"),
+        "Cherry-picked QUBO miner/solver tools",
+    )
+    _register(
+        "suite_fusion_tools",
+        2,
+        "suite",
+        lambda: _suite_status("fusion", "fusion"),
+        "Cherry-picked fusion bottleneck/GPU experiment tools",
+    )
+    _register(
+        "suite_ghosthunting",
+        3,
+        "suite",
+        lambda: _suite_status("ghosthunting", "ghosthunting"),
+        "Cherry-picked Geisterjagd hooks + Banach viz",
+    )
+    _register(
+        "suite_audio_bridge",
+        1,
+        "suite",
+        lambda: _suite_status("audio-bridge", "audio-bridge"),
+        "Cherry-picked PC-to-phone audio bridge",
+    )
+
 
 def _load_supabase() -> Any:
     if str(_DASH) not in sys.path:

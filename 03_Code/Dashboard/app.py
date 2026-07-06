@@ -616,6 +616,88 @@ async def index():
     return FileResponse(BASE / "templates" / "index.html")
 
 
+@app.get("/heroic", response_class=HTMLResponse)
+async def heroic_page():
+    """Cherry-picked legacy dashboard: heroische Philosophie."""
+    path = BASE / "templates" / "heroic.html"
+    if path.exists():
+        return FileResponse(path)
+    return HTMLResponse("<h1>heroic.html not found</h1>", status_code=404)
+
+
+@app.get("/about", response_class=HTMLResponse)
+async def about_page():
+    path = BASE / "templates" / "about.html"
+    if path.exists():
+        return FileResponse(path)
+    return HTMLResponse("<h1>about.html not found</h1>", status_code=404)
+
+
+@app.get("/donation", response_class=HTMLResponse)
+async def donation_page():
+    path = BASE / "static" / "donation.html"
+    if path.exists():
+        return FileResponse(path)
+    return HTMLResponse("<h1>donation.html not found</h1>", status_code=404)
+
+
+@app.get("/foundation", response_class=HTMLResponse)
+async def foundation_page():
+    """Layer 0 — Heroic Core Foundation spec."""
+    candidates = [
+        BASE.parent.parent / "01_Framework" / "heroic-core-foundation" / "FOUNDATION.md",
+        BASE.parent.parent / "01_Framework" / "heroic-core-foundation" / "README.md",
+    ]
+    for candidate in candidates:
+        if candidate.exists():
+            content = candidate.read_text(encoding="utf-8")
+            html = f"""<!doctype html>
+<html><head><meta charset="utf-8"><title>Heroic Core Foundation</title>
+<style>body{{background:#0a0a0f;color:#e2e8f0;font-family:ui-sans-serif,system-ui;margin:40px;line-height:1.6}}
+pre{{background:#11121a;padding:20px;border-radius:12px;overflow:auto;border:1px solid #1e1e2e}}a{{color:#40e0d0}}</style>
+</head><body><h1>Heroic Core Foundation — Layer 0</h1>
+<p><a href="/">← Dashboard</a> · <a href="/heroic">Heroische Philosophie</a></p>
+<pre>{content}</pre></body></html>"""
+            return HTMLResponse(html)
+    return HTMLResponse("<h1>Foundation not found</h1>", status_code=404)
+
+
+_WALLET_FILE = BASE / "static" / "wallet.json"
+_WALLET_CAP = 10000
+
+
+def _load_wallet() -> dict:
+    if _WALLET_FILE.exists():
+        try:
+            return json.loads(_WALLET_FILE.read_text(encoding="utf-8"))
+        except Exception:
+            pass
+    return {"balance": 0.0, "cap": _WALLET_CAP}
+
+
+def _save_wallet(data: dict) -> None:
+    _WALLET_FILE.parent.mkdir(parents=True, exist_ok=True)
+    _WALLET_FILE.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+
+
+@app.get("/api/wallet")
+async def api_wallet_get():
+    return _load_wallet()
+
+
+class WalletUpdate(BaseModel):
+    amount: float = 0
+
+
+@app.post("/api/wallet")
+async def api_wallet_update(payload: WalletUpdate):
+    wallet = _load_wallet()
+    amount = float(payload.amount)
+    wallet["balance"] = min(wallet.get("cap", _WALLET_CAP), wallet.get("balance", 0) + amount)
+    _save_wallet(wallet)
+    return wallet
+
+
 @app.get("/watch", response_class=HTMLResponse)
 async def watch_create_redirect():
     from watch_party import get_watch_manager
