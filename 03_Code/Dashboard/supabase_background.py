@@ -54,7 +54,7 @@ async def phone_link_snapshot_loop(interval_sec: float) -> None:
 async def watch_server_sync_loop(interval_sec: float) -> None:
     """Pollt Supabase und synchronisiert aktive Watch-Räume an alle WS-Clients."""
     while True:
-        await asyncio.sleep(max(1.0, interval_sec))
+        await asyncio.sleep(max(0.25, interval_sec))
         try:
             from watch_sync_server import active_room_ids, refresh_room_from_server, server_sync_enabled
             from watch_party import broadcast_room_state, get_watch_manager
@@ -86,6 +86,14 @@ def start_background_tasks(
     global _running
     if _running:
         return {"started": False, "reason": "already_running"}
+    try:
+        from core.process_exclusivity import try_acquire
+
+        lock = try_acquire("bg:supabase-sync", owner="supabase_background")
+        if not lock.ok:
+            return {"started": False, "reason": "process_busy", "detail": lock.reason}
+    except Exception:
+        pass
     if not _sync_enabled():
         return {"started": False, "reason": "FUSION_SUPABASE_SYNC=0"}
 

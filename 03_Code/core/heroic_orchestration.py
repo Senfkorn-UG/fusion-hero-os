@@ -517,9 +517,33 @@ def auto_load(phase: str = "staged", force: bool = False) -> Dict[str, Any]:
         results["loaded"].append("hyperthreading")
     except Exception as e:
         results["errors"].append(f"hyperthreading: {e}")
-    # Could add more: core modules, etc.
+    try:
+        from suite_bridge import suite_status
+        results["loaded"].append("suite_bridge")
+        results["suite"] = suite_status()
+    except Exception as e:
+        results["errors"].append(f"suite_bridge: {e}")
     results["phase"] = phase
     return results
+
+
+def apply_ghosthunt_coevo(
+    layer_name: str,
+    context: Optional[Dict[str, Any]] = None,
+    *,
+    steps: int = 8,
+    coevo_state: Optional[Dict[str, Any]] = None,
+) -> Tuple[Dict[str, Any], Dict[str, Any]]:
+    """Run Geisterjagd hook for orchestration-layer coevolution."""
+    from ghosthunt_hook import ghosthunt_hook
+    return ghosthunt_hook(
+        layer_name,
+        context=context,
+        use_springloop=True,
+        steps=steps,
+        coevo_state=coevo_state,
+        verbose=False,
+    )
 
 
 # Convenience for task creation (used by check_and_assign)
@@ -569,13 +593,22 @@ def create_classified_task(raw_query: str, **extra) -> Dict[str, Any]:
     agent = assign_task_to_agent(task)
     task["assigned_agent"] = agent
 
-    # If QUBO-related, pre-wire the best solver + virtual threads
+    # If QUBO-related, pre-wire the best solver + virtual threads + coevo ghosthunt
     if "qubo" in (dom or "").lower() or "qubo" in normalized.lower():
         q_data = extra.get("Q") or task.get("payload", {}).get("Q")
         if q_data:
             result = solve_qubo(q_data, extra.get("bias"))
             task["qubo_result"] = result
             task["solver"] = "qubo_miner+vht" if EXTERNAL_QUBO_SOLVER else "internal_vht"
+        try:
+            _, coevo = apply_ghosthunt_coevo(
+                f"qubo-{dom or 'general'}",
+                context={"events": 12, "queue": 3},
+                steps=6,
+            )
+            task["coevo"] = coevo
+        except Exception:
+            pass
 
     try:
         from agent_control import is_enabled, pre_dispatch, post_dispatch
