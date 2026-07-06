@@ -103,6 +103,7 @@ def row_to_watch_state(row: Dict[str, Any]) -> Dict[str, Any]:
         "server_time": now,
         "updated_at": updated_at,
         "revision": int(payload.get("revision") or row.get("revision") or 0),
+        "controller_id": str(payload.get("controller_id") or ""),
         "title": row.get("title") or "",
         "sync_authority": "server",
         "sync_source": "realtime",
@@ -138,6 +139,9 @@ def merge_row_into_room(room: "WatchRoom", row: Dict[str, Any]) -> bool:
         room.created_at = float(row.get("created_at"))
     if server_rev > 0:
         room.revision = server_rev
+    ctrl = (row.get("payload") or {}).get("controller_id")
+    if ctrl:
+        room.controller_id = str(ctrl)
     return True
 
 
@@ -174,6 +178,7 @@ def push_room_to_server(room: "WatchRoom") -> Dict[str, Any]:
                     "sync_authority": "server",
                     "pushed_at": time.time(),
                     "revision": int(getattr(room, "revision", 0) or 0),
+                    "controller_id": str(getattr(room, "controller_id", "") or ""),
                 },
             }
         )

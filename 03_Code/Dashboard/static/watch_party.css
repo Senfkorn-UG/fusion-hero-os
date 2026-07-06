@@ -87,6 +87,23 @@
   font-weight: 700;
 }
 
+.watch-badge-role {
+  border-color: #00d4aa;
+  color: #6ee7b7;
+  background: rgba(0, 212, 170, 0.12);
+}
+
+.watch-badge-role.follower {
+  border-color: #64748b;
+  color: #94a3b8;
+  background: rgba(100, 116, 139, 0.15);
+}
+
+.watch-controls.follower-mode #controller-controls {
+  opacity: 0.45;
+  pointer-events: none;
+}
+
 .watch-badge {
   font-size: 10px;
   color: #fca5a5;

@@ -33,6 +33,18 @@
   let lastPlaybackState = null;
   let videoRetryTimer = null;
   let lastLoadedVideoId = '';
+  const deviceId = (() => {
+    const key = 'fusion-watch-device-id';
+    let id = localStorage.getItem(key);
+    if (!id) {
+      id = `dev-${Math.random().toString(36).slice(2, 10)}`;
+      localStorage.setItem(key, id);
+    }
+    return id;
+  })();
+  const urlParams = new URLSearchParams(location.search);
+  const forcedFollower = urlParams.get('follower') === '1' || window.WATCH_ROLE === 'follower';
+  let isController = !forcedFollower && (window.WATCH_ROLE === 'controller' || !urlParams.has('follower'));
 
   const $ = (id) => document.getElementById(id);
 
@@ -60,8 +72,9 @@
     return (window.WATCH_LAN_BASE || location.origin).replace(/\/$/, '');
   }
 
-  function joinUrl() {
-    return `${lanBase()}/watch/${roomId}`;
+  function joinUrl(forFollower) {
+    const base = `${lanBase()}/watch/${roomId}`;
+    return forFollower ? `${base}?follower=1` : base;
   }
 
   function localUrl() {
@@ -83,18 +96,46 @@
     return base + Math.max(0, now - updatedAt);
   }
 
+  function updateRoleUi() {
+    const badge = $('role-badge');
+    const controls = document.querySelector('.watch-controls');
+    if (badge) {
+      badge.textContent = isController ? '● STEUERUNG' : '○ FOLLOWER (nur Ansehen)';
+      badge.classList.toggle('follower', !isController);
+    }
+    if (controls) controls.classList.toggle('follower-mode', !isController);
+    const loadBtn = $('load-video-btn');
+    const videoInput = $('video-url');
+    if (loadBtn) loadBtn.disabled = !isController;
+    if (videoInput) videoInput.disabled = !isController;
+  }
+
+  function applyControllerFromState(st) {
+    const cid = st.controller_id || '';
+    if (!cid) return;
+    if (forcedFollower) {
+      isController = false;
+    } else if (cid === deviceId) {
+      isController = true;
+    } else {
+      isController = false;
+    }
+    updateRoleUi();
+  }
+
   function updateJoinDisplay() {
     const joinEl = $('join-url');
-    if (joinEl) joinEl.textContent = joinUrl();
+    if (joinEl) joinEl.textContent = joinUrl(true);
     const localEl = $('local-url');
     if (localEl) localEl.textContent = localUrl();
     const roomInput = $('room-id');
     if (roomInput) roomInput.value = roomId;
+    updateRoleUi();
     renderRoomQr();
-    if (serverSync && rtConfig.enabled) {
-      setStatus('Supabase Realtime wird verbunden…');
-    } else if (serverSync) {
-      setStatus('Server-Sync aktiv (Supabase Poll)');
+    if (isController) {
+      setStatus('Steuerungsseite — Play/Pause/Laden nur hier');
+    } else {
+      setStatus('Follower — folgt der Steuerungsseite, sendet keine Befehle');
     }
   }
 
@@ -114,6 +155,7 @@
       server_time: now,
       updated_at: updatedAt,
       revision: Number(payload.revision || row.revision || 0),
+      controller_id: String(payload.controller_id || ''),
       sync_authority: 'server',
       sync_source: 'realtime',
     };
@@ -234,10 +276,12 @@
     if (revision > lastServerRev) lastServerRev = revision;
     lastAppliedKey = stateFingerprint(st);
     rememberPlaybackState(st);
+    applyControllerFromState(st);
 
     const targetPos = expectedPosition(st);
     const vid = normalizeVideoId(st.video_id);
-    setSuppress(opts && opts.localEcho ? 60 : SUPPRESS_MS);
+    const suppressMs = opts && opts.localEcho ? 60 : (isController ? SUPPRESS_MS : 320);
+    setSuppress(suppressMs);
 
     try {
       if (vid && playerNeedsLoad(vid)) {
@@ -269,7 +313,9 @@
     try {
       const r = await fetch(`/api/watch/room/${roomId}/state`);
       const data = await r.json();
-      if (data.ok && data.state) syncFromServer(data.state);
+      if (data.ok && data.state) {
+        syncFromServer({ ...data.state, sync_source: data.sync_source || 'poll' });
+      }
     } catch (_) { /* retry later */ }
   }
 
@@ -315,7 +361,7 @@
   async function renderRoomQr() {
     const canvas = $('room-qr');
     const fallback = $('room-qr-fallback');
-    const url = joinUrl();
+    const url = joinUrl(true);
     if (!canvas && !fallback) return;
     try {
       if (window.QRCode && canvas) {
@@ -336,7 +382,8 @@
   }
 
   async function sendCmd(cmd, extra) {
-    const body = { cmd, ...extra };
+    if (!isController) return;
+    const body = { cmd, device_id: deviceId, ...extra };
     if (serverSync) {
       if (cmdInFlight) return;
       cmdInFlight = true;
@@ -350,6 +397,10 @@
         if (data.ok && data.state) {
           const st = { ...data.state, sync_source: data.sync_source || 'local_fast' };
           syncFromServer(st, { localEcho: true });
+        } else if (data.error === 'not_controller') {
+          isController = false;
+          updateRoleUi();
+          setStatus('Nur die Steuerungsseite darf Befehle senden');
         }
       } catch (err) {
         setStatus(`Server-Cmd Fehler: ${err.message}`);
@@ -359,7 +410,7 @@
       return;
     }
     if (!ws || ws.readyState !== WebSocket.OPEN) return;
-    ws.send(JSON.stringify({ action: 'watch_cmd', cmd, ...extra }));
+    ws.send(JSON.stringify({ action: 'watch_cmd', cmd, device_id: deviceId, ...extra }));
   }
 
   function startExtrapolation() {
@@ -402,7 +453,7 @@
         player.playVideo();
       }
     }
-    if (suppressEvents || !isPlayerApiReady() || cmdInFlight) return;
+    if (!isController || suppressEvents || !isPlayerApiReady() || cmdInFlight) return;
     const pos = player.getCurrentTime() || 0;
     if (event.data === YT.PlayerState.PLAYING) {
       sendCmd('play', { position: pos });
@@ -504,7 +555,7 @@
 
   function bindUi() {
     $('copy-link-btn')?.addEventListener('click', async () => {
-      const url = joinUrl();
+      const url = joinUrl(true);
       try {
         await navigator.clipboard.writeText(url);
         setStatus('WLAN-Link kopiert');
@@ -539,6 +590,9 @@
     connectWs();
     await initRealtime();
     startServerPoll();
+    if (isController && serverSync) {
+      sendCmd('claim_controller', {});
+    }
   }
 
   boot();
