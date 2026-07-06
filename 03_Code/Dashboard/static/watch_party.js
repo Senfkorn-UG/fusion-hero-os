@@ -4,9 +4,9 @@
   const roomId = window.WATCH_ROOM_ID || '';
   const initialVideoId = window.WATCH_VIDEO_ID || '';
   const serverSync = window.WATCH_SERVER_SYNC === true;
-  const pollMs = Number(window.WATCH_POLL_MS) || 2000;
-  const pollActiveMs = 2000;
-  const realtimeStaleMs = 6000;
+  const pollMs = Number(window.WATCH_POLL_MS) || 500;
+  const pollActiveMs = Math.max(250, pollMs);
+  const realtimeStaleMs = Math.max(1500, pollActiveMs * 3);
   const rtConfig = window.WATCH_REALTIME_CONFIG || {};
   const DRIFT_SEEK = 0.35;
   const SUPPRESS_MS = 100;

@@ -34,21 +34,21 @@ def server_poll_interval_sec() -> float:
     """Poll-Intervall: Fallback wenn Realtime aus oder als Backup."""
     if realtime_enabled():
         try:
-            return float(os.getenv("FUSION_WATCH_POLL_FALLBACK_SEC", "3"))
+            return float(os.getenv("FUSION_WATCH_POLL_FALLBACK_SEC", "0.5"))
         except ValueError:
-            return 3.0
+            return 0.5
     try:
-        return float(os.getenv("FUSION_WATCH_SERVER_POLL_SEC", "2"))
+        return float(os.getenv("FUSION_WATCH_SERVER_POLL_SEC", "0.5"))
     except ValueError:
-        return 2.0
+        return 0.5
 
 
 def active_poll_interval_sec() -> float:
     """Server-Broadcast-Schleife für aktive Räume (immer schnell genug für Sync)."""
     try:
-        return float(os.getenv("FUSION_WATCH_ACTIVE_POLL_SEC", "2"))
+        return float(os.getenv("FUSION_WATCH_ACTIVE_POLL_SEC", "0.5"))
     except ValueError:
-        return 2.0
+        return 0.5
 
 
 def poll_fallback_only() -> bool:

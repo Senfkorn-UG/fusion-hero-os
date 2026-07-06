@@ -359,7 +359,7 @@ def render_watch_page(
         poll_ms = int(server_poll_interval_sec() * 1000)
         rt_cfg = get_realtime_client_config()
     except Exception:
-        poll_ms = 2000
+        poll_ms = 500
         rt_cfg = {"enabled": False}
     html = html.replace("{{ watch_poll_ms|tojson }}", json.dumps(poll_ms))
     html = html.replace("{{ watch_realtime_config|tojson }}", json.dumps(rt_cfg))
