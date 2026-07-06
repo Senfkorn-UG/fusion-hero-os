@@ -60,3 +60,8 @@ asd.md
 03_Code/internal_llm/data.jsonl
 .fusion/
 .wa_selenium_profile/
+
+# Legacy import secrets (never commit)
+legacy_sources/**/token.txt
+legacy_sources/**/header.txt
+legacy_sources/**/body.json
