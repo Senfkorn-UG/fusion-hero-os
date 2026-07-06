@@ -15,7 +15,7 @@ except Exception:
     pass
 
 ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY", "").strip()
-CLAUDE_SCIENCE_MODEL = os.getenv("CLAUDE_SCIENCE_MODEL", "claude-sonnet-4-20250514").strip()
+CLAUDE_SCIENCE_MODEL = os.getenv("CLAUDE_SCIENCE_MODEL", "claude-sonnet-5").strip()
 ANTHROPIC_API_URL = os.getenv("ANTHROPIC_API_URL", "https://api.anthropic.com/v1/messages").strip()
 
 SCIENCE_DOMAINS = (
@@ -471,4 +471,155 @@ def _call_api(prompt: str, system: Optional[str] = None) -> tuple[str, Dict[str,
         "input_tokens": usage.get("input_tokens"),
         "output_tokens": usage.get("output_tokens"),
         "stop_reason": data.get("stop_reason"),
+    }
+
+
+# ---------------------------------------------------------------------------
+# Tool-Use-Loop (Function Calling über die Messages API)
+# ---------------------------------------------------------------------------
+
+def _default_post(payload: Dict[str, Any]) -> Dict[str, Any]:
+    """Sendet ein Messages-API-Payload; gibt das JSON der Antwort zurück."""
+    import httpx
+
+    resp = httpx.post(
+        ANTHROPIC_API_URL,
+        headers={
+            "x-api-key": ANTHROPIC_API_KEY,
+            "anthropic-version": "2023-06-01",
+            "content-type": "application/json",
+        },
+        json=payload,
+        timeout=float(os.getenv("FUSION_CLAUDE_SCIENCE_TIMEOUT", "60")),
+    )
+    if resp.status_code != 200:
+        try:
+            detail = resp.json().get("error", {}).get("message", resp.text)
+        except Exception:
+            detail = resp.text[:300]
+        raise RuntimeError(f"Anthropic API {resp.status_code}: {detail}")
+    return resp.json()
+
+
+def run_tool_loop(
+    query: str,
+    tools: List[Dict[str, Any]],
+    tool_executor: Any,
+    system: Optional[str] = None,
+    max_rounds: int = 8,
+    post: Optional[Any] = None,
+) -> Dict[str, Any]:
+    """Echter Tool-Use-Loop: Claude ruft Tools auf, Ergebnisse fließen zurück.
+
+    Args:
+        query: Nutzeranfrage.
+        tools: Tool-Definitionen im Anthropic-Format
+               ({name, description, input_schema}).
+        tool_executor: Callable(name: str, tool_input: dict) -> str.
+                       Führt das Tool LOKAL aus (Grounding!) und gibt das
+                       Ergebnis als String zurück. Exceptions werden als
+                       is_error-Tool-Result zurückgemeldet, nicht verschluckt.
+        system: optionaler System-Prompt (Default: Science-Prompt).
+        max_rounds: harte Obergrenze an API-Runden (Endlosschleifen-Schutz).
+        post: injizierbarer Transport für Tests (payload -> response-json).
+
+    Returns dict: ok, response (finaler Text), tool_calls (Transkript),
+        rounds, stop_reason, usage. Ohne API-Key: ok=False + Offline-Hinweis.
+
+    Ehrlich: Der Loop selbst schafft kein Wissen — sein Wert entsteht durch
+    die lokal ausgeführten Tools (Dateien lesen, Tests laufen lassen, ...).
+    """
+    query = (query or "").strip()
+    if not query:
+        return {"ok": False, "error": "empty query"}
+    if post is None and not is_configured():
+        return {
+            "ok": False,
+            "error": "missing ANTHROPIC_API_KEY",
+            "response": "[Claude Science · Offline-Modus] Tool-Use benötigt Live-API.",
+            "tool_calls": [],
+            "rounds": 0,
+        }
+
+    send = post or _default_post
+    messages: List[Dict[str, Any]] = [{"role": "user", "content": query}]
+    tool_calls: List[Dict[str, Any]] = []
+    usage_total = {"input_tokens": 0, "output_tokens": 0}
+    stop_reason = None
+
+    for round_no in range(1, max_rounds + 1):
+        payload = {
+            "model": CLAUDE_SCIENCE_MODEL,
+            "max_tokens": int(os.getenv("FUSION_CLAUDE_SCIENCE_MAX_TOKENS", "1024")),
+            "system": system or _science_system_prompt(),
+            "messages": messages,
+            "tools": tools,
+        }
+        try:
+            data = send(payload)
+        except Exception as exc:
+            return {
+                "ok": False,
+                "error": str(exc),
+                "tool_calls": tool_calls,
+                "rounds": round_no,
+            }
+
+        usage = data.get("usage", {})
+        usage_total["input_tokens"] += usage.get("input_tokens") or 0
+        usage_total["output_tokens"] += usage.get("output_tokens") or 0
+        stop_reason = data.get("stop_reason")
+        content = data.get("content", [])
+
+        if stop_reason != "tool_use":
+            text = "\n".join(
+                b.get("text", "") for b in content if b.get("type") == "text"
+            ).strip()
+            return {
+                "ok": True,
+                "response": text,
+                "tool_calls": tool_calls,
+                "rounds": round_no,
+                "stop_reason": stop_reason,
+                "usage": usage_total,
+                "model": data.get("model", CLAUDE_SCIENCE_MODEL),
+            }
+
+        # Tool-Runde: alle tool_use-Blöcke ausführen, Ergebnisse zurückgeben
+        messages.append({"role": "assistant", "content": content})
+        results: List[Dict[str, Any]] = []
+        for block in content:
+            if block.get("type") != "tool_use":
+                continue
+            name = block.get("name", "")
+            tool_input = block.get("input") or {}
+            call_record = {"round": round_no, "tool": name, "input": tool_input}
+            try:
+                output = str(tool_executor(name, tool_input))
+                call_record["ok"] = True
+                call_record["output"] = output[:2000]
+                results.append({
+                    "type": "tool_result",
+                    "tool_use_id": block.get("id"),
+                    "content": output,
+                })
+            except Exception as exc:
+                call_record["ok"] = False
+                call_record["error"] = str(exc)
+                results.append({
+                    "type": "tool_result",
+                    "tool_use_id": block.get("id"),
+                    "content": f"Tool-Fehler: {exc}",
+                    "is_error": True,
+                })
+            tool_calls.append(call_record)
+        messages.append({"role": "user", "content": results})
+
+    return {
+        "ok": False,
+        "error": f"max_rounds={max_rounds} erreicht ohne finale Antwort",
+        "tool_calls": tool_calls,
+        "rounds": max_rounds,
+        "stop_reason": stop_reason,
+        "usage": usage_total,
     }
