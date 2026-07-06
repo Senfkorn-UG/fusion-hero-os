@@ -21,3 +21,19 @@ Thumbs.db
 # Vite
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
+
+# Python (Fusion Hero OS Engine)
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+
+# Numba JIT-Cache (.nbc/.nbi Kernel-Compile-Artefakte)
+*.nbc
+*.nbi
+
+# Rust-Build-Artefakte (PyO3-/Kernel-Crates)
+**/target/
