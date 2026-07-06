@@ -57,6 +57,23 @@ def test_join_url_for_room():
     assert url == "http://192.168.0.10:8000/watch/deadbeef"
 
 
+def test_join_url_follower_mode():
+    url = join_url_for_room("deadbeef", "http://192.168.0.10:8000", follower=True)
+    assert url == "http://192.168.0.10:8000/watch/deadbeef?follower=1"
+
+
+def test_only_controller_can_send_commands():
+    mgr = WatchPartyManager()
+    room = mgr.create_room()
+    rid = room.room_id
+    ok = mgr.apply_command(rid, "play", position=2.0, device_id="pc-main")
+    assert ok is not None
+    assert mgr.get_room(rid).controller_id == "pc-main"
+    denied = mgr.apply_command(rid, "pause", device_id="phone-follower")
+    assert denied is None
+    assert mgr.get_room(rid).playing is True
+
+
 def test_room_info_has_qr_fields():
     mgr = WatchPartyManager()
     room = mgr.create_room()

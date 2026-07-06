@@ -5,6 +5,8 @@
   const initialVideoId = window.WATCH_VIDEO_ID || '';
   const serverSync = window.WATCH_SERVER_SYNC === true;
   const pollMs = Number(window.WATCH_POLL_MS) || 2000;
+  const pollActiveMs = 2000;
+  const realtimeStaleMs = 6000;
   const rtConfig = window.WATCH_REALTIME_CONFIG || {};
   const DRIFT_SEEK = 0.35;
   const SUPPRESS_MS = 100;
@@ -22,12 +24,27 @@
   let pollTimer = null;
   let extrapolateTimer = null;
   let lastServerRevision = 0;
+  let lastServerRev = 0;
+  let lastAppliedKey = '';
   let cmdInFlight = false;
   let realtimeConnected = false;
+  let lastRealtimeAt = 0;
   let realtimeChannel = null;
   let lastPlaybackState = null;
   let videoRetryTimer = null;
   let lastLoadedVideoId = '';
+  const deviceId = (() => {
+    const key = 'fusion-watch-device-id';
+    let id = localStorage.getItem(key);
+    if (!id) {
+      id = `dev-${Math.random().toString(36).slice(2, 10)}`;
+      localStorage.setItem(key, id);
+    }
+    return id;
+  })();
+  const urlParams = new URLSearchParams(location.search);
+  const forcedFollower = urlParams.get('follower') === '1' || window.WATCH_ROLE === 'follower';
+  let isController = !forcedFollower && (window.WATCH_ROLE === 'controller' || !urlParams.has('follower'));
 
   const $ = (id) => document.getElementById(id);
 
@@ -55,8 +72,9 @@
     return (window.WATCH_LAN_BASE || location.origin).replace(/\/$/, '');
   }
 
-  function joinUrl() {
-    return `${lanBase()}/watch/${roomId}`;
+  function joinUrl(forFollower) {
+    const base = `${lanBase()}/watch/${roomId}`;
+    return forFollower ? `${base}?follower=1` : base;
   }
 
   function localUrl() {
@@ -78,18 +96,46 @@
     return base + Math.max(0, now - updatedAt);
   }
 
+  function updateRoleUi() {
+    const badge = $('role-badge');
+    const controls = document.querySelector('.watch-controls');
+    if (badge) {
+      badge.textContent = isController ? '● STEUERUNG' : '○ FOLLOWER (nur Ansehen)';
+      badge.classList.toggle('follower', !isController);
+    }
+    if (controls) controls.classList.toggle('follower-mode', !isController);
+    const loadBtn = $('load-video-btn');
+    const videoInput = $('video-url');
+    if (loadBtn) loadBtn.disabled = !isController;
+    if (videoInput) videoInput.disabled = !isController;
+  }
+
+  function applyControllerFromState(st) {
+    const cid = st.controller_id || '';
+    if (!cid) return;
+    if (forcedFollower) {
+      isController = false;
+    } else if (cid === deviceId) {
+      isController = true;
+    } else {
+      isController = false;
+    }
+    updateRoleUi();
+  }
+
   function updateJoinDisplay() {
     const joinEl = $('join-url');
-    if (joinEl) joinEl.textContent = joinUrl();
+    if (joinEl) joinEl.textContent = joinUrl(true);
     const localEl = $('local-url');
     if (localEl) localEl.textContent = localUrl();
     const roomInput = $('room-id');
     if (roomInput) roomInput.value = roomId;
+    updateRoleUi();
     renderRoomQr();
-    if (serverSync && rtConfig.enabled) {
-      setStatus('Supabase Realtime wird verbunden…');
-    } else if (serverSync) {
-      setStatus('Server-Sync aktiv (Supabase Poll)');
+    if (isController) {
+      setStatus('Steuerungsseite — Play/Pause/Laden nur hier');
+    } else {
+      setStatus('Follower — folgt der Steuerungsseite, sendet keine Befehle');
     }
   }
 
@@ -99,6 +145,7 @@
     const playing = !!row.playing;
     let position = Number(row.position) || 0;
     if (playing) position += Math.max(0, now - updatedAt);
+    const payload = row.payload || {};
     return {
       type: 'watch_state',
       room_id: row.room_id,
@@ -107,15 +154,34 @@
       playing,
       server_time: now,
       updated_at: updatedAt,
+      revision: Number(payload.revision || row.revision || 0),
+      controller_id: String(payload.controller_id || ''),
       sync_authority: 'server',
       sync_source: 'realtime',
     };
   }
 
+  function stateFingerprint(st) {
+    return [
+      st.video_id || '',
+      st.playing ? 1 : 0,
+      Math.round((Number(st.position) || 0) * 10),
+      Number(st.updated_at) || 0,
+      Number(st.revision) || 0,
+    ].join('|');
+  }
+
   function shouldApplyState(st) {
-    const rev = st.updated_at || 0;
-    if (rev > 0 && rev < lastServerRevision) return false;
-    if (rev > 0 && rev === lastServerRevision && cmdInFlight) return false;
+    const ts = Number(st.updated_at) || 0;
+    const rev = Number(st.revision) || 0;
+    const fp = stateFingerprint(st);
+    if (fp === lastAppliedKey) return false;
+    if (rev > 0 && rev < lastServerRev) return false;
+    if (rev <= lastServerRev && ts < lastServerRevision - 0.001) return false;
+    if (ts < lastServerRevision - 0.001) return false;
+    if (cmdInFlight && st.sync_source === 'local_fast' && ts <= lastServerRevision && rev <= lastServerRev) {
+      return false;
+    }
     return true;
   }
 
@@ -204,13 +270,18 @@
       return;
     }
 
-    const rev = st.updated_at || 0;
+    const rev = Number(st.updated_at) || 0;
+    const revision = Number(st.revision) || 0;
     if (rev > lastServerRevision) lastServerRevision = rev;
+    if (revision > lastServerRev) lastServerRev = revision;
+    lastAppliedKey = stateFingerprint(st);
     rememberPlaybackState(st);
+    applyControllerFromState(st);
 
     const targetPos = expectedPosition(st);
     const vid = normalizeVideoId(st.video_id);
-    setSuppress(opts && opts.localEcho ? 60 : SUPPRESS_MS);
+    const suppressMs = opts && opts.localEcho ? 60 : (isController ? SUPPRESS_MS : 320);
+    setSuppress(suppressMs);
 
     try {
       if (vid && playerNeedsLoad(vid)) {
@@ -242,7 +313,9 @@
     try {
       const r = await fetch(`/api/watch/room/${roomId}/state`);
       const data = await r.json();
-      if (data.ok && data.state) syncFromServer(data.state);
+      if (data.ok && data.state) {
+        syncFromServer({ ...data.state, sync_source: data.sync_source || 'poll' });
+      }
     } catch (_) { /* retry later */ }
   }
 
@@ -263,13 +336,16 @@
         },
         (payload) => {
           if (!payload.new) return;
+          lastRealtimeAt = Date.now();
           syncFromServer(rowToWatchState(payload.new));
         }
       );
       realtimeChannel.subscribe((status) => {
         if (status === 'SUBSCRIBED') {
           realtimeConnected = true;
+          lastRealtimeAt = Date.now();
           setStatus('Realtime + WS — Sync aktiv');
+          fetchAndApplyServerState();
         } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT' || status === 'CLOSED') {
           realtimeConnected = false;
           setStatus('Realtime offline — WS/Poll aktiv');
@@ -285,7 +361,7 @@
   async function renderRoomQr() {
     const canvas = $('room-qr');
     const fallback = $('room-qr-fallback');
-    const url = joinUrl();
+    const url = joinUrl(true);
     if (!canvas && !fallback) return;
     try {
       if (window.QRCode && canvas) {
@@ -306,7 +382,8 @@
   }
 
   async function sendCmd(cmd, extra) {
-    const body = { cmd, ...extra };
+    if (!isController) return;
+    const body = { cmd, device_id: deviceId, ...extra };
     if (serverSync) {
       if (cmdInFlight) return;
       cmdInFlight = true;
@@ -318,8 +395,12 @@
         });
         const data = await r.json();
         if (data.ok && data.state) {
-          lastServerRevision = data.state.updated_at || lastServerRevision;
-          syncFromServer(data.state, { localEcho: true });
+          const st = { ...data.state, sync_source: data.sync_source || 'local_fast' };
+          syncFromServer(st, { localEcho: true });
+        } else if (data.error === 'not_controller') {
+          isController = false;
+          updateRoleUi();
+          setStatus('Nur die Steuerungsseite darf Befehle senden');
         }
       } catch (err) {
         setStatus(`Server-Cmd Fehler: ${err.message}`);
@@ -329,7 +410,7 @@
       return;
     }
     if (!ws || ws.readyState !== WebSocket.OPEN) return;
-    ws.send(JSON.stringify({ action: 'watch_cmd', cmd, ...extra }));
+    ws.send(JSON.stringify({ action: 'watch_cmd', cmd, device_id: deviceId, ...extra }));
   }
 
   function startExtrapolation() {
@@ -372,7 +453,7 @@
         player.playVideo();
       }
     }
-    if (suppressEvents || !isPlayerApiReady() || cmdInFlight) return;
+    if (!isController || suppressEvents || !isPlayerApiReady() || cmdInFlight) return;
     const pos = player.getCurrentTime() || 0;
     if (event.data === YT.PlayerState.PLAYING) {
       sendCmd('play', { position: pos });
@@ -440,12 +521,13 @@
     if (!serverSync) return;
     clearInterval(pollTimer);
     pollTimer = setInterval(() => {
-      if (realtimeConnected && pollMs >= 15000) {
+      const staleRealtime = realtimeConnected && (Date.now() - lastRealtimeAt > realtimeStaleMs);
+      if (!realtimeConnected || staleRealtime) {
         pollServerState();
         return;
       }
-      if (!realtimeConnected) pollServerState();
-    }, pollMs);
+      if (pollMs >= pollActiveMs) pollServerState();
+    }, pollActiveMs);
   }
 
   function connectWs() {
@@ -462,7 +544,7 @@
       try {
         const msg = JSON.parse(e.data);
         if (msg.type === 'watch_state') {
-          syncFromServer(msg);
+          syncFromServer({ ...msg, sync_source: msg.sync_source || 'websocket' });
         } else if (msg.type === 'watch_meta') {
           const badge = $('viewer-count');
           if (badge) badge.textContent = `${msg.viewers || 0} Zuschauer`;
@@ -473,7 +555,7 @@
 
   function bindUi() {
     $('copy-link-btn')?.addEventListener('click', async () => {
-      const url = joinUrl();
+      const url = joinUrl(true);
       try {
         await navigator.clipboard.writeText(url);
         setStatus('WLAN-Link kopiert');
@@ -508,6 +590,9 @@
     connectWs();
     await initRealtime();
     startServerPoll();
+    if (isController && serverSync) {
+      sendCmd('claim_controller', {});
+    }
   }
 
   boot();

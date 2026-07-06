@@ -575,7 +575,7 @@ async def watch_create_redirect():
 
 
 @app.get("/watch/{room_id}", response_class=HTMLResponse)
-async def watch_room(room_id: str):
+async def watch_room(room_id: str, follower: bool = False):
     from watch_party import get_watch_manager, local_network_base, render_watch_page
     mgr = get_watch_manager()
     try:
@@ -586,7 +586,10 @@ async def watch_room(room_id: str):
     except Exception:
         pass
     room = mgr.get_room(room_id) or mgr.ensure_room(room_id)
-    return HTMLResponse(render_watch_page(room.room_id, room.video_id, lan_base=local_network_base()))
+    role = "follower" if follower else "controller"
+    return HTMLResponse(
+        render_watch_page(room.room_id, room.video_id, lan_base=local_network_base(), role=role)
+    )
 
 
 @app.get("/api/gui/status")
@@ -705,6 +708,7 @@ async def watch_party_ws(ws: WebSocket, room_id: str):
                 video_id=msg.get("video_id"),
                 position=msg.get("position"),
                 playing=msg.get("playing"),
+                device_id=str(msg.get("device_id") or "").strip() or None,
             )
             if updated:
                 await broadcast_room_state(mgr, room_id)
