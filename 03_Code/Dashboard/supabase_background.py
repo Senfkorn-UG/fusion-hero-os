@@ -86,6 +86,14 @@ def start_background_tasks(
     global _running
     if _running:
         return {"started": False, "reason": "already_running"}
+    try:
+        from core.process_exclusivity import try_acquire
+
+        lock = try_acquire("bg:supabase-sync", owner="supabase_background")
+        if not lock.ok:
+            return {"started": False, "reason": "process_busy", "detail": lock.reason}
+    except Exception:
+        pass
     if not _sync_enabled():
         return {"started": False, "reason": "FUSION_SUPABASE_SYNC=0"}
 

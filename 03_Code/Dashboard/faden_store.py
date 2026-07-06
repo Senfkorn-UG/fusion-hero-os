@@ -184,6 +184,30 @@ class FadenStore:
 
         now = time.time()
         tid = str(payload.get("thread_id") or "").strip()
+        if tid:
+            try:
+                from core.process_exclusivity import exclusive
+
+                with exclusive(f"faden:{tid}", owner="faden_upsert") as lock:
+                    if not lock.ok:
+                        return {"ok": False, "error": "process_busy", "thread_id": tid}
+                    return self._upsert_locked(payload, sync_cloud=sync_cloud, now=now, tid=tid)
+            except Exception:
+                pass
+        return self._upsert_locked(payload, sync_cloud=sync_cloud, now=now, tid=tid)
+
+    def _upsert_locked(
+        self,
+        payload: Dict[str, Any],
+        *,
+        sync_cloud: Optional[bool] = None,
+        now: Optional[float] = None,
+        tid: str = "",
+    ) -> Dict[str, Any]:
+        from supabase_store import device_id
+
+        now = now or time.time()
+        tid = tid or str(payload.get("thread_id") or "").strip()
         existing = self._threads.get(tid) if tid else None
 
         strength = (payload.get("strength") or (existing.strength if existing else "")).lower()

@@ -193,6 +193,40 @@ class WatchPartyManager:
         playing: Optional[bool] = None,
         device_id: Optional[str] = None,
     ) -> Optional[WatchRoom]:
+        try:
+            from core.process_exclusivity import exclusive
+
+            with exclusive(f"watch-room:{room_id}", owner="watch_cmd") as lock:
+                if not lock.ok:
+                    return None
+                return self._apply_command_locked(
+                    room_id,
+                    cmd,
+                    video_id=video_id,
+                    position=position,
+                    playing=playing,
+                    device_id=device_id,
+                )
+        except Exception:
+            return self._apply_command_locked(
+                room_id,
+                cmd,
+                video_id=video_id,
+                position=position,
+                playing=playing,
+                device_id=device_id,
+            )
+
+    def _apply_command_locked(
+        self,
+        room_id: str,
+        cmd: str,
+        *,
+        video_id: Optional[str] = None,
+        position: Optional[float] = None,
+        playing: Optional[bool] = None,
+        device_id: Optional[str] = None,
+    ) -> Optional[WatchRoom]:
         room = self.ensure_room(room_id)
         now = time.time()
 

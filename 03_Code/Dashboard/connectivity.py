@@ -116,6 +116,7 @@ def build_discovery() -> Dict[str, Any]:
             "settings": f"{base}/api/settings",
             "faden_status": f"{base}/api/faden/status",
             "faden_threads": f"{base}/api/faden/threads",
+            "process_exclusivity": f"{base}/api/process/exclusivity/status",
         },
         "hint": "Handy im gleichen WLAN — QR auf /watch scannen",
     }
@@ -206,6 +207,20 @@ def build_connectivity_summary() -> Dict[str, Any]:
         }
     except Exception as exc:
         out["access_points"]["faden_store"] = {"ok": False, "error": str(exc)[:120]}
+
+    try:
+        from core.process_exclusivity import status as exclusivity_status
+
+        ex = exclusivity_status()
+        out["access_points"]["process_exclusivity"] = {
+            "ok": True,
+            "enabled": ex.get("enabled"),
+            "held_in_process": len(ex.get("held_in_process") or []),
+            "file_locks": len(ex.get("file_locks") or []),
+            "pid": ex.get("pid"),
+        }
+    except Exception as exc:
+        out["access_points"]["process_exclusivity"] = {"ok": False, "error": str(exc)[:120]}
 
     ap_ok = [v.get("ok") for v in out["access_points"].values() if isinstance(v, dict)]
     out["all_ok"] = all(ap_ok) if ap_ok else False
