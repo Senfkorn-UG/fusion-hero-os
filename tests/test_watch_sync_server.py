@@ -107,6 +107,27 @@ def test_realtime_config_api():
     assert "url" in data
 
 
+def test_watch_room_cmd_rejects_non_controller():
+    from fastapi.testclient import TestClient
+
+    from app import app
+
+    client = TestClient(app)
+    created = client.post("/api/watch/room", json={}).json()
+    rid = created["room_id"]
+    claim = client.post(
+        f"/api/watch/room/{rid}/cmd",
+        json={"cmd": "claim_controller", "device_id": "pc-1"},
+    ).json()
+    assert claim["ok"] is True
+    denied = client.post(
+        f"/api/watch/room/{rid}/cmd",
+        json={"cmd": "pause", "device_id": "phone-2"},
+    ).json()
+    assert denied["ok"] is False
+    assert denied["error"] == "not_controller"
+
+
 def test_watch_room_cmd_api():
     from fastapi.testclient import TestClient
 

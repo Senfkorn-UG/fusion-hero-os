@@ -737,14 +737,24 @@ async def api_watch_room_cmd(room_id: str, payload: dict = None):
 
     payload = payload or {}
     mgr = get_watch_manager()
+    device_id = str(payload.get("device_id") or "").strip() or None
     updated = mgr.apply_command(
         room_id,
         payload.get("cmd", ""),
         video_id=payload.get("video_id"),
         position=payload.get("position"),
         playing=payload.get("playing"),
+        device_id=device_id,
     )
     if not updated:
+        room = mgr.get_room(room_id)
+        if room and device_id and room.controller_id and room.controller_id != device_id:
+            return {
+                "ok": False,
+                "error": "not_controller",
+                "controller_id": room.controller_id,
+                "hint": "Nur die Steuerungsseite darf Play/Pause/Laden senden",
+            }
         return {"ok": False, "error": "invalid_command"}
     await broadcast_room_state(mgr, room_id)
     from watch_sync_server import low_latency_enabled, state_response
