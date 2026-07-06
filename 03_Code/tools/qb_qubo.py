@@ -64,6 +64,19 @@ def energy(Q, x):
     return float(x @ Q @ x)
 
 
+def springloop_energy(Q, x, steps=200, k=0.5, damping=0.92):
+    """Springloop: federartige Energie-Minimierung mit Dämpfung (cherry-picked from suite)."""
+    x = np.asarray(x, dtype=np.float64).copy()
+    v = np.zeros_like(x)
+    e = energy(Q, x)
+    for _ in range(steps):
+        grad = 2.0 * (Q @ x)
+        v = damping * v - k * grad
+        x = np.clip(x + v, 0.0, 1.0)
+        e = energy(Q, x)
+    return x, e
+
+
 def make_Q(n, submodular=False, scale=1.0):
     """Vektorisiert: Diagonale und Off-Diagonale in einem Rutsch."""
     Q = np.zeros((n, n), dtype=np.float64)

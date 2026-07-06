@@ -591,6 +591,13 @@ async def api_connectivity():
     return await asyncio.to_thread(build_connectivity_summary)
 
 
+@router.get("/api/process/exclusivity/status")
+async def api_process_exclusivity_status():
+    from core.process_exclusivity import status as exclusivity_status
+
+    return await asyncio.to_thread(exclusivity_status)
+
+
 @router.post("/api/settings/sync")
 async def api_settings_sync(payload: dict = None):
     """Push lokale Settings in die Cloud und optional Pull (Merge wenn Cloud neuer)."""
@@ -755,6 +762,17 @@ async def api_watch_room_cmd(room_id: str, payload: dict = None):
                 "controller_id": room.controller_id,
                 "hint": "Nur die Steuerungsseite darf Play/Pause/Laden senden",
             }
+        try:
+            from core.process_exclusivity import is_held
+
+            if is_held(f"watch-room:{room_id}"):
+                return {
+                    "ok": False,
+                    "error": "process_busy",
+                    "hint": "Raum wird gerade von einem anderen Worker bearbeitet",
+                }
+        except Exception:
+            pass
         return {"ok": False, "error": "invalid_command"}
     await broadcast_room_state(mgr, room_id)
     from watch_sync_server import low_latency_enabled, state_response
@@ -841,6 +859,51 @@ async def api_viz_geisterjagd_banach(tick: bool = True):
             pass
         await asyncio.to_thread(viz.tick, hints)
     return viz.snapshot()
+
+
+@router.get("/api/suite/status")
+async def api_suite_status():
+    from core.suite_bridge import suite_status
+    return await asyncio.to_thread(suite_status)
+
+
+@router.get("/api/suite/pipeline/status")
+async def api_suite_pipeline_status():
+    from core.suite_pipeline import pipeline_status
+    return pipeline_status()
+
+
+@router.post("/api/suite/pipeline/run")
+async def api_suite_pipeline_run(timeout: int = 12, ghost_steps: int = 10):
+    from core.suite_pipeline import run_full_pipeline
+    return await asyncio.to_thread(
+        run_full_pipeline,
+        timeout_per_layer=max(4, min(60, timeout)),
+        ghost_steps=max(2, min(30, ghost_steps)),
+        verbose=False,
+    )
+
+
+class GhosthuntPayload(BaseModel):
+    layer: str = "api-probe"
+    events: int = 10
+    queue: int = 3
+    cpu: float = 30.0
+    steps: int = 8
+
+
+@router.post("/api/suite/ghosthunt")
+async def api_suite_ghosthunt(payload: GhosthuntPayload):
+    from core.ghosthunt_hook import ghosthunt_hook
+    snap, coevo = await asyncio.to_thread(
+        ghosthunt_hook,
+        payload.layer,
+        {"events": payload.events, "queue": payload.queue, "cpu": payload.cpu},
+        use_springloop=True,
+        steps=max(2, min(30, payload.steps)),
+        verbose=False,
+    )
+    return {"snapshot": snap, "coevo": coevo}
 
 
 @router.get("/api/signal/health")

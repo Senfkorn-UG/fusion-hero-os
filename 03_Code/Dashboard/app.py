@@ -450,8 +450,40 @@ async def _start_supabase_background() -> None:
         print(f"[Supabase] Background sync note: {exc}")
 
 
+_DASHBOARD_LOCK_KEY: Optional[str] = None
+
+
+def _acquire_dashboard_lock() -> bool:
+    """Verhindert zwei Dashboard-Instanzen auf dem gleichen Port."""
+    global _DASHBOARD_LOCK_KEY
+    try:
+        from connectivity import dashboard_port
+        from core.process_exclusivity import try_acquire
+
+        port = dashboard_port()
+        key = f"dashboard:{port}"
+        lock = try_acquire(key, owner="dashboard", ttl_sec=86400.0)
+        if not lock.ok:
+            print(
+                f"[Startup] ABBRUCH: Dashboard-Port {port} bereits belegt "
+                f"(PID {lock.holder_pid or '?'}, {lock.reason}). "
+                "Nur eine Instanz pro Port erlaubt."
+            )
+            return False
+        _DASHBOARD_LOCK_KEY = key
+        print(f"[Startup] Prozess-Exklusivität aktiv: {key} (PID {os.getpid()})")
+        return True
+    except Exception as exc:
+        print(f"[Startup] Prozess-Exklusivität note: {exc}")
+        return True
+
+
 @app.on_event("startup")
 async def startup_event():
+    if not _acquire_dashboard_lock():
+        import sys
+
+        sys.exit(1)
     launcher_fast_boot = os.getenv("FUSION_AUTO_LOAD") == "0"
     try:
         from fusion_settings import boot_load
@@ -551,6 +583,23 @@ async def startup_event():
     print(f"  Input-Faktoren: CPUs={INPUT_FACTORS.get('logical_cpus')}, HT={INPUT_FACTORS.get('hyperthreading_env')}")
     print(f"  Output-Faktoren: target_workers={OUTPUT_FACTORS.get('target_workers')}")
 
+
+@app.on_event("shutdown")
+async def shutdown_event():
+    global _DASHBOARD_LOCK_KEY
+    if not _DASHBOARD_LOCK_KEY:
+        return
+    try:
+        from core.process_exclusivity import release
+
+        release(_DASHBOARD_LOCK_KEY)
+        print(f"[Shutdown] Prozess-Lock freigegeben: {_DASHBOARD_LOCK_KEY}")
+    except Exception as exc:
+        print(f"[Shutdown] Prozess-Lock note: {exc}")
+    finally:
+        _DASHBOARD_LOCK_KEY = None
+
+
 @app.post("/api/events")
 async def post_event(payload: EventIn):
     PERFORMANCE_TRACKING["total_requests"] += 1
@@ -565,6 +614,88 @@ async def post_event(payload: EventIn):
 async def index():
     """Standard-GUI: Heroic Core Dashboard (HTML + WebSocket, kein NiceGUI)."""
     return FileResponse(BASE / "templates" / "index.html")
+
+
+@app.get("/heroic", response_class=HTMLResponse)
+async def heroic_page():
+    """Cherry-picked legacy dashboard: heroische Philosophie."""
+    path = BASE / "templates" / "heroic.html"
+    if path.exists():
+        return FileResponse(path)
+    return HTMLResponse("<h1>heroic.html not found</h1>", status_code=404)
+
+
+@app.get("/about", response_class=HTMLResponse)
+async def about_page():
+    path = BASE / "templates" / "about.html"
+    if path.exists():
+        return FileResponse(path)
+    return HTMLResponse("<h1>about.html not found</h1>", status_code=404)
+
+
+@app.get("/donation", response_class=HTMLResponse)
+async def donation_page():
+    path = BASE / "static" / "donation.html"
+    if path.exists():
+        return FileResponse(path)
+    return HTMLResponse("<h1>donation.html not found</h1>", status_code=404)
+
+
+@app.get("/foundation", response_class=HTMLResponse)
+async def foundation_page():
+    """Layer 0 — Heroic Core Foundation spec."""
+    candidates = [
+        BASE.parent.parent / "01_Framework" / "heroic-core-foundation" / "FOUNDATION.md",
+        BASE.parent.parent / "01_Framework" / "heroic-core-foundation" / "README.md",
+    ]
+    for candidate in candidates:
+        if candidate.exists():
+            content = candidate.read_text(encoding="utf-8")
+            html = f"""<!doctype html>
+<html><head><meta charset="utf-8"><title>Heroic Core Foundation</title>
+<style>body{{background:#0a0a0f;color:#e2e8f0;font-family:ui-sans-serif,system-ui;margin:40px;line-height:1.6}}
+pre{{background:#11121a;padding:20px;border-radius:12px;overflow:auto;border:1px solid #1e1e2e}}a{{color:#40e0d0}}</style>
+</head><body><h1>Heroic Core Foundation — Layer 0</h1>
+<p><a href="/">← Dashboard</a> · <a href="/heroic">Heroische Philosophie</a></p>
+<pre>{content}</pre></body></html>"""
+            return HTMLResponse(html)
+    return HTMLResponse("<h1>Foundation not found</h1>", status_code=404)
+
+
+_WALLET_FILE = BASE / "static" / "wallet.json"
+_WALLET_CAP = 10000
+
+
+def _load_wallet() -> dict:
+    if _WALLET_FILE.exists():
+        try:
+            return json.loads(_WALLET_FILE.read_text(encoding="utf-8"))
+        except Exception:
+            pass
+    return {"balance": 0.0, "cap": _WALLET_CAP}
+
+
+def _save_wallet(data: dict) -> None:
+    _WALLET_FILE.parent.mkdir(parents=True, exist_ok=True)
+    _WALLET_FILE.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+
+
+@app.get("/api/wallet")
+async def api_wallet_get():
+    return _load_wallet()
+
+
+class WalletUpdate(BaseModel):
+    amount: float = 0
+
+
+@app.post("/api/wallet")
+async def api_wallet_update(payload: WalletUpdate):
+    wallet = _load_wallet()
+    amount = float(payload.amount)
+    wallet["balance"] = min(wallet.get("cap", _WALLET_CAP), wallet.get("balance", 0) + amount)
+    _save_wallet(wallet)
+    return wallet
 
 
 @app.get("/watch", response_class=HTMLResponse)

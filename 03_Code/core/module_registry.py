@@ -235,6 +235,64 @@ def _build_registry() -> None:
 
     _register("highest_layer", 4, "layer4", _highest_layer, "Heroic Highest Layer Roadmap")
 
+    def _suite_mod(name: str) -> Dict[str, Any]:
+        from suite_bridge import suite_inventory
+        inv = suite_inventory()
+        hit = next((m for m in inv["modules"] if m["name"] == name), None)
+        return hit or {"name": name, "available": False}
+
+    _register(
+        "suite_layers",
+        2,
+        "suite",
+        lambda: _suite_mod("layers"),
+        "Cherry-picked 8-layer COEVO pipeline (private-hacking-suite)",
+    )
+    _register(
+        "suite_qubo",
+        2,
+        "suite",
+        lambda: _suite_mod("qubo"),
+        "Cherry-picked QUBO miner/solver tools",
+    )
+    _register(
+        "suite_fusion_tools",
+        2,
+        "suite",
+        lambda: _suite_mod("fusion"),
+        "Cherry-picked fusion bottleneck/GPU experiment tools",
+    )
+    _register(
+        "suite_ghosthunting",
+        3,
+        "suite",
+        lambda: _try_import("ghosthunt_hook", "ghosthunt_hook")(
+            "orchestration-probe", context={"events": 3}, steps=2, verbose=False,
+        )[1],
+        "Geisterjagd hook (core.ghosthunt_hook)",
+    )
+    _register(
+        "suite_audio_bridge",
+        1,
+        "suite",
+        lambda: _suite_mod("audio-bridge"),
+        "Cherry-picked PC-to-phone audio bridge",
+    )
+    _register(
+        "suite_pipeline",
+        2,
+        "suite",
+        lambda: _try_import("suite_pipeline", "pipeline_status")(),
+        "8-layer COEVO pipeline status (core.suite_pipeline)",
+    )
+    _register(
+        "suite_bridge",
+        1,
+        "suite",
+        lambda: _try_import("suite_bridge", "suite_status")(),
+        "Suite inventory + GPU + fusion health bridge",
+    )
+
 
 def _load_supabase() -> Any:
     if str(_DASH) not in sys.path:

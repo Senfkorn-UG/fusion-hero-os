@@ -193,6 +193,40 @@ class WatchPartyManager:
         playing: Optional[bool] = None,
         device_id: Optional[str] = None,
     ) -> Optional[WatchRoom]:
+        try:
+            from core.process_exclusivity import exclusive
+
+            with exclusive(f"watch-room:{room_id}", owner="watch_cmd") as lock:
+                if not lock.ok:
+                    return None
+                return self._apply_command_locked(
+                    room_id,
+                    cmd,
+                    video_id=video_id,
+                    position=position,
+                    playing=playing,
+                    device_id=device_id,
+                )
+        except Exception:
+            return self._apply_command_locked(
+                room_id,
+                cmd,
+                video_id=video_id,
+                position=position,
+                playing=playing,
+                device_id=device_id,
+            )
+
+    def _apply_command_locked(
+        self,
+        room_id: str,
+        cmd: str,
+        *,
+        video_id: Optional[str] = None,
+        position: Optional[float] = None,
+        playing: Optional[bool] = None,
+        device_id: Optional[str] = None,
+    ) -> Optional[WatchRoom]:
         room = self.ensure_room(room_id)
         now = time.time()
 
@@ -325,7 +359,7 @@ def render_watch_page(
         poll_ms = int(server_poll_interval_sec() * 1000)
         rt_cfg = get_realtime_client_config()
     except Exception:
-        poll_ms = 2000
+        poll_ms = 500
         rt_cfg = {"enabled": False}
     html = html.replace("{{ watch_poll_ms|tojson }}", json.dumps(poll_ms))
     html = html.replace("{{ watch_realtime_config|tojson }}", json.dumps(rt_cfg))

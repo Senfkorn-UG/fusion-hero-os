@@ -34,21 +34,21 @@ def server_poll_interval_sec() -> float:
     """Poll-Intervall: Fallback wenn Realtime aus oder als Backup."""
     if realtime_enabled():
         try:
-            return float(os.getenv("FUSION_WATCH_POLL_FALLBACK_SEC", "3"))
+            return float(os.getenv("FUSION_WATCH_POLL_FALLBACK_SEC", "0.5"))
         except ValueError:
-            return 3.0
+            return 0.5
     try:
-        return float(os.getenv("FUSION_WATCH_SERVER_POLL_SEC", "2"))
+        return float(os.getenv("FUSION_WATCH_SERVER_POLL_SEC", "0.5"))
     except ValueError:
-        return 2.0
+        return 0.5
 
 
 def active_poll_interval_sec() -> float:
     """Server-Broadcast-Schleife für aktive Räume (immer schnell genug für Sync)."""
     try:
-        return float(os.getenv("FUSION_WATCH_ACTIVE_POLL_SEC", "2"))
+        return float(os.getenv("FUSION_WATCH_ACTIVE_POLL_SEC", "0.5"))
     except ValueError:
-        return 2.0
+        return 0.5
 
 
 def poll_fallback_only() -> bool:
@@ -115,10 +115,21 @@ def apply_realtime_payload(mgr: "WatchPartyManager", payload: Any) -> Optional[s
     if not row or not row.get("room_id"):
         return None
     room_id = str(row["room_id"])
-    room = mgr.ensure_room(room_id)
-    if merge_row_into_room(room, row):
-        return room_id
-    return None
+    try:
+        from core.process_exclusivity import exclusive
+
+        with exclusive(f"watch-room:{room_id}", owner="watch_realtime") as lock:
+            if not lock.ok:
+                return None
+            room = mgr.ensure_room(room_id)
+            if merge_row_into_room(room, row):
+                return room_id
+            return None
+    except Exception:
+        room = mgr.ensure_room(room_id)
+        if merge_row_into_room(room, row):
+            return room_id
+        return None
 
 
 def merge_row_into_room(room: "WatchRoom", row: Dict[str, Any]) -> bool:
@@ -149,6 +160,21 @@ def refresh_room_from_server(mgr: "WatchPartyManager", room_id: str) -> Optional
     if not server_sync_enabled():
         return mgr.get_room(room_id)
     try:
+        from core.process_exclusivity import exclusive
+
+        with exclusive(f"watch-room:{room_id}", owner="watch_refresh") as lock:
+            if not lock.ok:
+                return mgr.get_room(room_id)
+            return _refresh_room_from_server_locked(mgr, room_id)
+    except Exception:
+        return _refresh_room_from_server_locked(mgr, room_id)
+
+
+def _refresh_room_from_server_locked(
+    mgr: "WatchPartyManager",
+    room_id: str,
+) -> Optional["WatchRoom"]:
+    try:
         import supabase_store as store
 
         row = store.load_watch_room(room_id)
@@ -162,6 +188,18 @@ def refresh_room_from_server(mgr: "WatchPartyManager", room_id: str) -> Optional
 
 
 def push_room_to_server(room: "WatchRoom") -> Dict[str, Any]:
+    try:
+        from core.process_exclusivity import exclusive
+
+        with exclusive(f"watch-room:{room.room_id}", owner="watch_push") as lock:
+            if not lock.ok:
+                return {"ok": False, "error": "process_busy", "key": lock.key}
+            return _push_room_to_server_locked(room)
+    except Exception:
+        return _push_room_to_server_locked(room)
+
+
+def _push_room_to_server_locked(room: "WatchRoom") -> Dict[str, Any]:
     try:
         import supabase_store as store
 
