@@ -1,8 +1,0 @@
-C:\Users\Admin\Desktop\projekt_archiv\CLAUDE\ALTE_Frau_95g_Core_v3.6\loving-williams-ae2943\rust_engine_crate\target\release\build\target-lexicon-4799248b202937db\build_script_build-4799248b202937db.d: C:\Users\Admin\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\target-lexicon-0.12.16\build.rs C:\Users\Admin\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\target-lexicon-0.12.16\src/data_model.rs C:\Users\Admin\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\target-lexicon-0.12.16\src/triple.rs C:\Users\Admin\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\target-lexicon-0.12.16\src/targets.rs
-
-C:\Users\Admin\Desktop\projekt_archiv\CLAUDE\ALTE_Frau_95g_Core_v3.6\loving-williams-ae2943\rust_engine_crate\target\release\build\target-lexicon-4799248b202937db\build_script_build-4799248b202937db.exe: C:\Users\Admin\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\target-lexicon-0.12.16\build.rs C:\Users\Admin\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\target-lexicon-0.12.16\src/data_model.rs C:\Users\Admin\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\target-lexicon-0.12.16\src/triple.rs C:\Users\Admin\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\target-lexicon-0.12.16\src/targets.rs
-
-C:\Users\Admin\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\target-lexicon-0.12.16\build.rs:
-C:\Users\Admin\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\target-lexicon-0.12.16\src/data_model.rs:
-C:\Users\Admin\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\target-lexicon-0.12.16\src/triple.rs:
-C:\Users\Admin\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\target-lexicon-0.12.16\src/targets.rs:
