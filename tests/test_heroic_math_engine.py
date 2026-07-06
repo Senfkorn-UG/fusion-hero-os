@@ -9,7 +9,7 @@ Edit nicht stillschweigend wieder in eine Überclaim-Behauptung zurückfällt.
 import numpy as np
 import pytest
 
-from core.heroic_math_engine import HeroicMatrixEngine, RepairedStructureIP
+from fusion_hero_os.core.heroic_math_engine import HeroicMatrixEngine, RepairedStructureIP
 
 
 def test_commutator_is_antisymmetric():
@@ -83,7 +83,7 @@ def test_module_docstring_does_not_reclaim_all_four_nodes():
     Knoten 1/16/19 überhaupt Code haben (und davon nur mit Einschränkungen).
     Dieser Test schlägt fehl, falls diese Formulierung unbemerkt zurückkehrt.
     """
-    import core.heroic_math_engine as mod
+    import fusion_hero_os.core.heroic_math_engine as mod
 
     doc = (mod.__doc__ or "").lower()
     assert "repariert zentrale mathematische schwächen (knoten 16, 17, 19, 20)" not in doc
