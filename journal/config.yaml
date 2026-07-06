@@ -1,3 +1,6 @@
+# ASR initial prompt (cherry-picked from fusion-hero-os-v1)
+asr_prompt_file: ../docs/v8/seeds/asr_optimized_prompt.txt
+
 # Themen-Konfiguration fuer das Voice-Journal.
 # Klassifikation ist rein lokal (Keyword-Scoring) — kein LLM-Call, keine Cloud.
 # Reihenfolge = Reihenfolge der Abschnitte im Tagebuch.
