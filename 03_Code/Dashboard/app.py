@@ -450,8 +450,40 @@ async def _start_supabase_background() -> None:
         print(f"[Supabase] Background sync note: {exc}")
 
 
+_DASHBOARD_LOCK_KEY: Optional[str] = None
+
+
+def _acquire_dashboard_lock() -> bool:
+    """Verhindert zwei Dashboard-Instanzen auf dem gleichen Port."""
+    global _DASHBOARD_LOCK_KEY
+    try:
+        from connectivity import dashboard_port
+        from core.process_exclusivity import try_acquire
+
+        port = dashboard_port()
+        key = f"dashboard:{port}"
+        lock = try_acquire(key, owner="dashboard", ttl_sec=86400.0)
+        if not lock.ok:
+            print(
+                f"[Startup] ABBRUCH: Dashboard-Port {port} bereits belegt "
+                f"(PID {lock.holder_pid or '?'}, {lock.reason}). "
+                "Nur eine Instanz pro Port erlaubt."
+            )
+            return False
+        _DASHBOARD_LOCK_KEY = key
+        print(f"[Startup] Prozess-Exklusivität aktiv: {key} (PID {os.getpid()})")
+        return True
+    except Exception as exc:
+        print(f"[Startup] Prozess-Exklusivität note: {exc}")
+        return True
+
+
 @app.on_event("startup")
 async def startup_event():
+    if not _acquire_dashboard_lock():
+        import sys
+
+        sys.exit(1)
     launcher_fast_boot = os.getenv("FUSION_AUTO_LOAD") == "0"
     try:
         from fusion_settings import boot_load
@@ -550,6 +582,23 @@ async def startup_event():
     print(f"  AutoLoad Status: {autoloader.status()}")
     print(f"  Input-Faktoren: CPUs={INPUT_FACTORS.get('logical_cpus')}, HT={INPUT_FACTORS.get('hyperthreading_env')}")
     print(f"  Output-Faktoren: target_workers={OUTPUT_FACTORS.get('target_workers')}")
+
+
+@app.on_event("shutdown")
+async def shutdown_event():
+    global _DASHBOARD_LOCK_KEY
+    if not _DASHBOARD_LOCK_KEY:
+        return
+    try:
+        from core.process_exclusivity import release
+
+        release(_DASHBOARD_LOCK_KEY)
+        print(f"[Shutdown] Prozess-Lock freigegeben: {_DASHBOARD_LOCK_KEY}")
+    except Exception as exc:
+        print(f"[Shutdown] Prozess-Lock note: {exc}")
+    finally:
+        _DASHBOARD_LOCK_KEY = None
+
 
 @app.post("/api/events")
 async def post_event(payload: EventIn):

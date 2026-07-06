@@ -72,6 +72,14 @@ def start_watch_realtime_task() -> dict:
     global _running
     if _running:
         return {"started": False, "reason": "already_running"}
+    try:
+        from core.process_exclusivity import try_acquire
+
+        lock = try_acquire("bg:watch-realtime", owner="watch_realtime_server")
+        if not lock.ok:
+            return {"started": False, "reason": "process_busy", "detail": lock.reason}
+    except Exception:
+        pass
     if os.getenv("FUSION_WATCH_REALTIME", "1") != "1":
         return {"started": False, "reason": "FUSION_WATCH_REALTIME=0"}
     try:

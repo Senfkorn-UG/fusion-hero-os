@@ -591,6 +591,13 @@ async def api_connectivity():
     return await asyncio.to_thread(build_connectivity_summary)
 
 
+@router.get("/api/process/exclusivity/status")
+async def api_process_exclusivity_status():
+    from core.process_exclusivity import status as exclusivity_status
+
+    return await asyncio.to_thread(exclusivity_status)
+
+
 @router.post("/api/settings/sync")
 async def api_settings_sync(payload: dict = None):
     """Push lokale Settings in die Cloud und optional Pull (Merge wenn Cloud neuer)."""
@@ -755,6 +762,17 @@ async def api_watch_room_cmd(room_id: str, payload: dict = None):
                 "controller_id": room.controller_id,
                 "hint": "Nur die Steuerungsseite darf Play/Pause/Laden senden",
             }
+        try:
+            from core.process_exclusivity import is_held
+
+            if is_held(f"watch-room:{room_id}"):
+                return {
+                    "ok": False,
+                    "error": "process_busy",
+                    "hint": "Raum wird gerade von einem anderen Worker bearbeitet",
+                }
+        except Exception:
+            pass
         return {"ok": False, "error": "invalid_command"}
     await broadcast_room_state(mgr, room_id)
     from watch_sync_server import low_latency_enabled, state_response
