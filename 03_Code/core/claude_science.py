@@ -18,6 +18,13 @@ ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY", "").strip()
 CLAUDE_SCIENCE_MODEL = os.getenv("CLAUDE_SCIENCE_MODEL", "claude-sonnet-5").strip()
 ANTHROPIC_API_URL = os.getenv("ANTHROPIC_API_URL", "https://api.anthropic.com/v1/messages").strip()
 
+# --- Frontier-Backend-Fähigkeiten (opt-in per Env; koevolutionär wählbar) ------
+# Prompt-Caching: markiert den System-Prompt als cache_control -> Anthropic
+#   Prompt-Cache (5-Min-TTL) spart Kosten/Latenz bei wiederholten System-Prompts.
+PROMPT_CACHE_ENABLED = os.getenv("FUSION_CLAUDE_PROMPT_CACHE", "1") == "1"
+# Extended Thinking: Reasoning-Budget in Tokens (0 = aus).
+THINKING_BUDGET = int(os.getenv("FUSION_CLAUDE_THINKING_BUDGET", "0"))
+
 SCIENCE_DOMAINS = (
     "biology",
     "genomics",
@@ -246,6 +253,13 @@ def status() -> Dict[str, Any]:
         "api_url": ANTHROPIC_API_URL,
         "native_app_platforms": ["macOS", "Linux"],
         "windows_mode": "api_bridge",
+        "frontier_capabilities": {
+            "tool_use_loop": True,
+            "prompt_caching": PROMPT_CACHE_ENABLED,
+            "streaming": True,
+            "extended_thinking": THINKING_BUDGET > 0,
+            "thinking_budget": THINKING_BUDGET,
+        },
         "skills": list(SCIENCE_SKILLS),
         "connectors": list(SCIENCE_CONNECTORS),
         "domains": list(SCIENCE_DOMAINS),
@@ -434,6 +448,45 @@ def _detect_subdomain(query: str) -> str:
     return "general_science"
 
 
+def _system_field(system: Optional[str], cache: bool) -> Any:
+    """System-Prompt als cache-fähigen Block (cache_control) oder als String.
+
+    Mit cache=True wird der System-Prompt als ephemeraler Cache-Breakpoint
+    markiert -> wiederholte Calls mit gleichem System-Prompt lesen aus dem
+    Anthropic-Prompt-Cache (5-Min-TTL) statt ihn neu zu prozessieren.
+    """
+    text = system or _science_system_prompt()
+    if not cache:
+        return text
+    return [{"type": "text", "text": text, "cache_control": {"type": "ephemeral"}}]
+
+
+def _build_payload(
+    prompt: str,
+    system: Optional[str] = None,
+    *,
+    cache: bool = PROMPT_CACHE_ENABLED,
+    thinking_budget: int = THINKING_BUDGET,
+    stream: bool = False,
+    max_tokens: Optional[int] = None,
+) -> Dict[str, Any]:
+    """Baut das Messages-API-Payload inkl. Caching/Thinking/Streaming (opt-in)."""
+    mt = max_tokens or int(os.getenv("FUSION_CLAUDE_SCIENCE_MAX_TOKENS", "1024"))
+    payload: Dict[str, Any] = {
+        "model": CLAUDE_SCIENCE_MODEL,
+        "max_tokens": mt,
+        "system": _system_field(system, cache),
+        "messages": [{"role": "user", "content": prompt}],
+    }
+    if thinking_budget and thinking_budget > 0:
+        # Extended Thinking: Reasoning-Budget muss < max_tokens sein.
+        payload["max_tokens"] = max(mt, thinking_budget + 512)
+        payload["thinking"] = {"type": "enabled", "budget_tokens": thinking_budget}
+    if stream:
+        payload["stream"] = True
+    return payload
+
+
 def _call_api(prompt: str, system: Optional[str] = None) -> tuple[str, Dict[str, Any]]:
     import httpx
 
@@ -444,12 +497,7 @@ def _call_api(prompt: str, system: Optional[str] = None) -> tuple[str, Dict[str,
             "anthropic-version": "2023-06-01",
             "content-type": "application/json",
         },
-        json={
-            "model": CLAUDE_SCIENCE_MODEL,
-            "max_tokens": int(os.getenv("FUSION_CLAUDE_SCIENCE_MAX_TOKENS", "1024")),
-            "system": system or _science_system_prompt(),
-            "messages": [{"role": "user", "content": prompt}],
-        },
+        json=_build_payload(prompt, system),
         timeout=float(os.getenv("FUSION_CLAUDE_SCIENCE_TIMEOUT", "60")),
     )
     if resp.status_code != 200:
@@ -470,8 +518,82 @@ def _call_api(prompt: str, system: Optional[str] = None) -> tuple[str, Dict[str,
         "model": data.get("model", CLAUDE_SCIENCE_MODEL),
         "input_tokens": usage.get("input_tokens"),
         "output_tokens": usage.get("output_tokens"),
+        "cache_creation_input_tokens": usage.get("cache_creation_input_tokens"),
+        "cache_read_input_tokens": usage.get("cache_read_input_tokens"),
         "stop_reason": data.get("stop_reason"),
     }
+
+
+def call_stream(
+    prompt: str,
+    system: Optional[str] = None,
+    on_delta: Optional[Any] = None,
+    *,
+    iter_lines: Optional[Any] = None,
+) -> tuple[str, Dict[str, Any]]:
+    """Streamt die Antwort token-weise (SSE). on_delta(text) pro Delta aufgerufen.
+
+    Returns (voller_text, meta). `iter_lines` ist injizierbar (Iterator über
+    SSE-Zeilen) — damit ohne Netz testbar. Ohne Injektion wird httpx-Streaming
+    gegen die Anthropic-API genutzt.
+
+    Ehrlich: Streaming ändert nichts an der Antwortqualität — nur an der
+    Latenz-Wahrnehmung (inkrementelle Ausgabe fürs Dashboard).
+    """
+    import json as _json
+
+    def _consume(lines: Any) -> tuple[str, Dict[str, Any]]:
+        parts: List[str] = []
+        meta: Dict[str, Any] = {"model": CLAUDE_SCIENCE_MODEL, "streamed": True}
+        for raw in lines:
+            line = raw.decode("utf-8") if isinstance(raw, (bytes, bytearray)) else str(raw)
+            line = line.strip()
+            if not line or not line.startswith("data:"):
+                continue
+            payload = line[len("data:"):].strip()
+            if payload == "[DONE]":
+                break
+            try:
+                evt = _json.loads(payload)
+            except Exception:
+                continue
+            etype = evt.get("type")
+            if etype == "content_block_delta":
+                delta = (evt.get("delta") or {}).get("text", "")
+                if delta:
+                    parts.append(delta)
+                    if on_delta:
+                        on_delta(delta)
+            elif etype == "message_delta":
+                usage = evt.get("usage") or {}
+                meta["output_tokens"] = usage.get("output_tokens")
+                meta["stop_reason"] = (evt.get("delta") or {}).get("stop_reason")
+            elif etype == "message_start":
+                usage = ((evt.get("message") or {}).get("usage")) or {}
+                meta["input_tokens"] = usage.get("input_tokens")
+                meta["cache_read_input_tokens"] = usage.get("cache_read_input_tokens")
+        return "".join(parts).strip(), meta
+
+    if iter_lines is not None:
+        return _consume(iter_lines)
+
+    import httpx
+
+    payload = _build_payload(prompt, system, stream=True)
+    with httpx.stream(
+        "POST",
+        ANTHROPIC_API_URL,
+        headers={
+            "x-api-key": ANTHROPIC_API_KEY,
+            "anthropic-version": "2023-06-01",
+            "content-type": "application/json",
+        },
+        json=payload,
+        timeout=float(os.getenv("FUSION_CLAUDE_SCIENCE_TIMEOUT", "60")),
+    ) as resp:
+        if resp.status_code != 200:
+            raise RuntimeError(f"Anthropic API {resp.status_code}: {resp.read()[:300]!r}")
+        return _consume(resp.iter_lines())
 
 
 # ---------------------------------------------------------------------------
@@ -551,7 +673,7 @@ def run_tool_loop(
         payload = {
             "model": CLAUDE_SCIENCE_MODEL,
             "max_tokens": int(os.getenv("FUSION_CLAUDE_SCIENCE_MAX_TOKENS", "1024")),
-            "system": system or _science_system_prompt(),
+            "system": _system_field(system, PROMPT_CACHE_ENABLED),
             "messages": messages,
             "tools": tools,
         }
