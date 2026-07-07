@@ -16,34 +16,45 @@ version: 1
 
 claims:
   # ---- Mathematischer Kern (Knoten-Saetze) ---------------------------------
-  - id: K16
-    statement: "Transponierten-Reziprozitaet gilt universell in relativer Toleranz (die naive absolute Form ist KEIN Satz)."
+  # 2026-07-06 auf tatsaechlichen Stand synchronisiert (Honesty-Rewrite der
+  # test_heroic_math_engine.py): frueher als "universell bewiesen" behauptete
+  # Knoten sind auf Fragment-/Modell-Status bzw. OFFEN zurueckgestuft.
+  - id: K1-KOMMUTATOR
+    statement: "Kommutator [Q,B] = -[B,Q] ist antisymmetrisch (reine lineare Algebra, keine Sonderbehauptung)."
     status: BEWIESEN
     proofs:
-      - tests/test_heroic_math_engine.py::test_k16_transpose_reciprocity_universal
-      - tests/test_heroic_math_engine.py::test_k16_holds_at_large_scale
-      - tests/test_heroic_math_engine.py::test_k16_naive_form_is_not_a_theorem
+      - tests/test_heroic_math_engine.py::test_commutator_is_antisymmetric
+
+  - id: K16
+    statement: "Reziprozitaet (Knoten 16) gilt NUR im trivialen Fall Q1==Q2 — es gibt KEINE universelle Reziprozitaet (FRAGMENT-Status, per Gegenbeispiel belegt)."
+    status: BEWIESEN
+    proofs:
+      - tests/test_heroic_math_engine.py::test_reciprocity_holds_only_in_trivial_case
 
   - id: K17
-    statement: "Projektor-Eigenschaften (Idempotenz etc.) des K17-Operators."
-    status: BEWIESEN
-    proofs:
-      - tests/test_heroic_math_engine.py::test_k17_projector_properties
+    statement: "Projektor-Eigenschaften (Knoten 17) sind im Modul NICHT implementiert (kein Code, kein Test) — bewusst offen statt behauptet."
+    status: OFFEN
+    proofs: []
+    notes: "Frueher als BEWIESEN behauptet; der zugehoerige Test wurde im Honesty-Rewrite entfernt, das Modul markiert Knoten 17 als nicht implementiert."
 
   - id: K19
-    statement: "Monotone Fusion im bewiesenen Definitionsbereich; ausserhalb (eta, negatives lambda) wird abgelehnt."
+    statement: "Monotone Fusion (Knoten 19) haelt im dokumentierten Beispiel, ist aber KEIN universelles Gesetz — per Sweep ~5-60 % Verletzungen (MODELL-Status)."
     status: BEWIESEN
     proofs:
-      - tests/test_heroic_math_engine.py::test_k19_monotone_fusion_in_proven_domain
-      - tests/test_heroic_math_engine.py::test_k19_eta_leaves_proven_domain
-      - tests/test_heroic_math_engine.py::test_k19_negative_lambda_rejected
+      - tests/test_heroic_math_engine.py::test_monotonicity_documented_example_holds
+      - tests/test_heroic_math_engine.py::test_monotonicity_is_not_a_universal_law
 
   - id: K20
-    statement: "Banach-Fixpunkt mit geometrischer Konvergenz; Nicht-Kontraktionen werden abgelehnt."
+    statement: "Banach-Fixpunkt (Knoten 20) ist im Modul NICHT implementiert (kein Code, kein Test) — bewusst offen statt behauptet."
+    status: OFFEN
+    proofs: []
+    notes: "Wie K17: frueherer Test entfernt; Modul markiert Knoten 20 als nicht implementiert."
+
+  - id: MATH-DOCSTRING-HONESTY
+    statement: "Der Modul-Docstring von heroic_math_engine behauptet die vier Knoten NICHT pauschal als erledigt und markiert Knoten 17/20 explizit als nicht implementiert (Waechter gegen Ueberclaim-Rueckfall)."
     status: BEWIESEN
     proofs:
-      - tests/test_heroic_math_engine.py::test_k20_banach_fixpoint_and_geometric_convergence
-      - tests/test_heroic_math_engine.py::test_k20_non_contraction_rejected
+      - tests/test_heroic_math_engine.py::test_module_docstring_does_not_reclaim_all_four_nodes
 
   - id: ISING-BRIDGE
     statement: "qubo_to_ising/ising_energy: E_QUBO(x) == E_Ising(s) fuer symmetrische Q unter x=(1+s)/2."
