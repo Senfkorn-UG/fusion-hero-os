@@ -158,6 +158,12 @@ def _build_registry() -> None:
     _register("fusion_hero_node", 2, "orchestration",
               lambda: _try_import("fusion_hero_node", "status")(),
               "HAUPTKNOTEN: Fusion aller dienlichen Module (HT-paralleles Kreativlösen)")
+    _register("judge_panel", 2, "orchestration",
+              lambda: _try_import("judge_panel", "status")(),
+              "Semantisches Judge-Panel (best-of-N, Mehrheitsvotum)")
+    _register("coevolution_router", 2, "orchestration",
+              lambda: _try_import("coevolution_router", "status")(),
+              "Koevolvierende Kosten-/Fähigkeits-Routing-Policy (#1+#5+#7 fusioniert)")
     _register("parallel_internal_optimizer", 2, "orchestration",
               lambda: _try_import("parallel_internal_optimizer", "run")(),
               "Parallele Intern-Optimierung (Hyperthreading-Tracks)")
