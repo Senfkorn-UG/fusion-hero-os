@@ -149,6 +149,15 @@ def _build_registry() -> None:
     _register("claude_science", 2, "science",
               lambda: _try_import("claude_science", "status")(),
               "Claude Science Workbench (Anthropic API)")
+    _register("creative_problem_solving", 2, "orchestration",
+              lambda: _try_import("creative_problem_solving", "status")(),
+              "Kreative Problemlösungs-Strategien (Divergenz→Annealing→Anti-Agent)")
+    _register("structured_output", 1, "orchestration",
+              lambda: _try_import("structured_output", "status")(),
+              "Schema-validierte LLM-Outputs mit Repair-Retry")
+    _register("fusion_hero_node", 2, "orchestration",
+              lambda: _try_import("fusion_hero_node", "status")(),
+              "HAUPTKNOTEN: Fusion aller dienlichen Module (HT-paralleles Kreativlösen)")
     _register("parallel_internal_optimizer", 2, "orchestration",
               lambda: _try_import("parallel_internal_optimizer", "run")(),
               "Parallele Intern-Optimierung (Hyperthreading-Tracks)")

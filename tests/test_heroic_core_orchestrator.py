@@ -1,19 +1,22 @@
-"""Ehrliche Regressionstests für core/heroic_core_orchestrator.py.
+"""Ehrliche Regressionstests für fusion_hero_os/core/heroic_core_orchestrator.py.
 
-Verankert den tatsächlichen Stand (Fail-Closed real, PMS-Kernel/Integritäts-
-prüfung Platzhalter) - siehe docs/02_architecture/HEROIC_CORE_ORCHESTRATOR.md.
+Verankert den tatsächlichen Stand (Fail-Closed real, Integritätsprüfung seit
+2026-07-04 echt, PMS-Kernel Platzhalter) - siehe
+docs/02_architecture/HEROIC_CORE_ORCHESTRATOR.md.
 """
 import pytest
 
-from core.heroic_core_orchestrator import MasterSeed, PMSEvidenceSpine, QuadCoreBridge
+from fusion_hero_os.core.heroic_core_orchestrator import MasterSeed, PMSEvidenceSpine, QuadCoreBridge
 
 
-def test_master_seed_verify_integrity_is_a_stub():
-    """verify_integrity() liefert immer True, unabhängig vom Input - ein Stub."""
+def test_master_seed_verify_integrity_is_real():
+    """verify_integrity() prüft echt: nur der kanonische state_hash() gilt (seit 2026-07-04)."""
     seed = MasterSeed()
-    assert seed.verify_integrity("beliebiger_hash") is True
-    assert seed.verify_integrity("") is True
-    assert "PLATZHALTER" in seed.verify_integrity.__doc__
+    assert seed.verify_integrity(seed.state_hash()) is True
+    assert seed.verify_integrity("beliebiger_hash") is False
+    assert seed.verify_integrity("") is False
+    assert seed.verify_integrity(None) is False  # type: ignore[arg-type]
+    assert "PLATZHALTER" not in (seed.verify_integrity.__doc__ or "")
 
 
 def test_pms_spine_fails_closed_when_kernel_missing():
