@@ -1,0 +1,47 @@
+[project]
+name = "normal-os"
+version = "0.1.0"
+description = "Practical AI orchestration framework with QUBO optimization and multi-LLM routing"
+readme = "README.md"
+requires-python = ">=3.12"
+license = {text = "MIT"}
+authors = [{name = "normalOS Contributors"}]
+dependencies = [
+    "pydantic>=2.8,<3.0",
+    "pydantic-settings>=2.3,<3.0",
+    "fastapi>=0.111,<0.112",
+    "uvicorn[standard]>=0.30,<0.31",
+    "httpx>=0.27,<0.28",
+    "jinja2>=3.1,<4.0",
+    "python-dotenv>=1.0,<2.0",
+    "dimod>=0.12,<0.13",
+    "numpy>=1.26,<2.0",
+    "structlog>=24.1,<25.0",
+]
+
+[project.optional-dependencies]
+test = [
+    "pytest>=8.2,<9.0",
+    "pytest-asyncio>=0.23,<0.24",
+    "ruff>=0.5,<0.6",
+    "black>=24.4,<25.0",
+]
+
+[build-system]
+build-backend = "hatchling.build"
+requires = ["hatchling"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/normal_os"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.black]
+line-length = 100
+target-version = ["py312"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
