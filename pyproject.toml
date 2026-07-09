@@ -1,8 +1,4 @@
-[project.optional-dependencies]
-rust = [
-    # Rust backend requires maturin + Rust toolchain
-    # Build steps:
-    #   cd rust_engine
-    #   maturin develop --release
-    # Then the backend becomes available via 'backend="rust"' in parallel_anneal()
-]
+[project]
+name = "fusion-hero-os"
+version = "9.4.0"
+description = "Fusion Hero OS → AscensionOS — Best Coevolutionary Version (CEC, Persistent Sisyphos, AscensionCore)"
