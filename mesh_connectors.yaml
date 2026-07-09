@@ -113,6 +113,14 @@ connectors:
 # Routing-Schema (Funnel + MagicDNS)
 routing:
   base_url: "https://host.example.ts.net"
+  unified: "/fusion/status"
+  fusion_graph: "/fusion/graph"
   mesh_overview: "/mesh/status"
   per_connector: "/mesh/{connector_id}/status"
+  llm_overview: "/llm/status"
+  per_llm: "/llm/{provider}/status"
   tailscale_overview: "/tailscale/status"
+
+# Verknüpfung mit LLM-Frameworks (siehe fusion_unified.yaml)
+integration_hub: fusion_integration_hub.py
+unified_config: fusion_unified.yaml

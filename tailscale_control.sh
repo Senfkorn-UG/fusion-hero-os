@@ -18,6 +18,9 @@ show_help() {
     echo "  status           - Aktuellen Status anzeigen"
     echo "  mesh             - Gesamtes Mesh (alle Konnektor-Segmente) anzeigen"
     echo "  mesh-connector   - Einzelnes Konnektor-Segment prüfen (z.B. github)"
+    echo "  fusion           - Verknüpfter Gesamtstatus (Mesh + LLM + Tailscale)"
+    echo "  fusion-graph     - Integrationsgraph anzeigen"
+    echo "  llm              - Alle LLM-Frameworks anzeigen"
     echo "  funnel           - Funnel für Hero Docs Server aktivieren"
     echo "  notify           - Phone Notification Monitor starten"
     echo "  all              - Alles nacheinander ausführen (install → start → funnel)"
@@ -53,6 +56,18 @@ case "$1" in
         fi
         echo "→ Mesh-Segment: $2"
         python3 "$SCRIPT_DIR/tailscale_mesh_registry.py" "$2"
+        ;;
+    fusion)
+        echo "→ Unified Integration Status (alles verknüpft):"
+        python3 "$SCRIPT_DIR/fusion_integration_hub.py" status
+        ;;
+    fusion-graph)
+        echo "→ Integrationsgraph:"
+        python3 "$SCRIPT_DIR/fusion_integration_hub.py" graph
+        ;;
+    llm)
+        echo "→ LLM Framework Status:"
+        python3 "$SCRIPT_DIR/03_Code/llm_status.py"
         ;;
     funnel)
         echo "→ Aktiviere Funnel..."

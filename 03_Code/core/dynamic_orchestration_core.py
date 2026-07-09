@@ -48,6 +48,25 @@ class DynamicOrchestrationCoreModule:
         route_reason = None
         anti_review = None
 
+        # Fusion Integration Hub — verknüpfte LLM-Frameworks (TRINITY)
+        try:
+            import sys
+            from pathlib import Path
+            root = Path(__file__).resolve().parents[2]
+            if str(root) not in sys.path:
+                sys.path.insert(0, str(root))
+            from fusion_integration_hub import orchestrate as fusion_orchestrate
+            pool = models if model_pool else ["grok", "claude", "gpt"]
+            provider = pool[0] if pool else "grok"
+            fused = fusion_orchestrate(query, role="worker")
+            if fused.get("ok") and fused.get("source") == "api" and fused.get("response"):
+                response = fused["response"]
+                backend = f"fusion_hub:{fused.get('provider')}"
+                route_reason = "fusion_integration_hub"
+                models = [fused.get("provider", provider)] + [m for m in pool if m != fused.get("provider")]
+        except Exception:
+            pass
+
         try:
             from agent_backend_router import is_dual_agent_enabled, dual_run
 
