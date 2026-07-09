@@ -1,9 +1,6 @@
-"""Abstract Base + unified LLMResult for all LLM providers in Fusion Hero OS v8.4.
+"""Abstract Base + unified LLMResult for all LLM providers in Fusion Hero OS v8.5.
 
-This is the key hardening that makes the core symmetric:
-- Every provider has the same interface (is_available, generate, health).
-- Router only orchestrates order + heroic context + classification.
-- Easy to add local models or cost-optimized providers later.
+Now with capability profiles so the router can do dynamic, non-fixed task assignment.
 """
 
 from __future__ import annotations
@@ -16,10 +13,6 @@ from typing import Any, Dict, List, Optional
 
 @dataclass
 class LLMResult:
-    """Unified, serializable result for every LLM call (Claude, Grok, EveryAPI, internal).
-
-    Replaces the previous inline LLMResponse. Used everywhere in Orchestrator, Dashboard and Agents.
-    """
     provider: str
     response: str
     latency_ms: float = 0.0
@@ -41,9 +34,11 @@ class LLMResult:
 
 
 class BaseLLMProvider(ABC):
-    """Common contract every concrete provider must fulfill."""
+    """Common contract. Now carries capability profile for dynamic assignment."""
 
     name: str = "base"
+    # Capability scores [0.0 - 1.0] per category. Router uses these for dynamic non-fixed assignment.
+    capabilities: Dict[str, float] = field(default_factory=dict)
 
     def __init__(self, config: Optional[Dict[str, Any]] = None) -> None:
         self.config = config or {}
@@ -51,20 +46,23 @@ class BaseLLMProvider(ABC):
         self._failure_count: int = 0
         self._last_latency: float = 0.0
         self._last_error: Optional[str] = None
+        # Default capabilities (overridden in concrete providers)
+        if not self.capabilities:
+            self.capabilities = {
+                "code": 0.6,
+                "current_events": 0.5,
+                "simple_fact": 0.7,
+                "creative": 0.6,
+                "heroic_core": 0.5,
+                "default": 0.6,
+            }
 
     @abstractmethod
     def is_available(self) -> bool:
-        """True if this provider can serve requests right now (keys + client ready)."""
         ...
 
     @abstractmethod
-    def generate(
-        self,
-        prompt: str,
-        system_prompt: Optional[str] = None,
-        **kwargs: Any,
-    ) -> LLMResult:
-        """Perform the actual call. Must always return an LLMResult (never raise to caller)."""
+    def generate(self, prompt: str, system_prompt: Optional[str] = None, **kwargs: Any) -> LLMResult:
         ...
 
     def health(self) -> Dict[str, Any]:
@@ -75,6 +73,7 @@ class BaseLLMProvider(ABC):
             "failure_count": self._failure_count,
             "last_latency_ms": self._last_latency,
             "last_error": self._last_error,
+            "capabilities": self.capabilities,
         }
 
     def _record(self, success: bool, latency_ms: float, error: Optional[str] = None) -> None:

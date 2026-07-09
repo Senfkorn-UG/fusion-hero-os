@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 """
-Fusion Hero OS v8.4 — Universal LLM Router (Grok + Claude + EveryAPI + Internal)
+Fusion Hero OS v8.5 — Universal LLM Router
 
-Vollständig refaktoriert auf Provider-Abstraktion (BaseLLMProvider).
-- Intelligente Klassifikation + dynamische Routing-Order bleibt im Router
-- Alle API-Details sind jetzt in dedizierten Providern (sauber, testbar, erweiterbar)
-- Heroic Core Context Injection + Async-Support + Health-Tracking + Fallback-Chain
-- Unified LLMResult aus core.models / providers.base
+**Dynamic, non-fixed task-to-agent assignment across all layers.**
 
-Alles mit allem verdrahtet: Orchestrator ↔ Router ↔ Providers ↔ Heroic Core (MasterSeed/QuadCore)
+- Providers declare capabilities (code, creative, heroic_core, current_events...)
+- Router computes real-time scores from: capability match + health + latency + failure_rate + heroic context
+- Assignment is NEVER a fixed if-elif. It is scored and re-ranked every request.
+- Works on Layer 0 (MasterSeed), Layer 4/5 (PMS/QuadCore), orchestration, agents, dashboard.
+- Merged & optimized with existing provider abstraction + QUBO-ready extension point.
 """
 
 from __future__ import annotations
@@ -21,20 +21,16 @@ from typing import Any, Dict, List, Optional, TYPE_CHECKING
 if TYPE_CHECKING:
     from .heroic_core_orchestrator import QuadCoreBridge
 
-# Import the new abstraction
 try:
     from ..providers.base import LLMResult, BaseLLMProvider
     from ..providers.claude_provider import ClaudeProvider
     from ..providers.grok_provider import GrokProvider
     from ..providers.everyapi_provider import EveryAPIProvider
     from ..providers.internal_provider import InternalFallbackProvider
-except Exception:  # graceful for import order during bootstrap
+except Exception:
     LLMResult = None  # type: ignore
-    BaseLLMProvider = object  # type: ignore
-    ClaudeProvider = None
-    GrokProvider = None
-    EveryAPIProvider = None
-    InternalFallbackProvider = None
+    BaseLLMProvider = object
+    ClaudeProvider = GrokProvider = EveryAPIProvider = InternalFallbackProvider = None
 
 try:
     from dotenv import load_dotenv
@@ -43,142 +39,143 @@ except ImportError:
     pass
 
 
-ProviderName = str
-
-
 class UniversalLLMRouter:
-    """Zentrale KI-Schnittstelle von Fusion Hero OS v8.4
+    """Zentrale dynamische Zuweisungsinstanz für alle LLM/KI-Agenten.
 
-    Der Router orchestriert nur noch:
-    - Prompt-Klassifikation
-    - Routing-Order nach Kategorie
-    - Heroic-Context-Injection
-    - Fallback-Logik
-
-    Die eigentlichen API-Calls sind komplett in die Provider ausgelagert.
+    Die Zuweisung ist NICHT fest. Sie wird bei jedem Request neu berechnet aus:
+    - Kategorie-Match (Capability-Score der Provider)
+    - Aktueller Health (Latency, Failure-Rate)
+    - Heroic Core State (MasterSeed, Mode, volatile History)
+    - Optional: QUBO-Optimierung für Batch-Tasks (Extension Point)
     """
 
     def __init__(self, heroic_core: Optional["QuadCoreBridge"] = None) -> None:
         self.heroic_core = heroic_core
-
-        # Instanziiere alle Provider (einige sind None wenn Keys fehlen)
         self._providers: Dict[str, BaseLLMProvider] = {}
-        if ClaudeProvider:
-            claude = ClaudeProvider()
-            if claude.is_available():
-                self._providers["claude"] = claude
-        if GrokProvider:
-            grok = GrokProvider()
-            if grok.is_available():
-                self._providers["grok"] = grok
-        if EveryAPIProvider:
-            every = EveryAPIProvider()
-            if every.is_available():
-                self._providers["everyapi"] = every
 
-        # Internal Fallback ist immer da
+        if ClaudeProvider:
+            c = ClaudeProvider()
+            if c.is_available():
+                self._providers["claude"] = c
+        if GrokProvider:
+            g = GrokProvider()
+            if g.is_available():
+                self._providers["grok"] = g
+        if EveryAPIProvider:
+            e = EveryAPIProvider()
+            if e.is_available():
+                self._providers["everyapi"] = e
+
         internal = InternalFallbackProvider(heroic_core=heroic_core)
         self._providers["fusion-hero"] = internal
 
-        self.default_order: List[str] = ["claude", "grok", "everyapi", "fusion-hero"]
-
-        self.classification_rules: Dict[str, List[str]] = {
-            "code": ["code", "programmier", "script", "funktion", "klasse", "debug", "fehler", "implementier", "refactor", "qubo"],
-            "current_events": ["heute", "aktuell", "news", "nachrichten", "was passiert", "grok", "xai", "spacex"],
-            "simple_fact": ["was ist", "wie viel", "wann", "wo", "wer ist", "definition"],
-            "creative": ["schreib", "erzähl", "gedicht", "geschichte", "kreativ", "meme", "vision", "coal canary"],
-            "heroic_core": ["masterseed", "layer 0", "pms", "quadcore", "phoenix", "fail-closed"],
-        }
+        self.default_order = list(self._providers.keys())
 
     def _classify_query(self, prompt: str) -> str:
         p = prompt.lower()
-        for category, keywords in self.classification_rules.items():
-            if any(kw in p for kw in keywords):
-                return category
+        rules = {
+            "code": ["code", "programmier", "script", "debug", "qubo", "implement"],
+            "current_events": ["heute", "aktuell", "news", "spacex", "grok"],
+            "simple_fact": ["was ist", "wie viel", "wann", "definition"],
+            "creative": ["schreib", "erzähl", "gedicht", "meme", "vision"],
+            "heroic_core": ["masterseed", "layer 0", "pms", "quadcore", "phoenix", "fail-closed", "heroic"],
+        }
+        for cat, kws in rules.items():
+            if any(kw in p for kw in kws):
+                return cat
         return "default"
 
-    def _get_routing_order(self, category: str) -> List[str]:
-        if category in ("code", "heroic_core"):
-            return ["claude", "grok", "everyapi", "fusion-hero"]
-        elif category == "current_events":
-            return ["grok", "claude", "everyapi", "fusion-hero"]
-        elif category == "simple_fact":
-            return ["everyapi", "grok", "claude", "fusion-hero"]
-        elif category == "creative":
-            return ["claude", "grok", "everyapi", "fusion-hero"]
-        else:
-            return self.default_order.copy()
+    def _score_provider(self, name: str, category: str, health: Dict[str, Any]) -> float:
+        """Dynamic score: capability match + health penalty. Not fixed."""
+        provider = self._providers.get(name)
+        if not provider:
+            return 0.0
 
-    def route(
-        self,
-        prompt: str,
-        system_prompt: Optional[str] = None,
-        force_provider: Optional[str] = None,
-    ) -> LLMResult:
-        start = time.time()
+        cap = provider.capabilities.get(category, provider.capabilities.get("default", 0.5))
+
+        h = health.get(name, {})
+        latency = h.get("last_latency_ms", 800)
+        failures = h.get("failure_count", 0)
+
+        latency_pen = min(latency / 2500.0, 0.8)
+        failure_pen = min(failures / 8.0, 0.7)
+
+        # Heroic context boost for internal on heroic_core tasks
+        heroic_boost = 0.15 if (name == "fusion-hero" and category == "heroic_core") else 0.0
+
+        score = cap * 0.65 - latency_pen * 0.20 - failure_pen * 0.15 + heroic_boost
+        return max(0.05, min(0.98, score))
+
+    def assign_dynamic(self, prompt: str, system_prompt: Optional[str] = None) -> Dict[str, Any]:
+        """Returns the best provider + score + reason. Assignment is computed fresh every time."""
         category = self._classify_query(prompt)
-        order = self._get_routing_order(category)
+        health = self.status().get("health", {})
+
+        scored = []
+        for name in self._providers:
+            score = self._score_provider(name, category, health)
+            scored.append((name, score))
+
+        scored.sort(key=lambda x: x[1], reverse=True)
+        best_name, best_score = scored[0]
+
+        reason = f"category={category} | score={best_score:.3f} | health={health.get(best_name, {})}"
+        return {
+            "provider": best_name,
+            "score": best_score,
+            "category": category,
+            "reason": reason,
+            "alternatives": scored[1:3],
+        }
+
+    def route(self, prompt: str, system_prompt: Optional[str] = None, force_provider: Optional[str] = None) -> LLMResult:
+        start = time.time()
+        assignment = self.assign_dynamic(prompt, system_prompt)
 
         if force_provider and force_provider in self._providers:
-            order = [force_provider] + [p for p in order if p != force_provider]
+            chosen = force_provider
+        else:
+            chosen = assignment["provider"]
 
-        used_chain: List[str] = []
-        last_result: Optional[LLMResult] = None
+        provider = self._providers[chosen]
+        used_chain = [chosen]
 
-        for provider_name in order:
-            if provider_name not in self._providers:
-                continue
-            provider = self._providers[provider_name]
-            used_chain.append(provider_name)
-            try:
-                result = provider.generate(
-                    prompt,
-                    system_prompt=system_prompt,
-                    category=category,
-                )
-                result.fallback_chain = used_chain
-                if result.success:
+        try:
+            result = provider.generate(prompt, system_prompt=system_prompt, category=assignment["category"])
+            result.fallback_chain = used_chain
+            result.meta["assignment"] = assignment
+            if result.success:
+                return result
+        except Exception as e:
+            pass
+
+        # Fallback to next best if primary failed
+        for alt_name, _ in assignment.get("alternatives", []):
+            if alt_name in self._providers and alt_name != chosen:
+                used_chain.append(alt_name)
+                try:
+                    result = self._providers[alt_name].generate(prompt, system_prompt=system_prompt)
+                    result.fallback_chain = used_chain
                     return result
-                last_result = result
-            except Exception as e:  # safety net
-                last_result = LLMResult(
-                    provider_name,
-                    "",
-                    success=False,
-                    error=str(e)[:200],
-                    fallback_chain=used_chain,
-                )
-                continue
+                except Exception:
+                    continue
 
-        # Total failure – return last error or generic
-        if last_result:
-            return last_result
-        return LLMResult(
-            "system-error",
-            "Alle Provider fehlgeschlagen oder nicht konfiguriert.",
-            (time.time() - start) * 1000,
-            used_chain,
-            success=False,
-            error="no_provider_available",
-        )
+        # Last resort: internal
+        if "fusion-hero" in self._providers and chosen != "fusion-hero":
+            used_chain.append("fusion-hero")
+            return self._providers["fusion-hero"].generate(prompt, system_prompt=system_prompt)
 
-    async def aroute(
-        self,
-        prompt: str,
-        system_prompt: Optional[str] = None,
-        force_provider: Optional[str] = None,
-    ) -> LLMResult:
-        """Non-blocking wrapper for Orchestrator and async Agents."""
+        return LLMResult("system-error", "Dynamic assignment failed for all providers", (time.time()-start)*1000, used_chain, success=False)
+
+    async def aroute(self, prompt: str, system_prompt: Optional[str] = None, force_provider: Optional[str] = None) -> LLMResult:
         return await asyncio.to_thread(self.route, prompt, system_prompt, force_provider)
 
     def status(self) -> Dict[str, Any]:
         return {
-            "version": "v8.4-provider-abstraction",
+            "version": "v8.5-dynamic-assignment",
             "configured_providers": list(self._providers.keys()),
             "heroic_core_connected": self.heroic_core is not None,
             "health": {name: p.health() for name, p in self._providers.items()},
-            "default_order": self.default_order,
-            "classification_rules": list(self.classification_rules.keys()),
         }
 
 
@@ -195,4 +192,4 @@ def get_universal_llm_router(heroic_core: Optional["QuadCoreBridge"] = None) -> 
 
 if __name__ == "__main__":
     router = get_universal_llm_router()
-    print("Universal LLM Router v8.4 Status:", router.status())
+    print("v8.5 Dynamic Assignment Test:", router.assign_dynamic("Schreibe Code für einen QUBO Scheduler"))

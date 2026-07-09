@@ -1,7 +1,4 @@
-"""EveryAPI provider for Fusion Hero OS v8.4 Universal LLM Router.
-
-Fully ENV-configurable endpoint so the same code works with any EveryAPI-compatible backend.
-"""
+"""EveryAPI provider v8.5 - good for simple_fact / general tasks."""
 
 from __future__ import annotations
 
@@ -19,6 +16,14 @@ from .base import BaseLLMProvider, LLMResult
 
 class EveryAPIProvider(BaseLLMProvider):
     name = "everyapi"
+    capabilities = {
+        "code": 0.55,
+        "current_events": 0.60,
+        "simple_fact": 0.88,
+        "creative": 0.65,
+        "heroic_core": 0.50,
+        "default": 0.70,
+    }
 
     def __init__(self, config: Optional[Dict[str, Any]] = None) -> None:
         super().__init__(config)
@@ -31,18 +36,11 @@ class EveryAPIProvider(BaseLLMProvider):
 
     def generate(self, prompt: str, system_prompt: Optional[str] = None, **kwargs: Any) -> LLMResult:
         if not self.is_available():
-            return LLMResult(self.name, "", success=False, error="EveryAPI key or requests missing")
+            return LLMResult(self.name, "", success=False, error="EveryAPI not configured")
         start = time.time()
         try:
-            headers = {
-                "Authorization": f"Bearer {self.api_key}",
-                "Content-Type": "application/json",
-            }
-            payload = {
-                "model": self.model,
-                "message": prompt,
-                "max_tokens": kwargs.get("max_tokens", 2048),
-            }
+            headers = {"Authorization": f"Bearer {self.api_key}", "Content-Type": "application/json"}
+            payload = {"model": self.model, "message": prompt, "max_tokens": kwargs.get("max_tokens", 2048)}
             r = requests.post(self.base_url, json=payload, headers=headers, timeout=30)
             if r.status_code == 200:
                 data = r.json()
@@ -53,8 +51,8 @@ class EveryAPIProvider(BaseLLMProvider):
             else:
                 latency = (time.time() - start) * 1000
                 self._record(False, latency, f"HTTP {r.status_code}")
-                return LLMResult(self.name, "", latency, success=False, error=f"EveryAPI {r.status_code}: {r.text[:200]}")
-        except Exception as e:  # noqa: BLE001
+                return LLMResult(self.name, "", latency, success=False, error=f"HTTP {r.status_code}")
+        except Exception as e:
             latency = (time.time() - start) * 1000
             self._record(False, latency, str(e))
             return LLMResult(self.name, "", latency, success=False, error=str(e)[:300])
