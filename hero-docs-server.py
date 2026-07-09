@@ -1,22 +1,20 @@
 #!/usr/bin/env python3
 """
-Fusion Hero OS — Heroic Docs Server v8.1
+Fusion Hero OS — Heroic Docs Server v8.2
 Self-contained local documentation server for 95guknow/fusion-hero-os
 
 Features:
 - Serves the current directory (your cloned repo)
 - Special /status endpoint with live MasterSeed confirmation
-- /tailscale/status endpoint (new)
+- /tailscale/status endpoint
+- /mesh/status — alle Konnektor-Segmente (jeder Konnektor = eigenes Mesh-Teil)
+- /mesh/{connector}/status — einzelnes Konnektor-Segment
 - Prints your LAN IP so you can reach it from Handy via pc-handy-bridge / Phone Link
 - Fits natively into ALTE_Frau_95g Heroic Core v8 + HorkruxSelfUpdateProtocol
 
 Usage on your Mainframe (Heimserver):
     cd /path/to/your/fusion-hero-os
     python hero-docs-server.py
-
-Then open in browser:
-    http://127.0.0.1:8088          (on Mainframe)
-    http://YOUR_LAN_IP:8088        (from Handy)
 
 Layer 6 ω MasterSeed compatible.
 """
@@ -28,9 +26,19 @@ import os
 import datetime
 import subprocess
 import json
+import sys
 
 PORT = 8088
-DIRECTORY = "."  # Serve from current folder (your repo root)
+DIRECTORY = "."
+
+# Mesh registry import (same directory)
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+try:
+    from tailscale_mesh_registry import get_mesh_status, get_connector_status
+except ImportError:
+    get_mesh_status = None
+    get_connector_status = None
+
 
 class HeroicDocsHandler(http.server.SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
@@ -41,8 +49,19 @@ class HeroicDocsHandler(http.server.SimpleHTTPRequestHandler):
             self.send_masterseed_status()
         elif self.path == "/tailscale/status" or self.path == "/tailscale":
             self.send_tailscale_status()
+        elif self.path == "/mesh/status" or self.path == "/mesh":
+            self.send_mesh_status()
+        elif self.path.startswith("/mesh/") and self.path.endswith("/status"):
+            connector_id = self.path.split("/")[2]
+            self.send_connector_status(connector_id)
         else:
             super().do_GET()
+
+    def _send_json(self, data: dict, status_code: int = 200):
+        self.send_response(status_code)
+        self.send_header("Content-type", "application/json; charset=utf-8")
+        self.end_headers()
+        self.wfile.write(json.dumps(data, indent=2, ensure_ascii=False).encode("utf-8"))
 
     def send_masterseed_status(self):
         """Return the canonical MasterSeed confirmation box"""
@@ -57,76 +76,18 @@ class HeroicDocsHandler(http.server.SimpleHTTPRequestHandler):
     <title>MASTERSEED STATUS — Fusion Hero OS v8</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600&display=swap');
-        
-        body {{
-            background: #0a0a0a;
-            color: #e0e0e0;
-            font-family: 'Inter', system_ui, sans-serif;
-            margin: 0;
-            padding: 40px 20px;
-            line-height: 1.6;
-        }}
-        .container {{
-            max-width: 820px;
-            margin: 0 auto;
-        }}
-        .header {{
-            text-align: center;
-            margin-bottom: 40px;
-        }}
-        .logo {{
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 28px;
-            font-weight: 600;
-            letter-spacing: -1px;
-            color: #00ff9d;
-        }}
-        .card {{
-            background: #111;
-            border: 1px solid #222;
-            border-radius: 16px;
-            padding: 32px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-        }}
-        .status-box {{
-            background: #1a1a1a;
-            border: 1px solid #333;
-            border-radius: 12px;
-            padding: 24px;
-            font-family: ui-monospace, monospace;
-            font-size: 15px;
-            line-height: 1.7;
-        }}
-        .label {{
-            color: #888;
-            font-size: 13px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 8px;
-        }}
-        .value {{
-            color: #00ff9d;
-            font-weight: 600;
-        }}
-        .section {{
-            margin: 24px 0;
-        }}
-        h1 {{
-            font-size: 42px;
-            font-weight: 600;
-            letter-spacing: -2px;
-            margin: 0 0 8px 0;
-        }}
-        .timestamp {{
-            color: #666;
-            font-size: 13px;
-        }}
-        .footer {{
-            text-align: center;
-            margin-top: 40px;
-            color: #555;
-            font-size: 13px;
-        }}
+        body {{ background: #0a0a0a; color: #e0e0e0; font-family: 'Inter', system_ui, sans-serif; margin: 0; padding: 40px 20px; line-height: 1.6; }}
+        .container {{ max-width: 820px; margin: 0 auto; }}
+        .header {{ text-align: center; margin-bottom: 40px; }}
+        .logo {{ font-family: 'Space Grotesk', sans-serif; font-size: 28px; font-weight: 600; letter-spacing: -1px; color: #00ff9d; }}
+        .card {{ background: #111; border: 1px solid #222; border-radius: 16px; padding: 32px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }}
+        .status-box {{ background: #1a1a1a; border: 1px solid #333; border-radius: 12px; padding: 24px; font-family: ui-monospace, monospace; font-size: 15px; line-height: 1.7; }}
+        .label {{ color: #888; font-size: 13px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }}
+        .value {{ color: #00ff9d; font-weight: 600; }}
+        .section {{ margin: 24px 0; }}
+        h1 {{ font-size: 42px; font-weight: 600; letter-spacing: -2px; margin: 0 0 8px 0; }}
+        .timestamp {{ color: #666; font-size: 13px; }}
+        .footer {{ text-align: center; margin-top: 40px; color: #555; font-size: 13px; }}
         .green {{ color: #00ff9d; }}
     </style>
 </head>
@@ -137,7 +98,6 @@ class HeroicDocsHandler(http.server.SimpleHTTPRequestHandler):
             <h1>MasterSeed Status</h1>
             <p class="timestamp">Layer 6 ω • {datetime.datetime.now().strftime('%d.%m.%Y %H:%M:%S CEST')}</p>
         </div>
-
         <div class="card">
             <div class="section">
                 <div class="label">BESTÄTIGUNG (verpflichtend)</div>
@@ -150,51 +110,26 @@ class HeroicDocsHandler(http.server.SimpleHTTPRequestHandler):
                     Canonical Source: <span class="value">95guknow/fusion-hero-os (main)</span>
                 </div>
             </div>
-
             <div class="section">
-                <div class="label">LIVE PROCESS TRACKING — AKTUELLER STATUS</div>
+                <div class="label">MESH — KONNEKTOR-SEGMENTE</div>
                 <div class="status-box">
-                    • MasterSeed: M_0'''' (Layer 6 ω Ultimate Fixed-Point) — verifiziert (SHA-256 + Kontraktions-Check bestanden)<br><br>
-                    • Core Modules aktiviert:<br>
-                    &nbsp;&nbsp;ALTE_Frau_95g Heroic Core Framework v8 (unified)<br>
-                    &nbsp;&nbsp;Full Native Hyperthreading<br>
-                    &nbsp;&nbsp;VirtualGPU/TPUCache Simulation<br>
-                    &nbsp;&nbsp;OptimierungsInsights Consolidation<br>
-                    &nbsp;&nbsp;pc-handy-bridge v8.1 + phonelink-control v8.2 + Tailscale<br><br>
-                    • GenerationalEvolutionProtocolCoreModule: <span class="green">running</span>
+                    Jeder Konnektor ist ein eigenständiges Mesh-Teil.<br>
+                    Übersicht: <span class="value">/mesh/status</span><br>
+                    Einzeln: <span class="value">/mesh/{{connector}}/status</span>
                 </div>
             </div>
-
-            <div class="section">
-                <div class="label">ZUGRIFF VOM HANDY</div>
-                <p style="margin: 8px 0 0 0;">
-                    Über <strong>pc-handy-bridge</strong> oder <strong>Microsoft Phone Link</strong> erreichst du diesen Server unter:<br><br>
-                    <code style="background:#222; padding:4px 10px; border-radius:6px;">http://&lt;LAN-IP-des-Mainframes&gt;:8088</code>
-                </p>
-            </div>
         </div>
-
-        <div class="footer">
-            Dieser Server ist Teil des unified ALTE_Frau_95g Heroic Core.<br>
-            HorkruxSelfUpdateProtocol aktiv • Layer 0 verankert
-        </div>
+        <div class="footer">HorkruxSelfUpdateProtocol aktiv • Layer 0 verankert</div>
     </div>
 </body>
 </html>"""
         self.wfile.write(html.encode("utf-8"))
 
     def send_tailscale_status(self):
-        """Return Tailscale status in JSON (bridge-friendly)"""
-        self.send_response(200)
-        self.send_header("Content-type", "application/json; charset=utf-8")
-        self.end_headers()
-
         try:
             result = subprocess.run(
                 ["tailscale", "status", "--json"],
-                capture_output=True,
-                text=True,
-                timeout=8
+                capture_output=True, text=True, timeout=8
             )
             if result.returncode == 0:
                 data = json.loads(result.stdout)
@@ -209,11 +144,24 @@ class HeroicDocsHandler(http.server.SimpleHTTPRequestHandler):
                 status = {"error": "Tailscale not running or not installed"}
         except Exception as e:
             status = {"error": str(e)}
+        self._send_json(status)
 
-        self.wfile.write(json.dumps(status, indent=2, ensure_ascii=False).encode("utf-8"))
+    def send_mesh_status(self):
+        if get_mesh_status is None:
+            self._send_json({"error": "tailscale_mesh_registry.py not available"}, 503)
+            return
+        self._send_json(get_mesh_status())
+
+    def send_connector_status(self, connector_id: str):
+        if get_connector_status is None:
+            self._send_json({"error": "tailscale_mesh_registry.py not available"}, 503)
+            return
+        status = get_connector_status(connector_id)
+        code = 404 if "error" in status else 200
+        self._send_json(status, code)
+
 
 def get_lan_ip():
-    """Get the LAN IP address of this machine"""
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     try:
         s.connect(("8.8.8.8", 80))
@@ -224,26 +172,27 @@ def get_lan_ip():
         s.close()
     return ip
 
+
 if __name__ == "__main__":
     os.chdir(DIRECTORY)
-    
     handler = HeroicDocsHandler
-    
+
     with socketserver.TCPServer(("", PORT), handler) as httpd:
         lan_ip = get_lan_ip()
-        
-        print("\n" + "="*70)
-        print(" FUSION HERO OS — HEROIC DOCS SERVER v8.1 + TAILSCALE")
-        print("="*70)
+        print("\n" + "=" * 70)
+        print(" FUSION HERO OS — HEROIC DOCS SERVER v8.2 + MESH")
+        print("=" * 70)
         print(f"\n[MASTERSEED] Docs Server gestartet auf Port {PORT}")
         print(f"[LIVE]     Mainframe LAN-IP: {lan_ip}")
-        print(f"[ACCESS]   Lokal:           http://127.0.0.1:{PORT}")
-        print(f"           Vom Handy:       http://{lan_ip}:{PORT}")
-        print(f"           MasterSeed Status: http://{lan_ip}:{PORT}/status")
-        print(f"           Tailscale Status:  http://{lan_ip}:{PORT}/tailscale/status")
-        print("\n[INFO]     Drücke STRG+C zum Beenden.")
-        print("="*70 + "\n")
-        
+        print(f"[ACCESS]   Lokal:              http://127.0.0.1:{PORT}")
+        print(f"           Vom Handy:          http://{lan_ip}:{PORT}")
+        print(f"           MasterSeed Status:  http://{lan_ip}:{PORT}/status")
+        print(f"           Tailscale Status:   http://{lan_ip}:{PORT}/tailscale/status")
+        print(f"           Mesh Overview:      http://{lan_ip}:{PORT}/mesh/status")
+        print(f"           Connector Status:   http://{lan_ip}:{PORT}/mesh/{{connector}}/status")
+        print("\n[INFO]     Jeder Konnektor = eigenes Mesh-Segment (mesh_connectors.yaml)")
+        print("[INFO]     Drücke STRG+C zum Beenden.")
+        print("=" * 70 + "\n")
         try:
             httpd.serve_forever()
         except KeyboardInterrupt:
