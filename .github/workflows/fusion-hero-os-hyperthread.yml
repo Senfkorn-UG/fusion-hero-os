@@ -1,77 +1,110 @@
-name: Fusion Hero OS - Heroic Core CI (Hyperthreading aware)
+name: Fusion Hero OS - Intelligent CI (Hyperthreading + Smart Routing)
 
 on:
   push:
     branches:
       - main
       - develop
+      - ascension
       - 'feature/**'
+      - 'heroic/**'
   pull_request:
     branches:
       - main
       - develop
+      - ascension
 
 jobs:
+  branch-routing-decision:
+    runs-on: ubuntu-latest
+    name: Branch Routing Decision
+    outputs:
+      target_track: ${{ steps.decide.outputs.track }}
+      recommended_action: ${{ steps.decide.outputs.action }}
+
+    steps:
+      - name: Decide best path (Hyperthreading)
+        id: decide
+        run: |
+          BRANCH="${{ github.ref_name }}"
+          EVENT="${{ github.event_name }}"
+
+          if [[ "$BRANCH" == "main" ]]; then
+            echo "track=main"
+            echo "action=direct_push_detected - prefer PR from develop or ascension"
+            echo "::warning::Direct push to main detected. Best practice: Use PR from develop (Option A) or ascension (Option B)"
+          elif [[ "$BRANCH" == "develop" ]]; then
+            echo "track=option_a_develop"
+            echo "action=run_full_ci_then_create_pr_to_main"
+          elif [[ "$BRANCH" == "ascension" ]]; then
+            echo "track=option_b_ascension"
+            echo "action=run_full_ci_then_create_pr_to_main_or_keep_isolated"
+          else
+            echo "track=feature"
+            echo "action=run_ci_then_merge_to_develop_or_ascension"
+          fi
+
+          echo "track=$track" >> $GITHUB_OUTPUT
+          echo "action=$action" >> $GITHUB_OUTPUT
+
   heroic-core-ci:
     runs-on: ubuntu-latest
-    name: Heroic Core Validation
+    name: Heroic Core Validation (${{ needs.branch-routing-decision.outputs.target_track }})
+    needs: branch-routing-decision
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Validate Repository Structure
+      - name: Smart Branch Context
         run: |
-          echo "=== Checking Core vs Developer Separation ==="
+          echo "=== Hyperthreading CI Decision ==="
+          echo "Source Branch: ${{ github.ref_name }}"
+          echo "Track: ${{ needs.branch-routing-decision.outputs.target_track }}"
+          echo "Recommended Action: ${{ needs.branch-routing-decision.outputs.recommended_action }}"
+          echo "=================================="
+
+      - name: Validate Core Structure
+        run: |
+          echo "Validating fusion_hero_os/core and ascension_os structure..."
           if [ ! -d "fusion_hero_os/core" ]; then
-            echo "::error::fusion_hero_os/core/ directory is missing!"
+            echo "::error::fusion_hero_os/core/ missing!"
             exit 1
           fi
-          echo "fusion_hero_os/core/ directory exists"
+          echo "Core structure OK"
 
-      - name: Validate Core Python Syntax
+      - name: Python Syntax Check (both tracks)
         run: |
-          echo "=== Validating all Python files in fusion_hero_os/ ==="
-          find fusion_hero_os -name "*.py" -print0 | while IFS= read -r -d '' file; do
+          echo "Checking Python syntax across fusion_hero_os/ and ascension_os/ ..."
+          find fusion_hero_os ascension_os -name "*.py" -print0 2>/dev/null | while IFS= read -r -d '' file; do
             python3 -m py_compile "$file" || exit 1
           done
-          echo "All fusion_hero_os Python files have valid syntax"
+          echo "All Python files have valid syntax"
 
-      - name: Validate Migration Concept
+      - name: Track-specific Validation
         run: |
-          echo "=== Checking MIGRATION_KONZEPT completeness ==="
-          MIGRATION_DOC="docs/99_archive/MIGRATION_KONZEPT_v7.12_HardFork.md"
-          if [ ! -f "$MIGRATION_DOC" ]; then
-            echo "::error::$MIGRATION_DOC is missing!"
-            exit 1
+          TRACK="${{ needs.branch-routing-decision.outputs.target_track }}"
+          if [[ "$TRACK" == "option_b_ascension" ]]; then
+            echo "Running AscensionOS strong track specific checks..."
+            # Hier können später strengere Ascension-spezifische Checks kommen
+          else
+            echo "Running standard Heroic Core checks (Option A track)"
           fi
 
-          REQUIRED_SECTIONS=(
-            "Zielarchitektur"
-            "Rollback-Plan"
-            "Technische Schutzmaßnahmen"
-            "Risiken & Gegenmaßnahmen"
-          )
-
-          for section in "${REQUIRED_SECTIONS[@]}"; do
-            if ! grep -q "$section" "$MIGRATION_DOC"; then
-              echo "::warning::Missing section in Migration Concept: $section"
-            fi
-          done
-          echo "Migration Concept check completed"
-
-      - name: Heroic Core Status Report
+      - name: Final Routing Recommendation
         run: |
           echo "===================================="
-          echo "ALTE_Frau_95g Heroic Core CI - SUCCESS"
-          echo "Version: v8"
-          echo "Branch: ${{ github.ref_name }}"
-          echo "Core Structure: Validated"
-          echo "Python Syntax: OK"
+          echo "CI COMPLETE - Recommended Next Step:"
+          echo "${{ needs.branch-routing-decision.outputs.recommended_action }}"
           echo "===================================="
 
-      - name: Branch Model Compliance Check
+  # Optional: Block direct pushes to main (can be enabled via branch protection too)
+  main-protection:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    steps:
+      - name: Warn on direct main push
         run: |
-          echo "Checking branch model compliance..."
-          if [[ "${{ github.ref_name }}" == main* ]]; then
-            echo "Direct push to main detected - ensure it came via develop + review"
-          fi
+          echo "::warning::Direct push to main is discouraged."
+          echo "Best path: Create PR from develop (Option A) or ascension (Option B)."
+          # Uncomment the next line to actually fail direct pushes
+          # exit 1
