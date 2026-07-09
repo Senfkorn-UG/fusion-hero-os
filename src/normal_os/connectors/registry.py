@@ -1,13 +1,7 @@
 """
-ConnectorRegistry for normalOS
+ConnectorRegistry for normalOS (expanded)
 
-Central registry for all external connectors.
-Allows the Orchestrator and Agents to discover and use
-GitHub, Google Drive, Notion, Gmail, Calendar, Bridge etc.
-in a uniform way.
-
-This is the explicit anchoring of all available Grok connectors
-into the normalOS architecture.
+Now also registers the PCBridgeConnector by default.
 """
 
 from typing import Dict, Type, Optional
@@ -15,6 +9,7 @@ from .base import BaseConnector, ConnectorConfig
 from .github_connector import GitHubConnector
 from .google_drive_connector import GoogleDriveConnector
 from .notion_connector import NotionConnector
+from .pc_bridge_connector import PCBridgeConnector
 
 
 class ConnectorRegistry:
@@ -25,11 +20,11 @@ class ConnectorRegistry:
         self._register_defaults()
 
     def _register_defaults(self):
-        """Register the core set of connectors autonomously."""
         self.register("github", GitHubConnector())
         self.register("google_drive", GoogleDriveConnector())
         self.register("notion", NotionConnector())
-        # More connectors will be added autonomously (Gmail, Calendar, Bridge, etc.)
+        self.register("pc_bridge", PCBridgeConnector())
+        # Gmail, Calendar, Canva etc. will be added autonomously
 
     def register(self, name: str, connector: BaseConnector):
         self._connectors[name.lower()] = connector
