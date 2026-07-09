@@ -55,15 +55,103 @@ def _get_tailscale_raw() -> dict:
         if r.returncode == 0:
             data = json.loads(r.stdout)
             self_data = data.get("Self", {})
+            peer_data = data.get("Peer") or {}
+            peers = []
+            for _pk, p in peer_data.items():
+                peers.append({
+                    "hostname": p.get("HostName"),
+                    "os": p.get("OS"),
+                    "online": p.get("Online", False),
+                    "magicdns": (p.get("DNSName") or "").rstrip("."),
+                    "ip": (p.get("TailscaleIPs") or [None])[0],
+                })
+            login = ""
+            for uid, u in (data.get("User") or {}).items():
+                login = u.get("LoginName", login)
             return {
                 "online": self_data.get("Online", False),
                 "hostname": self_data.get("HostName"),
                 "tailscale_ip": (self_data.get("TailscaleIPs") or [None])[0],
-                "peers": len(data.get("Peer") or {}),
+                "magicdns": (self_data.get("DNSName") or "").rstrip("."),
+                "peers": len(peers),
+                "peer_list": peers,
+                "tailnet": (data.get("CurrentTailnet") or {}).get("Name"),
+                "login": login,
             }
     except Exception as e:
         return {"online": False, "error": str(e)}
     return {"online": False}
+
+
+def _get_vr_status() -> dict:
+    """VR assets + Highest Layer mit VR."""
+    root = Path(os.environ.get("FUSION_HERO_ROOT", str(ROOT)))
+    vr_root = Path(os.environ.get("FUSION_VR_ASSETS_ROOT", str(root / "03_VR_Assets")))
+    expected = [
+        "vr_mister_jailbait_hero_equirectangular.jpg",
+        "heroic_evolution_fractal.jpg",
+    ]
+    assets = []
+    for name in expected:
+        p = vr_root / name
+        assets.append({
+            "file": name,
+            "exists": p.exists(),
+            "size_bytes": p.stat().st_size if p.exists() else 0,
+        })
+    layer = {}
+    hl_path = CODE_DIR / "heroic-highest-layer"
+    try:
+        if str(hl_path) not in sys.path:
+            sys.path.insert(0, str(hl_path))
+        from highest_layer import load_vr
+        layer = load_vr().get_vr_status()
+    except Exception as e:
+        layer = {"error": str(e)}
+    present = sum(1 for a in assets if a["exists"] and a["size_bytes"] > 10000)
+    return {
+        "assets_root": str(vr_root),
+        "assets": assets,
+        "assets_ready": present,
+        "assets_total": len(expected),
+        "viewer_path": "/vr/viewer",
+        "dashboard_port": 8000,
+        "layer": layer,
+        "status": "ready" if present == len(expected) else "needs_assets",
+    }
+
+
+def _get_workstation() -> dict:
+    ws = Path.home() / "normalOS-workstation" / "paths.json"
+    if not ws.exists():
+        return {"configured": False}
+    try:
+        with open(ws, encoding="utf-8") as f:
+            return {"configured": True, "paths": json.load(f)}
+    except Exception as e:
+        return {"configured": False, "error": str(e)}
+
+
+def _check_phone_visibility(unified: dict, tailscale: dict) -> dict:
+    """Warnung wenn Phone in Config aber nicht in Tailscale-Peers."""
+    phone_cfg = (unified.get("nodes") or {}).get("phone", {})
+    expected = phone_cfg.get("hostname", "redmi-note-13-pro-5g")
+    peer_list = tailscale.get("peer_list") or []
+    found = any(
+        expected.lower() in (p.get("hostname") or "").lower()
+        or expected.lower() in (p.get("magicdns") or "").lower()
+        for p in peer_list
+    )
+    hint = phone_cfg.get("login_hint") or (
+        "Handy und PC muessen im gleichen Tailnet sein (gleicher Login: Google, nicht GitHub)"
+    )
+    return {
+        "expected_hostname": expected,
+        "visible": found,
+        "peer_count": tailscale.get("peers", 0),
+        "account_login": tailscale.get("login"),
+        "fix_hint": None if found else hint,
+    }
 
 
 def _build_graph(unified: dict, mesh: dict, llm: dict) -> dict:
@@ -116,6 +204,8 @@ def _build_graph(unified: dict, mesh: dict, llm: dict) -> dict:
         {"from": role, "to": llm_id, "relation": "trinity_role"}
         for role, llm_id in trinity.items()
     ]
+    node_edges = unified.get("node_edges", [])
+    ws = unified.get("workstation", {})
 
     return {
         "nodes": nodes,
@@ -125,7 +215,9 @@ def _build_graph(unified: dict, mesh: dict, llm: dict) -> dict:
             for c, l in links.items()
         ],
         "trinity_edges": trinity_edges,
-        "edge_count": len(links) + len(trinity),
+        "node_edges": node_edges,
+        "workstation": ws,
+        "edge_count": len(links) + len(trinity) + len(node_edges),
     }
 
 
@@ -135,6 +227,9 @@ def get_unified_status() -> dict:
     mesh = _get_mesh_status()
     llm = _get_llm_status()
     tailscale = _get_tailscale_raw()
+    workstation = _get_workstation()
+    phone_check = _check_phone_visibility(unified, tailscale)
+    vr_status = _get_vr_status()
     graph = _build_graph(unified, mesh, llm)
 
     mesh_ok = mesh.get("connectors_registered", 0) > 0 or not mesh.get("error")
@@ -150,8 +245,10 @@ def get_unified_status() -> dict:
             "network": "online" if net_ok else "offline",
             "connectors": f"{mesh.get('connectors_registered', 0)}/{mesh.get('connector_count', 0)}",
             "llm": "live" if llm_ok else "no_keys",
+            "vr": vr_status.get("status", "unknown"),
             "overall": "healthy" if (mesh_ok or llm_ok) else "degraded",
         },
+        "vr": vr_status,
         "tailscale": tailscale,
         "mesh_summary": {
             "connector_count": mesh.get("connector_count"),
@@ -166,6 +263,8 @@ def get_unified_status() -> dict:
         "trinity_roles": unified.get("trinity_roles", {}),
         "connector_llm_links": unified.get("connector_llm_links", {}),
         "endpoints": unified.get("endpoints", {}),
+        "workstation": workstation,
+        "phone_mesh": phone_check,
         "graph": graph,
     }
 

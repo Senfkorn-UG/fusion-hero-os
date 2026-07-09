@@ -28,6 +28,16 @@ nodes:
       - grok-cli
       - mcp-bridges
 
+  phone:
+    role: mobile-client
+    hostname: redmi-note-13-pro-5g
+    magicdns: redmi-note-13-pro-5g.tail391adb.ts.net
+    platform: android
+    tailscale_tag: tag:fusion-node-phone
+    services:
+      - tailscale-app
+      - phone-link-bridge
+
 # MCP-Konnektoren — jeweils eigenes Mesh-Segment (logisch isoliert)
 connectors:
   github:
