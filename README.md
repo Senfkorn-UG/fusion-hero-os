@@ -1,54 +1,71 @@
-# Tailscale Integration – Fusion Hero OS v8
+# Tailscale Mesh Integration – Fusion Hero OS v8
 
-**Status:** Neu implementiert (09.07.2026)  
-**Zweck:** Zero-Config VPN für sicheren Zugriff auf den Heimserver von überall (inkl. Phone-Bridge-Steuerung)
+**Status:** Vollständig integriert (09.07.2026)  
+**Zweck:** Zero-Config Mesh-VPN + Phone-Bridge + Funnel für den gesamten Heimserver
 
 ## Was ist das?
 
-Tailscale ist ein modernes WireGuard-basiertes Mesh-VPN. Es erlaubt dir:
-- Deinen Heimserver sicher von unterwegs zu erreichen (ohne Port-Forwarding)
-- Einfache Authentifizierung über GitHub / Google / Microsoft
-- Nahtlose Integration mit `pc-handy-bridge` + `phonelink-control`
+Vollständige Tailscale-Integration als **Mesh** innerhalb von Fusion Hero OS:
 
-## Schnellstart (auf dem Heimserver)
+- Sicherer Zugriff von überall (MagicDNS + Funnel)
+- Phone-Benachrichtigungen via `pc-handy-bridge` + `phonelink-control`
+- Zentrale Steuerung über ein Control Center
+- Live-Status direkt im `hero-docs-server`
+
+## Ein-Klick Mesh Setup
 
 ```bash
-# 1. Installation + Setup
 cd tools/tailscale
-chmod +x tailscale_install.sh
-./tailscale_install.sh
 
-# 2. Tailscale starten + als Service einrichten
-./tailscale_start.sh
+# Vollständige Initialisierung (empfohlen)
+chmod +x tailscale_control.sh
+sudo ./tailscale_control.sh all
 ```
 
-Danach kannst du im Tailscale Admin Console (https://login.tailscale.com) deinen Server sehen und freigeben.
+Oder einzeln:
 
-## Phone-Bridge Integration (empfohlen)
+```bash
+./tailscale_control.sh install
+./tailscale_control.sh start
+./tailscale_control.sh funnel
+./tailscale_control.sh notify
+```
 
-Die Integration ist so designed, dass du Tailscale-Status und Start/Stop **vom Handy aus** über die Bridge steuern kannst.
+## Verfügbare Kommandos
 
-Zukünftige Erweiterung (bereits vorbereitet):
-- `tailscale_phone_notify.py` → sendet Status-Updates via `phonelink-control` an dein Handy
-- Status-Abfrage über `hero-docs-server` Endpoint möglich
+| Command     | Beschreibung                              |
+|-------------|-------------------------------------------|
+| `install`   | Installation + Authentifizierung          |
+| `start`     | Start + Service einrichten                |
+| `status`    | Aktuellen Status anzeigen                 |
+| `funnel`    | Funnel für Hero Docs Server aktivieren    |
+| `notify`    | Phone Notification Monitor starten        |
+| `all`       | Komplettes Mesh-Setup                     |
+
+## Erreichbare URLs (nach Funnel + MagicDNS)
+
+- **Hero Docs Server**: `https://host.example.ts.net`
+- **MasterSeed Status**: `https://host.example.ts.net/status`
+- **Tailscale Status**: `https://host.example.ts.net/tailscale/status`
+
+## Phone-Bridge Integration
+
+- `tailscale_phone_notify.py` sendet Connect/Disconnect Events ans Handy
+- Status-Abfrage möglich über `hero-docs-server`
+- Zukünftig: Direkte Steuerung vom Handy aus
 
 ## Dateien
 
-| Datei                        | Zweck                                      |
-|-----------------------------|--------------------------------------------|
-| `tailscale_install.sh`      | Ein-Klick Installation + Auth              |
-| `tailscale_start.sh`        | Startet Tailscale + richtet Service ein    |
-| `tailscale_status.py`       | Status-Abfrage (Python, bridge-fähig)      |
-| `README.md`                 | Diese Anleitung                            |
-
-## Nächste Schritte (geplant)
-
-- [ ] Phone-Notification beim Connect/Disconnect
-- [ ] Automatischer Start beim Mainframe-Boot
-- [ ] `/tailscale/status` Endpoint im `hero-docs-server`
-- [ ] One-Command "Tailscale aktivieren vom Handy aus"
+| Datei                        | Zweck                                           |
+|-----------------------------|-------------------------------------------------|
+| `tailscale_control.sh`      | Zentrales Control Center (Mesh Orchestrator)    |
+| `tailscale_install.sh`      | Installation + Login                            |
+| `tailscale_start.sh`        | Start + Service                                 |
+| `tailscale_status.py`       | Status als JSON (Bridge-fähig)                  |
+| `tailscale_funnel.sh`       | Funnel-Aktivierung für öffentlichen Zugriff     |
+| `tailscale_phone_notify.py` | Phone Notifications bei Status-Änderung         |
+| `README.md`                 | Diese Anleitung                                 |
 
 ---
 
-**Layer 0 verankert** – passt zum Fusion Hero OS v8 Standard.  
-Möchtest du die Phone-Notification + Status-Endpoint jetzt auch noch direkt implementieren?
+**Layer 0 verankert** – Vollständig integriert in ALTE_Frau_95g Heroic Core v8 + HorkruxSelfUpdateProtocol.
