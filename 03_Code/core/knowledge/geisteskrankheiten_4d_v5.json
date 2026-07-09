@@ -2,7 +2,11 @@
   "id": "geisteskrankheiten_4d_v5",
   "version": "5.0",
   "source": "v4 + visual_pi_KG_SN + einzelfall_trajektorien",
+<<<<<<< HEAD
   "updated_ts": 1783178702.5387719,
+=======
+  "updated_ts": 1783568998.7102616,
+>>>>>>> 1e9b21f (auto-save [2026-07-09_05-50-13] main - M 03_Code/core/knowledge/geisteskrankheiten_4d_v2.json | M 03_Code/core/knowledge/geisteskrankheiten_4d_v4.json | M 03_Code/core/knowledge/geisteskrankheiten_4d_v5.json)
   "files": {
     "v4_full": "C:\\Users\\Admin\\Downloads\\Masterarchiv_Der_heroische_Mensch\\Geisteskrankheiten_4D_Matrix_v4_vollstaendig.md",
     "v5_extension": "Geisteskrankheiten_4D_Visual_Trajektorien_v5.md",
@@ -36,5 +40,5 @@
     "autismus_masking"
   ],
   "chars": 66023,
-  "path": "C:\\Users\\Admin\\fusion-hero-os\\03_Code\\core\\knowledge\\Geisteskrankheiten_4D_Matrix_v5_vollstaendig.md"
+  "path": "C:\\Users\\Admin\\Desktop\\best-FuHOS\\03_Code\\core\\knowledge\\Geisteskrankheiten_4D_Matrix_v5_vollstaendig.md"
 }
