@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
-FUSION HERO OS v8.6 - HEROIC CORE ORCHESTRATOR
+FUSION HERO OS v8.8 - HEROIC CORE ORCHESTRATOR
 
-Vollständig delegiert an das Unified Heroic LLM Core (v8.6).
-Layer 0 (MasterSeed) + Layer 4/5 (PMS + QuadCore) + EIN einheitlicher LLM/Agenten-Brain.
+Jetzt mit vollem HeroicCore-Aggregator (v8.8).
+Alle epistemischen Begriffe + LLM + Module-Registrierung an einem Ort.
 """
 
 import hashlib
@@ -14,6 +14,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Dict, Any, Optional
 
+from .heroic_core import get_heroic_core, HeroicCore
 from .universal_llm_router import get_unified_llm_core, LLMResult
 
 _REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -21,7 +22,7 @@ _REPO_ROOT = Path(__file__).resolve().parents[2]
 
 @dataclass(frozen=True)
 class MasterSeed:
-    genesis_hash: str = "000000000000000000im0000000000000000000000000000000000000000000"
+    genesis_hash: str = "000000000000000000im000000000000im0000000000000000000000000000000"
     criticality_target: float = 0.22
     strict_contraction_enforced: bool = True
 
@@ -65,8 +66,8 @@ class QuadCoreBridge:
         self.mode = "STANDARD"
         self.volatile_history: list = []
         self.volatile_cache: Dict[str, Any] = {}
-        # EIN einheitliches LLM Core für alles
-        self.llm = get_unified_llm_core(heroic_core=self)
+        self.heroic = get_heroic_core(quad_core=self)   # v8.8 Aggregator
+        self.llm = self.heroic.llm                        # direkter Zugriff auf Unified LLM
 
     def invoke_phoenix_mode(self) -> bool:
         print("[LAYER 5] Phoenix-Mode aktiviert")
@@ -83,30 +84,30 @@ class QuadCoreBridge:
         if domain in ["BEWEIS", "GESTALT"]:
             return self.spine.execute_operator_chain(operator_id, payload)
         self.volatile_history.append({"domain": domain, "operator": operator_id})
-        return {"status": "SUCCESS", "message": "Synthese via Unified Heroic LLM Core v8.6"}
+        return {"status": "SUCCESS", "message": "via HeroicCore v8.8"}
 
     def ask_llm(self, prompt: str, system_prompt: Optional[str] = None, force_provider: Optional[str] = None) -> LLMResult:
-        """Delegiert komplett an das Unified Heroic LLM Core (eine Quelle der Wahrheit)."""
-        assignment = self.llm.get_best_assignment(prompt)
-        print(f"[UNIFIED v8.6] {assignment['provider']} (score={assignment['score']:.3f}, cat={assignment['category']})")
-        return self.llm.ask(prompt, system_prompt, force_provider, context="heroic")
+        assignment = self.llm.get_best_assignment(prompt) if self.llm else None
+        if assignment:
+            print(f"[HEROIC v8.8] {assignment['provider']} (score={assignment['score']:.3f})")
+        return self.llm.ask(prompt, system_prompt, force_provider, context="heroic") if self.llm else LLMResult("no-llm", "HeroicCore nicht verfügbar")
 
 
 def bootstrap_v8_system():
     print("=" * 70)
-    print("BOOTING FUSION-HERO-OS v8.6 — Unified Heroic LLM Core (alles zu einem)")
+    print("BOOTING FUSION-HERO-OS v8.8 — HeroicCore Aggregator (alles grounded)")
     print("=" * 70)
     seed = MasterSeed()
     spine = PMSEvidenceSpine()
     core = QuadCoreBridge(spine, seed=seed)
-    print("[LAYER 0+4+5] MasterSeed + PMS + QuadCore + Unified Heroic LLM Core v8.6")
-    print("[MERGE] Alle LLM-Logik (Provider, Dynamic Assignment, Heroic Context) in EINEM Core")
+    print("[LAYER 0+4+5] MasterSeed + PMS + QuadCore + HeroicCore v8.8 + Unified LLM")
+    print("[EXPANSION] Alle anderen Module können sich jetzt über heroic.register_module(...) heroic machen.")
     print("=" * 70)
     return core
 
 
 if __name__ == "__main__":
     heroic_core = bootstrap_v8_system()
-    result = heroic_core.ask_llm("Zeige mir, dass alles jetzt wirklich zu einem zusammengeführt ist.")
-    print(f"\nProvider: {result.provider}")
-    print(f"Heroic Context injected: {result.meta.get('heroic_context_injected')}")
+    result = heroic_core.ask_llm("Zeige, dass jetzt wirklich alle Begriffe und Module grounded sind.")
+    print(f"Provider: {result.provider}")
+    print(f"Sisyphos: {heroic_core.heroic.get_sisyphos_state()}")
