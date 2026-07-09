@@ -15,8 +15,55 @@ All high-value practical functions from the Fusion Hero OS Horkrux have been ext
 - Worker Pool
 - HTMX Dashboard (live updates)
 - Full Typer CLI
+- **GrokPCBridge** – Bidirectional local PC bridge (analog to PhoneBridge)
 - Docker ready
+
+## GrokPCBridge (New in v1.0)
+
+The GrokPCBridge gives Grok / normalOS controlled, explicit access to your local Windows PC — especially the Desktop.
+
+This solves requests like "check what Claude left on my desktop" in a clean and secure way.
+
+### How to use
+
+1. On your local PC, start the bridge:
+
+```bash
+python -m src.normal_os.bridge.grok_pc_bridge
+```
+
+2. The bridge will print a **token** on startup.
+
+3. From Grok/normalOS you can now connect using:
+   - Base URL: `http://localhost:8765` (or your PC's IP if remote)
+   - Authorization: `Bearer <token>`
+
+### Available Endpoints (v1)
+
+- `GET /status` – Bridge health
+- `GET /ping` – Latency measurement
+- `GET /desktop/list?subpath=` – List Desktop contents
+- `GET /desktop/search?query=claude` – Search files on Desktop
+- `GET /desktop/read?path=...` – Read a text file from allowed paths
+- `GET /system/info` – Basic system information
+
+### Security Model
+
+- Token-based authentication (required)
+- Read-only in v1
+- Path allow-list: Desktop, Documents, Downloads (configurable)
+- Max file read size: 2 MB
+- All operations are logged on the PC side
+
+### Future Extensions (planned)
+
+- Bidirectional event streaming (PC ↔ Grok)
+- Controlled write operations (with explicit user approval)
+- Resource monitoring + process listing
+- Integration into normalOS Orchestrator as native BridgeAgent
 
 ## Status
 
 **v1.0 COMPLETE** — All major practical patterns from the Horkrux are now explicit, clean, and usable.
+
+The GrokPCBridge is the first step toward deep, trusted local PC integration while keeping everything explicit and auditable.
