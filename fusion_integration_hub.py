@@ -121,9 +121,25 @@ def _get_vr_status() -> dict:
     }
 
 
+def _workstation_paths_file() -> Optional[Path]:
+    candidates: List[Path] = []
+    env_ws = os.environ.get("NORMALOS_WORKSTATION")
+    if env_ws:
+        candidates.append(Path(env_ws) / "paths.json")
+    home = Path.home()
+    candidates.extend([
+        home / "normalOS" / "workstation" / "paths.json",
+        home / "normalOS-workstation" / "paths.json",
+    ])
+    for p in candidates:
+        if p.exists():
+            return p
+    return None
+
+
 def _get_workstation() -> dict:
-    ws = Path.home() / "normalOS-workstation" / "paths.json"
-    if not ws.exists():
+    ws = _workstation_paths_file()
+    if not ws:
         return {"configured": False}
     try:
         with open(ws, encoding="utf-8") as f:

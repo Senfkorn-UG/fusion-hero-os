@@ -26,9 +26,9 @@ layers:
     port: 8088
     health: /fusion/status
   workstation:
-    module: normalOS-workstation
-    config: paths.json
-    health: status.ps1
+    module: normal_os.workstation
+    config: workstation/paths.json
+    health: workstation/status.ps1
   normalos:
     module: normal_os.bridge.grok_pc_bridge
     port: 8765
@@ -70,8 +70,8 @@ node_edges:
 
 # Workstation-Pfade (normalOS)
 workstation:
-  root: C:\Users\Admin\normalOS-workstation
-  paths_config: paths.json
+  root: C:\Users\Admin\normalOS\workstation
+  paths_config: workstation/paths.json
   desktop_structure:
     - normalOS
     - Apps
