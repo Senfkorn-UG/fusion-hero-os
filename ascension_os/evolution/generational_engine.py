@@ -1,14 +1,12 @@
 # -*- coding: utf-8 -*-
 """
-AscensionOS v9.0 - Inside-Out Generational Evolution Engine
+AscensionOS v9.0 - Inside-Out Generational Evolution Engine (Fixed)
 
-Dieses Modul ermöglicht autonome, selbstständige Entwicklung über viele Generationen.
-
-"Inside Out" Prinzip:
-- Jede Generation beginnt im Kern (MasterSeed, AscensionCore, Sisyphos, Fail-Closed)
-- Verbesserungen strahlen von innen nach außen aus (Layer 0 → Layer 5 → Module → Agents)
-
-Ziel: Das System kann über 1000+ Generationen hinweg eigenständig reifen.
+Korrigierte Version:
+- Bessere Kompatibilität mit realen State-Daten (SisyphosCycle.get_state())
+- Robustere Fitness-Bewertung
+- Bessere Simulation von Generationen
+- Package-Struktur korrigiert
 """
 
 from __future__ import annotations
@@ -32,61 +30,73 @@ class GenerationalEvolutionEngine:
     """
     Inside-Out Generational Evolution Engine für AscensionOS.
 
-    Kann autonom viele Generationen durchlaufen und das System von innen nach außen verbessern.
+    Jede Generation beginnt im Kern und arbeitet nach außen.
     """
 
     def __init__(self, ascension_core: Any = None):
         self.ascension_core = ascension_core
         self.generations: List[Generation] = []
         self.current_generation = 0
-        self.max_generations = 1000
 
     def evaluate_fitness(self, core_state: Dict[str, Any]) -> float:
         """
-        Bewertet die "Fitness" des aktuellen Zustands.
-        Höhere Werte = besser integriert, stabiler, ascension-näher.
+        Bewertet Fitness basierend auf tatsächlich vorhandenen Keys
+        aus SisyphosCycle.get_state() und anderen Komponenten.
         """
-        score = 0.0
+        score = 50.0  # Basiswert
 
-        # Core Ascension Eigenschaften
-        if core_state.get("sisyphos_sustainable", False):
-            score += 25
-        if core_state.get("fail_closed_active", False):
-            score += 20
-        if core_state.get("masterseed_integrity", False):
-            score += 20
-        if core_state.get("ascension_mode_active", False):
+        # SisyphosCycle State (realistische Keys)
+        if "is_sustainable" in core_state:
+            if core_state.get("is_sustainable"):
+                score += 20
+            else:
+                score -= 10
+
+        if "satisfaction" in core_state:
+            satisfaction = core_state["satisfaction"]
+            score += (satisfaction - 0.5) * 30  # -15 bis +15
+
+        if "load" in core_state:
+            load = core_state["load"]
+            if load > 0.85:
+                score -= 15
+            elif load < 0.4:
+                score += 5
+
+        # Weitere Ascension-Eigenschaften (falls vorhanden)
+        if core_state.get("fail_closed_active"):
+            score += 10
+        if core_state.get("masterseed_integrity"):
+            score += 10
+        if core_state.get("ascension_mode_active"):
             score += 15
-        if core_state.get("cross_layer_integration", 0) > 0.7:
-            score += 20
 
-        return min(100.0, score)
+        return max(0.0, min(100.0, score))
 
     def propose_improvements(self, current_state: Dict[str, Any]) -> List[str]:
-        """
-        Schlägt Verbesserungen für die nächste Generation vor.
-        Beginnt immer im Kern und arbeitet nach außen.
-        """
         improvements = []
 
-        if not current_state.get("sisyphos_sustainable"):
-            improvements.append("Strengthen SisyphosCycle sustainability logic (core)")
+        if current_state.get("is_sustainable") is False:
+            improvements.append("Improve SisyphosCycle sustainability (core layer)")
+
+        if current_state.get("satisfaction", 0.5) < 0.6:
+            improvements.append("Increase overall system satisfaction / reduce load")
+
+        if current_state.get("load", 0.5) > 0.8:
+            improvements.append("Reduce system load through better task distribution")
 
         if not current_state.get("fail_closed_active"):
-            improvements.append("Harden FailClosed enforcement across all layers")
-
-        if current_state.get("cross_layer_integration", 0) < 0.8:
-            improvements.append("Improve Ascension property propagation from Core to Modules")
+            improvements.append("Activate/strengthen FailClosed across layers")
 
         if not current_state.get("ascension_mode_active"):
-            improvements.append("Activate full Ascension mode in QuadCoreBridge and modules")
+            improvements.append("Enable full Ascension mode in QuadCoreBridge")
+
+        if not improvements:
+            improvements.append("Fine-tune cross-layer integration and self-reflection")
 
         return improvements
 
     def run_generation(self, current_state: Dict[str, Any]) -> Generation:
-        """
-        Führt eine einzelne Generation durch (Inside-Out).
-        """
         self.current_generation += 1
 
         improvements = self.propose_improvements(current_state)
@@ -98,27 +108,29 @@ class GenerationalEvolutionEngine:
             core_state=current_state.copy(),
             improvements=improvements,
             fitness_score=fitness,
-            notes=f"Generation {self.current_generation} - Inside-Out evolution"
         )
 
         self.generations.append(new_gen)
         return new_gen
 
     def run_generations(self, initial_state: Dict[str, Any], generations: int = 10) -> List[Generation]:
-        """
-        Führt mehrere Generationen autonom aus.
-        """
         results = []
         state = initial_state.copy()
 
-        for i in range(generations):
+        for _ in range(generations):
             gen = self.run_generation(state)
             results.append(gen)
 
-            # Simuliere leichte Verbesserung für nächste Generation
-            state["cross_layer_integration"] = min(1.0, state.get("cross_layer_integration", 0.5) + 0.05)
+            # Realistischere State-Transition
+            if "satisfaction" in state:
+                state["satisfaction"] = min(1.0, state["satisfaction"] + 0.03)
+            if "load" in state:
+                state["load"] = max(0.0, state["load"] - 0.02)
+            if "is_sustainable" in state:
+                state["is_sustainable"] = state.get("satisfaction", 0) > 0.55 and state.get("load", 1) < 0.75
+
             state["ascension_mode_active"] = True
-            state["sisyphos_sustainable"] = True
+            state["fail_closed_active"] = True
 
         return results
 
@@ -128,7 +140,8 @@ class GenerationalEvolutionEngine:
 
         return {
             "total_generations": len(self.generations),
-            "final_fitness": self.generations[-1].fitness_score,
-            "average_fitness": sum(g.fitness_score for g in self.generations) / len(self.generations),
+            "final_fitness": round(self.generations[-1].fitness_score, 2),
+            "average_fitness": round(sum(g.fitness_score for g in self.generations) / len(self.generations), 2),
             "latest_improvements": self.generations[-1].improvements,
+            "fitness_trend": [round(g.fitness_score, 1) for g in self.generations[-5:]],
         }
