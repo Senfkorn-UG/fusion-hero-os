@@ -1,10 +1,11 @@
 from datetime import datetime
-from typing import Any, Literal
+from typing import Any, Literal, List
+from enum import Enum
 
 from pydantic import BaseModel, Field
 
 
-class TaskStatus(str, Literal):
+class TaskStatus(str, Enum):
     PENDING = "pending"
     RUNNING = "running"
     COMPLETED = "completed"
@@ -39,6 +40,12 @@ class QUBOSolution(BaseModel):
     num_reads: int
     solver: str
     cached: bool = False
+
+
+class OptimizationResult(BaseModel):
+    task_order: List[str]
+    energy: float
+    solver_time_ms: float
 
 
 class AgentInfo(BaseModel):
