@@ -1,40 +1,33 @@
-"""Base Agent class and simple registry.
-
-Clean, extensible agent system.
-"""
 from abc import ABC, abstractmethod
 from typing import Any
+from normal_os.core.models import Task
 
-from ..core.models import Task
+import structlog
+
+logger = structlog.get_logger(__name__)
 
 
 class BaseAgent(ABC):
-    """Abstract base class for all agents."""
+    """Explicit base class for all agents. Forces clear interface."""
 
     name: str = "base"
-    description: str = "Base agent"
+    capabilities: list[str] = []
+
+    def __init__(self, **kwargs: Any):
+        self.config = kwargs
+        logger.info("agent_initialized", name=self.name)
 
     @abstractmethod
-    async def run(self, task: Task, context: dict[str, Any] | None = None) -> dict[str, Any]:
-        """Execute the task. Must be implemented by subclasses."""
+    async def run(self, task: Task) -> dict[str, Any]:
+        """Execute a task and return result. Must be implemented by subclasses."""
         pass
 
+    def status(self) -> dict[str, Any]:
+        return {
+            "name": self.name,
+            "capabilities": self.capabilities,
+            "status": "idle",
+        }
 
-class AgentRegistry:
-    """Simple in-memory agent registry."""
-
-    def __init__(self):
-        self._agents: dict[str, BaseAgent] = {}
-
-    def register(self, agent: BaseAgent):
-        self._agents[agent.name] = agent
-
-    def get(self, name: str) -> BaseAgent | None:
-        return self._agents.get(name)
-
-    def list_agents(self) -> list[str]:
-        return list(self._agents.keys())
-
-
-# Global registry instance
-registry = AgentRegistry()
+    async def health_check(self) -> bool:
+        return True

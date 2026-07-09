@@ -1,56 +1,23 @@
-# normalOS
+# normalOS v0.5.0
 
-**Practical AI Agent Orchestration Framework** (v0.2.0)
+Clean, explicit, production-oriented orchestration and optimization platform.
 
-Clean, production-oriented implementation written like a senior developer would have done it in March 2026.
+Extracted and normalized from the Fusion Hero OS Horkrux — all implicit patterns made explicit.
 
-## Features
+## Architecture (explicit)
 
-- Multi-LLM router (Grok, OpenAI, Anthropic, Ollama)
-- QUBO-based task optimization
-- Async SQLite persistence
-- Simple but extensible Agent system
-- FastAPI + HTMX dashboard (no heavy frontend framework)
-- Docker support
+- **core/**: Configuration, domain models, orchestrator
+- **agents/**: BaseAgent + explicit Registry
+- **optimization/**: QUBO solver with caching
+- **llm/**: Multi-provider router
+- **persistence/**: Async task store
+- **executor/**: Async task execution engine (planned v0.5.1)
+- **dashboard/**: FastAPI + HTMX
+- **cli/**: Typer CLI
 
-## Quick Start (with Docker)
-
-```bash
-git clone https://github.com/95guknow/normalOS.git
-cd normalOS
-docker compose up --build
-```
-
-Then open http://localhost:8000
-
-## Local Development
+## Quickstart
 
 ```bash
-python -m venv .venv
-source .venv/bin/activate
-pip install -e ".[test]"
-
-python -m normal_os.dashboard.app
+uv sync
+normalos --help
 ```
-
-## Architecture
-
-```
-src/normal_os/
-├── core/            # Config + models
-├── llm/             # Multi-provider router
-├── optimization/    # QUBO solver
-├── agents/          # BaseAgent + registry + examples
-├── persistence/     # Async SQLite task store
-├── dashboard/       # FastAPI + HTMX templates
-└── orchestrator.py
-```
-
-## Next Steps (typical for this kind of project)
-
-- Add real background task execution
-- Integrate vector store (Qdrant / Chroma)
-- Add evaluation / tracing
-- Proper auth for dashboard
-
-MIT License

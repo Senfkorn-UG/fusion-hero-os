@@ -1,35 +1,49 @@
-"""Core data models."""
+from datetime import datetime
+from typing import Any, Literal
 
 from pydantic import BaseModel, Field
-from typing import Literal, Any
-from datetime import datetime
+
+
+class TaskStatus(str, Literal):
+    PENDING = "pending"
+    RUNNING = "running"
+    COMPLETED = "completed"
+    FAILED = "failed"
+    CANCELLED = "cancelled"
 
 
 class Task(BaseModel):
-    """A task to be executed by the system."""
-    id: str = Field(default_factory=lambda: f"task_{datetime.now().timestamp()}")
-    description: str
-    priority: int = Field(default=5, ge=1, le=10)
-    estimated_duration_minutes: int = 30
-    required_capabilities: list[str] = Field(default_factory=list)
-    status: Literal["pending", "running", "completed", "failed"] = "pending"
+    id: str
+    type: str
+    payload: dict[str, Any] = Field(default_factory=dict)
+    status: TaskStatus = TaskStatus.PENDING
     created_at: datetime = Field(default_factory=datetime.utcnow)
+    started_at: datetime | None = None
+    completed_at: datetime | None = None
+    result: dict[str, Any] | None = None
+    error: str | None = None
+    priority: int = 5
+
+
+class QUBOProblem(BaseModel):
+    id: str | None = None
+    Q: dict[tuple[int, int], float]
+    bias: dict[int, float]
     metadata: dict[str, Any] = Field(default_factory=dict)
 
 
-class LLMResponse(BaseModel):
-    """Standardized response from any LLM provider."""
-    provider: str
-    model: str
-    content: str
-    tokens_used: int | None = None
-    latency_ms: float | None = None
-    metadata: dict[str, Any] = Field(default_factory=dict)
-
-
-class OptimizationResult(BaseModel):
-    """Result from QUBO optimization."""
-    task_order: list[str]
+class QUBOSolution(BaseModel):
+    problem_id: str | None = None
+    solution: dict[int, int]
     energy: float
-    solver_time_ms: float
-    metadata: dict[str, Any] = Field(default_factory=dict)
+    num_reads: int
+    solver: str
+    cached: bool = False
+
+
+class AgentInfo(BaseModel):
+    name: str
+    type: str
+    status: Literal["idle", "busy", "error"] = "idle"
+    capabilities: list[str] = Field(default_factory=list)
+    last_used: datetime | None = None

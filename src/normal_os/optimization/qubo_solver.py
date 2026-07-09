@@ -1,75 +1,78 @@
-"""Practical QUBO solver wrapper using dimod.
-
-Clean implementation suitable for task scheduling and prioritization.
-"""
-
 import dimod
-import time
-import numpy as np
+import neal
 from typing import Any
+from datetime import datetime
 
-from ..core.models import OptimizationResult, Task
+import structlog
+
+from normal_os.core.models import QUBOProblem, QUBOSolution
+
+logger = structlog.get_logger(__name__)
 
 
 class QUBOSolver:
-    """Solves QUBO problems for task ordering and resource allocation."""
+    """Explicit, production-grade QUBO solver with caching and multiple backends."""
 
-    def __init__(self, timeout: float | None = None):
-        self.timeout = timeout or 5.0
+    def __init__(self, solver: str = "auto", cache_enabled: bool = True):
+        self.solver = solver
+        self.cache_enabled = cache_enabled
+        self._neal_sampler = neal.SimulatedAnnealingSampler()
+        self._solution_cache: dict[str, QUBOSolution] = {}
 
-    def optimize_task_order(self, tasks: list[Task]) -> OptimizationResult:
-        """Optimize the execution order of tasks using a simple QUBO formulation."""
-        if not tasks:
-            return OptimizationResult(task_order=[], energy=0.0, solver_time_ms=0.0)
+    def solve(
+        self,
+        problem: QUBOProblem,
+        num_reads: int = 1000,
+        use_cache: bool = True,
+    ) -> QUBOSolution:
+        problem_id = problem.id or self._generate_problem_id(problem)
 
-        start = time.perf_counter()
+        # Check cache
+        if use_cache and self.cache_enabled and problem_id in self._solution_cache:
+            logger.info("cache_hit", problem_id=problem_id)
+            cached = self._solution_cache[problem_id]
+            cached.cached = True
+            return cached
 
-        n = len(tasks)
-        # Simple QUBO: penalize high-priority tasks being placed late
-        # and reward grouping tasks with similar capabilities
-        Q = np.zeros((n, n))
+        # Build full QUBO (merge bias into diagonal)
+        Q_full = dict(problem.Q)
+        for i, b in problem.bias.items():
+            key = (i, i)
+            Q_full[key] = Q_full.get(key, 0.0) + b
 
-        for i in range(n):
-            for j in range(n):
-                if i == j:
-                    # Linear term: earlier position for higher priority
-                    Q[i, i] = -tasks[i].priority * 10
-                else:
-                    # Interaction: small penalty for different capabilities
-                    cap_i = set(tasks[i].required_capabilities)
-                    cap_j = set(tasks[j].required_capabilities)
-                    if cap_i.isdisjoint(cap_j):
-                        Q[i, j] = 2.0
+        bqm = dimod.BinaryQuadraticModel.from_qubo(Q_full)
 
-        # Solve with dimod ExactSolver (good for small instances, replace with Leap for production)
-        bqm = dimod.BinaryQuadraticModel.from_qubo(Q)
-        sampler = dimod.ExactSolver()
-        sampleset = sampler.sample(bqm)
+        # Solve
+        if self.solver in ("neal", "auto"):
+            response = self._neal_sampler.sample(bqm, num_reads=num_reads)
+            best = response.first
 
-        best_sample = sampleset.first.sample
-        # Convert binary solution to ordering (simple heuristic)
-        order_indices = sorted(range(n), key=lambda k: -best_sample.get(k, 0) * tasks[k].priority)
-        task_order = [tasks[i].id for i in order_indices]
+            solution = QUBOSolution(
+                problem_id=problem_id,
+                solution={int(k): int(v) for k, v in best.sample.items()},
+                energy=float(best.energy),
+                num_reads=num_reads,
+                solver="neal",
+            )
+        else:
+            # Placeholder for future GPU / custom solvers
+            raise NotImplementedError(f"Solver {self.solver} not implemented yet")
 
-        solver_time = (time.perf_counter() - start) * 1000
+        if self.cache_enabled:
+            self._solution_cache[problem_id] = solution
 
-        return OptimizationResult(
-            task_order=task_order,
-            energy=float(sampleset.first.energy),
-            solver_time_ms=solver_time,
-            metadata={"num_tasks": n, "solver": "dimod.ExactSolver"},
+        logger.info(
+            "qubo_solved",
+            problem_id=problem_id,
+            energy=solution.energy,
+            solver=solution.solver,
         )
+        return solution
 
-    def solve_generic_qubo(self, Q: dict[tuple[int, int], float]) -> dict[str, Any]:
-        """Solve a generic QUBO problem."""
-        start = time.perf_counter()
-        bqm = dimod.BinaryQuadraticModel.from_qubo(Q)
-        sampler = dimod.ExactSolver()
-        sampleset = sampler.sample(bqm)
-        solver_time = (time.perf_counter() - start) * 1000
+    def _generate_problem_id(self, problem: QUBOProblem) -> str:
+        import hashlib
+        content = str(sorted(problem.Q.items())) + str(sorted(problem.bias.items()))
+        return hashlib.sha256(content.encode()).hexdigest()[:16]
 
-        return {
-            "best_energy": float(sampleset.first.energy),
-            "best_sample": dict(sampleset.first.sample),
-            "solver_time_ms": solver_time,
-        }
+    def clear_cache(self) -> None:
+        self._solution_cache.clear()

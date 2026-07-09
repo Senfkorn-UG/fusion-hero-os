@@ -1,32 +1,41 @@
-"""Configuration management using Pydantic Settings (March 2026 style)."""
-
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 from pydantic import Field
 from typing import Literal
 
 
 class Settings(BaseSettings):
-    """Application settings."""
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        env_file_encoding="utf-8",
+        extra="ignore",
+    )
 
-    # LLM Configuration
-    default_llm_provider: Literal["openai", "anthropic", "grok", "ollama"] = "grok"
-    openai_api_key: str | None = Field(default=None, validation_alias="OPENAI_API_KEY")
-    anthropic_api_key: str | None = Field(default=None, validation_alias="ANTHROPIC_API_KEY")
-    grok_api_key: str | None = Field(default=None, validation_alias="GROK_API_KEY")
-    ollama_base_url: str = "http://localhost:11434"
+    # Application
+    app_name: str = "NormalOS"
+    environment: Literal["development", "production"] = "development"
+    debug: bool = True
+
+    # Persistence
+    database_url: str = "sqlite+aiosqlite:///./data/normalos.db"
+
+    # LLM Routing
+    default_llm_provider: str = "groq"
+    groq_api_key: str | None = None
+    openai_api_key: str | None = None
+    anthropic_api_key: str | None = None
 
     # QUBO / Optimization
-    qubo_solver_timeout: float = 5.0
-    max_qubo_variables: int = 1000
+    qubo_default_solver: Literal["neal", "gpu", "auto"] = "auto"
+    qubo_num_reads: int = 1000
+    qubo_cache_enabled: bool = True
 
-    # Dashboard
-    dashboard_host: str = "0.0.0.0"
-    dashboard_port: int = 8000
+    # Execution
+    max_concurrent_tasks: int = 8
+    task_timeout_seconds: int = 300
 
-    # Logging
-    log_level: Literal["DEBUG", "INFO", "WARNING", "ERROR"] = "INFO"
-
-    model_config = {"env_file": ".env", "env_file_encoding": "utf-8", "extra": "ignore"}
+    # Resource
+    enable_gpu: bool = False
+    gpu_memory_fraction: float = 0.8
 
 
 settings = Settings()
