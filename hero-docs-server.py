@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Fusion Hero OS — Heroic Docs Server v8.2
+Fusion Hero OS — Heroic Docs Server v8.3
 Self-contained local documentation server for 95guknow/fusion-hero-os
 
 Features:
@@ -9,6 +9,10 @@ Features:
 - /tailscale/status endpoint
 - /mesh/status — alle Konnektor-Segmente (jeder Konnektor = eigenes Mesh-Teil)
 - /mesh/{connector}/status — einzelnes Konnektor-Segment
+- /fusion/status — verknüpfter Gesamtstatus (Mesh + LLM + Tailscale)
+- /fusion/graph — Integrationsgraph (alles mit allem)
+- /llm/status — alle LLM-Frameworks
+- /llm/{provider}/status — einzelnes LLM-Framework
 - Prints your LAN IP so you can reach it from Handy via pc-handy-bridge / Phone Link
 - Fits natively into ALTE_Frau_95g Heroic Core v8 + HorkruxSelfUpdateProtocol
 
@@ -39,6 +43,14 @@ except ImportError:
     get_mesh_status = None
     get_connector_status = None
 
+try:
+    from fusion_integration_hub import get_unified_status, get_llm_segment
+    from llm_frameworks import connector_status as get_llm_status_all
+except ImportError:
+    get_unified_status = None
+    get_llm_segment = None
+    get_llm_status_all = None
+
 
 class HeroicDocsHandler(http.server.SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
@@ -54,6 +66,15 @@ class HeroicDocsHandler(http.server.SimpleHTTPRequestHandler):
         elif self.path.startswith("/mesh/") and self.path.endswith("/status"):
             connector_id = self.path.split("/")[2]
             self.send_connector_status(connector_id)
+        elif self.path == "/fusion/status" or self.path == "/fusion":
+            self.send_fusion_status()
+        elif self.path == "/fusion/graph":
+            self.send_fusion_graph()
+        elif self.path == "/llm/status" or self.path == "/llm":
+            self.send_llm_status()
+        elif self.path.startswith("/llm/") and self.path.endswith("/status"):
+            provider_id = self.path.split("/")[2]
+            self.send_llm_segment(provider_id)
         else:
             super().do_GET()
 
@@ -111,11 +132,12 @@ class HeroicDocsHandler(http.server.SimpleHTTPRequestHandler):
                 </div>
             </div>
             <div class="section">
-                <div class="label">MESH — KONNEKTOR-SEGMENTE</div>
+                <div class="label">UNIFIED INTEGRATION — ALLES VERKNÜPFT</div>
                 <div class="status-box">
-                    Jeder Konnektor ist ein eigenständiges Mesh-Teil.<br>
-                    Übersicht: <span class="value">/mesh/status</span><br>
-                    Einzeln: <span class="value">/mesh/{{connector}}/status</span>
+                    Mesh + LLM + Tailscale + Orchestration<br>
+                    Gesamt: <span class="value">/fusion/status</span><br>
+                    Graph: <span class="value">/fusion/graph</span><br>
+                    Mesh: <span class="value">/mesh/status</span> · LLM: <span class="value">/llm/status</span>
                 </div>
             </div>
         </div>
@@ -160,6 +182,33 @@ class HeroicDocsHandler(http.server.SimpleHTTPRequestHandler):
         code = 404 if "error" in status else 200
         self._send_json(status, code)
 
+    def send_fusion_status(self):
+        if get_unified_status is None:
+            self._send_json({"error": "fusion_integration_hub.py not available"}, 503)
+            return
+        self._send_json(get_unified_status())
+
+    def send_fusion_graph(self):
+        if get_unified_status is None:
+            self._send_json({"error": "fusion_integration_hub.py not available"}, 503)
+            return
+        unified = get_unified_status()
+        self._send_json(unified.get("graph", {}))
+
+    def send_llm_status(self):
+        if get_llm_status_all is None:
+            self._send_json({"error": "llm_frameworks not available"}, 503)
+            return
+        self._send_json(get_llm_status_all())
+
+    def send_llm_segment(self, provider_id: str):
+        if get_llm_segment is None:
+            self._send_json({"error": "fusion_integration_hub.py not available"}, 503)
+            return
+        status = get_llm_segment(provider_id)
+        code = 404 if "error" in status else 200
+        self._send_json(status, code)
+
 
 def get_lan_ip():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -180,7 +229,7 @@ if __name__ == "__main__":
     with socketserver.TCPServer(("", PORT), handler) as httpd:
         lan_ip = get_lan_ip()
         print("\n" + "=" * 70)
-        print(" FUSION HERO OS — HEROIC DOCS SERVER v8.2 + MESH")
+        print(" FUSION HERO OS — HEROIC DOCS SERVER v8.3 + UNIFIED")
         print("=" * 70)
         print(f"\n[MASTERSEED] Docs Server gestartet auf Port {PORT}")
         print(f"[LIVE]     Mainframe LAN-IP: {lan_ip}")
@@ -188,9 +237,11 @@ if __name__ == "__main__":
         print(f"           Vom Handy:          http://{lan_ip}:{PORT}")
         print(f"           MasterSeed Status:  http://{lan_ip}:{PORT}/status")
         print(f"           Tailscale Status:   http://{lan_ip}:{PORT}/tailscale/status")
+        print(f"           Fusion Unified:     http://{lan_ip}:{PORT}/fusion/status")
+        print(f"           Fusion Graph:       http://{lan_ip}:{PORT}/fusion/graph")
         print(f"           Mesh Overview:      http://{lan_ip}:{PORT}/mesh/status")
-        print(f"           Connector Status:   http://{lan_ip}:{PORT}/mesh/{{connector}}/status")
-        print("\n[INFO]     Jeder Konnektor = eigenes Mesh-Segment (mesh_connectors.yaml)")
+        print(f"           LLM Overview:       http://{lan_ip}:{PORT}/llm/status")
+        print("\n[INFO]     Alles verknüpft via fusion_integration_hub.py + fusion_unified.yaml")
         print("[INFO]     Drücke STRG+C zum Beenden.")
         print("=" * 70 + "\n")
         try:

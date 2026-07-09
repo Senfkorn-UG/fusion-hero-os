@@ -74,3 +74,20 @@ frameworks:
 
 trinity_order: ["grok", "claude", "gpt"]
 health_endpoint: "/llm/status"
+per_provider: "/llm/{provider}/status"
+unified_endpoint: "/fusion/status"
+integration_hub: fusion_integration_hub.py
+unified_config: fusion_unified.yaml
+
+# Verknüpfung MCP-Konnektor → LLM (Primary)
+connector_links:
+  github: grok
+  gmail: claude
+  google_drive: gpt
+  google_calendar: gpt
+  canva: gemini
+  gamma: gpt
+  notion: claude
+  vercel: grok
+  hyperframes: gemini
+  tasks: claude

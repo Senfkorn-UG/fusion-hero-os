@@ -1,0 +1,69 @@
+# Fusion Hero OS v8 — Unified Integration Graph
+# Alles mit allem verknüpft: Mesh ↔ LLM ↔ Tailscale ↔ Orchestration
+
+version: "1.0"
+principle: "Jedes Segment ist eigenständig UND über den Integration Hub mit allem anderen verbunden"
+
+layers:
+  network:
+    module: tailscale_mesh_registry
+    config: mesh_connectors.yaml
+    health: /tailscale/status
+  connectors:
+    module: tailscale_mesh_registry
+    config: mesh_connectors.yaml
+    health: /mesh/status
+  intelligence:
+    module: fusion_integration_hub
+    config: llm_frameworks.yaml
+    health: /llm/status
+  orchestration:
+    module: model_connectors
+    config: 03_Code/llm_frameworks/
+    health: /fusion/orchestrate
+  surface:
+    module: hero-docs-server
+    port: 8088
+    health: /fusion/status
+
+# Physische Knoten
+nodes:
+  mainframe:
+    role: orchestrator
+    hosts: [hero-docs-server, tailscale-control, fusion-integration-hub]
+    magicdns: mainframe.tail391adb.ts.net
+  desktop:
+    role: grok-workstation
+    hosts: [grok-cli, mcp-bridges, llm-frameworks]
+    magicdns: desktop-kpki9e4.tail391adb.ts.net
+
+# Verknüpfungen: MCP-Konnektor → bevorzugtes LLM-Framework
+connector_llm_links:
+  github: grok
+  gmail: claude
+  google_drive: gpt
+  google_calendar: gpt
+  canva: gemini
+  gamma: gpt
+  notion: claude
+  vercel: grok
+  hyperframes: gemini
+  tasks: claude
+
+# TRINITY-Orchestrierung (Rollen → LLM)
+trinity_roles:
+  thinker: claude
+  worker: gpt
+  verifier: grok
+
+# API-Endpunkte (hero-docs-server)
+endpoints:
+  unified: /fusion/status
+  graph: /fusion/graph
+  mesh: /mesh/status
+  mesh_segment: /mesh/{id}/status
+  llm: /llm/status
+  llm_segment: /llm/{id}/status
+  tailscale: /tailscale/status
+  orchestrate: /fusion/orchestrate
+  masterseed: /status

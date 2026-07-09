@@ -67,16 +67,38 @@ def _get_tailscale_self():
             "online": self_data.get("Online", False),
             "hostname": self_data.get("HostName"),
             "tailscale_ip": (self_data.get("TailscaleIPs") or [None])[0],
-            "peers": len(data.get("Peer", {})),
+            "peers": len(data.get("Peer") or {}),
         }
     except Exception as e:
         return {"online": False, "error": str(e)}
+
+
+def _load_yaml_file(path: Path) -> dict:
+    try:
+        import yaml
+        if path.exists():
+            with open(path, encoding="utf-8") as f:
+                return yaml.safe_load(f) or {}
+    except ImportError:
+        pass
+    return {}
+
+
+def _get_connector_llm_links() -> dict:
+    base = Path(__file__).parent
+    unified = _load_yaml_file(base / "fusion_unified.yaml")
+    if unified.get("connector_llm_links"):
+        return unified["connector_llm_links"]
+    llm_cfg = _load_yaml_file(base / "llm_frameworks.yaml")
+    return llm_cfg.get("connector_links", {})
 
 
 def _probe_mcp_connector(connector_id: str, config: dict) -> dict:
     """Probe a single connector mesh segment."""
     mcp_path = Path.home() / "mcps" / connector_id
     tools_exist = (mcp_path / "tools").is_dir() if mcp_path.exists() else False
+    links = _get_connector_llm_links()
+    linked_llm = links.get(connector_id)
 
     return {
         "mesh_id": config.get("mesh_id", f"mesh-connector-{connector_id}"),
@@ -86,6 +108,8 @@ def _probe_mcp_connector(connector_id: str, config: dict) -> dict:
         "health_path": config.get("health_path", f"/mesh/{connector_id}/status"),
         "tailscale_tag": config.get("tailscale_tag"),
         "description": config.get("description", ""),
+        "linked_llm": linked_llm,
+        "linked_llm_path": f"/llm/{linked_llm}/status" if linked_llm else None,
         "segment_status": "registered" if tools_exist else "pending",
         "mcp_tools_available": tools_exist,
         "mcp_path": str(mcp_path),
