@@ -14,21 +14,34 @@ Vollständige Tailscale-Integration als **Mesh** innerhalb von Fusion Hero OS:
 
 ## Ein-Klick Mesh Setup
 
+### Von Windows (Git Bash) aus (empfohlen)
+
 ```bash
 cd tools/tailscale
 
-# Vollständige Initialisierung (empfohlen)
-chmod +x tailscale_control.sh
-sudo ./tailscale_control.sh all
+# Einmalig ausführbar machen
+chmod +x run_on_heimgserver.sh
+
+# Vollständiges Mesh-Setup auf dem Heimserver triggern
+./run_on_heimgserver.sh all
 ```
 
-Oder einzeln:
+Einzelne Kommandos:
+```bash
+./run_on_heimgserver.sh install
+./run_on_heimgserver.sh start
+./run_on_heimgserver.sh funnel
+./run_on_heimgserver.sh status
+```
+
+> **Hinweis:** Trage oben in `run_on_heimgserver.sh` deinen SSH-Usernamen ein (`USER="admin"` → dein tatsächlicher User).
+
+### Direkt auf dem Linux-Heimserver
 
 ```bash
-./tailscale_control.sh install
-./tailscale_control.sh start
-./tailscale_control.sh funnel
-./tailscale_control.sh notify
+cd tools/tailscale
+chmod +x tailscale_control.sh
+sudo ./tailscale_control.sh all
 ```
 
 ## Verfügbare Kommandos
@@ -64,6 +77,7 @@ Oder einzeln:
 | `tailscale_status.py`       | Status als JSON (Bridge-fähig)                  |
 | `tailscale_funnel.sh`       | Funnel-Aktivierung für öffentlichen Zugriff     |
 | `tailscale_phone_notify.py` | Phone Notifications bei Status-Änderung         |
+| `run_on_heimgserver.sh`     | Remote-Ausführung von Windows aus per SSH         |
 | `README.md`                 | Diese Anleitung                                 |
 
 ---
