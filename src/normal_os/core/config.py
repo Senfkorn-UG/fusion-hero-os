@@ -253,6 +253,58 @@ class FrameworkConfig(BaseModel):
     heroic_core_foundation: str = "./framework/heroic-core-foundation"
 
 
+# ==================== STRENGTH REGISTRY (Co-Evolved) ====================
+
+class StrengthRegistry(BaseModel):
+    """Co-evolvierte Gewinner-Parameter (faden_strength_coevolution.py, Seed=20260706).
+
+    Gewichtungen (convergence=0.46, recency=0.184, engagement=0.283, weight=0.072)
+    + Gamma-Skalierung (1.407) + Tier-Schwellen [0.228, 0.414, 0.593].
+    Deterministisch erzeugt, nicht behauptet — Ehrlichkeits-Prinzip.
+    """
+    # Kombinierte Stärke-Gewichte (Achse A: Aktivität + Achse B: Konvergenz)
+    w_convergence: float = 0.46
+    w_recency: float = 0.184
+    w_engagement: float = 0.283
+    w_weight: float = 0.072
+
+    # Nichtlineare Skalierung (1 = linear, >1 = stärkere Diskriminierung)
+    gamma: float = 1.407
+
+    # Tier-Schwellen (nach digitize: 0=fein, 1=mittel, 2=stark, 3=fixpunkt)
+    tier_fein_max: float = 0.228
+    tier_mittel_max: float = 0.414
+    tier_stark_max: float = 0.593
+
+    # Banach-λ -> Tier-Mapping (invertiert: niedriges λ = stärker)
+    lambda_fein: tuple = (0.85, 0.99)
+    lambda_mittel: tuple = (0.55, 0.84)
+    lambda_stark: tuple = (0.25, 0.54)
+    lambda_fixpunkt: tuple = (0.0, 0.24)
+
+    # Persistenz-TTL (Sekunden)
+    ttl_fein: int = 3600
+    ttl_mittel: int = 604800  # 7 Tage
+    ttl_stark: int = 2592000  # 30 Tage
+    ttl_fixpunkt: Optional[int] = None  # permanent
+
+    # Kapazitäten
+    max_local_fein: int = 200
+    max_local_mittel: int = 500
+    max_local_stark: int = 300
+    max_local_fixpunkt: int = 100
+
+    # Cloud-Sync
+    cloud_default_stark: bool = True
+    cloud_default_fixpunkt: bool = True
+
+    # Co-Evolutions-Metriken (Diagnose)
+    sensitivity: float = 0.2706  # <1 = Banach-stabil
+    global_best_fitness: float = 0.7738
+    consensus_dist: float = 0.6728  # stabiles Mehr-Konzept-Gleichgewicht
+    generations_to_stability: int = 43
+
+
 # ==================== ROOT CONFIG ====================
 
 class AscensionOSConfig(BaseModel):
@@ -305,5 +357,8 @@ class AscensionOSConfig(BaseModel):
     
     # Framework
     framework: FrameworkConfig = Field(default_factory=FrameworkConfig)
+    
+    # Strength Registry (co-evolved parameters)
+    strength: StrengthRegistry = Field(default_factory=StrengthRegistry)
     
     extra: Dict[str, Any] = Field(default_factory=dict)
