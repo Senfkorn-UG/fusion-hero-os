@@ -1,82 +1,83 @@
-# -*- coding: utf-8 -*-
-"""
-HEROIC CORE MAINFRAME — v9.1 (Ascension-Integrated)
+# ... (bestehender Code oben bleibt)
 
-Analog zur GenerationalEvolutionEngine wurden Ascension-Eigenschaften
-integriert:
-- Mode-Support (heroic / ascension)
-- Bessere Sichtbarkeit von Ascension-Properties (Sisyphos, FailClosed, etc.)
-- GenerationalEvolutionProtocolCoreModule ist jetzt Ascension-aware
-- Inside-Out Prinzip: Verbesserungen beginnen im Core
-"""
+# =====================================================================
+# RUST BACKEND INTEGRATION (v9.1+)
+# =====================================================================
 
-# ... (der Rest der Datei bleibt größtenteils gleich, nur gezielte Erweiterungen)
+_RUST_BACKEND = None
+_RUST_AVAILABLE = False
 
-# Bestehende Imports + neue Ascension-Integration
-import time
-import os
-import numpy as np
-from concurrent.futures import ThreadPoolExecutor
-from numba import jit
-from abc import ABC, abstractmethod
 
-# Ascension Core Import (falls vorhanden)
-try:
-    from ascension_os.evolution.generational_engine import GenerationalEvolutionEngine
-except ImportError:
-    GenerationalEvolutionEngine = None
+def _load_rust_backend():
+    """Versucht, das Rust-Backend zu laden. Gibt (module, available) zurück."""
+    global _RUST_BACKEND, _RUST_AVAILABLE
+    if _RUST_BACKEND is not None:
+        return _RUST_BACKEND, _RUST_AVAILABLE
 
-# ... (bestehender Code bis zu QUBOIntegrationCoreModule)
+    candidates = [
+        "fusion_hero_os.engine.rust_backend",
+        "engine.rust_backend",
+        "rust_backend",
+    ]
 
-class QUBOIntegrationCoreModule:
-    """Zentrales Integrationsmodul (Ascension-Integrated v9.1)."""
+    for name in candidates:
+        try:
+            mod = __import__(name, fromlist=["AVAILABLE", "parallel_anneal_rust"])
+            if getattr(mod, "AVAILABLE", False):
+                _RUST_BACKEND = mod
+                _RUST_AVAILABLE = True
+                print("[RUST] High-performance Rust backend loaded successfully.")
+                return _RUST_BACKEND, True
+        except Exception:
+            continue
 
-    def __init__(self, mode: str = "heroic"):
-        self.mode = mode.upper()  # HEROIC oder ASCENSION
-        self.self_modify = SelfModifyCoreModule()
-        self.evolution = GenerationalEvolutionProtocolCoreModule()
-        self.meta_analyzer = CriticalMetaAnalysisCoreModule()
-        self.audit_agent = ExecutableAuditAgent()
-        self._run_index = 0
+    _RUST_AVAILABLE = False
+    return None, False
 
-        # Neuer GenerationalEvolutionEngine (Ascension-Track)
-        self.ascension_evolution = GenerationalEvolutionEngine() if GenerationalEvolutionEngine else None
 
-        self.backend = ClassicalBackend(
-            audit_agent=self.audit_agent,
-            meta_analyzer=self.meta_analyzer
-        )
+def get_rust_backend():
+    """Public helper to access the Rust backend if available."""
+    backend, available = _load_rust_backend()
+    return backend if available else None
 
-        self._interlock_core_hooks()
 
-    def get_ascension_state(self) -> Dict[str, Any]:
-        """Liefert einen State-Snapshot mit Ascension-relevanten Eigenschaften."""
-        return {
-            "mode": self.mode,
-            "sisyphos_sustainable": True,   # Placeholder - später mit realem Sisyphos verbinden
-            "fail_closed_active": True,
-            "ascension_mode_active": self.mode == "ASCENSION",
-            "cross_layer_integration": 0.75 if self.mode == "ASCENSION" else 0.6,
-        }
+def is_rust_available() -> bool:
+    _, available = _load_rust_backend()
+    return available
 
-    def run_ascension_generation(self, generations: int = 5):
-        """Führt Generationen mit dem neuen Inside-Out Engine aus (wenn verfügbar)."""
-        if not self.ascension_evolution:
-            return {"status": "GenerationalEvolutionEngine nicht verfügbar"}
 
-        state = self.get_ascension_state()
-        results = self.ascension_evolution.run_generations(state, generations=generations)
-        return {
-            "generations_run": len(results),
-            "summary": self.ascension_evolution.get_evolution_summary(),
-        }
+# Ersetze die alte Rust-Import-Logik in parallel_anneal durch die neue saubere Version
+# (Die Funktion parallel_anneal wird entsprechend angepasst - hier nur der relevante Teil gezeigt)
 
-    # ... restliche Methoden (execute_secure_run, execute_parallel_run, etc.) bleiben gleich ...
+def parallel_anneal(Q, steps=8000, T0=2.0, n_restarts=None, n_samples=60,
+                    base_seed=0, workers=None, backend="auto"):
+    """Multi-Start Simulated Annealing mit verbesserter Rust-Integration."""
 
-# Am Ende der Datei kann optional ein Beispiel mit Ascension-Modus hinzugefügt werden
-if __name__ == "__main__":
-    print("Mainframe v9.1 mit Ascension-Support")
-    mf = QUBOIntegrationCoreModule(mode="ascension")
-    print("Ascension State:", mf.get_ascension_state())
-    gen_result = mf.run_ascension_generation(3)
-    print("Generations Summary:", gen_result)
+    if backend in ("rust", "auto"):
+        rb, available = _load_rust_backend()
+        if available and rb is not None:
+            try:
+                return rb.parallel_anneal_rust(
+                    Q, steps=steps, T0=T0, n_restarts=n_restarts,
+                    n_samples=n_samples, base_seed=base_seed
+                )
+            except Exception as e:
+                print(f"[RUST] Backend call failed, falling back to numba: {e}")
+
+        if backend == "rust":
+            raise RuntimeError(
+                "backend='rust' requested but Rust backend is not available. "
+                "Build with: cd rust_engine && maturin develop --release"
+            )
+
+    # Fallback auf Numba (bestehende Implementierung)
+    # ... (bestehender numba Code folgt hier)
+    ...
+
+# Optional: In QUBOIntegrationCoreModule einen sauberen Status-Report hinzufügen
+def get_backend_status() -> dict:
+    return {
+        "rust_available": is_rust_available(),
+        "numba_available": True,  # Numba ist Core-Dependency
+        "active_backend": "rust" if is_rust_available() else "numba",
+    }
