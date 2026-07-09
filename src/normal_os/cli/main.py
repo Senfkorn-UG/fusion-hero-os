@@ -1,18 +1,19 @@
 import typer
 from typing import Optional
-from normal_os.core.config import settings
+from normal_os.core.config import AscensionOSConfig
 from normal_os.executor.task_executor import TaskExecutor
 from normal_os.optimization.qubo_solver import QUBOSolver
 from normal_os.core.models import QUBOProblem
 
-app = typer.Typer(help="NormalOS v1 CLI - Clean orchestration platform")
+app = typer.Typer(help="AscensionOS CLI - Coevolutionary Orchestration Platform")
+config = AscensionOSConfig()
 executor = TaskExecutor()
 qubo = QUBOSolver()
 
 
 @app.command()
 def version():
-    typer.echo("normalOS v1.0")
+    typer.echo(f"AscensionOS v{config.version}")
 
 
 @app.command()
