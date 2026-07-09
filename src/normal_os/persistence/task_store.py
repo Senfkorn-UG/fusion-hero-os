@@ -1,99 +1,95 @@
-"""Simple async SQLite persistence layer using SQLModel + aiosqlite.
-
-Clean and pragmatic for small-to-medium projects.
-"""
-
 import aiosqlite
-from sqlmodel import SQLModel, Field, select
-from typing import Optional, AsyncGenerator
+import json
 from datetime import datetime
+from typing import Any, List, Optional
 
-from ..core.models import Task as TaskModel
-
-
-class TaskRecord(SQLModel, table=True):
-    """Database model for tasks."""
-    __tablename__ = "tasks"
-
-    id: str = Field(primary_key=True)
-    description: str
-    priority: int = 5
-    estimated_duration_minutes: int = 30
-    status: str = "pending"
-    created_at: datetime = Field(default_factory=datetime.utcnow)
-    completed_at: Optional[datetime] = None
-    metadata_json: str = "{}"
+from normal_os.core.models import Task, TaskStatus
 
 
 class TaskStore:
-    """Async task persistence."""
+    """Explicit async persistence for tasks + context/history."""
 
-    def __init__(self, db_path: str = "normalos.db"):
+    def __init__(self, db_path: str = "./data/normalos.db"):
         self.db_path = db_path
 
-    async def init_db(self):
+    async def _init_db(self):
         async with aiosqlite.connect(self.db_path) as db:
             await db.execute("""
                 CREATE TABLE IF NOT EXISTS tasks (
                     id TEXT PRIMARY KEY,
-                    description TEXT NOT NULL,
-                    priority INTEGER DEFAULT 5,
-                    estimated_duration_minutes INTEGER DEFAULT 30,
-                    status TEXT DEFAULT 'pending',
-                    created_at TIMESTAMP,
-                    completed_at TIMESTAMP,
-                    metadata_json TEXT DEFAULT '{}'
+                    type TEXT,
+                    payload TEXT,
+                    status TEXT,
+                    created_at TEXT,
+                    started_at TEXT,
+                    completed_at TEXT,
+                    result TEXT,
+                    error TEXT,
+                    priority INTEGER
+                )
+            """)
+            await db.execute("""
+                CREATE TABLE IF NOT EXISTS task_context (
+                    task_id TEXT,
+                    key TEXT,
+                    value TEXT,
+                    PRIMARY KEY (task_id, key)
+                )
+            """)
+            await db.execute("""
+                CREATE TABLE IF NOT EXISTS task_history (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    task_id TEXT,
+                    event TEXT,
+                    data TEXT,
+                    ts TEXT
                 )
             """)
             await db.commit()
 
-    async def add_task(self, task: TaskModel) -> TaskModel:
-        record = TaskRecord(
-            id=task.id,
-            description=task.description,
-            priority=task.priority,
-            estimated_duration_minutes=task.estimated_duration_minutes,
-            status=task.status,
-            created_at=task.created_at,
-            metadata_json=str(task.metadata),
-        )
+    async def save(self, task: Task):
+        await self._init_db()
         async with aiosqlite.connect(self.db_path) as db:
-            await db.execute(
-                "INSERT INTO tasks (id, description, priority, estimated_duration_minutes, status, created_at, metadata_json) VALUES (?, ?, ?, ?, ?, ?, ?)",
-                (record.id, record.description, record.priority, record.estimated_duration_minutes, record.status, record.created_at, record.metadata_json),
-            )
-            await db.commit()
-        return task
-
-    async def list_tasks(self, status: Optional[str] = None, limit: int = 50) -> list[TaskModel]:
-        query = "SELECT * FROM tasks ORDER BY created_at DESC LIMIT ?"
-        params = [limit]
-        if status:
-            query = "SELECT * FROM tasks WHERE status = ? ORDER BY created_at DESC LIMIT ?"
-            params = [status, limit]
-
-        async with aiosqlite.connect(self.db_path) as db:
-            db.row_factory = aiosqlite.Row
-            async with db.execute(query, params) as cursor:
-                rows = await cursor.fetchall()
-
-        tasks = []
-        for row in rows:
-            tasks.append(TaskModel(
-                id=row["id"],
-                description=row["description"],
-                priority=row["priority"],
-                estimated_duration_minutes=row["estimated_duration_minutes"],
-                status=row["status"],
-                created_at=row["created_at"],
-                metadata=eval(row["metadata_json"]) if row["metadata_json"] else {},
+            await db.execute("""
+                INSERT OR REPLACE INTO tasks
+                (id, type, payload, status, created_at, started_at, completed_at, result, error, priority)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """, (
+                task.id, task.type, json.dumps(task.payload), task.status,
+                task.created_at.isoformat(),
+                task.started_at.isoformat() if task.started_at else None,
+                task.completed_at.isoformat() if task.completed_at else None,
+                json.dumps(task.result) if task.result else None,
+                task.error, task.priority
             ))
-        return tasks
-
-    async def update_status(self, task_id: str, status: str):
-        async with aiosqlite.connect(self.db_path) as db:
-            await db.execute(
-                "UPDATE tasks SET status = ?, completed_at = ? WHERE id = ?",
-                (status, datetime.utcnow() if status in ("completed", "failed") else None, task_id),
-            )
             await db.commit()
+
+    async def get(self, task_id: str) -> Optional[Task]:
+        await self._init_db()
+        async with aiosqlite.connect(self.db_path) as db:
+            cursor = await db.execute("SELECT * FROM tasks WHERE id = ?", (task_id,))
+            row = await cursor.fetchone()
+            if row:
+                return self._row_to_task(row)
+            return None
+
+    async def list_by_status(self, status: TaskStatus) -> List[Task]:
+        await self._init_db()
+        async with aiosqlite.connect(self.db_path) as db:
+            cursor = await db.execute("SELECT * FROM tasks WHERE status = ? ORDER BY priority DESC, created_at", (status,))
+            rows = await cursor.fetchall()
+            return [self._row_to_task(r) for r in rows]
+
+    def _row_to_task(self, row) -> Task:
+        return Task(
+            id=row[0],
+            type=row[1],
+            payload=json.loads(row[2]) if row[2] else {},
+            status=row[3],
+            created_at=datetime.fromisoformat(row[4]),
+            started_at=datetime.fromisoformat(row[5]) if row[5] else None,
+            completed_at=datetime.fromisoformat(row[6]) if row[6] else None,
+            result=json.loads(row[7]) if row[7] else None,
+            error=row[8],
+            priority=row[9],
+        )
