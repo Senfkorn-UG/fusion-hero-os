@@ -28,15 +28,7 @@ jobs:
             echo "::error::proof_registry.yaml fehlt!"
             exit 1
           fi
-          python3 -c "
-import yaml
-with open('proof_registry.yaml') as f:
-    reg = yaml.safe_load(f)
-print('proof_registry.yaml geladen, Version:', reg.get('version'))
-print('QPT-SISYPHOS-FIT Status:', reg.get('Ehrlichkeits_Punkte', [{}])[-1].get('status', 'unbekannt'))
-if reg.get('Ehrlichkeits_Punkte', [{}])[-1].get('status') != 'OFFEN':
-    print('::warning::QPT-SISYPHOS-FIT sollte OFFEN sein für empirische Claims')
-" || echo "::warning::YAML/ Python Check fehlgeschlagen (nicht blockierend)"
+          python3 -c "import yaml; reg = yaml.safe_load(open('proof_registry.yaml')); ep = reg.get('Ehrlichkeits_Punkte', [{}])[-1]; print('proof_registry.yaml geladen, Version:', reg.get('version')); print('QPT-SISYPHOS-FIT Status:', ep.get('status', 'unbekannt')); print('::warning::QPT-SISYPHOS-FIT sollte OFFEN sein für empirische Claims') if ep.get('status') != 'OFFEN' else None" || echo "::warning::YAML/ Python Check fehlgeschlagen (nicht blockierend)"
           echo "proof_registry.yaml Validierung abgeschlossen"
 
       - name: Validate Repository Structure (v8)

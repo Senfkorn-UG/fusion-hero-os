@@ -80,10 +80,7 @@ jobs:
     - name: Hyper-Threading Merge Verification (Full)
       if: matrix.check-level == 'full'
       run: |
-        python -c "
-from fusion_hero_os.core import hyperthreading
-print('Hyper-Threading Core present:', hasattr(hyperthreading, 'HyperthreadingCoreModule'))
-" || echo "Hyper-Threading module check (optional)"
+        python -c "from fusion_hero_os.core import hyperthreading; print('Hyper-Threading Core present:', hasattr(hyperthreading, 'HyperthreadingCoreModule'))" || echo "Hyper-Threading module check (optional)"
 
     - name: Proof-Registry Gate (Claims <-> Beweise)
       run: |
