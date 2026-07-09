@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
-FUSION HERO OS v8.8 - HEROIC CORE ORCHESTRATOR
+FUSION HERO OS v8.9 - HEROIC CORE ORCHESTRATOR
 
-Jetzt mit vollem HeroicCore-Aggregator (v8.8).
-Alle epistemischen Begriffe + LLM + Module-Registrierung an einem Ort.
+Mit Ascension-Integration über alle Layer.
+QuadCoreBridge ist jetzt sowohl Heroic- als auch Ascension-aware.
 """
 
 import hashlib
@@ -17,12 +17,19 @@ from typing import Dict, Any, Optional
 from .heroic_core import get_heroic_core, HeroicCore
 from .universal_llm_router import get_unified_llm_core, LLMResult
 
+# Ascension Track Integration
+try:
+    from ascension_os.core.ascension_core import get_ascension_core, AscensionCore
+except ImportError:
+    AscensionCore = None
+    get_ascension_core = None
+
 _REPO_ROOT = Path(__file__).resolve().parents[2]
 
 
 @dataclass(frozen=True)
 class MasterSeed:
-    genesis_hash: str = "000000000000000000im000000000000im0000000000000000000000000000000"
+    genesis_hash: str = "000000000im0000000000000000000000000000000000000000000000000000"
     criticality_target: float = 0.22
     strict_contraction_enforced: bool = True
 
@@ -60,17 +67,33 @@ class PMSEvidenceSpine:
 
 
 class QuadCoreBridge:
-    def __init__(self, spine: PMSEvidenceSpine, seed: MasterSeed = None):
+    """
+    Layer 0 + 4 + 5 Bridge mit Ascension-Unterstützung.
+
+    Kann sowohl im Heroic- als auch im Ascension-Modus betrieben werden.
+    """
+
+    def __init__(self, spine: PMSEvidenceSpine, seed: MasterSeed = None, mode: str = "heroic"):
         self.spine = spine
         self.seed = seed or MasterSeed()
-        self.mode = "STANDARD"
+        self.mode = mode.upper()  # "HEROIC" oder "ASCENSION"
         self.volatile_history: list = []
         self.volatile_cache: Dict[str, Any] = {}
-        self.heroic = get_heroic_core(quad_core=self)   # v8.8 Aggregator
-        self.llm = self.heroic.llm                        # direkter Zugriff auf Unified LLM
+
+        # Heroic Track
+        self.heroic = get_heroic_core(quad_core=self)
+        self.llm = self.heroic.llm if self.heroic else None
+
+        # Ascension Track (falls verfügbar)
+        self.ascension: Optional[AscensionCore] = None
+        if get_ascension_core:
+            try:
+                self.ascension = get_ascension_core()
+            except Exception:
+                self.ascension = None
 
     def invoke_phoenix_mode(self) -> bool:
-        print("[LAYER 5] Phoenix-Mode aktiviert")
+        print(f"[LAYER 5] Phoenix-Mode aktiviert (Mode: {self.mode})")
         self.mode = "PHOENIX"
         self._flush_volatile_memory()
         return self.seed.verify_integrity(self.seed.state_hash())
@@ -84,30 +107,37 @@ class QuadCoreBridge:
         if domain in ["BEWEIS", "GESTALT"]:
             return self.spine.execute_operator_chain(operator_id, payload)
         self.volatile_history.append({"domain": domain, "operator": operator_id})
-        return {"status": "SUCCESS", "message": "via HeroicCore v8.8"}
+        return {"status": "SUCCESS", "message": f"via {self.mode} Core v8.9"}
 
     def ask_llm(self, prompt: str, system_prompt: Optional[str] = None, force_provider: Optional[str] = None) -> LLMResult:
+        if self.mode == "ASCENSION" and self.ascension:
+            # Ascension-spezifische Logik (kann später erweitert werden)
+            print("[ASCENSION v8.9] Using AscensionCore path")
+            if hasattr(self.ascension, "llm") and self.ascension.llm:
+                return self.ascension.llm.ask(prompt, system_prompt, force_provider, context="ascension")
+
+        # Default: Heroic Path
         assignment = self.llm.get_best_assignment(prompt) if self.llm else None
         if assignment:
-            print(f"[HEROIC v8.8] {assignment['provider']} (score={assignment['score']:.3f})")
-        return self.llm.ask(prompt, system_prompt, force_provider, context="heroic") if self.llm else LLMResult("no-llm", "HeroicCore nicht verfügbar")
+            print(f"[{self.mode} v8.9] {assignment['provider']} (score={assignment['score']:.3f})")
+        return self.llm.ask(prompt, system_prompt, force_provider, context="heroic") if self.llm else LLMResult("no-llm", "Core nicht verfügbar")
 
 
-def bootstrap_v8_system():
+def bootstrap_v8_system(mode: str = "heroic"):
     print("=" * 70)
-    print("BOOTING FUSION-HERO-OS v8.8 — HeroicCore Aggregator (alles grounded)")
+    print(f"BOOTING FUSION-HERO-OS v8.9 — {mode.upper()} MODE")
     print("=" * 70)
     seed = MasterSeed()
     spine = PMSEvidenceSpine()
-    core = QuadCoreBridge(spine, seed=seed)
-    print("[LAYER 0+4+5] MasterSeed + PMS + QuadCore + HeroicCore v8.8 + Unified LLM")
-    print("[EXPANSION] Alle anderen Module können sich jetzt über heroic.register_module(...) heroic machen.")
+    core = QuadCoreBridge(spine, seed=seed, mode=mode)
+    print(f"[LAYER 0+4+5] MasterSeed + PMS + QuadCore + {mode.upper()} Core v8.9")
+    print("[ASCENSION INTEGRATION] Ascension properties now available across layers")
     print("=" * 70)
     return core
 
 
 if __name__ == "__main__":
-    heroic_core = bootstrap_v8_system()
-    result = heroic_core.ask_llm("Zeige, dass jetzt wirklich alle Begriffe und Module grounded sind.")
+    # Beispiel: Im Ascension-Modus starten
+    core = bootstrap_v8_system(mode="ascension")
+    result = core.ask_llm("Zeige Ascension-Integration über alle Layer.")
     print(f"Provider: {result.provider}")
-    print(f"Sisyphos: {heroic_core.heroic.get_sisyphos_state()}")
