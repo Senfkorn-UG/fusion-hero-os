@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
-FUSION HERO OS v8.5 - HEROIC CORE ORCHESTRATOR
+FUSION HERO OS v8.6 - HEROIC CORE ORCHESTRATOR
 
-Jetzt mit expliziter Nutzung der dynamischen, nicht-festen Task-Zuweisung aus dem UniversalLLMRouter v8.5.
-Layer 0 (MasterSeed) + Layer 4/5 (PMS + QuadCore) + dynamische LLM/Agent-Assignment auf allen Ebenen.
+Vollständig delegiert an das Unified Heroic LLM Core (v8.6).
+Layer 0 (MasterSeed) + Layer 4/5 (PMS + QuadCore) + EIN einheitlicher LLM/Agenten-Brain.
 """
 
 import hashlib
@@ -14,7 +14,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Dict, Any, Optional
 
-from .universal_llm_router import get_universal_llm_router, LLMResult
+from .universal_llm_router import get_unified_llm_core, LLMResult
 
 _REPO_ROOT = Path(__file__).resolve().parents[2]
 
@@ -65,7 +65,8 @@ class QuadCoreBridge:
         self.mode = "STANDARD"
         self.volatile_history: list = []
         self.volatile_cache: Dict[str, Any] = {}
-        self.llm_router = get_universal_llm_router(heroic_core=self)
+        # EIN einheitliches LLM Core für alles
+        self.llm = get_unified_llm_core(heroic_core=self)
 
     def invoke_phoenix_mode(self) -> bool:
         print("[LAYER 5] Phoenix-Mode aktiviert")
@@ -77,35 +78,35 @@ class QuadCoreBridge:
         n = len(self.volatile_history) + len(self.volatile_cache)
         self.volatile_history.clear()
         self.volatile_cache.clear()
-        print(f"[LAYER 5] Volatile memory flushed ({n} entries)")
 
     def process_query(self, domain: str, operator_id: str, payload: Dict[str, Any]) -> Any:
         if domain in ["BEWEIS", "GESTALT"]:
             return self.spine.execute_operator_chain(operator_id, payload)
         self.volatile_history.append({"domain": domain, "operator": operator_id})
-        return {"status": "SUCCESS", "message": "Philosophische Synthese etabliert."}
+        return {"status": "SUCCESS", "message": "Synthese via Unified Heroic LLM Core v8.6"}
 
     def ask_llm(self, prompt: str, system_prompt: Optional[str] = None, force_provider: Optional[str] = None) -> LLMResult:
-        """Verwendet die dynamische v8.5 Assignment-Logik des Routers."""
-        assignment = self.llm_router.assign_dynamic(prompt, system_prompt)
-        print(f"[DYNAMIC ASSIGN v8.5] {assignment['provider']} (score={assignment['score']:.3f}, category={assignment['category']})")
-        return self.llm_router.route(prompt, system_prompt, force_provider)
+        """Delegiert komplett an das Unified Heroic LLM Core (eine Quelle der Wahrheit)."""
+        assignment = self.llm.get_best_assignment(prompt)
+        print(f"[UNIFIED v8.6] {assignment['provider']} (score={assignment['score']:.3f}, cat={assignment['category']})")
+        return self.llm.ask(prompt, system_prompt, force_provider, context="heroic")
 
 
 def bootstrap_v8_system():
-    print("=" * 60)
-    print("BOOTING FUSION-HERO-OS v8.5 (Dynamic Non-Fixed Assignment Layer)")
-    print("=" * 60)
+    print("=" * 70)
+    print("BOOTING FUSION-HERO-OS v8.6 — Unified Heroic LLM Core (alles zu einem)")
+    print("=" * 70)
     seed = MasterSeed()
     spine = PMSEvidenceSpine()
     core = QuadCoreBridge(spine, seed=seed)
-    print("[LAYER 0+4+5] MasterSeed + PMS + QuadCore + Dynamic LLM Router v8.5 online")
-    print("[INTEGRATION] Assignment now computed fresh on every ask_llm() across all layers")
-    print("=" * 60)
+    print("[LAYER 0+4+5] MasterSeed + PMS + QuadCore + Unified Heroic LLM Core v8.6")
+    print("[MERGE] Alle LLM-Logik (Provider, Dynamic Assignment, Heroic Context) in EINEM Core")
+    print("=" * 70)
     return core
 
 
 if __name__ == "__main__":
     heroic_core = bootstrap_v8_system()
-    result = heroic_core.ask_llm("Erkläre kurz den Vorteil dynamischer Agenten-Zuweisung in v8.5")
-    print(f"\nProvider: {result.provider} | Latency: {result.latency_ms:.1f}ms")
+    result = heroic_core.ask_llm("Zeige mir, dass alles jetzt wirklich zu einem zusammengeführt ist.")
+    print(f"\nProvider: {result.provider}")
+    print(f"Heroic Context injected: {result.meta.get('heroic_context_injected')}")

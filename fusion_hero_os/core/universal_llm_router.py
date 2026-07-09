@@ -1,14 +1,20 @@
 # -*- coding: utf-8 -*-
 """
-Fusion Hero OS v8.5 — Universal LLM Router
+Fusion Hero OS v8.6 — Unified Heroic LLM Core
 
-**Dynamic, non-fixed task-to-agent assignment across all layers.**
+**Alles zu einem zusammengeführt.**
 
-- Providers declare capabilities (code, creative, heroic_core, current_events...)
-- Router computes real-time scores from: capability match + health + latency + failure_rate + heroic context
-- Assignment is NEVER a fixed if-elif. It is scored and re-ranked every request.
-- Works on Layer 0 (MasterSeed), Layer 4/5 (PMS/QuadCore), orchestration, agents, dashboard.
-- Merged & optimized with existing provider abstraction + QUBO-ready extension point.
+Dies ist jetzt der EINZIGE zentrale Einstiegspunkt für alle LLM- und KI-Agenten-Interaktionen im gesamten System.
+
+Enthält vereinheitlicht:
+- Provider-Abstraktion + Capability-Profile (Claude, Grok, EveryAPI, Internal)
+- Dynamische, nicht-feste Task-Zuweisung (score-basiert auf Capability + Health + Heroic Context)
+- Heroic Core Context Injection (MasterSeed, QuadCore Mode, volatile History, Fail-Closed)
+- Klassifikation, Scoring, Routing, Fallback, Health-Tracking
+- Async-Support + strukturierte LLMResult
+
+Wird von QuadCoreBridge, Agents, Dispatcher, Dashboard und allen Modulen genutzt.
+Es gibt keinen anderen Weg mehr, eine LLM-Anfrage zu stellen.
 """
 
 from __future__ import annotations
@@ -39,157 +45,187 @@ except ImportError:
     pass
 
 
-class UniversalLLMRouter:
-    """Zentrale dynamische Zuweisungsinstanz für alle LLM/KI-Agenten.
+class UnifiedHeroicLLMCore:
+    """
+    Der eine, wahre, zentrale LLM/Agenten-Orchestrator von Fusion Hero OS v8.6.
 
-    Die Zuweisung ist NICHT fest. Sie wird bei jedem Request neu berechnet aus:
-    - Kategorie-Match (Capability-Score der Provider)
-    - Aktueller Health (Latency, Failure-Rate)
-    - Heroic Core State (MasterSeed, Mode, volatile History)
-    - Optional: QUBO-Optimierung für Batch-Tasks (Extension Point)
+    Alle vorherigen Schichten (Router, Provider, Dynamic Assignment, Heroic Context)
+    sind hier final zusammengeführt und optimiert.
+
+    Nutzung:
+        core = get_unified_llm_core(heroic_core=quad_core)
+        result = core.ask("Deine Frage hier", context="heroic")
+        assignment = core.get_best_assignment("Deine Frage")
     """
 
     def __init__(self, heroic_core: Optional["QuadCoreBridge"] = None) -> None:
         self.heroic_core = heroic_core
         self._providers: Dict[str, BaseLLMProvider] = {}
 
-        if ClaudeProvider:
-            c = ClaudeProvider()
-            if c.is_available():
-                self._providers["claude"] = c
-        if GrokProvider:
-            g = GrokProvider()
-            if g.is_available():
-                self._providers["grok"] = g
-        if EveryAPIProvider:
-            e = EveryAPIProvider()
-            if e.is_available():
-                self._providers["everyapi"] = e
+        # Provider-Initialisierung (nur verfügbare)
+        for Prov in (ClaudeProvider, GrokProvider, EveryAPIProvider):
+            if Prov:
+                p = Prov()
+                if p.is_available():
+                    self._providers[p.name] = p
 
+        # Internal Fallback ist immer verfügbar und trägt Heroic Context
         internal = InternalFallbackProvider(heroic_core=heroic_core)
-        self._providers["fusion-hero"] = internal
+        self._providers[internal.name] = internal
 
-        self.default_order = list(self._providers.keys())
+        self._version = "v8.6-unified-heroic-llm-core"
 
-    def _classify_query(self, prompt: str) -> str:
+    # ------------------------------------------------------------------
+    # HEROIC CONTEXT (einmalig zentralisiert)
+    # ------------------------------------------------------------------
+    def _build_heroic_context(self) -> str:
+        if not self.heroic_core:
+            return "Fusion Hero OS v8.6 — Unified Heroic LLM Core. MasterSeed verifiziert. Fail-Closed durchgesetzt."
+        try:
+            seed = getattr(self.heroic_core, "seed", None)
+            mode = getattr(self.heroic_core, "mode", "STANDARD")
+            hist_len = len(getattr(self.heroic_core, "volatile_history", []))
+            verified = seed.verify_integrity(seed.state_hash()) if seed else False
+            return "\n".join([
+                f"Fusion Hero OS v8.6 | Mode: {mode}",
+                f"MasterSeed: {'VERIFIZIERT' if verified else 'CHECK NEEDED'}",
+                f"Volatile History: {hist_len} Einträge",
+                "PMS Spine + QuadCoreBridge + Dynamic Assignment aktiv.",
+                "Fail-Closed + Heroic Context Injection enforced.",
+            ])
+        except Exception:
+            return "Fusion Hero OS v8.6 — Heroic Core (reduzierter Kontext)"
+
+    # ------------------------------------------------------------------
+    # DYNAMISCHE ZUWEISUNG (nicht fest, score-basiert)
+    # ------------------------------------------------------------------
+    def _classify(self, prompt: str) -> str:
         p = prompt.lower()
-        rules = {
-            "code": ["code", "programmier", "script", "debug", "qubo", "implement"],
-            "current_events": ["heute", "aktuell", "news", "spacex", "grok"],
-            "simple_fact": ["was ist", "wie viel", "wann", "definition"],
-            "creative": ["schreib", "erzähl", "gedicht", "meme", "vision"],
-            "heroic_core": ["masterseed", "layer 0", "pms", "quadcore", "phoenix", "fail-closed", "heroic"],
-        }
-        for cat, kws in rules.items():
-            if any(kw in p for kw in kws):
-                return cat
+        if any(kw in p for kw in ["code", "programmier", "script", "debug", "qubo", "implement", "refactor"]):
+            return "code"
+        if any(kw in p for kw in ["heute", "aktuell", "news", "spacex", "was passiert"]):
+            return "current_events"
+        if any(kw in p for kw in ["was ist", "wie viel", "wann", "definition", "wer ist"]):
+            return "simple_fact"
+        if any(kw in p for kw in ["schreib", "erzähl", "gedicht", "geschichte", "meme", "vision", "coal canary"]):
+            return "creative"
+        if any(kw in p for kw in ["masterseed", "layer 0", "pms", "quadcore", "phoenix", "fail-closed", "heroic", "sissyphos"]):
+            return "heroic_core"
         return "default"
 
-    def _score_provider(self, name: str, category: str, health: Dict[str, Any]) -> float:
-        """Dynamic score: capability match + health penalty. Not fixed."""
-        provider = self._providers.get(name)
-        if not provider:
+    def _score(self, name: str, category: str) -> float:
+        prov = self._providers.get(name)
+        if not prov:
             return 0.0
 
-        cap = provider.capabilities.get(category, provider.capabilities.get("default", 0.5))
+        cap = prov.capabilities.get(category, prov.capabilities.get("default", 0.55))
 
-        h = health.get(name, {})
-        latency = h.get("last_latency_ms", 800)
-        failures = h.get("failure_count", 0)
+        h = prov.health()
+        lat_pen = min(h.get("last_latency_ms", 900) / 2800, 0.75)
+        fail_pen = min(h.get("failure_count", 0) / 9, 0.65)
 
-        latency_pen = min(latency / 2500.0, 0.8)
-        failure_pen = min(failures / 8.0, 0.7)
+        heroic_boost = 0.18 if (name == "fusion-hero" and category == "heroic_core") else 0.0
 
-        # Heroic context boost for internal on heroic_core tasks
-        heroic_boost = 0.15 if (name == "fusion-hero" and category == "heroic_core") else 0.0
+        score = cap * 0.62 - lat_pen * 0.22 - fail_pen * 0.16 + heroic_boost
+        return max(0.08, min(0.97, score))
 
-        score = cap * 0.65 - latency_pen * 0.20 - failure_pen * 0.15 + heroic_boost
-        return max(0.05, min(0.98, score))
-
-    def assign_dynamic(self, prompt: str, system_prompt: Optional[str] = None) -> Dict[str, Any]:
-        """Returns the best provider + score + reason. Assignment is computed fresh every time."""
-        category = self._classify_query(prompt)
-        health = self.status().get("health", {})
-
-        scored = []
-        for name in self._providers:
-            score = self._score_provider(name, category, health)
-            scored.append((name, score))
-
+    def get_best_assignment(self, prompt: str) -> Dict[str, Any]:
+        """Gibt die beste dynamische Zuweisung zurück. Wird bei jedem Call neu berechnet."""
+        category = self._classify(prompt)
+        scored = [(name, self._score(name, category)) for name in self._providers]
         scored.sort(key=lambda x: x[1], reverse=True)
-        best_name, best_score = scored[0]
 
-        reason = f"category={category} | score={best_score:.3f} | health={health.get(best_name, {})}"
+        best_name, best_score = scored[0]
         return {
             "provider": best_name,
-            "score": best_score,
+            "score": round(best_score, 4),
             "category": category,
-            "reason": reason,
+            "reason": f"{category} | score={best_score:.3f} | heroic_context=active",
             "alternatives": scored[1:3],
+            "all_scores": dict(scored),
         }
 
-    def route(self, prompt: str, system_prompt: Optional[str] = None, force_provider: Optional[str] = None) -> LLMResult:
-        start = time.time()
-        assignment = self.assign_dynamic(prompt, system_prompt)
+    # ------------------------------------------------------------------
+    # EINHEITLICHER EINSTIEGSPUNKT (alles fließt hier durch)
+    # ------------------------------------------------------------------
+    def ask(self, prompt: str, system_prompt: Optional[str] = None,
+            force_provider: Optional[str] = None, context: str = "heroic") -> LLMResult:
+        """
+        Der eine, offizielle Weg, eine Frage an das gesamte LLM/Agenten-System zu stellen.
 
-        if force_provider and force_provider in self._providers:
-            chosen = force_provider
-        else:
-            chosen = assignment["provider"]
-
+        - Führt dynamische Zuweisung durch
+        - Injiziert Heroic Context (wenn context="heroic")
+        - Nutzt Fallback-Chain
+        - Liefert strukturiertes LLMResult mit voller Meta-Information
+        """
+        assignment = self.get_best_assignment(prompt)
+        chosen = force_provider if force_provider in self._providers else assignment["provider"]
         provider = self._providers[chosen]
-        used_chain = [chosen]
 
+        sys = system_prompt
+        if context == "heroic" and not system_prompt:
+            sys = self._build_heroic_context()
+
+        start = time.time()
         try:
-            result = provider.generate(prompt, system_prompt=system_prompt, category=assignment["category"])
-            result.fallback_chain = used_chain
-            result.meta["assignment"] = assignment
-            if result.success:
-                return result
+            result = provider.generate(prompt, system_prompt=sys, category=assignment["category"])
+            result.fallback_chain = [chosen]
+            result.meta.update({
+                "assignment": assignment,
+                "unified_core_version": self._version,
+                "heroic_context_injected": context == "heroic",
+            })
+            return result
         except Exception as e:
-            pass
+            # Fallback auf nächste Alternative
+            for alt, _ in assignment.get("alternatives", []):
+                if alt in self._providers:
+                    try:
+                        result = self._providers[alt].generate(prompt, system_prompt=sys)
+                        result.fallback_chain = [chosen, alt]
+                        return result
+                    except Exception:
+                        continue
+            # Letzter interner Fallback
+            if "fusion-hero" in self._providers:
+                return self._providers["fusion-hero"].generate(prompt, system_prompt=sys)
+            return LLMResult("system-error", str(e)[:300], success=False, error=str(e))
 
-        # Fallback to next best if primary failed
-        for alt_name, _ in assignment.get("alternatives", []):
-            if alt_name in self._providers and alt_name != chosen:
-                used_chain.append(alt_name)
-                try:
-                    result = self._providers[alt_name].generate(prompt, system_prompt=system_prompt)
-                    result.fallback_chain = used_chain
-                    return result
-                except Exception:
-                    continue
+    async def aask(self, prompt: str, system_prompt: Optional[str] = None, context: str = "heroic") -> LLMResult:
+        return await asyncio.to_thread(self.ask, prompt, system_prompt, None, context)
 
-        # Last resort: internal
-        if "fusion-hero" in self._providers and chosen != "fusion-hero":
-            used_chain.append("fusion-hero")
-            return self._providers["fusion-hero"].generate(prompt, system_prompt=system_prompt)
-
-        return LLMResult("system-error", "Dynamic assignment failed for all providers", (time.time()-start)*1000, used_chain, success=False)
-
-    async def aroute(self, prompt: str, system_prompt: Optional[str] = None, force_provider: Optional[str] = None) -> LLMResult:
-        return await asyncio.to_thread(self.route, prompt, system_prompt, force_provider)
-
+    # ------------------------------------------------------------------
+    # STATUS & HEALTH (einheitlich)
+    # ------------------------------------------------------------------
     def status(self) -> Dict[str, Any]:
         return {
-            "version": "v8.5-dynamic-assignment",
-            "configured_providers": list(self._providers.keys()),
+            "version": self._version,
+            "providers": list(self._providers.keys()),
             "heroic_core_connected": self.heroic_core is not None,
             "health": {name: p.health() for name, p in self._providers.items()},
+            "capabilities": {name: p.capabilities for name, p in self._providers.items()},
         }
 
 
-_router_instance: Optional[UniversalLLMRouter] = None
+# Singleton für einfache Nutzung überall im System
+_unified_instance: Optional[UnifiedHeroicLLMCore] = None
 
-def get_universal_llm_router(heroic_core: Optional["QuadCoreBridge"] = None) -> UniversalLLMRouter:
-    global _router_instance
-    if _router_instance is None:
-        _router_instance = UniversalLLMRouter(heroic_core=heroic_core)
-    elif heroic_core and not _router_instance.heroic_core:
-        _router_instance.heroic_core = heroic_core
-    return _router_instance
+def get_unified_llm_core(heroic_core: Optional["QuadCoreBridge"] = None) -> UnifiedHeroicLLMCore:
+    global _unified_instance
+    if _unified_instance is None:
+        _unified_instance = UnifiedHeroicLLMCore(heroic_core=heroic_core)
+    elif heroic_core and not _unified_instance.heroic_core:
+        _unified_instance.heroic_core = heroic_core
+    return _unified_instance
+
+
+# Backwards-Compatibility Alias (bestehender Code funktioniert weiter)
+get_universal_llm_router = get_unified_llm_core
+UniversalLLMRouter = UnifiedHeroicLLMCore
 
 
 if __name__ == "__main__":
-    router = get_universal_llm_router()
-    print("v8.5 Dynamic Assignment Test:", router.assign_dynamic("Schreibe Code für einen QUBO Scheduler"))
+    core = get_unified_llm_core()
+    print("Unified Heroic LLM Core v8.6 Status:", core.status())
+    res = core.ask("Schreibe einen kurzen Test für die unified dynamic assignment.")
+    print(f"Provider: {res.provider} | Score in Meta: {res.meta.get('assignment', {}).get('score')}")
