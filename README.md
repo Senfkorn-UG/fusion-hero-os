@@ -3,26 +3,45 @@
 **Status:** Vollständig integriert (09.07.2026)  
 **Zweck:** Zero-Config Mesh-VPN + Phone-Bridge + Funnel für den gesamten Heimserver
 
-## Was ist das?
+## Mesh-Prinzip: Jeder Konnektor = eigenes Teil
 
-Vollständige Tailscale-Integration als **Mesh** innerhalb von Fusion Hero OS:
+Kein Monolith. Jedes Mesh-Segment hat:
 
-- Sicherer Zugriff von überall (MagicDNS + Funnel)
-- Phone-Benachrichtigungen via `pc-handy-bridge` + `phonelink-control`
-- Zentrale Steuerung über ein Control Center
-- Live-Status direkt im `hero-docs-server`
+- **Eigene ID** (`mesh-connector-github`, `mesh-connector-gmail`, …)
+- **Eigener Host-Knoten** (`mainframe` oder `desktop`)
+- **Eigene Health-Probe** (`/mesh/{connector}/status`)
+- **Eigener Tailscale-Tag** (`tag:fusion-connector-github`, …)
+
+Registry: `mesh_connectors.yaml`
+
+### Physische Knoten
+
+| Knoten | Rolle | MagicDNS |
+|--------|-------|----------|
+| `mainframe` | Orchestrator (Linux Heimserver) | `mainframe.tail391adb.ts.net` |
+| `desktop` | Grok-Workstation (Windows) | `desktop-kpki9e4.tail391adb.ts.net` |
+
+### MCP-Konnektor-Segmente (je eigenständig)
+
+| Konnektor | Mesh-ID | Host |
+|-----------|---------|------|
+| GitHub | `mesh-connector-github` | desktop |
+| Gmail | `mesh-connector-gmail` | desktop |
+| Google Drive | `mesh-connector-google-drive` | desktop |
+| Google Calendar | `mesh-connector-google-calendar` | desktop |
+| Canva | `mesh-connector-canva` | desktop |
+| Gamma | `mesh-connector-gamma` | desktop |
+| Notion | `mesh-connector-notion` | desktop |
+| Vercel | `mesh-connector-vercel` | desktop |
+| HyperFrames | `mesh-connector-hyperframes` | desktop |
+| Tasks | `mesh-connector-tasks` | desktop |
 
 ## Ein-Klick Mesh Setup
 
 ### Von Windows (Git Bash) aus (empfohlen)
 
 ```bash
-cd tools/tailscale
-
-# Einmalig ausführbar machen
 chmod +x run_on_heimgserver.sh
-
-# Vollständiges Mesh-Setup auf dem Heimserver triggern
 ./run_on_heimgserver.sh all
 ```
 
@@ -32,53 +51,53 @@ Einzelne Kommandos:
 ./run_on_heimgserver.sh start
 ./run_on_heimgserver.sh funnel
 ./run_on_heimgserver.sh status
+./run_on_heimgserver.sh mesh
 ```
-
-> **Hinweis:** Trage oben in `run_on_heimgserver.sh` deinen SSH-Usernamen ein (`USER="admin"` → dein tatsächlicher User).
 
 ### Direkt auf dem Linux-Heimserver
 
 ```bash
-cd tools/tailscale
 chmod +x tailscale_control.sh
 sudo ./tailscale_control.sh all
+sudo ./tailscale_control.sh mesh
+sudo ./tailscale_control.sh mesh-connector github
 ```
 
 ## Verfügbare Kommandos
 
-| Command     | Beschreibung                              |
-|-------------|-------------------------------------------|
-| `install`   | Installation + Authentifizierung          |
-| `start`     | Start + Service einrichten                |
-| `status`    | Aktuellen Status anzeigen                 |
-| `funnel`    | Funnel für Hero Docs Server aktivieren    |
-| `notify`    | Phone Notification Monitor starten        |
-| `all`       | Komplettes Mesh-Setup                     |
+| Command | Beschreibung |
+|---------|-------------|
+| `install` | Installation + Authentifizierung |
+| `start` | Start + Service einrichten |
+| `status` | Tailscale-Status |
+| `mesh` | Alle Konnektor-Segmente anzeigen |
+| `mesh-connector <id>` | Einzelnes Segment prüfen |
+| `funnel` | Funnel für Hero Docs Server |
+| `notify` | Phone Notification Monitor |
+| `all` | Komplettes Mesh-Setup |
 
 ## Erreichbare URLs (nach Funnel + MagicDNS)
 
 - **Hero Docs Server**: `https://mainframe.tail391adb.ts.net`
 - **MasterSeed Status**: `https://mainframe.tail391adb.ts.net/status`
 - **Tailscale Status**: `https://mainframe.tail391adb.ts.net/tailscale/status`
-
-## Phone-Bridge Integration
-
-- `tailscale_phone_notify.py` sendet Connect/Disconnect Events ans Handy
-- Status-Abfrage möglich über `hero-docs-server`
-- Zukünftig: Direkte Steuerung vom Handy aus
+- **Mesh Overview**: `https://mainframe.tail391adb.ts.net/mesh/status`
+- **Einzelner Konnektor**: `https://mainframe.tail391adb.ts.net/mesh/github/status`
 
 ## Dateien
 
-| Datei                        | Zweck                                           |
-|-----------------------------|-------------------------------------------------|
-| `tailscale_control.sh`      | Zentrales Control Center (Mesh Orchestrator)    |
-| `tailscale_install.sh`      | Installation + Login                            |
-| `tailscale_start.sh`        | Start + Service                                 |
-| `tailscale_status.py`       | Status als JSON (Bridge-fähig)                  |
-| `tailscale_funnel.sh`       | Funnel-Aktivierung für öffentlichen Zugriff     |
-| `tailscale_phone_notify.py` | Phone Notifications bei Status-Änderung         |
-| `run_on_heimgserver.sh`     | Remote-Ausführung von Windows aus per SSH         |
-| `README.md`                 | Diese Anleitung                                 |
+| Datei | Zweck |
+|-------|-------|
+| `mesh_connectors.yaml` | Registry aller Mesh-Segmente |
+| `tailscale_mesh_registry.py` | Health-Probes pro Konnektor |
+| `tailscale_control.sh` | Zentrales Control Center |
+| `tailscale_install.sh` | Installation + Login |
+| `tailscale_start.sh` | Start + Service |
+| `tailscale_status.py` | Tailscale-Status als JSON |
+| `tailscale_funnel.sh` | Funnel-Aktivierung |
+| `tailscale_phone_notify.py` | Phone Notifications |
+| `run_on_heimgserver.sh` | Remote-Ausführung per SSH |
+| `hero-docs-server.py` | Docs + Mesh-Endpoints |
 
 ---
 
