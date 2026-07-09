@@ -93,9 +93,16 @@ def _get_connector_llm_links() -> dict:
     return llm_cfg.get("connector_links", {})
 
 
+# Connector-ID → Ordner unter ~/mcps (wenn abweichend)
+MCP_PATH_ALIASES = {
+    "hyperframes": "hyperframes_by_heygen",
+}
+
+
 def _probe_mcp_connector(connector_id: str, config: dict) -> dict:
     """Probe a single connector mesh segment."""
-    mcp_path = Path.home() / "mcps" / connector_id
+    folder = MCP_PATH_ALIASES.get(connector_id, connector_id)
+    mcp_path = Path.home() / "mcps" / folder
     tools_exist = (mcp_path / "tools").is_dir() if mcp_path.exists() else False
     links = _get_connector_llm_links()
     linked_llm = links.get(connector_id)
