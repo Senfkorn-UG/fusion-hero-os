@@ -1,26 +1,25 @@
-# ... (bestehender Code von v9.2)
+# ... (bestehender Code)
 
 try:
-    from .coevolutionary_closure import get_coevolutionary_closure, CoEvolutionaryClosure
+    from .persistent_sisyphos import PersistentSisyphosCycle
 except Exception:
-    CoEvolutionaryClosure = None
-    get_coevolutionary_closure = None
+    PersistentSisyphosCycle = None
 
 
 class AscensionCore:
     def __init__(self):
         ...
-        # CoevolutionaryClosure Integration
-        self.cec: Optional[CoEvolutionaryClosure] = None
-        if get_coevolutionary_closure:
-            self.cec = get_coevolutionary_closure()
+        # Persistent Sisyphos
+        self.persistent_sisyphos: Optional[PersistentSisyphosCycle] = None
+        if PersistentSisyphosCycle:
+            self.persistent_sisyphos = PersistentSisyphosCycle()
 
-    def get_ascension_status(self) -> Dict[str, Any]:
-        status = { ... }
-        if self.cec:
-            status["cec_status"] = self.cec.get_status()
-        return status
+    def step_sisyphos(self, load: float, notes: str = ""):
+        if self.persistent_sisyphos:
+            return self.persistent_sisyphos.step(load, notes)
+        return None
 
-    def notify_coevolutionary_change(self, source: str, change_type: str, payload: Dict[str, Any]):
-        if self.cec:
-            self.cec.notify_change(source, change_type, payload)
+    def get_sisyphos_history(self, last_n: int = 10):
+        if self.persistent_sisyphos:
+            return self.persistent_sisyphos.get_history(last_n)
+        return []
