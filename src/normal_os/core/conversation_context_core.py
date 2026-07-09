@@ -31,9 +31,13 @@ _TASK_WEIGHTS = {"light": 0.65, "medium": 1.0, "heavy": 1.45}
 # jede (Re-)Allokation liest die aktuellen Stärken -> orientiert sich neu.
 # Bewusst eine TRANSPARENTE Heuristik, KEIN gelerntes Modell (Code-Honesty).
 _STRENGTH_HALFLIFE = float(os.getenv("FUSION_CONTEXT_STRENGTH_HALFLIFE_S", "1800"))  # 30 min
-_STRENGTH_W_RECENCY = float(os.getenv("FUSION_CONTEXT_STRENGTH_W_RECENCY", "0.5"))
-_STRENGTH_W_ENGAGE = float(os.getenv("FUSION_CONTEXT_STRENGTH_W_ENGAGE", "0.3"))
-_STRENGTH_W_WEIGHT = float(os.getenv("FUSION_CONTEXT_STRENGTH_W_WEIGHT", "0.2"))
+# Co-evolvierte Gewichtungen (faden_strength_coevolution.py, Seed=20260706)
+# Orig: convergence=0.46, recency=0.184, engagement=0.283, weight=0.072
+# Kontext-System hat nur recency/engagement/weight -> normalisiert auf Summe=1
+_STRENGTH_W_RECENCY = float(os.getenv("FUSION_CONTEXT_STRENGTH_W_RECENCY", "0.341"))
+_STRENGTH_W_ENGAGE = float(os.getenv("FUSION_CONTEXT_STRENGTH_W_ENGAGE", "0.525"))
+_STRENGTH_W_WEIGHT = float(os.getenv("FUSION_CONTEXT_STRENGTH_W_WEIGHT", "0.134"))
+_STRENGTH_GAMMA = float(os.getenv("FUSION_CONTEXT_STRENGTH_GAMMA", "1.407"))  # Nichtlinearität
 _STRENGTH_ENGAGE_SAT = float(os.getenv("FUSION_CONTEXT_STRENGTH_ENGAGE_SAT", "12"))  # Sättigung
 _STRENGTH_PRUNE = float(os.getenv("FUSION_CONTEXT_STRENGTH_PRUNE", "0.08"))
 _STRENGTH_PRUNE_MIN_AGE_S = float(os.getenv("FUSION_CONTEXT_STRENGTH_PRUNE_MIN_AGE_S", "3600"))
@@ -603,6 +607,8 @@ class ConversationContextCore:
         wsum = wsum if wsum > 0 else 1.0
         score = (_STRENGTH_W_RECENCY * recency + _STRENGTH_W_ENGAGE * engage
                  + _STRENGTH_W_WEIGHT * weight) / wsum
+        # Gamma-Skalierung (co-evolved: 1.407) — verstärkt Diskriminierung
+        score = min(1.0, max(0.0, score)) ** _STRENGTH_GAMMA
         return {
             "window_id": win.window_id,
             "subagent_name": win.subagent_name,
