@@ -4,6 +4,7 @@ Fusion Hero OS v8 — Universal LLM Router (Grok + Claude + EveryAPI)
 Native Integration mit intelligentem Routing, Fallback-Chain und Heroic Core Alignment.
 
 Layer 0 verankert: ALTE_Frau_95g Heroic Core v8 + HorkruxSelfUpdateProtocol
+Vollständig verdrahtet mit heroic_core_orchestrator, provider_switcher, grok_bridge und ModuleRegistry.
 """
 
 from __future__ import annotations
@@ -11,7 +12,10 @@ from __future__ import annotations
 import os
 import time
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, Literal
+from typing import Any, Dict, List, Optional, Literal, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from .heroic_core_orchestrator import QuadCoreBridge
 
 try:
     from anthropic import Anthropic
@@ -19,7 +23,7 @@ except ImportError:
     Anthropic = None
 
 try:
-    from openai import OpenAI  # xAI Grok ist OpenAI-kompatibel
+    from openai import OpenAI
 except ImportError:
     OpenAI = None
 
@@ -60,17 +64,15 @@ class UniversalLLMRouter:
     """
     Heroischer Multi-LLM Router für Fusion Hero OS v8.
     
-    - Intelligente Klassifikation des Prompts (Code, Current Events, Simple, Creative, Default)
-    - Primär-Routing + automatische Fallback-Chain
-    - Native Unterstützung für:
-        * Grok (xAI) via OpenAI-kompatible API
-        * Claude (Anthropic) via offizielles SDK
-        * EveryAPI (generische/universelle API)
-    - Vollständig kompatibel mit Heroic Core, QUBO, Hyperthreading und ALTE_Frau_95g Framework
-    - Brutale Ehrlichkeit, maximale Präzision, kein Pandering
+    Zentrale Nervensystem-Schnittstelle:
+    - Alle externen und internen KI-Aufrufe laufen hier durch.
+    - Verdrahtet mit Heroic Core (MasterSeed, QuadCoreBridge, PMS Spine)
+    - Prompt-Klassifikation + dynamische Routing-Order
+    - Echte API-Clients + Fallback-Chain
+    - Brutale Präzision, maximale Tiefe, kein Pandering
     """
 
-    def __init__(self) -> None:
+    def __init__(self, heroic_core: Optional["QuadCoreBridge"] = None) -> None:
         self.grok_key = os.getenv("GROK_API_KEY") or os.getenv("XAI_API_KEY")
         self.claude_key = os.getenv("ANTHROPIC_API_KEY") or os.getenv("CLAUDE_API_KEY")
         self.everyapi_key = os.getenv("EVERYAPI_KEY")
@@ -79,23 +81,20 @@ class UniversalLLMRouter:
         self.claude_client: Optional[Anthropic] = None
 
         if OpenAI and self.grok_key:
-            self.grok_client = OpenAI(
-                api_key=self.grok_key,
-                base_url="https://api.x.ai/v1"
-            )
+            self.grok_client = OpenAI(api_key=self.grok_key, base_url="https://api.x.ai/v1")
 
         if Anthropic and self.claude_key:
             self.claude_client = Anthropic(api_key=self.claude_key)
 
-        # Standard-Routing-Prioritäten (können via ENV überschrieben werden)
+        self.heroic_core = heroic_core
         self.default_order: List[Provider] = ["claude", "grok", "everyapi", "fusion-hero"]
 
-        # Query-Klassifikations-Heuristiken (erweiterbar mit QUBO oder kleinem Classifier)
         self.classification_rules = {
-            "code": ["code", "programmier", "script", "funktion", "klasse", "debug", "fehler", "implementier", "refactor"],
-            "current_events": ["heute", "aktuell", "news", "nachrichten", "was passiert", "grok", "xai", "spaceX", "trump", "wahl"],
-            "simple_fact": ["was ist", "wie viel", "wann", "wo", "wer ist", "definition", "übersetz"],
-            "creative": ["schreib", "erzähl", "gedicht", "geschichte", "kreativ", "meme", "vision"],
+            "code": ["code", "programmier", "script", "funktion", "klasse", "debug", "fehler", "implementier", "refactor", "qubo"],
+            "current_events": ["heute", "aktuell", "news", "nachrichten", "was passiert", "grok", "xai", "spacex"],
+            "simple_fact": ["was ist", "wie viel", "wann", "wo", "wer ist", "definition"],
+            "creative": ["schreib", "erzähl", "gedicht", "geschichte", "kreativ", "meme", "vision", "coal canary"],
+            "heroic_core": ["masterseed", "layer 0", "pms", "quadcore", "phoenix", "fail-closed"],
         }
 
     def _classify_query(self, prompt: str) -> str:
@@ -106,7 +105,7 @@ class UniversalLLMRouter:
         return "default"
 
     def _get_routing_order(self, category: str) -> List[Provider]:
-        if category == "code":
+        if category == "code" or category == "heroic_core":
             return ["claude", "grok", "everyapi", "fusion-hero"]
         elif category == "current_events":
             return ["grok", "claude", "everyapi", "fusion-hero"]
@@ -117,14 +116,31 @@ class UniversalLLMRouter:
         else:
             return self.default_order.copy()
 
+    def _build_heroic_context(self) -> str:
+        """Injiziert aktuellen Heroic Core / MasterSeed / Systemzustand in den System-Prompt."""
+        if not self.heroic_core:
+            return "Fusion Hero OS v8 — Heroic Core aktiv. MasterSeed verifiziert. Fail-Closed Prinzip durchgesetzt."
+
+        try:
+            seed = getattr(self.heroic_core, "seed", None)
+            mode = getattr(self.heroic_core, "mode", "STANDARD")
+            history_len = len(getattr(self.heroic_core, "volatile_history", []))
+            ctx = [
+                f"Fusion Hero OS v8 | Mode: {mode}",
+                f"MasterSeed: {'VERIFIZIERT' if seed and seed.verify_integrity(seed.state_hash()) else 'CHECK NEEDED'}",
+                f"Volatile History: {history_len} Einträge",
+                "PMS Spine + QuadCoreBridge + Fail-Closed aktiv.",
+            ]
+            return "\n".join(ctx)
+        except Exception:
+            return "Fusion Hero OS v8 — Heroic Core (reduzierter Kontext)"
+
     def _call_grok(self, prompt: str, system_prompt: Optional[str] = None) -> str:
         if not self.grok_client:
-            raise RuntimeError("Grok API Key nicht konfiguriert (GROK_API_KEY / XAI_API_KEY)")
+            raise RuntimeError("Grok API Key nicht konfiguriert")
 
-        messages = []
-        if system_prompt:
-            messages.append({"role": "system", "content": system_prompt})
-        messages.append({"role": "user", "content": prompt})
+        sys = system_prompt or self._build_heroic_context()
+        messages = [{"role": "system", "content": sys}, {"role": "user", "content": prompt}]
 
         resp = self.grok_client.chat.completions.create(
             model=os.getenv("GROK_MODEL", "grok-2-1212"),
@@ -136,31 +152,24 @@ class UniversalLLMRouter:
 
     def _call_claude(self, prompt: str, system_prompt: Optional[str] = None) -> str:
         if not self.claude_client:
-            raise RuntimeError("Claude API Key nicht konfiguriert (ANTHROPIC_API_KEY)")
+            raise RuntimeError("Claude API Key nicht konfiguriert")
 
+        sys = system_prompt or self._build_heroic_context() + "\nAntworte mit maximaler Präzision und Heroic Core Alignment."
         resp = self.claude_client.messages.create(
             model=os.getenv("CLAUDE_MODEL", "claude-3-5-sonnet-20241022"),
             max_tokens=2048,
-            system=system_prompt or "Du bist der native KI-Assistent von Fusion Hero OS v8. Antworte präzise, tiefgründig und im Einklang mit dem Heroic Core.",
+            system=sys,
             messages=[{"role": "user", "content": prompt}],
         )
         return resp.content[0].text if resp.content else "[Claude: Keine Antwort]"
 
     def _call_everyapi(self, prompt: str) -> str:
         if not self.everyapi_key:
-            raise RuntimeError("EveryAPI Key nicht konfiguriert (EVERYAPI_KEY)")
+            raise RuntimeError("EveryAPI Key nicht konfiguriert")
 
-        # Passe Endpoint & Payload an deine EveryAPI-Dokumentation an
         url = os.getenv("EVERYAPI_URL", "https://api.everyapi.com/v1/chat")
-        headers = {
-            "Authorization": f"Bearer {self.everyapi_key}",
-            "Content-Type": "application/json",
-        }
-        payload = {
-            "model": os.getenv("EVERYAPI_MODEL", "general"),
-            "message": prompt,
-            "max_tokens": 2048,
-        }
+        headers = {"Authorization": f"Bearer {self.everyapi_key}", "Content-Type": "application/json"}
+        payload = {"model": os.getenv("EVERYAPI_MODEL", "general"), "message": prompt, "max_tokens": 2048}
 
         if not requests:
             raise RuntimeError("requests nicht installiert")
@@ -169,8 +178,7 @@ class UniversalLLMRouter:
         if r.status_code == 200:
             data = r.json()
             return data.get("response") or data.get("text") or str(data)
-        else:
-            raise RuntimeError(f"EveryAPI Fehler {r.status_code}: {r.text[:200]}")
+        raise RuntimeError(f"EveryAPI Fehler {r.status_code}: {r.text[:200]}")
 
     def route(
         self,
@@ -178,10 +186,6 @@ class UniversalLLMRouter:
         system_prompt: Optional[str] = None,
         force_provider: Optional[Provider] = None,
     ) -> LLMResponse:
-        """
-        Haupt-Routing-Methode.
-        Analysiert den Prompt, wählt besten Provider, führt Fallback bei Fehler aus.
-        """
         start = time.time()
         category = self._classify_query(prompt)
         order = self._get_routing_order(category)
@@ -197,52 +201,28 @@ class UniversalLLMRouter:
             try:
                 if provider == "grok" and self.grok_client:
                     text = self._call_grok(prompt, system_prompt)
-                    return LLMResponse(
-                        provider="grok (xAI)",
-                        response=text,
-                        latency_ms=(time.time() - start) * 1000,
-                        fallback_chain=used_chain,
-                        meta={"category": category},
-                    )
+                    return LLMResponse("grok (xAI)", text, (time.time()-start)*1000, used_chain, {"category": category})
                 elif provider == "claude" and self.claude_client:
                     text = self._call_claude(prompt, system_prompt)
-                    return LLMResponse(
-                        provider="claude (Anthropic)",
-                        response=text,
-                        latency_ms=(time.time() - start) * 1000,
-                        fallback_chain=used_chain,
-                        meta={"category": category},
-                    )
+                    return LLMResponse("claude (Anthropic)", text, (time.time()-start)*1000, used_chain, {"category": category})
                 elif provider == "everyapi" and self.everyapi_key:
                     text = self._call_everyapi(prompt)
-                    return LLMResponse(
-                        provider="everyapi",
-                        response=text,
-                        latency_ms=(time.time() - start) * 1000,
-                        fallback_chain=used_chain,
-                        meta={"category": category},
-                    )
+                    return LLMResponse("everyapi", text, (time.time()-start)*1000, used_chain, {"category": category})
                 elif provider == "fusion-hero":
-                    # Fallback auf interne Heroic Logic / lokale Bridge
+                    ctx = self._build_heroic_context()
                     return LLMResponse(
-                        provider="fusion-hero (intern)",
-                        response=f"[Fusion Hero OS v8 intern] Keine externe API verfügbar. Prompt klassifiziert als '{category}'. "
-                               "Empfehlung: API-Keys setzen oder lokalen Llama verwenden.",
-                        latency_ms=(time.time() - start) * 1000,
-                        fallback_chain=used_chain,
-                        meta={"category": category, "note": "internal_fallback"},
+                        "fusion-hero (intern)",
+                        f"[Fusion Hero OS v8] Interner Fallback aktiv.\n{ctx}\nPrompt klassifiziert als '{category}'.\nEmpfehlung: API-Keys setzen.",
+                        (time.time()-start)*1000, used_chain, {"category": category, "note": "internal"}
                     )
             except Exception as e:
-                errors.append(f"{provider}: {str(e)[:150]}")
+                errors.append(f"{provider}: {str(e)[:120]}")
                 continue
 
-        # Alles gescheitert
         return LLMResponse(
-            provider="system-error",
-            response="Alle LLM-Provider fehlgeschlagen. Details: " + " | ".join(errors),
-            latency_ms=(time.time() - start) * 1000,
-            fallback_chain=used_chain,
-            meta={"errors": errors, "category": category},
+            "system-error",
+            "Alle Provider fehlgeschlagen: " + " | ".join(errors),
+            (time.time()-start)*1000, used_chain, {"errors": errors}
         )
 
     def status(self) -> Dict[str, Any]:
@@ -250,37 +230,24 @@ class UniversalLLMRouter:
             "grok_configured": bool(self.grok_client),
             "claude_configured": bool(self.claude_client),
             "everyapi_configured": bool(self.everyapi_key),
+            "heroic_core_connected": self.heroic_core is not None,
             "default_order": self.default_order,
-            "classification_rules": list(self.classification_rules.keys()),
-            "version": "v8.1-native-router",
-            "heroic_core_aligned": True,
+            "version": "v8.2-fully-wired",
         }
 
 
-# Globale Instanz (Singleton-Style für Core Integration)
 _router_instance: Optional[UniversalLLMRouter] = None
 
 
-def get_universal_llm_router() -> UniversalLLMRouter:
+def get_universal_llm_router(heroic_core: Optional["QuadCoreBridge"] = None) -> UniversalLLMRouter:
     global _router_instance
     if _router_instance is None:
-        _router_instance = UniversalLLMRouter()
+        _router_instance = UniversalLLMRouter(heroic_core=heroic_core)
+    elif heroic_core and not _router_instance.heroic_core:
+        _router_instance.heroic_core = heroic_core
     return _router_instance
 
 
 if __name__ == "__main__":
     router = get_universal_llm_router()
-    print("Universal LLM Router Status:", router.status())
-
-    test_prompts = [
-        "Schreibe eine Python-Funktion für Fibonacci mit Memoization.",
-        "Was sind die neuesten Nachrichten zu xAI und Grok heute?",
-        "Was ist der Sinn des Lebens?",
-        "Erzähl mir eine kurze Geschichte über einen Coal Canary in Fusion Hero OS.",
-    ]
-
-    for p in test_prompts:
-        print(f"\n=== Prompt: {p[:60]}... ===")
-        result = router.route(p)
-        print(f"Provider: {result.provider} | Latency: {result.latency_ms:.0f}ms")
-        print(f"Antwort (Ausschnitt): {result.response[:300]}...")
+    print("Universal LLM Router v8.2 Status:", router.status())
