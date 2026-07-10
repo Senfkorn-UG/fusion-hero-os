@@ -1,10 +1,30 @@
-# Sync Fusion Hero OS v1.2 zum Medienserver (Google Drive G:)
+# Sync Fusion Hero OS v8 zum Medienserver (Google Drive)
 $ErrorActionPreference = "Stop"
 $Root = Split-Path -Parent $MyInvocation.MyCommand.Path
-$Target = "G:\Meine Ablage\Fusion_Hero_OS_v1.2"
 $Exclude = @(".git", "__pycache__", "venv", "node_modules", "logs", ".pytest_cache")
 
-Write-Host "=== Fusion Hero OS v1.2 -> Medienserver (Google Drive) ===" -ForegroundColor Cyan
+function Resolve-MedienserverTarget {
+    if ($env:FUSION_MEDIENSERVER) { return $env:FUSION_MEDIENSERVER }
+    $candidates = @(
+        "G:\Meine Ablage\Fusion_Hero_OS_v1.2",
+        (Join-Path $env:USERPROFILE "Google Drive-Streaming\Meine Ablage\Fusion_Hero_OS_v1.2"),
+        (Join-Path $env:USERPROFILE "Google Drive\Meine Ablage\Fusion_Hero_OS_v1.2")
+    )
+    foreach ($c in $candidates) {
+        $parent = Split-Path $c -Parent
+        if (Test-Path $parent) { return $c }
+    }
+    return $null
+}
+
+$Target = Resolve-MedienserverTarget
+if (-not $Target) {
+    Write-Host "Google Drive nicht gefunden (G: oder Google Drive-Streaming)." -ForegroundColor Red
+    exit 1
+}
+
+Write-Host "=== Fusion Hero OS v8 -> Medienserver (Google Drive) ===" -ForegroundColor Cyan
+Write-Host "Ziel: $Target" -ForegroundColor DarkGray
 
 $ManifestPath = Join-Path $Target "GROK_ONLINE_MANIFEST.json"
 $MaxAgeMin = if ($env:FUSION_SYNC_MAX_AGE_MIN) { [int]$env:FUSION_SYNC_MAX_AGE_MIN } else { 60 }
@@ -22,36 +42,42 @@ if ($env:FUSION_FORCE_SYNC -ne "1" -and (Test-Path $ManifestPath)) {
     } catch {}
 }
 
-if (-not (Test-Path "G:\Meine Ablage")) {
-    Write-Host "Google Drive (G:) nicht verfuegbar." -ForegroundColor Red
-    exit 1
-}
-
 New-Item -ItemType Directory -Force -Path $Target | Out-Null
 
-# Optimiert für Netzwerk/Drive Bottleneck + Storage: Delta-only (/XO), /FFT for skew, /J unbuf, higher MT for parallel net I/O
-$RoboOpts = "/E /XO /XD $Exclude /NFL /NDL /NJH /NJS /nc /ns /np /MT:12 /R:0 /W:0 /FFT /J /DCOPY:DA"
-robocopy $Root $Target $RoboOpts | Out-Null
-if ($LASTEXITCODE -ge 8) {
-    Write-Host "Robocopy Fehler: $LASTEXITCODE" -ForegroundColor Red
-    exit $LASTEXITCODE
+# Delta-only (/XO), /FFT for Drive skew, parallel I/O
+& robocopy $Root $Target /E /XO /XD $Exclude /NFL /NDL /NJH /NJS /nc /ns /np /MT:8 /R:1 /W:1 /FFT /J /DCOPY:DA | Out-Null
+$rc = $LASTEXITCODE
+if ($rc -ge 8) {
+    Write-Host "Robocopy Fehler: $rc" -ForegroundColor Red
+    exit $rc
 }
 
+$gitHead = "unknown"
+try {
+    Push-Location $Root
+    $gitHead = (git rev-parse --short HEAD 2>$null)
+    Pop-Location
+} catch { Pop-Location -ErrorAction SilentlyContinue }
+
 $manifest = @{
-    version = "v1.2"
-    core = "v7.5"
+    version = "v8"
+    core = "v8"
+    github_head = $gitHead
     synced_at = (Get-Date -Format "yyyy-MM-dd HH:mm:ss")
+    file_sync_status = "OK"
     github = "https://github.com/95guknow/fusion-hero-os"
     grok_online = @{
         repo = "95guknow/fusion-hero-os"
         branch = "main"
         health_local = "http://127.0.0.1:8000/api/health"
-        workspace_local = "http://127.0.0.1:8080"
+        gui_local = "http://127.0.0.1:8000"
+        nicegui_legacy = "http://127.0.0.1:8080"
     }
     medienserver_path = $Target
 } | ConvertTo-Json -Depth 4
 
-Set-Content -Path (Join-Path $Target "GROK_ONLINE_MANIFEST.json") -Value $manifest -Encoding UTF8
+$manifestPath = Join-Path $Target "GROK_ONLINE_MANIFEST.json"
+[System.IO.File]::WriteAllText($manifestPath, $manifest, [System.Text.UTF8Encoding]::new($false))
 
 Write-Host "OK: $Target" -ForegroundColor Green
 Write-Host "Grok online: https://github.com/95guknow/fusion-hero-os" -ForegroundColor Cyan
