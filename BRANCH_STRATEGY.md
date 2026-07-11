@@ -1,5 +1,7 @@
 # Branching Strategy — Fusion Hero OS → AscensionOS (Final v8.8+)
 
+> **Stand:** v8.3.0 · 2026-07-11
+
 ## Aktuelles Modell (Hyperthreading + Archive)
 
 ### `main` (Stable Release Line)

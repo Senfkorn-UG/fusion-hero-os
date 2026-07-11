@@ -1,5 +1,7 @@
 # v8 Activation Prompt für die published Fusion Hero OS App
 
+> **Stand:** v8.3.0 · 2026-07-11
+
 **Ziel**: Diese Prompt in die published Cloud Run App (https://fusion-hero-os-...run.app) kopieren, um den vollständigen **Fusion Hero OS v8/main Core** (ALTE_Frau_95g Heroic Core Framework) zu verankern.
 
 ---
