@@ -1,7 +1,19 @@
 # Fusion-Hero-OS v8 – Repository Overview
 
-**Version:** v8 (Konsolidiert)  
+**Version:** v8.3 (Konsolidiert, 2026-07-10)  
 **Status:** Doku-/Strukturebene abgeschlossen. Kernfunktionalität teilweise implementiert bzw. aspirational — die mathematische Fundierung ist **nicht** abgeschlossen (Knoten 16 = Fragment, Knoten 19 = Modell mit ~29 % Monotonie-Verletzungen im Sweep, Knoten 17/20 nicht implementiert). Verbindlicher Detailstand: `docs/01_vision/V8_STATUS_REPORT.md`.
+
+**v8.3-Konsolidierung ("alles mit allem", 2026-07-10):** Paket-Regression
+behoben (Orchestrator/AscensionCore/Mainframe aus Delta-Fragmenten
+wiederhergestellt, `import fusion_hero_os` läuft wieder), `pyproject.toml`
+vervollständigt (180 Tests grün), Layer-Graph auf 13 Layer erweitert
+(`kernel`, `ascension`, `tarnkappe`, `android`, `knowledge` +
+`layer_edges` in `fusion_unified.yaml`; Status via
+`fusion_hero_os/core/layer_registry.py`, Endpunkte `/layers/status` und
+`/erkenntnisse/status`), Erkenntnis-Index `docs/v8/erkenntnisse_index.yaml`
+mit CI-Gate eingeführt und drei dokumentierte Widersprüche aufgelöst
+(BestVersion, Android Root/Non-Root, Root-v7.x-Duplikate). Details:
+`V8_STATUS_REPORT.md`, Abschnitt 0.
 
 ## Aktuelle Top-Down-Struktur
 

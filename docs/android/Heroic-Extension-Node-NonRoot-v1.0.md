@@ -1,7 +1,12 @@
 # Heroic Extension Node – Non-Root Implementation v1.0
 **Datum:** 2026-07-09  
-**Status:** Fertig entwickelt / Umsetzungsreif  
+**Status:** Fertig entwickelt / Umsetzungsreif — **AKTUELLER BESCHLUSS** (v8.3-Konsolidierung)  
 **Ansatz:** Vollständig non-root, adaptiv und ressourcenbasiert
+
+> **Geltungshinweis:** Dieser Non-Root-Pfad ist der beschlossene Weg für den
+> Android-Layer. Der Root+Magisk-Pfad im Three-Mesh-Doc
+> (`docs/architecture/2026-07-09-three-mesh-heroic-fusion-android.md`) ist
+> Alternative/Draft (siehe `docs/v8/erkenntnisse_index.yaml`).
 
 ## 1. Zielsetzung
 
