@@ -19,6 +19,8 @@ nodes:
       - tailscale-control
 
   desktop:
+    # Doppelrolle: weiterhin Grok-Workstation UND vollwertige Enduser-Stelle
+    # auf einer Stufe mit dem Handy (siehe enduser-Block).
     role: grok-workstation
     hostname: desktop-kpki9e4
     magicdns: host.example.ts.net
@@ -27,6 +29,21 @@ nodes:
     services:
       - grok-cli
       - mcp-bridges
+    # Enduser-Stelle mit zusaetzlicher Sicherheitsschicht.
+    # Initial laeuft NUR das klassische Enduser-Protokoll (fail-closed):
+    # erweiterte Protokolle sind vorhanden, aber standardmaessig deaktiviert
+    # und muessen bewusst freigeschaltet werden.
+    enduser:
+      peer_of: phone            # gleiche Enduser-Stufe wie das Handy
+      security_layer: enabled
+      active_protocol: classic-enduser-only
+      elevated_protocols_enabled: false
+      elevated_protocols:       # vorhanden, aber initial gesperrt
+        - orchestrator-access
+        - connector-admin
+      note: >
+        Erweiterte Protokolle erst nach bewusster Freischaltung durch den Owner.
+        Bis dahin verhaelt sich desktop als Enduser wie das phone.
 
   phone:
     role: mobile-client
@@ -37,6 +54,26 @@ nodes:
     services:
       - tailscale-app
       - phone-link-bridge
+    enduser:
+      peer_of: desktop          # gleiche Enduser-Stufe wie der Windows-PC
+      security_layer: standard  # Handy: klassisches Enduser-Protokoll ohne Zusatzschicht
+      active_protocol: classic-enduser-only
+
+# Logische Agenten-Instanzen — eigene Mesh-Identitaet, aber kein physisches
+# Tailscale-Geraet. Bewusst von 'nodes' getrennt, damit sichtbar bleibt, was
+# Hardware ist und was ein laufender Agent.
+agents:
+  researcher:
+    mesh_id: mesh-agent-researcher
+    role: research
+    runs_on: mainframe          # ausgefuehrt auf dem Orchestrator-Knoten
+    health_path: /mesh/agent/researcher/status
+    tailscale_tag: tag:fusion-agent-researcher
+    capabilities:
+      - literatur-recherche
+      - quellen-erhebung
+      - evidenz-auswertung
+    description: "Researcher — eigene Mesh-Instanz fuer Recherche/Evidenz"
 
 # MCP-Konnektoren — jeweils eigenes Mesh-Segment (logisch isoliert)
 connectors:
@@ -127,6 +164,8 @@ routing:
   fusion_graph: "/fusion/graph"
   mesh_overview: "/mesh/status"
   per_connector: "/mesh/{connector_id}/status"
+  per_agent: "/mesh/agent/{agent_id}/status"
+  enduser_overview: "/mesh/enduser/status"
   llm_overview: "/llm/status"
   per_llm: "/llm/{provider}/status"
   tailscale_overview: "/tailscale/status"
