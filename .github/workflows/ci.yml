@@ -102,6 +102,12 @@ jobs:
       run: |
         python -m fusion_hero_os.core.dependency_atlas --check
 
+    - name: Multimodal-Protokoll Gate (Archiv-Inventar)
+      # Archiv-Sweep vollstaendig, keine Extraktionsfehler (Claim MULTIMODAL-PROTOCOL).
+      run: |
+        pip install pypdf Pillow
+        python -m fusion_hero_os.core.multimodal_protocol --check
+
     - name: Doc-Versions Gate (versionierte Benennung)
       # Jedes aktive Dokument traegt eine sichtbare Versionierung (Kopfzeile
       # '**Stand:**', Frontmatter 'version:' oder Versionsmarker im Namen).
