@@ -1,5 +1,7 @@
 # Tailscale Mesh Integration – Fusion Hero OS v8
 
+> **Stand:** v8.3.0 · 2026-07-11 · Mesh-Integration (09.07.2026) + Legacy-Spiegel + Dependency Atlas
+
 **Status:** Vollständig integriert (09.07.2026)  
 **Zweck:** Zero-Config Mesh-VPN + Phone-Bridge + Funnel für den gesamten Heimserver
 

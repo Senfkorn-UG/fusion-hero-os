@@ -1,5 +1,7 @@
 # Fusion Hero OS - Deployment Guide
 
+> **Stand:** v8.3.0 · 2026-07-11 · Dashboard + VR + Dependency Atlas
+
 ## Quick Start
 
 ### Prerequisites
@@ -8,17 +10,29 @@ pip install fastapi uvicorn psutil
 ```
 
 ### Single Process: Dashboard GUI + API (Port 8000)
+
+**Empfohlen: Fast-Boot.** Der volle Auto-Load (GPU-Tuning, Provider-Probing,
+Modul-Registry) läuft synchron im Startup-Event und kann den Serverstart
+minutenlang blockieren ("Waiting for application startup", Befund 2026-07-11).
+Mit `FUSION_AUTO_LOAD=0` ist die Bridge-UI sofort verfügbar; Module lassen
+sich danach über die API nachladen.
+
 ```bash
 cd 03_Code/Dashboard
-python -m uvicorn app:app --host 127.0.0.1 --port 8000
+FUSION_AUTO_LOAD=0 python -m uvicorn app:app --host 127.0.0.1 --port 8000
 ```
 
-Or on Windows:
+PowerShell:
+```powershell
+$env:FUSION_AUTO_LOAD = "0"; python -m uvicorn app:app --host 127.0.0.1 --port 8000
+```
+
+Or on Windows (voller Auto-Load):
 ```bat
 run_backend.bat
 ```
 
-### Auto-Load (recommended)
+### Auto-Load (voller Boot, kann lange dauern)
 ```powershell
 powershell -File start_all.ps1
 ```
@@ -28,6 +42,9 @@ powershell -File start_all.ps1
 - **API Health**: http://127.0.0.1:8000/api/health
 - **API Docs**: http://127.0.0.1:8000/docs
 - **WebSocket**: ws://127.0.0.1:8000/ws
+- **VR 360° Viewer**: http://127.0.0.1:8000/vr/viewer (Szenen dynamisch aus `03_VR_Assets/`; `/api/vr/assets`, `/api/vr/roadmap`, `/api/vr/status`)
+- **Highest Layer**: http://127.0.0.1:8000/highest-layer · `/highest-layer-vr`
+- **Dependency Atlas**: http://127.0.0.1:8000/architecture (Mermaid-Plot) · `/api/architecture/atlas` (JSON)
 
 ### Optional: NiceGUI Legacy (Port 8080)
 Only if needed — not the default GUI:

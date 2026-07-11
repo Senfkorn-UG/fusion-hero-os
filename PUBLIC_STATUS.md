@@ -1,5 +1,7 @@
 # PUBLIC STATUS – Fusion Hero OS (v8)
 
+> **Stand:** v8.3.0 · 2026-07-11 · Policy unverändert gültig
+
 **Gültig ab sofort und permanent:**
 
 Persönliche Updates an die Test-Hörerschaft / Jünger werden auf das notwendige Minimum reduziert.
