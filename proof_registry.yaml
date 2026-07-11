@@ -278,3 +278,13 @@ claims:
       - tests/test_process_exclusivity.py::test_exclusive_context_manager
       - tests/test_process_exclusivity.py::test_thread_parallel_blocks
       - tests/test_supabase_sync.py::test_watch_room_persist_called
+
+  - id: DEP-ATLAS
+    statement: "Der Abhaengigkeitsgraph des Repos (Python/Rust/JS, Fraktal-Layer-Zuordnung aus fusion_unified.yaml) ist maschinell aus dem Code abgeleitet statt in Prosa behauptet; unaufgeloeste interne Imports und Top-Level-Import-Zyklen sind CI-fatal, Platzhalter-Marker werden quantifiziert (Stand Einfuehrung: 0 unresolved, 0 Zyklen nach Aufloesung des ascension<->heroic-Zyklus per Lazy-Import)."
+    status: BEWIESEN
+    proofs:
+      - tests/test_dependency_atlas.py::test_cycle_detection_finds_direct_cycle
+      - tests/test_dependency_atlas.py::test_deferred_edges_do_not_form_cycles
+      - tests/test_dependency_atlas.py::test_repo_has_no_unresolved_rooted_imports
+      - tests/test_dependency_atlas.py::test_repo_has_no_toplevel_import_cycles
+      - tests/test_dependency_atlas.py::test_repo_atlas_assigns_layers
