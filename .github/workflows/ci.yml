@@ -102,6 +102,12 @@ jobs:
       run: |
         python -m fusion_hero_os.core.dependency_atlas --check
 
+    - name: Doc-Versions Gate (versionierte Benennung)
+      # Jedes aktive Dokument traegt eine sichtbare Versionierung (Kopfzeile
+      # '**Stand:**', Frontmatter 'version:' oder Versionsmarker im Namen).
+      run: |
+        python scripts/check_doc_versions.py
+
     - name: Status Report
       run: |
         echo "Branch: ${{ github.ref_name }} | Python: ${{ matrix.python-version }} | Level: ${{ matrix.check-level }} | SHA: ${{ github.sha }}"
