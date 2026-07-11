@@ -1328,6 +1328,13 @@ try:
 except Exception as _vr_err:
     print(f"[API] VR routes note: {_vr_err}")
 
+# === Dependency Atlas (Fraktal-Layer-Architektur) ===
+try:
+    from architecture_routes import router as _arch_router
+    app.include_router(_arch_router)
+except Exception as _arch_err:
+    print(f"[API] Architecture routes note: {_arch_err}")
+
 # === Alle Module + fehlende Endpunkte freigeben ===
 try:
     from api_extensions import router as _extensions_router
