@@ -34,13 +34,11 @@ try:
 except Exception:  # pragma: no cover - nur bei kaputter Provider-Schicht
     LLMResult = None
 
-# Ascension Track (v9.x) ist optional: Fehlt das Paket, laeuft der
-# Heroic-Track unveraendert weiter.
-try:
-    from ascension_os.core.ascension_core import AscensionCore, get_ascension_core
-except Exception:
-    AscensionCore = None
-    get_ascension_core = None
+# Ascension Track (v9.x) ist optional und wird LAZY in QuadCoreBridge.__init__
+# importiert (gleiche Begruendung wie beim heroic_core-Import dort): der
+# Top-Level-Import erzeugte den Import-Zyklus ascension_core -> heroic_core ->
+# orchestrator -> ascension_core (Befund: dependency_atlas --check).
+AscensionCore = None  # nur fuer Typ-Referenzen; echte Bindung lazy
 
 _REPO_ROOT = Path(__file__).resolve().parents[2]
 
@@ -157,14 +155,15 @@ class QuadCoreBridge:
             self.heroic = None
         self.llm = self.heroic.llm if self.heroic else None
 
-        # Ascension Track (jetzt mit substantiellem AscensionCore v9.4)
+        # Ascension Track (jetzt mit substantiellem AscensionCore v9.4);
+        # lazy import — siehe Modulkopf (Zyklus-Befund dependency_atlas)
         self.ascension: Optional["AscensionCore"] = None
-        if get_ascension_core:
-            try:
-                self.ascension = get_ascension_core()
-                self.ascension.register_masterseed(self.seed)
-            except Exception:
-                self.ascension = None
+        try:
+            from ascension_os.core.ascension_core import get_ascension_core
+            self.ascension = get_ascension_core()
+            self.ascension.register_masterseed(self.seed)
+        except Exception:
+            self.ascension = None
 
     def invoke_phoenix_mode(self) -> bool:
         """Leert die fluechtigen Container und prueft die Seed-Integritaet.
