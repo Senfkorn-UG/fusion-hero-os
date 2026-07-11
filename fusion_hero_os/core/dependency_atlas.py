@@ -434,12 +434,70 @@ def find_cycles(atlas: Atlas) -> List[List[str]]:
 
 def build_atlas() -> Atlas:
     atlas = Atlas()
-    unified_prefixes = _layer_prefixes_from_unified()
+    unified_prefixes = _layer_prefixes_cached()
     scan_python(atlas, unified_prefixes)
     scan_rust(atlas, unified_prefixes)
     scan_js(atlas, unified_prefixes)
     atlas.cycles = find_cycles(atlas)
     return atlas
+
+
+# ---------------------------------------------------------------------------
+# Quanten-Wörterbuch-Anbindung (zentrale Memoisierung, mtime-invalidiert)
+# ---------------------------------------------------------------------------
+
+def _repo_state_signature() -> str:
+    """Billige Zustands-Signatur des gescannten Codes: Anzahl + max-mtime.
+
+    os.stat je Datei ist um Groessenordnungen billiger als read+ast.parse;
+    aendert sich irgendeine gescannte Datei (oder kommt eine hinzu/weg),
+    aendert sich die Signatur -> Wörterbuch invalidiert den Atlas-Eintrag.
+    """
+    count, max_mtime = 0, 0.0
+    for root_name in PYTHON_ROOTS:
+        root = REPO_ROOT / root_name
+        if not root.is_dir():
+            continue
+        for f in _iter_python_files(root):
+            count += 1
+            mt = f.stat().st_mtime
+            if mt > max_mtime:
+                max_mtime = mt
+    for extra in ("fusion_unified.yaml", "package.json",
+                  "rust_engine_crate/Cargo.toml", "pms_rust_kernel_crate/Cargo.toml"):
+        p = REPO_ROOT / extra
+        if p.is_file():
+            count += 1
+            max_mtime = max(max_mtime, p.stat().st_mtime)
+    return f"{count}:{max_mtime:.6f}"
+
+
+def _layer_prefixes_cached() -> List[Tuple[str, str]]:
+    """Layer-Prefixe aus fusion_unified.yaml, memoisiert auf dessen mtime."""
+    try:
+        from fusion_hero_os.core.quantum_dictionaries import get_quantum_dictionary
+    except Exception:
+        return _layer_prefixes_from_unified()
+    cfg = REPO_ROOT / "fusion_unified.yaml"
+    sig = str(cfg.stat().st_mtime) if cfg.is_file() else "missing"
+    qd = get_quantum_dictionary("layer-prefixes")
+    return qd.get_or_compute("fusion_unified.layers", _layer_prefixes_from_unified,
+                             signature=sig)
+
+
+def build_atlas_cached() -> Atlas:
+    """Wie build_atlas(), aber ueber das zentrale Quanten-Wörterbuch.
+
+    Neu gescannt wird nur, wenn sich der Repo-Zustand (Signatur) geaendert
+    hat — das macht wiederholte Dashboard-Aufrufe (/architecture,
+    /api/architecture/atlas) praktisch kostenlos.
+    """
+    try:
+        from fusion_hero_os.core.quantum_dictionaries import get_quantum_dictionary
+    except Exception:
+        return build_atlas()
+    qd = get_quantum_dictionary("dependency-atlas", max_entries=4)
+    return qd.get_or_compute("repo-atlas", build_atlas, signature=_repo_state_signature())
 
 
 # ---------------------------------------------------------------------------

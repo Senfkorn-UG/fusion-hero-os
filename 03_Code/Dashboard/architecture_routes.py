@@ -17,8 +17,8 @@ _REPO_ROOT = Path(__file__).resolve().parents[2]
 def _load_atlas():
     if str(_REPO_ROOT) not in sys.path:
         sys.path.insert(0, str(_REPO_ROOT))
-    from fusion_hero_os.core.dependency_atlas import build_atlas, render_mermaid
-    atlas = build_atlas()
+    from fusion_hero_os.core.dependency_atlas import build_atlas_cached, render_mermaid
+    atlas = build_atlas_cached()  # Quanten-Wörterbuch: Rescan nur bei geändertem Repo-Zustand
     return atlas, render_mermaid(atlas)
 
 
@@ -27,7 +27,13 @@ async def api_architecture_atlas():
     """Vollstaendiger maschinell abgeleiteter Abhaengigkeitsgraph als JSON."""
     try:
         atlas, _ = _load_atlas()
-        return atlas.to_dict()
+        payload = atlas.to_dict()
+        try:
+            from fusion_hero_os.core.quantum_dictionaries import registry_stats
+            payload["quantum_dictionaries"] = registry_stats()
+        except Exception:
+            pass
+        return payload
     except Exception as e:
         return {"error": str(e)}
 
