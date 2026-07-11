@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# Numba JIT-Cache
+.numba_cache/
+
+# Generierte Artefakte / Pipeline-Output
+Archiv_*.zip
+00_Uebersicht.md
+
+# Lokale/temporäre Dateien
+asd.md
+*.tmp
+
+# Controller-Aggregat Owner-Credentials (Default liegt ohnehin unter ~/.fusion_hero_os/,
+# dieser Eintrag ist Verteidigung in der Tiefe falls der Pfad je repo-lokal überschrieben wird)
+.owner_credentials.json
+orchestration/.owner_credentials.json
+
+# Editor/OS
+.DS_Store
+Thumbs.db
+
+# Lokale Claude-Einstellungen (Konfig bleibt lokal; launch.json wird versioniert)
+.claude/settings.local.json
