@@ -1,18 +1,35 @@
-# BEST VERSION - Fusion Hero OS → AscensionOS
+# BEST VERSION — Fusion Hero OS
 
-**Stand:** v9.4+ (Coevolutionär integriert)
+**Stand:** v8.3-Konsolidierung (2026-07-10)
 
-Dieses Dokument beschreibt den aktuell besten, kohärentesten und am weitesten entwickelten Stand des Systems.
+Dieses Dokument benennt den besten, kohärentesten Stand des Systems — und
+trennt dabei explizit den **operativen Kanon** vom **Roadmap-Track**
+(Auflösung des früheren Widerspruchs zu
+`docs/v8/BESTVERSION_CONSOLIDATION_MANIFEST.md`, siehe
+`docs/v8/erkenntnisse_index.yaml` → `bestversion-vs-ascension`).
 
-## Kernkomponenten der Best Version
+## Operativer Kanon: v8/main
+
+**v8/main dieses Repos ist die kanonische, lauffähige Bestversion.**
+
+- QUBO-Engine (`fusion_hero_os/engine/mainframe.py`, Numba + optionales Rust-Backend)
+- Multi-Agenten-Orchestrierung (`fusion_hero_os/orchestration/agents.py`)
+- Layer 0/4/5 Orchestrator (`fusion_hero_os/core/heroic_core_orchestrator.py`)
+- Tailscale-Mesh + MCP-Konnektoren (`tailscale_mesh_registry.py`, `mesh_connectors.yaml`)
+- LLM-Frameworks + Integration Hub (`fusion_integration_hub.py`, `llm_frameworks.yaml`)
+- Layer-Registry über alle 13 Layer (`fusion_hero_os/core/layer_registry.py`, v8.3)
+- CI-gesichert: pytest-Suite + Proof-Registry-Gate + Erkenntnis-Index-Gate
+
+## Roadmap-/Forschungs-Track: AscensionOS v9.x
+
+`ascension_os/` enthält den visionären v9.x-Track (**nicht** der operative Kanon):
 
 ### 1. CoEvolutionaryClosure (CEC) v9.3
-- Aktive MasterSeed Strict Contraction Enforcement
+- MasterSeed Strict Contraction Enforcement (Runtime-Modell)
 - Hyperthreading Track Management
 - Coevolutionäre Event-Propagation
 
 ### 2. AscensionCore v9.4
-- Substantiell ausgebaut
 - Hält Sisyphos, Psycholysis, LLM Core, MasterSeed
 - Integriert GenerationalEvolutionEngine
 - Nutzt PersistentSisyphosCycle
@@ -20,22 +37,22 @@ Dieses Dokument beschreibt den aktuell besten, kohärentesten und am weitesten e
 ### 3. PersistentSisyphosCycle v9.4
 - Volle Historie + JSON-Persistence
 - Automatische CEC-Benachrichtigung
-- Langzeitfähig und analysierbar
 
 ### 4. GenerationalEvolutionEngine
-- Inside-Out Evolution
-- Coevolutionär mit AscensionCore verbunden
+- Inside-Out Evolution, coevolutionär mit AscensionCore verbunden
 
-### 5. Mainframe + QuadCoreBridge
-- Ascension-Modus unterstützt
-- Generational und CEC-Integration begonnen
+Der Ascension-Track ist seit v8.3 als optionaler Layer (`ascension`) in
+`fusion_unified.yaml` registriert und über die `QuadCoreBridge`
+(`mode="ascension"`) aus dem Kanon heraus nutzbar.
 
-## Architektur-Prinzipien der Best Version
+## Architektur-Prinzipien
 
-- **Inside-Out**: Alles beginnt im Kern (CEC, MasterSeed, Sisyphos) und strahlt nach außen.
+- **Inside-Out**: Alles beginnt im Kern (MasterSeed, Sisyphos) und strahlt nach außen.
 - **Coevolutionär**: Komponenten beeinflussen sich kontrolliert gegenseitig.
 - **Persistent + Stateful**: Wichtige Zustände (Sisyphos) werden persistiert.
-- **Hyperthreading-fähig**: Grundlegende parallele Track-Verwaltung vorhanden.
+- **Ehrlich**: Was gilt, steht in `proof_registry.yaml` und
+  `docs/01_vision/V8_STATUS_REPORT.md` — Roadmap-Anspruch wird nicht als
+  Ist-Zustand ausgegeben.
 
 ## Nächste logische Erweiterungen (Roadmap)
 
@@ -43,5 +60,3 @@ Dieses Dokument beschreibt den aktuell besten, kohärentesten und am weitesten e
 - Governance-fähige Self-Modification
 - Volle Cross-Track-Synergie zwischen Heroic und Ascension
 - Systemweiter EudaimoniaGuard
-
-Diese Version gilt als aktueller Referenzstand für alle weiteren coevolutionären Entwicklungen.

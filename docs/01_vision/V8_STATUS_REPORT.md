@@ -1,8 +1,39 @@
 # Fusion-Hero-OS v8 – Statusbericht
 
-**Datum:** 2026-07-01 (Code-Honesty-Korrektur: 2026-07-02)
+**Datum:** 2026-07-01 (Code-Honesty-Korrektur: 2026-07-02; v8.3-Konsolidierung: 2026-07-10)
 **Version:** v8 (Doku/Struktur konsolidiert; Kernfunktionalität teilweise/aspirational)
 **Status:** Struktur abgeschlossen. Core-Module mit v8-Headern versehen (kosmetisch, kein funktionales Rework). Mathematische Fundierung: NICHT abgeschlossen — siehe Abschnitt 2.3.
+
+---
+
+## 0. v8.3-Konsolidierung (2026-07-10) — "Alles mit allem"
+
+Nachtrag zum verbindlichen Stand; alle Punkte sind durch Tests/CI-Gates gedeckt:
+
+1. **Paket-Regression behoben:** `fusion_hero_os/core/heroic_core_orchestrator.py`,
+   `ascension_os/core/ascension_core.py` und `fusion_hero_os/engine/mainframe.py`
+   waren durch unvollständige Delta-Fragmente ersetzt worden (Commits 745a6e2,
+   5cd32ab/781269f, 793d540/1942af0) — `import fusion_hero_os` schlug komplett
+   fehl. Vollversionen aus der Git-Historie wiederhergestellt und die gemeinten
+   Erweiterungen (Ascension-Modus, Rust-Backend-Helper) korrekt ausformuliert.
+   Root-`core/heroic_core_orchestrator.py` ist jetzt ein Re-Export-Shim (keine
+   zweite driftende Kopie mehr).
+2. **Installierbarkeit/CI:** `pyproject.toml` vervollständigt (build-system,
+   dependencies, `[dev]`-Extra) — `pip install -e ".[dev]"`, `pytest tests/`
+   (180 Tests), `python -m fusion_hero_os.registry` und beide Gates laufen grün.
+3. **Layer-Graph vollständig:** `fusion_unified.yaml` um die Layer `kernel`,
+   `ascension`, `tarnkappe`, `android`, `knowledge` + `layer_edges` erweitert
+   (13 Layer). Neues Modul `fusion_hero_os/core/layer_registry.py` liefert
+   einheitlichen Offline-Status je Layer; `fusion_integration_hub.py` und
+   `hero-docs-server.py` exponieren ihn (`/layers/status`, `/erkenntnisse/status`).
+4. **Erkenntnis-Index eingeführt:** `docs/v8/erkenntnisse_index.yaml` (17 Docs,
+   Layer-Mapping, Geltungsstatus) + CI-Gate `scripts/check_erkenntnisse_index.py`.
+5. **Widersprüche aufgelöst:** BEST_VERSION (v8/main = Kanon, v9.4 = Roadmap),
+   Android Root vs. Non-Root (Non-Root = Beschluss), Root-v7.x-Duplikate
+   (Volltexte in `docs/99_archive/`, Root = Redirect-Stubs).
+6. **Echter Bugfix:** `core/process_exclusivity` ist jetzt reentrant (RLock +
+   Tiefenzähler) — vorher übersprang `apply_command → push_room_to_server`
+   die Watch-Room-Persistenz still, sobald das Lock-Modul importierbar war.
 
 ---
 
