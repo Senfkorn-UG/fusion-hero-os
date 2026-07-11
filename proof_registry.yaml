@@ -297,3 +297,13 @@ claims:
       - tests/test_quantum_dictionaries.py::test_get_or_compute_caches_and_counts
       - tests/test_quantum_dictionaries.py::test_signature_change_invalidates
       - tests/test_quantum_dictionaries.py::test_atlas_cached_is_hit_on_second_call_and_identical
+
+  - id: MULTIMODAL-PROTOCOL
+    statement: "Das Multimodal-Archiv-Protokoll v1.0 geht die Archiv-Wurzeln vollstaendig durch (233 Dateien Stand 2026-07-11), klassifiziert nach 8 Modalitaeten, extrahiert lokal (PDF via pypdf: 25/25 ok; Bild via PIL) und routet jede Modalitaet auf Provider-Faehigkeiten aus llm_frameworks.yaml — Zugangsstatus nur als gesetzt/nicht-gesetzt, Key-Werte werden nie ausgegeben. KEIN Modell-Training (deklarierte Abgrenzung, docs/02_architecture/MULTIMODAL_PROTOCOL_v1.0.md)."
+    status: BEWIESEN
+    proofs:
+      - tests/test_multimodal_protocol.py::test_inventory_covers_archives
+      - tests/test_multimodal_protocol.py::test_inventory_pdfs_are_actually_extracted
+      - tests/test_multimodal_protocol.py::test_provider_status_never_contains_key_values
+      - tests/test_multimodal_protocol.py::test_routing_reacts_to_key_presence
+      - tests/test_multimodal_protocol.py::test_inventory_is_cached_via_quantum_dictionary

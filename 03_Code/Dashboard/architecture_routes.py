@@ -38,6 +38,18 @@ async def api_architecture_atlas():
         return {"error": str(e)}
 
 
+@router.get("/api/multimodal/inventory")
+async def api_multimodal_inventory():
+    """Multimodal-Archiv-Protokoll: Inventar + Routing (MAP v1.0)."""
+    if str(_REPO_ROOT) not in sys.path:
+        sys.path.insert(0, str(_REPO_ROOT))
+    try:
+        from fusion_hero_os.core.multimodal_protocol import build_inventory_cached, to_dict
+        return to_dict(build_inventory_cached())
+    except Exception as e:
+        return {"error": str(e)}
+
+
 @router.get("/architecture", response_class=HTMLResponse)
 async def architecture_page():
     """Live-Plot des Dependency Atlas (Mermaid, Layer-geclustert)."""
