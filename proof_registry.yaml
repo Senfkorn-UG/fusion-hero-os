@@ -241,3 +241,40 @@ claims:
     status: OFFEN
     proofs: []
     notes: "Depriorisiert bis Daten-Pipeline steht: versionierter Datensatz, deterministische Eval, versiegeltes Holdout (SHA-256). Reihenfolge aus Gemini-Synthese v9 uebernommen — deckt sich mit Audit-Prio."
+
+  # ---- v8.3-Konsolidierung 2026-07-10 ("alles mit allem") -------------------
+  - id: PAKET-IMPORTIERBAR
+    statement: "Das Paket fusion_hero_os ist vollstaendig importierbar; der Layer-0/4/5-Orchestrator (MasterSeed mit echter Integritaetspruefung, PMS-Spine fail-closed, QuadCoreBridge mit Domain-Validierung) ist aus den Delta-Fragment-Regressionen wiederhergestellt."
+    status: BEWIESEN
+    proofs:
+      - tests/test_heroic_core_orchestrator.py::test_master_seed_verify_integrity_is_real
+      - tests/test_heroic_core_orchestrator.py::test_pms_spine_fails_closed_when_kernel_missing
+      - tests/test_heroic_core_orchestrator.py::test_quad_core_bridge_rejects_invalid_domain
+      - tests/test_heroic_core_orchestrator.py::test_phoenix_mode_does_not_reset_real_state
+
+  - id: LAYER-GRAPH-VOLLSTAENDIG
+    statement: "fusion_unified.yaml definiert den vollstaendigen 13-Layer-Graphen (inkl. kernel/ascension/tarnkappe/android/knowledge + layer_edges); die Layer-Registry verifiziert jeden Layer offline als present+config_ok."
+    status: BEWIESEN
+    proofs:
+      - tests/test_layer_registry.py::test_v83_layers_registered
+      - tests/test_layer_registry.py::test_registry_reports_every_layer
+      - tests/test_layer_registry.py::test_all_layers_present_and_config_ok
+      - tests/test_layer_registry.py::test_layer_edges_reference_known_layers
+
+  - id: ERKENNTNISSE-INDEXIERT
+    statement: "Alle Erkenntnis-Docs (v8 bis v8.2 inkl. Tarnkappe/Tails/Android) sind maschinenlesbar indexiert (docs/v8/erkenntnisse_index.yaml), CI-gated, und die drei dokumentierten Widersprueche (BestVersion, Root-vs-NonRoot, v7.x-Duplikate) sind aufgeloest."
+    status: BEWIESEN
+    proofs:
+      - tests/test_erkenntnisse_index.py::test_all_indexed_docs_exist
+      - tests/test_erkenntnisse_index.py::test_recent_v82_erkenntnisse_indexed
+      - tests/test_erkenntnisse_index.py::test_conflicts_all_resolved
+      - tests/test_erkenntnisse_index.py::test_gate_script_passes
+
+  - id: LOCK-REENTRANT
+    statement: "Prozess-Exklusivitaet ist thread-reentrant (RLock + Tiefenzaehler): verschachtelte Sperren desselben Keys im selben Thread blockieren sich nicht mehr selbst; die Watch-Room-Persistenz geht dadurch nicht mehr still verloren."
+    status: BEWIESEN
+    proofs:
+      - tests/test_process_exclusivity.py::test_try_acquire_and_release_reentrant
+      - tests/test_process_exclusivity.py::test_exclusive_context_manager
+      - tests/test_process_exclusivity.py::test_thread_parallel_blocks
+      - tests/test_supabase_sync.py::test_watch_room_persist_called
