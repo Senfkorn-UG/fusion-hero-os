@@ -75,6 +75,10 @@ class HeroicDocsHandler(http.server.SimpleHTTPRequestHandler):
         elif self.path.startswith("/llm/") and self.path.endswith("/status"):
             provider_id = self.path.split("/")[2]
             self.send_llm_segment(provider_id)
+        elif self.path == "/layers/status" or self.path == "/layers":
+            self.send_layers_status()
+        elif self.path == "/erkenntnisse/status" or self.path == "/erkenntnisse":
+            self.send_erkenntnisse_status()
         else:
             super().do_GET()
 
@@ -208,6 +212,23 @@ class HeroicDocsHandler(http.server.SimpleHTTPRequestHandler):
         status = get_llm_segment(provider_id)
         code = 404 if "error" in status else 200
         self._send_json(status, code)
+
+    def send_layers_status(self):
+        """v8.3: Status ALLER Layer (inkl. kernel/ascension/tarnkappe/android/knowledge)."""
+        try:
+            from fusion_hero_os.core.layer_registry import get_all_layer_status
+            self._send_json(get_all_layer_status())
+        except Exception as e:
+            self._send_json({"error": str(e)}, 503)
+
+    def send_erkenntnisse_status(self):
+        """v8.3: Zusammenfassung des Erkenntnis-Index (docs/v8/erkenntnisse_index.yaml)."""
+        try:
+            from fusion_hero_os.core.layer_registry import erkenntnisse_summary
+            summary = erkenntnisse_summary()
+            self._send_json(summary, 200 if summary.get("ok") else 503)
+        except Exception as e:
+            self._send_json({"error": str(e)}, 503)
 
 
 def get_lan_ip():
