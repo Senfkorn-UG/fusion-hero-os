@@ -1,0 +1,21 @@
+{
+  "name": "mister-Contributor-gui",
+  "version": "1.0.0",
+  "description": "alte_frau.95g.hero gui",
+  "main": "src/app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/95guknow/mister-Contributor-gui.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/95guknow/mister-Contributor-gui/issues"
+  },
+  "homepage": "https://github.com/95guknow/mister-Contributor-gui#readme"
+}
