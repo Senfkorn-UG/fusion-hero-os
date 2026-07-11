@@ -64,6 +64,12 @@ DEFAULT_MODULES: List[ModuleSpec] = [
         "fusion_hero_os.core.universal_llm_router",
         "Universal LLM Router v8.4 (Claude + Grok + EveryAPI + Internal Fallback mit Heroic Context + Provider-Abstraktion)",
     ),
+    # NEU in v8.3-Konsolidierung: Layer-Registry (alle Layer aus fusion_unified.yaml)
+    ModuleSpec(
+        "core.layer_registry",
+        "fusion_hero_os.core.layer_registry",
+        "Layer-Registry v8.3 (Status aller Layer inkl. kernel/ascension/tarnkappe/android/knowledge)",
+    ),
     ModuleSpec(
         "core.math", "fusion_hero_os.core.heroic_math_engine",
         "Mathematischer Kern (Matrizen, Stabilität, Fusionsoperationen)",

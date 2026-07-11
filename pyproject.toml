@@ -1,4 +1,28 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
 [project]
 name = "fusion-hero-os"
-version = "9.4.0"
-description = "Fusion Hero OS → AscensionOS — Best Coevolutionary Version (CEC, Persistent Sisyphos, AscensionCore)"
+version = "8.3.0"
+description = "Fusion Hero OS v8/main — operativer Kanon (QUBO-Engine, Mesh, LLM-Orchestrierung); AscensionOS v9.x als Roadmap-Track enthalten"
+requires-python = ">=3.11"
+dependencies = [
+    "numpy>=1.26",
+    "numba>=0.59",
+    "PyYAML>=6.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "ruff>=0.4",
+    "fastapi>=0.110",
+    "httpx>=0.27",
+]
+
+[tool.setuptools.packages.find]
+include = ["fusion_hero_os*", "ascension_os*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

@@ -170,6 +170,24 @@ def _check_phone_visibility(unified: dict, tailscale: dict) -> dict:
     }
 
 
+def _get_layer_registry_status() -> dict:
+    """Status aller Layer (inkl. kernel/ascension/tarnkappe/android/knowledge, v8.3)."""
+    try:
+        from fusion_hero_os.core.layer_registry import get_all_layer_status
+        return get_all_layer_status()
+    except Exception as e:
+        return {"error": str(e), "layer": "layer_registry"}
+
+
+def _get_erkenntnisse_status() -> dict:
+    """Zusammenfassung des Erkenntnis-Index (docs/v8/erkenntnisse_index.yaml)."""
+    try:
+        from fusion_hero_os.core.layer_registry import erkenntnisse_summary
+        return erkenntnisse_summary()
+    except Exception as e:
+        return {"ok": False, "error": str(e)}
+
+
 def _build_graph(unified: dict, mesh: dict, llm: dict) -> dict:
     """Build linked graph: nodes → connectors → LLMs."""
     links = unified.get("connector_llm_links", {})
@@ -221,10 +239,18 @@ def _build_graph(unified: dict, mesh: dict, llm: dict) -> dict:
         for role, llm_id in trinity.items()
     ]
     node_edges = unified.get("node_edges", [])
+    layer_edges = unified.get("layer_edges", [])
     ws = unified.get("workstation", {})
+
+    layer_nodes = [
+        {"id": lid, "type": "layer", "module": (cfg or {}).get("module"),
+         "health": (cfg or {}).get("health")}
+        for lid, cfg in (unified.get("layers") or {}).items()
+    ]
 
     return {
         "nodes": nodes,
+        "layer_nodes": layer_nodes,
         "segments": segments,
         "connector_llm_edges": [
             {"from": c, "to": l, "relation": "primary_llm"}
@@ -232,8 +258,9 @@ def _build_graph(unified: dict, mesh: dict, llm: dict) -> dict:
         ],
         "trinity_edges": trinity_edges,
         "node_edges": node_edges,
+        "layer_edges": layer_edges,
         "workstation": ws,
-        "edge_count": len(links) + len(trinity) + len(node_edges),
+        "edge_count": len(links) + len(trinity) + len(node_edges) + len(layer_edges),
     }
 
 
@@ -247,6 +274,8 @@ def get_unified_status() -> dict:
     phone_check = _check_phone_visibility(unified, tailscale)
     vr_status = _get_vr_status()
     graph = _build_graph(unified, mesh, llm)
+    layer_registry = _get_layer_registry_status()
+    erkenntnisse = _get_erkenntnisse_status()
 
     mesh_ok = mesh.get("connectors_registered", 0) > 0 or not mesh.get("error")
     llm_ok = llm.get("any_live", False)
@@ -257,11 +286,15 @@ def get_unified_status() -> dict:
         "version": unified.get("version", "1.0"),
         "principle": unified.get("principle"),
         "layers": unified.get("layers", {}),
+        "layer_registry": layer_registry,
+        "erkenntnisse": erkenntnisse,
         "health": {
             "network": "online" if net_ok else "offline",
             "connectors": f"{mesh.get('connectors_registered', 0)}/{mesh.get('connector_count', 0)}",
             "llm": "live" if llm_ok else "no_keys",
             "vr": vr_status.get("status", "unknown"),
+            "layers": f"{layer_registry.get('layers_ok', 0)}/{layer_registry.get('layer_count', 0)}",
+            "erkenntnisse": "indexed" if erkenntnisse.get("ok") else "pending",
             "overall": "healthy" if (mesh_ok or llm_ok) else "degraded",
         },
         "vr": vr_status,
