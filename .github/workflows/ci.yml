@@ -96,6 +96,12 @@ jobs:
       run: |
         python scripts/check_erkenntnisse_index.py
 
+    - name: Dependency-Atlas Gate (Imports <-> Layer)
+      # Maschinell abgeleiteter Abhaengigkeitsgraph: fatal bei unaufgeloesten
+      # gerooteten Imports und neuen Top-Level-Import-Zyklen (Claim DEP-ATLAS).
+      run: |
+        python -m fusion_hero_os.core.dependency_atlas --check
+
     - name: Status Report
       run: |
         echo "Branch: ${{ github.ref_name }} | Python: ${{ matrix.python-version }} | Level: ${{ matrix.check-level }} | SHA: ${{ github.sha }}"
