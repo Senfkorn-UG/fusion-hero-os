@@ -115,7 +115,7 @@ proof_registry) — Review mit Verdicts: `docs/01_vision/GEMINI_SYNTHESIS_v9_REV
 | E5 | Performance-Orakel (Benchmark-JSONL + Regression statt CNN) | OFFEN — liefert B4-Benchmarks mit | ORACLE-PREDICT |
 | E6 | Timespace-Token-Management als MMR-QUBO (lokal, ohne Grok-Wartezeit) | OFFEN — bei Grok-Eingang (A1) gegeneinander benchmarken | TIMESPACE-QUBO |
 | E7 | Ehrlicher LoRA-Track (erst versiegeltes Holdout + deterministische Eval, dann Training) | OFFEN — Ziel F1 ≥ 10 % (von 1,97 %) | LORA-F1 |
-| E8 | Hörbarer Schwarm (MessageBus → tts_router, Piper-Backend) | OFFEN — Demo-Kandidat; tts_router seit 2026-07-05 importierbar | — |
+| E8 | Hörbarer Schwarm (MessageBus → tts_router, Piper-Backend) | TEILWEISE (2026-07-12) — Piper-Backend ruft jetzt echtes `piper`-Binary auf (fail-closed statt Fake-Audio, `PIPER_BINARY`/`PIPER_MODEL_*`); MessageBus-Anbindung + echtes Voice-Model-Deployment weiterhin offen | — |
 
 **Abgelehnt (ehrlich dokumentiert, nicht vergessen):** D-Wave/QPU-Integration,
 CNN/GP-Surrogate als Startpunkt, BFT-Behauptung aus CRDT allein (heruntergestuft
