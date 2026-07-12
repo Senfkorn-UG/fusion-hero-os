@@ -24,19 +24,28 @@ def _use_temp_lock_dir(tmp_path: Path, monkeypatch):
     monkeypatch.setenv("FUSION_PROCESS_EXCLUSIVITY", "1")
     monkeypatch.setattr(pe, "_thread_locks", {}, raising=False)
     monkeypatch.setattr(pe, "_held_keys", set(), raising=False)
+    monkeypatch.setattr(pe, "_hold_depth", {}, raising=False)
     pe.lock_dir()
 
 
-def test_try_acquire_and_release(tmp_path, monkeypatch):
+def test_try_acquire_and_release_reentrant(tmp_path, monkeypatch):
+    """Derselbe Thread darf denselben Key verschachtelt sperren (reentrant);
+    erst der aeusserste release() gibt den Key wirklich frei."""
     _use_temp_lock_dir(tmp_path, monkeypatch)
     first = pe.try_acquire("test:resource")
     assert first.ok is True
     second = pe.try_acquire("test:resource")
-    assert second.ok is False
-    assert second.reason in ("held_by_other_thread", "held_by_other_process")
+    assert second.ok is True
+    assert second.reason == "reentrant"
+    # Innerer release: Key bleibt gehalten
     assert pe.release("test:resource") is True
+    assert pe.is_held("test:resource") is True
+    # Aeusserer release: Key frei
+    assert pe.release("test:resource") is True
+    assert pe.is_held("test:resource") is False
     third = pe.try_acquire("test:resource")
     assert third.ok is True
+    assert third.reason != "reentrant"
     pe.release("test:resource")
 
 
@@ -44,10 +53,16 @@ def test_exclusive_context_manager(tmp_path, monkeypatch):
     _use_temp_lock_dir(tmp_path, monkeypatch)
     with pe.exclusive("ctx:key") as lock:
         assert lock.ok is True
-        blocked = pe.try_acquire("ctx:key")
-        assert blocked.ok is False
+        # Verschachtelter Kontext im selben Thread ist reentrant erlaubt
+        # (Praxisfall: apply_command -> finalize -> push_room_to_server).
+        with pe.exclusive("ctx:key") as inner:
+            assert inner.ok is True
+            assert inner.reason == "reentrant"
+        # Nach dem inneren Kontext ist der Key weiterhin gehalten
+        assert pe.is_held("ctx:key") is True
     after = pe.try_acquire("ctx:key")
     assert after.ok is True
+    assert after.reason != "reentrant"
     pe.release("ctx:key")
 
 

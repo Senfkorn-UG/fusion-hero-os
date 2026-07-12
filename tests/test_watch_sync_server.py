@@ -65,7 +65,8 @@ def test_state_includes_updated_at():
 def test_watch_room_state_api():
     from fastapi.testclient import TestClient
 
-    from app import app
+    from conftest import import_dashboard_app
+    app = import_dashboard_app().app
 
     mgr_mod = sys.modules.get("watch_party")
     if mgr_mod:
@@ -97,7 +98,8 @@ def test_row_to_watch_state_playing():
 def test_realtime_config_api():
     from fastapi.testclient import TestClient
 
-    from app import app
+    from conftest import import_dashboard_app
+    app = import_dashboard_app().app
 
     client = TestClient(app)
     r = client.get("/api/watch/realtime/config")
@@ -110,7 +112,8 @@ def test_realtime_config_api():
 def test_watch_room_cmd_rejects_non_controller():
     from fastapi.testclient import TestClient
 
-    from app import app
+    from conftest import import_dashboard_app
+    app = import_dashboard_app().app
 
     client = TestClient(app)
     created = client.post("/api/watch/room", json={}).json()
@@ -131,7 +134,8 @@ def test_watch_room_cmd_rejects_non_controller():
 def test_watch_room_cmd_api():
     from fastapi.testclient import TestClient
 
-    from app import app
+    from conftest import import_dashboard_app
+    app = import_dashboard_app().app
 
     client = TestClient(app)
     created = client.post("/api/watch/room", json={}).json()

@@ -4,6 +4,13 @@
 **Author:** Grok (Fusion Hero OS Core)
 **Status:** Initial Draft / For Review
 
+> **Geltungshinweis (v8.3-Konsolidierung, 2026-07-10):** Der in diesem Doc
+> beschriebene **Root+Magisk-Pfad ist eine Alternative/Draft**. Der
+> beschlossene, umsetzungsreife Weg ist der **Non-Root-Pfad** in
+> `docs/android/Heroic-Extension-Node-NonRoot-v1.0.md`
+> (siehe `docs/v8/erkenntnisse_index.yaml` → `android-root-vs-nonroot`).
+> Die Three-Mesh-Zonen-Architektur selbst bleibt gültig.
+
 ## Executive Summary
 
 This document captures the architecture decisions from the 2026-07-09 session regarding:

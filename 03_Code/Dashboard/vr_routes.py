@@ -7,8 +7,8 @@ import os
 import sys
 from pathlib import Path
 
-from fastapi import APIRouter, Request
-from fastapi.responses import HTMLResponse, FileResponse, RedirectResponse
+from fastapi import APIRouter, HTTPException, Request
+from fastapi.responses import HTMLResponse, FileResponse
 
 router = APIRouter(tags=["vr"])
 
@@ -20,6 +20,23 @@ HL_PATHS = [
     CODE_ROOT / "heroic-highest-layer",
     Path(os.environ.get("HEROIC_HIGHEST_LAYER", r"C:\Users\Admin\heroic-highest-layer")),
 ]
+
+IMAGE_EXTS = {".jpg", ".jpeg", ".png", ".webp"}
+
+
+def _scan_scene_files() -> list[dict]:
+    """Dynamically list every image in VR_ASSETS instead of two hardcoded filenames."""
+    if not VR_ASSETS.exists():
+        return []
+    out = []
+    for p in sorted(VR_ASSETS.iterdir()):
+        if p.is_file() and p.suffix.lower() in IMAGE_EXTS:
+            out.append({
+                "file": p.name,
+                "url": f"/vr/assets/{p.name}",
+                "size_bytes": p.stat().st_size,
+            })
+    return out
 
 
 def _hl_path() -> Path:
@@ -92,41 +109,72 @@ pre{{background:#11121a;padding:20px;border-radius:12px;overflow:auto;border:1px
 
 
 @router.get("/vr/viewer", response_class=HTMLResponse)
-async def vr_viewer(request: Request):
+async def vr_viewer(request: Request, pano: str | None = None, overlay: str | None = None):
     tpl = DASHBOARD / "templates" / "vr_viewer.html"
     if not tpl.exists():
         return HTMLResponse("<h1>vr_viewer.html missing</h1>", status_code=500)
+
+    scenes = _scan_scene_files()
+    names = [s["file"] for s in scenes]
+
+    # Default pano = an "equirectangular"/360°-tagged file if present, else first found.
+    # (Plain alphabetical order would silently swap pano/overlay when file names change.)
+    default_pano = next((n for n in names if "equirectangular" in n.lower() or "360" in n.lower()), names[0] if names else None)
+    remaining = [n for n in names if n != default_pano]
+    default_overlay = remaining[0] if remaining else default_pano
+
+    def _resolve(requested: str | None, default: str | None) -> str | None:
+        if requested and Path(requested).name in names:
+            return Path(requested).name
+        return default
+
+    pano_file = _resolve(pano, default_pano)
+    overlay_file = _resolve(overlay, default_overlay)
+
     base = str(request.base_url).rstrip("/")
-    pano = f"{base}/vr/assets/vr_mister_Contributor_hero_equirectangular.jpg"
-    overlay = f"{base}/vr/assets/heroic_evolution_fractal.jpg"
+    pano_url = f"{base}/vr/assets/{pano_file}" if pano_file else ""
+    overlay_url = f"{base}/vr/assets/{overlay_file}" if overlay_file else ""
+
     html = tpl.read_text(encoding="utf-8")
-    html = html.replace("{{PANORAMA_URL}}", pano).replace("{{OVERLAY_URL}}", overlay)
+    html = html.replace("{{PANORAMA_URL}}", pano_url).replace("{{OVERLAY_URL}}", overlay_url)
     return HTMLResponse(html)
 
 
 @router.get("/vr/assets/{filename}")
 async def vr_asset_file(filename: str):
     safe = Path(filename).name
+    if Path(safe).suffix.lower() not in IMAGE_EXTS:
+        raise HTTPException(status_code=404, detail=f"Unsupported asset type: {safe}")
     path = VR_ASSETS / safe
     if not path.exists():
-        return RedirectResponse("/api/vr/status", status_code=302)
-    media = "image/jpeg"
-    if safe.endswith(".png"):
-        media = "image/png"
+        raise HTTPException(status_code=404, detail=f"VR asset not found: {safe}")
+    media = {
+        ".png": "image/png",
+        ".webp": "image/webp",
+    }.get(path.suffix.lower(), "image/jpeg")
     return FileResponse(path, media_type=media)
+
+
+@router.get("/api/vr/assets")
+async def api_vr_assets():
+    """Full dynamic scene list for the in-viewer asset picker (task 4)."""
+    return {"vr_assets_root": str(VR_ASSETS), "scenes": _scan_scene_files()}
+
+
+@router.get("/api/vr/roadmap")
+async def api_vr_roadmap():
+    """Roadmap milestones for rendering as spherical nodes in the VR scene (VR_PROTOCOL.md)."""
+    try:
+        _ensure_hl_import()
+        from highest_layer import load_vr
+        return load_vr().get_roadmap()
+    except Exception as e:
+        return {"version": "unknown", "milestones": [], "error": str(e)}
 
 
 @router.get("/api/vr/status")
 async def api_vr_status():
-    assets = []
-    for name in ("vr_mister_Contributor_hero_equirectangular.jpg", "heroic_evolution_fractal.jpg"):
-        p = VR_ASSETS / name
-        assets.append({
-            "file": name,
-            "exists": p.exists(),
-            "size_bytes": p.stat().st_size if p.exists() else 0,
-            "url": f"/vr/assets/{name}",
-        })
+    scenes = _scan_scene_files()
     vr_layer = {}
     try:
         _ensure_hl_import()
@@ -136,7 +184,7 @@ async def api_vr_status():
         vr_layer = {"error": str(e)}
     return {
         "vr_assets_root": str(VR_ASSETS),
-        "assets": assets,
+        "assets": scenes,
         "viewer": "/vr/viewer",
         "layer": vr_layer,
     }

@@ -1,5 +1,7 @@
 # Tailscale Mesh Integration – Fusion Hero OS v8
 
+> **Stand:** v8.3.0 · 2026-07-11 · Mesh-Integration (09.07.2026) + Legacy-Spiegel + Dependency Atlas
+
 **Status:** Vollständig integriert (09.07.2026)  
 **Zweck:** Zero-Config Mesh-VPN + Phone-Bridge + Funnel für den gesamten Heimserver
 
@@ -18,8 +20,12 @@ Registry: `mesh_connectors.yaml`
 
 | Knoten | Rolle | MagicDNS |
 |--------|-------|----------|
-| `mainframe` | Orchestrator (Linux Heimserver) | `host.example.ts.net` |
-| `desktop` | Grok-Workstation (Windows) | `host.example.ts.net` |
+| `mainframe` | Orchestrator (**Windows-Desktop**, kanonisch) | `host.example.ts.net` |
+| `desktop` | Alias → mainframe (gleicher PC) | `host.example.ts.net` |
+| `phone` | Mobile Client (Android) | `host.example.ts.net` |
+| `legacy-linux` | Archiviert (früherer Linux-Knoten) | `host.example.ts.net` |
+
+Kanonische Rollen: `src/normal_os/integration/mesh_roles.yaml`
 
 ### MCP-Konnektor-Segmente (je eigenständig)
 
@@ -83,6 +89,7 @@ sudo ./tailscale_control.sh mesh-connector github
 - **Tailscale Status**: `https://host.example.ts.net/tailscale/status`
 - **Mesh Overview**: `https://host.example.ts.net/mesh/status`
 - **Einzelner Konnektor**: `https://host.example.ts.net/mesh/github/status`
+- **Fusion Dashboard (lokal/Mainframe)**: `http://127.0.0.1:8000` / `http://host.example.ts.net:8000`
 
 ## Dateien
 

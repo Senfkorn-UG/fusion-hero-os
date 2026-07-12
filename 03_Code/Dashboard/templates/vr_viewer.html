@@ -16,6 +16,14 @@
     #hud label { font-size: 12px; opacity: 0.85; }
     #hud input[type=range] { width: 120px; vertical-align: middle; }
     .badge { font-size: 11px; padding: 2px 8px; border-radius: 6px; background: #00ff9f22; color: #00ff9f; border: 1px solid #00ff9f44; }
+    #hud select { background: #11121a; color: #e2e8f0; border: 1px solid #1e293b; border-radius: 4px; font-size: 12px; padding: 2px 4px; }
+    #milestonePanel {
+      position: fixed; bottom: 16px; left: 16px; z-index: 10; max-width: 320px;
+      background: rgba(10,10,18,0.9); border: 1px solid #40e0d0; border-radius: 10px;
+      padding: 12px 14px; font-size: 13px; display: none;
+    }
+    #milestonePanel h3 { margin: 0 0 6px; color: #40e0d0; font-size: 14px; }
+    #assetError { color: #ff6b6b; font-size: 12px; }
   </style>
 </head>
 <body>
@@ -23,8 +31,17 @@
     <a href="/">← Dashboard</a>
     <a href="/highest-layer-vr">Highest Layer VR</a>
     <span class="badge">A-Frame 360°</span>
+    <label>Szene <select id="panoSelect"></select></label>
+    <label>Overlay <select id="overlaySelect"></select></label>
     <label>Overlay-Deckkraft <input id="overlayOpacity" type="range" min="0" max="100" value="35"></label>
     <label>Gyro <input id="gyroToggle" type="checkbox" checked></label>
+    <span id="assetError"></span>
+  </div>
+
+  <div id="milestonePanel">
+    <h3 id="msTitle"></h3>
+    <p id="msDesc" style="margin:0 0 6px;color:#cbd5e1;"></p>
+    <p id="msMeta" style="margin:0;color:#94a3b8;font-size:11px;"></p>
   </div>
 
   <a-scene vr-mode-ui="enabled: true" embedded style="height: 100vh; margin-top: 48px;">
@@ -44,6 +61,8 @@
     </a-entity>
 
     <a-text value="Heroic Layer 4 — Generational VR" align="center" color="#00ff9f" width="6" position="0 2.2 -3" look-at="#cam"></a-text>
+
+    <a-entity id="roadmapNodes"></a-entity>
   </a-scene>
 
   <script>
@@ -51,6 +70,12 @@
     const overlayEl = document.getElementById('overlaySphere');
     const gyroToggle = document.getElementById('gyroToggle');
     const cam = document.getElementById('cam');
+    const panoImg = document.getElementById('pano');
+    const overlayImg = document.getElementById('overlay');
+    const skyEl = document.getElementById('sky');
+    const panoSelect = document.getElementById('panoSelect');
+    const overlaySelect = document.getElementById('overlaySelect');
+    const assetError = document.getElementById('assetError');
 
     opacitySlider.addEventListener('input', () => {
       const v = opacitySlider.value / 100;
@@ -60,6 +85,102 @@
     gyroToggle.addEventListener('change', () => {
       cam.setAttribute('look-controls', 'magicWindowTrackingEnabled', gyroToggle.checked);
     });
+
+    // --- Scene picker: populate from live asset scan (open topic #2) ---
+    async function loadSceneOptions() {
+      try {
+        const res = await fetch('/api/vr/assets');
+        const data = await res.json();
+        const scenes = data.scenes || [];
+        if (!scenes.length) {
+          assetError.textContent = 'Keine VR-Assets in ' + data.vr_assets_root + ' gefunden.';
+          return;
+        }
+        for (const sel of [panoSelect, overlaySelect]) {
+          sel.innerHTML = '';
+          for (const s of scenes) {
+            const opt = document.createElement('option');
+            opt.value = s.file;
+            opt.textContent = s.file;
+            sel.appendChild(opt);
+          }
+        }
+        const currentPano = decodeURIComponent((panoImg.getAttribute('src') || '').split('/').pop());
+        const currentOverlay = decodeURIComponent((overlayImg.getAttribute('src') || '').split('/').pop());
+        if (scenes.some(s => s.file === currentPano)) panoSelect.value = currentPano;
+        if (scenes.some(s => s.file === currentOverlay)) overlaySelect.value = currentOverlay;
+      } catch (e) {
+        assetError.textContent = 'Asset-Liste konnte nicht geladen werden: ' + e;
+      }
+    }
+
+    function applySelection() {
+      const p = panoSelect.value, o = overlaySelect.value;
+      if (p) { panoImg.setAttribute('src', '/vr/assets/' + p); skyEl.setAttribute('src', '#pano'); }
+      if (o) { overlayImg.setAttribute('src', '/vr/assets/' + o); overlayEl.setAttribute('material', 'src', '#overlay'); }
+    }
+    panoSelect.addEventListener('change', applySelection);
+    overlaySelect.addEventListener('change', applySelection);
+    loadSceneOptions();
+
+    // Graceful fallback if the panorama itself 404s (open topic #1)
+    panoImg.addEventListener('error', () => {
+      assetError.textContent = 'Panorama konnte nicht geladen werden — Asset fehlt.';
+    });
+
+    // --- Roadmap milestones as spherical VR nodes (open topic #3) ---
+    const STATUS_COLOR = { done: '#00ff9f', in_progress: '#40e0d0', blocked: '#ff6b6b', planned: '#64748b' };
+    const STATUS_ICON = { done: '✓', in_progress: '◉', blocked: '✕', planned: '○' };
+
+    async function loadRoadmapNodes() {
+      try {
+        const res = await fetch('/api/vr/roadmap');
+        const data = await res.json();
+        const milestones = data.milestones || [];
+        const container = document.getElementById('roadmapNodes');
+        const radius = 6;
+        milestones.forEach((m, i) => {
+          const angle = (2 * Math.PI * i) / Math.max(1, milestones.length);
+          const x = (radius * Math.sin(angle)).toFixed(2);
+          const z = (-radius * Math.cos(angle)).toFixed(2);
+          const color = STATUS_COLOR[m.status] || STATUS_COLOR.planned;
+          const icon = STATUS_ICON[m.status] || STATUS_ICON.planned;
+
+          const node = document.createElement('a-entity');
+          node.setAttribute('position', `${x} 1.6 ${z}`);
+
+          const sphere = document.createElement('a-sphere');
+          sphere.setAttribute('radius', '0.28');
+          sphere.setAttribute('color', color);
+          sphere.setAttribute('class', 'clickable');
+          sphere.setAttribute('data-id', m.id);
+          sphere.addEventListener('click', () => showMilestone(m));
+          node.appendChild(sphere);
+
+          const label = document.createElement('a-text');
+          label.setAttribute('value', `${icon} ${m.title}`);
+          label.setAttribute('align', 'center');
+          label.setAttribute('color', '#e2e8f0');
+          label.setAttribute('width', '4');
+          label.setAttribute('position', '0 0.5 0');
+          label.setAttribute('look-at', '#cam');
+          node.appendChild(label);
+
+          container.appendChild(node);
+        });
+      } catch (e) {
+        assetError.textContent = (assetError.textContent ? assetError.textContent + ' ' : '') + 'Roadmap-Nodes: ' + e;
+      }
+    }
+
+    function showMilestone(m) {
+      document.getElementById('msTitle').textContent = `${STATUS_ICON[m.status] || ''} ${m.title}`;
+      document.getElementById('msDesc').textContent = m.description || '(keine Beschreibung)';
+      document.getElementById('msMeta').textContent = `Layer: ${m.target_layer} · Status: ${m.status}`;
+      document.getElementById('milestonePanel').style.display = 'block';
+    }
+
+    loadRoadmapNodes();
   </script>
 </body>
 </html>

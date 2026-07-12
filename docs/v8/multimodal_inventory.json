@@ -1,0 +1,2744 @@
+{
+  "protocol": "Multimodal-Archiv-Protokoll v1.0",
+  "archive_roots": [
+    "04_Buch_und_Archiv",
+    "06_Master_Archive",
+    "docs",
+    "archive",
+    "memes",
+    "03_VR_Assets",
+    "visual_seeds",
+    "tts"
+  ],
+  "total_files": 234,
+  "by_modality": {
+    "text": {
+      "files": 142,
+      "bytes": 1648236,
+      "extracted_ok": 142,
+      "extractor_missing": 0,
+      "errors": 0
+    },
+    "bundle": {
+      "files": 4,
+      "bytes": 3521960,
+      "extracted_ok": 0,
+      "extractor_missing": 4,
+      "errors": 0
+    },
+    "other": {
+      "files": 21,
+      "bytes": 46273790,
+      "extracted_ok": 0,
+      "extractor_missing": 21,
+      "errors": 0
+    },
+    "code": {
+      "files": 25,
+      "bytes": 157978,
+      "extracted_ok": 25,
+      "extractor_missing": 0,
+      "errors": 0
+    },
+    "data": {
+      "files": 13,
+      "bytes": 248492,
+      "extracted_ok": 13,
+      "extractor_missing": 0,
+      "errors": 0
+    },
+    "pdf": {
+      "files": 25,
+      "bytes": 435219,
+      "extracted_ok": 25,
+      "extractor_missing": 0,
+      "errors": 0
+    },
+    "image": {
+      "files": 4,
+      "bytes": 163310,
+      "extracted_ok": 4,
+      "extractor_missing": 0,
+      "errors": 0
+    }
+  },
+  "routing": {
+    "text": {
+      "required_capability": "text-generation",
+      "live_providers": [
+        "ollama"
+      ],
+      "configured_no_key": [
+        "claude",
+        "gemini",
+        "gpt",
+        "grok",
+        "openrouter"
+      ],
+      "servable_now": true
+    },
+    "code": {
+      "required_capability": "text-generation",
+      "live_providers": [
+        "ollama"
+      ],
+      "configured_no_key": [
+        "claude",
+        "gemini",
+        "gpt",
+        "grok",
+        "openrouter"
+      ],
+      "servable_now": true
+    },
+    "data": {
+      "required_capability": "text-generation",
+      "live_providers": [
+        "ollama"
+      ],
+      "configured_no_key": [
+        "claude",
+        "gemini",
+        "gpt",
+        "grok",
+        "openrouter"
+      ],
+      "servable_now": true
+    },
+    "pdf": {
+      "required_capability": "text-generation",
+      "live_providers": [
+        "ollama"
+      ],
+      "configured_no_key": [
+        "claude",
+        "gemini",
+        "gpt",
+        "grok",
+        "openrouter"
+      ],
+      "servable_now": true
+    },
+    "image": {
+      "required_capability": "vision",
+      "live_providers": [],
+      "configured_no_key": [
+        "claude",
+        "gemini",
+        "gpt",
+        "grok",
+        "openrouter"
+      ],
+      "servable_now": false
+    },
+    "audio": {
+      "required_capability": "audio-transcription",
+      "live_providers": [],
+      "configured_no_key": [
+        "gemini",
+        "gpt"
+      ],
+      "servable_now": false
+    },
+    "video": {
+      "required_capability": "video-understanding",
+      "live_providers": [],
+      "configured_no_key": [
+        "gemini"
+      ],
+      "servable_now": false
+    },
+    "bundle": {
+      "required_capability": "none (erst entpacken)",
+      "live_providers": [],
+      "configured_no_key": [],
+      "servable_now": false
+    },
+    "other": {
+      "required_capability": "none (unklassifiziert)",
+      "live_providers": [],
+      "configured_no_key": [],
+      "servable_now": false
+    }
+  },
+  "inventory": [
+    {
+      "path": "04_Buch_und_Archiv/Der_Heroischer_Mensch_2026-06-15/CLI_Version/heroic_program/build/Der_Heroische_Mensch/Analysis-00.toc",
+      "modality": "text",
+      "size_bytes": 35879,
+      "sha256": "86a0e8dc70dd8f7d4eddb581578198ca90995fc7686f5acfa2039bc821151731",
+      "extraction": {
+        "status": "ok",
+        "chars": 35072,
+        "lines": 808
+      }
+    },
+    {
+      "path": "04_Buch_und_Archiv/Der_Heroischer_Mensch_2026-06-15/CLI_Version/heroic_program/build/Der_Heroische_Mensch/base_library.zip",
+      "modality": "bundle",
+      "size_bytes": 880490,
+      "sha256": "42e40398544b68db41b71cac073b8fee4a95a5cb6a7ce6b77fa9f61fa9545ab0",
+      "extraction": {
+        "status": "extractor_missing",
+        "hint": "kein lokaler Extraktor fuer 'bundle'"
+      }
+    },
+    {
+      "path": "04_Buch_und_Archiv/Der_Heroischer_Mensch_2026-06-15/CLI_Version/heroic_program/build/Der_Heroische_Mensch/Der_Heroische_Mensch.pkg",
+      "modality": "other",
+      "size_bytes": 5190874,
+      "sha256": "92518d53d6f87d1a45676020ffb24f1f388ec7b4ceafe302c278f18b419f8007",
+      "extraction": {
+        "status": "extractor_missing",
+        "hint": "kein lokaler Extraktor fuer 'other'"
+      }
+    },
+    {
+      "path": "04_Buch_und_Archiv/Der_Heroischer_Mensch_2026-06-15/CLI_Version/heroic_program/build/Der_Heroische_Mensch/EXE-00.toc",
+      "modality": "text",
+      "size_bytes": 5911,
+      "sha256": "2209be5228089b1a814ff208f3de81254c65260bcc4d2aa0b88462730086742d",
+      "extraction": {
+        "status": "ok",
+        "chars": 5807,
+        "lines": 105
+      }
+    },
+    {
+      "path": "04_Buch_und_Archiv/Der_Heroischer_Mensch_2026-06-15/CLI_Version/heroic_program/build/Der_Heroische_Mensch/PKG-00.toc",
+      "modality": "text",
+      "size_bytes": 4048,
+      "sha256": "559f65140411a60118eee4088aae9bb46f503b48f51e547196f90341b8eb4197",
+      "extraction": {
+        "status": "ok",
+        "chars": 3966,
+        "lines": 83
+      }
+    },
+    {
+      "path": "04_Buch_und_Archiv/Der_Heroischer_Mensch_2026-06-15/CLI_Version/heroic_program/build/Der_Heroische_Mensch/PYZ-00.pyz",
+      "modality": "other",
+      "size_bytes": 815548,
+      "sha256": "c418e7f0a422fab3d562ac8b98ff6826ff478679361bfb387cb2743941f3c783",
+      "extraction": {
+        "status": "extractor_missing",
+        "hint": "kein lokaler Extraktor fuer 'other'"
+      }
+    },
+    {
+      "path": "04_Buch_und_Archiv/Der_Heroischer_Mensch_2026-06-15/CLI_Version/heroic_program/build/Der_Heroische_Mensch/PYZ-00.toc",
+      "modality": "text",
+      "size_bytes": 12421,
+      "sha256": "0799190ae4c2f4f64b23ace3aef1249f194c92eee5efc08771e27961e32fbcd2",
+      "extraction": {
+        "status": "ok",
+        "chars": 12132,
+        "lines": 290
+      }
+    },
+    {
+      "path": "04_Buch_und_Archiv/Der_Heroischer_Mensch_2026-06-15/CLI_Version/heroic_program/build/Der_Heroische_Mensch/warn-Der_Heroische_Mensch.txt",
+      "modality": "text",
+      "size_bytes": 2361,
+      "sha256": "edc704fa5b04d411fa6c756aab1a085655e19d4f0d9373426afedbbb841ce9e3",
+      "extraction": {
+        "status": "ok",
+        "chars": 2331,
+        "lines": 31
+      }
+    },
+    {
+      "path": "04_Buch_und_Archiv/Der_Heroischer_Mensch_2026-06-15/CLI_Version/heroic_program/build/Der_Heroische_Mensch/xref-Der_Heroische_Mensch.html",
+      "modality": "text",
+      "size_bytes": 236139,
+      "sha256": "bf78f28738d57fd4d7d9027f179f1b2a9203444fb21ad786496f20aaf4222e53",
+      "extraction": {
+        "status": "ok",
+        "chars": 229184,
+        "lines": 6956
+      }
+    },
+    {
+      "path": "04_Buch_und_Archiv/Der_Heroischer_Mensch_2026-06-15/CLI_Version/heroic_program/build_windows_exe.bat",
+      "modality": "code",
+      "size_bytes": 1229,
+      "sha256": "11f6777ff1f8c3da24522107c83dc8ba7a2903b26636fe29c61bce9f4d6d98d4",
+      "extraction": {
+        "status": "ok",
+        "chars": 1187,
+        "lines": 43
+      }
+    },
+    {
+      "path": "04_Buch_und_Archiv/Der_Heroischer_Mensch_2026-06-15/CLI_Version/heroic_program/data/philosophers_nodes.json",
+      "modality": "data",
+      "size_bytes": 10625,
+      "sha256": "c31e67c8755d387d208a79f15b660c732f62a29ffb408f41fc4d1acc867ff39c",
+      "extraction": {
+        "status": "ok",
+        "chars": 10247,
+        "lines": 257
+      }
+    },
+    {
+      "path": "04_Buch_und_Archiv/Der_Heroischer_Mensch_2026-06-15/CLI_Version/heroic_program/Der_Heroische_Mensch.spec",
+      "modality": "data",
+      "size_bytes": 750,
+      "sha256": "d9ab318904f3ef526d65e6257a3630cd3f2d414ba3f25b03ea376d085fa324ec",
+      "extraction": {
+        "status": "ok",
+        "chars": 712,
+        "lines": 39
+      }
+    },
+    {
+      "path": "04_Buch_und_Archiv/Der_Heroischer_Mensch_2026-06-15/CLI_Version/heroic_program/dist/Der_Heroische_Mensch.exe",
+      "modality": "other",
+      "size_bytes": 5538522,
+      "sha256": "d9510fc457a0ea41e3df47832735d21c6f7d8a3297027c4af9ff983a0c345070",
+      "extraction": {
+        "status": "extractor_missing",
+        "hint": "kein lokaler Extraktor fuer 'other'"
+      }
+    },
+    {
+      "path": "04_Buch_und_Archiv/Der_Heroischer_Mensch_2026-06-15/CLI_Version/heroic_program/main.py",
+      "modality": "code",
+      "size_bytes": 14805,
+      "sha256": "d98d211a707f785ce4f707ed1b21bb90cf7e0e97ad2ff1e977c14cb265c807cc",
+      "extraction": {
+        "status": "ok",
+        "chars": 14428,
+        "lines": 273
+      }
+    },
+    {
+      "path": "04_Buch_und_Archiv/Der_Heroischer_Mensch_2026-06-15/CLI_Version/heroic_program/main.py.bak",
+      "modality": "other",
+      "size_bytes": 12017,
+      "sha256": "146a9e859c4042e94297a396a0eb5fb7be4ef4d387db434144f39441dd3e63c1",
+      "extraction": {
+        "status": "extractor_missing",
+        "hint": "kein lokaler Extraktor fuer 'other'"
+      }
+    },
+    {
+      "path": "04_Buch_und_Archiv/Der_Heroischer_Mensch_2026-06-15/CLI_Version/heroic_program/main.py.bak2",
+      "modality": "other",
+      "size_bytes": 11280,
+      "sha256": "86aad4d349f78a367d56335f32ff54c66092082d211f0130015fbf0d4f5808a0",
+      "extraction": {
+        "status": "extractor_missing",
+        "hint": "kein lokaler Extraktor fuer 'other'"
+      }
+    },
+    {
+      "path": "04_Buch_und_Archiv/Der_Heroischer_Mensch_2026-06-15/CLI_Version/heroic_program/main_final_backup.py",
+      "modality": "code",
+      "size_bytes": 13142,
+      "sha256": "9d5e20eb2c97602f7708ca7f554789b549835dd6c1e80b3beb9c92a32d8ab6ad",
+      "extraction": {
+        "status": "ok",
+        "chars": 12719,
+        "lines": 293
+      }
+    },
+    {
+      "path": "04_Buch_und_Archiv/Der_Heroischer_Mensch_2026-06-15/CLI_Version/heroic_program/README.md",
+      "modality": "text",
+      "size_bytes": 1285,
+      "sha256": "0c68601fb034868ed3f5c17ada20c4cf58927d0e9a17323e618d36e01747b437",
+      "extraction": {
+        "status": "ok",
+        "chars": 1217,
+        "lines": 47
+      }
+    },
+    {
+      "path": "04_Buch_und_Archiv/Der_Heroischer_Mensch_2026-06-15/CLI_Version/heroic_program/README_BUILD_EXE.md",
+      "modality": "text",
+      "size_bytes": 1298,
+      "sha256": "97eb5be81b67309176ffbeaed7994678cd4fef6880eb9859a43536a75e1ed814",
+      "extraction": {
+        "status": "ok",
+        "chars": 1229,
+        "lines": 59
+      }
+    },
+    {
+      "path": "04_Buch_und_Archiv/Der_Heroischer_Mensch_2026-06-15/CLI_Version/heroic_program/requirements.txt",
+      "modality": "text",
+      "size_bytes": 14,
+      "sha256": "7a9224b6a98e2b17923ad76d31416499d229d51d4ac0348212664753da8b23ab",
+      "extraction": {
+        "status": "ok",
+        "chars": 13,
+        "lines": 2
+      }
+    },
+    {
+      "path": "04_Buch_und_Archiv/Der_Heroischer_Mensch_2026-06-15/Der_Heroische_Mensch/build/Der_Heroische_Mensch/Analysis-00.toc",
+      "modality": "text",
+      "size_bytes": 35879,
+      "sha256": "86a0e8dc70dd8f7d4eddb581578198ca90995fc7686f5acfa2039bc821151731",
+      "extraction": {
+        "status": "ok",
+        "chars": 35072,
+        "lines": 808
+      }
+    },
+    {
+      "path": "04_Buch_und_Archiv/Der_Heroischer_Mensch_2026-06-15/Der_Heroische_Mensch/build/Der_Heroische_Mensch/base_library.zip",
+      "modality": "bundle",
+      "size_bytes": 880490,
+      "sha256": "42e40398544b68db41b71cac073b8fee4a95a5cb6a7ce6b77fa9f61fa9545ab0",
+      "extraction": {
+        "status": "extractor_missing",
+        "hint": "kein lokaler Extraktor fuer 'bundle'"
+      }
+    },
+    {
+      "path": "04_Buch_und_Archiv/Der_Heroischer_Mensch_2026-06-15/Der_Heroische_Mensch/build/Der_Heroische_Mensch/Der_Heroische_Mensch.pkg",
+      "modality": "other",
+      "size_bytes": 5190874,
+      "sha256": "92518d53d6f87d1a45676020ffb24f1f388ec7b4ceafe302c278f18b419f8007",
+      "extraction": {
+        "status": "extractor_missing",
+        "hint": "kein lokaler Extraktor fuer 'other'"
+      }
+    },
+    {
+      "path": "04_Buch_und_Archiv/Der_Heroischer_Mensch_2026-06-15/Der_Heroische_Mensch/build/Der_Heroische_Mensch/EXE-00.toc",
+      "modality": "text",
+      "size_bytes": 5911,
+      "sha256": "2209be5228089b1a814ff208f3de81254c65260bcc4d2aa0b88462730086742d",
+      "extraction": {
+        "status": "ok",
+        "chars": 5807,
+        "lines": 105
+      }
+    },
+    {
+      "path": "04_Buch_und_Archiv/Der_Heroischer_Mensch_2026-06-15/Der_Heroische_Mensch/build/Der_Heroische_Mensch/PKG-00.toc",
+      "modality": "text",
+      "size_bytes": 4048,
+      "sha256": "559f65140411a60118eee4088aae9bb46f503b48f51e547196f90341b8eb4197",
+      "extraction": {
+        "status": "ok",
+        "chars": 3966,
+        "lines": 83
+      }
+    },
+    {
+      "path": "04_Buch_und_Archiv/Der_Heroischer_Mensch_2026-06-15/Der_Heroische_Mensch/build/Der_Heroische_Mensch/PYZ-00.pyz",
+      "modality": "other",
+      "size_bytes": 815548,
+      "sha256": "c418e7f0a422fab3d562ac8b98ff6826ff478679361bfb387cb2743941f3c783",
+      "extraction": {
+        "status": "extractor_missing",
+        "hint": "kein lokaler Extraktor fuer 'other'"
+      }
+    },
+    {
+      "path": "04_Buch_und_Archiv/Der_Heroischer_Mensch_2026-06-15/Der_Heroische_Mensch/build/Der_Heroische_Mensch/PYZ-00.toc",
+      "modality": "text",
+      "size_bytes": 12421,
+      "sha256": "0799190ae4c2f4f64b23ace3aef1249f194c92eee5efc08771e27961e32fbcd2",
+      "extraction": {
+        "status": "ok",
+        "chars": 12132,
+        "lines": 290
+      }
+    },
+    {
+      "path": "04_Buch_und_Archiv/Der_Heroischer_Mensch_2026-06-15/Der_Heroische_Mensch/build/Der_Heroische_Mensch/warn-Der_Heroische_Mensch.txt",
+      "modality": "text",
+      "size_bytes": 2361,
+      "sha256": "edc704fa5b04d411fa6c756aab1a085655e19d4f0d9373426afedbbb841ce9e3",
+      "extraction": {
+        "status": "ok",
+        "chars": 2331,
+        "lines": 31
+      }
+    },
+    {
+      "path": "04_Buch_und_Archiv/Der_Heroischer_Mensch_2026-06-15/Der_Heroische_Mensch/build/Der_Heroische_Mensch/xref-Der_Heroische_Mensch.html",
+      "modality": "text",
+      "size_bytes": 236139,
+      "sha256": "bf78f28738d57fd4d7d9027f179f1b2a9203444fb21ad786496f20aaf4222e53",
+      "extraction": {
+        "status": "ok",
+        "chars": 229184,
+        "lines": 6956
+      }
+    },
+    {
+      "path": "04_Buch_und_Archiv/Der_Heroischer_Mensch_2026-06-15/Der_Heroische_Mensch/build_windows_exe.bat",
+      "modality": "code",
+      "size_bytes": 1229,
+      "sha256": "11f6777ff1f8c3da24522107c83dc8ba7a2903b26636fe29c61bce9f4d6d98d4",
+      "extraction": {
+        "status": "ok",
+        "chars": 1187,
+        "lines": 43
+      }
+    },
+    {
+      "path": "04_Buch_und_Archiv/Der_Heroischer_Mensch_2026-06-15/Der_Heroische_Mensch/data/philosophers_nodes.json",
+      "modality": "data",
+      "size_bytes": 10625,
+      "sha256": "c31e67c8755d387d208a79f15b660c732f62a29ffb408f41fc4d1acc867ff39c",
+      "extraction": {
+        "status": "ok",
+        "chars": 10247,
+        "lines": 257
+      }
+    },
+    {
+      "path": "04_Buch_und_Archiv/Der_Heroischer_Mensch_2026-06-15/Der_Heroische_Mensch/Der_Heroische_Mensch.spec",
+      "modality": "data",
+      "size_bytes": 750,
+      "sha256": "d9ab318904f3ef526d65e6257a3630cd3f2d414ba3f25b03ea376d085fa324ec",
+      "extraction": {
+        "status": "ok",
+        "chars": 712,
+        "lines": 39
+      }
+    },
+    {
+      "path": "04_Buch_und_Archiv/Der_Heroischer_Mensch_2026-06-15/Der_Heroische_Mensch/dist/Der_Heroische_Mensch.exe",
+      "modality": "other",
+      "size_bytes": 5538522,
+      "sha256": "d9510fc457a0ea41e3df47832735d21c6f7d8a3297027c4af9ff983a0c345070",
+      "extraction": {
+        "status": "extractor_missing",
+        "hint": "kein lokaler Extraktor fuer 'other'"
+      }
+    },
+    {
+      "path": "04_Buch_und_Archiv/Der_Heroischer_Mensch_2026-06-15/Der_Heroische_Mensch/main.py",
+      "modality": "code",
+      "size_bytes": 14805,
+      "sha256": "d98d211a707f785ce4f707ed1b21bb90cf7e0e97ad2ff1e977c14cb265c807cc",
+      "extraction": {
+        "status": "ok",
+        "chars": 14428,
+        "lines": 273
+      }
+    },
+    {
+      "path": "04_Buch_und_Archiv/Der_Heroischer_Mensch_2026-06-15/Der_Heroische_Mensch/main.py.bak",
+      "modality": "other",
+      "size_bytes": 12017,
+      "sha256": "146a9e859c4042e94297a396a0eb5fb7be4ef4d387db434144f39441dd3e63c1",
+      "extraction": {
+        "status": "extractor_missing",
+        "hint": "kein lokaler Extraktor fuer 'other'"
+      }
+    },
+    {
+      "path": "04_Buch_und_Archiv/Der_Heroischer_Mensch_2026-06-15/Der_Heroische_Mensch/main.py.bak2",
+      "modality": "other",
+      "size_bytes": 11280,
+      "sha256": "86aad4d349f78a367d56335f32ff54c66092082d211f0130015fbf0d4f5808a0",
+      "extraction": {
+        "status": "extractor_missing",
+        "hint": "kein lokaler Extraktor fuer 'other'"
+      }
+    },
+    {
+      "path": "04_Buch_und_Archiv/Der_Heroischer_Mensch_2026-06-15/Der_Heroische_Mensch/main_final_backup.py",
+      "modality": "code",
+      "size_bytes": 13142,
+      "sha256": "9d5e20eb2c97602f7708ca7f554789b549835dd6c1e80b3beb9c92a32d8ab6ad",
+      "extraction": {
+        "status": "ok",
+        "chars": 12719,
+        "lines": 293
+      }
+    },
+    {
+      "path": "04_Buch_und_Archiv/Der_Heroischer_Mensch_2026-06-15/Der_Heroische_Mensch/README.md",
+      "modality": "text",
+      "size_bytes": 1285,
+      "sha256": "0c68601fb034868ed3f5c17ada20c4cf58927d0e9a17323e618d36e01747b437",
+      "extraction": {
+        "status": "ok",
+        "chars": 1217,
+        "lines": 47
+      }
+    },
+    {
+      "path": "04_Buch_und_Archiv/Der_Heroischer_Mensch_2026-06-15/Der_Heroische_Mensch/README_BUILD_EXE.md",
+      "modality": "text",
+      "size_bytes": 1298,
+      "sha256": "97eb5be81b67309176ffbeaed7994678cd4fef6880eb9859a43536a75e1ed814",
+      "extraction": {
+        "status": "ok",
+        "chars": 1229,
+        "lines": 59
+      }
+    },
+    {
+      "path": "04_Buch_und_Archiv/Der_Heroischer_Mensch_2026-06-15/Der_Heroische_Mensch/requirements.txt",
+      "modality": "text",
+      "size_bytes": 14,
+      "sha256": "7a9224b6a98e2b17923ad76d31416499d229d51d4ac0348212664753da8b23ab",
+      "extraction": {
+        "status": "ok",
+        "chars": 13,
+        "lines": 2
+      }
+    },
+    {
+      "path": "04_Buch_und_Archiv/Der_Heroischer_Mensch_2026-06-15/Der_Heroische_Mensch_2026-06-15/CLI_Version/heroic_program/build/Der_Heroische_Mensch/Analysis-00.toc",
+      "modality": "text",
+      "size_bytes": 35879,
+      "sha256": "86a0e8dc70dd8f7d4eddb581578198ca90995fc7686f5acfa2039bc821151731",
+      "extraction": {
+        "status": "ok",
+        "chars": 35072,
+        "lines": 808
+      }
+    },
+    {
+      "path": "04_Buch_und_Archiv/Der_Heroischer_Mensch_2026-06-15/Der_Heroische_Mensch_2026-06-15/CLI_Version/heroic_program/build/Der_Heroische_Mensch/base_library.zip",
+      "modality": "bundle",
+      "size_bytes": 880490,
+      "sha256": "42e40398544b68db41b71cac073b8fee4a95a5cb6a7ce6b77fa9f61fa9545ab0",
+      "extraction": {
+        "status": "extractor_missing",
+        "hint": "kein lokaler Extraktor fuer 'bundle'"
+      }
+    },
+    {
+      "path": "04_Buch_und_Archiv/Der_Heroischer_Mensch_2026-06-15/Der_Heroische_Mensch_2026-06-15/CLI_Version/heroic_program/build/Der_Heroische_Mensch/Der_Heroische_Mensch.pkg",
+      "modality": "other",
+      "size_bytes": 5190874,
+      "sha256": "92518d53d6f87d1a45676020ffb24f1f388ec7b4ceafe302c278f18b419f8007",
+      "extraction": {
+        "status": "extractor_missing",
+        "hint": "kein lokaler Extraktor fuer 'other'"
+      }
+    },
+    {
+      "path": "04_Buch_und_Archiv/Der_Heroischer_Mensch_2026-06-15/Der_Heroische_Mensch_2026-06-15/CLI_Version/heroic_program/build/Der_Heroische_Mensch/EXE-00.toc",
+      "modality": "text",
+      "size_bytes": 5911,
+      "sha256": "2209be5228089b1a814ff208f3de81254c65260bcc4d2aa0b88462730086742d",
+      "extraction": {
+        "status": "ok",
+        "chars": 5807,
+        "lines": 105
+      }
+    },
+    {
+      "path": "04_Buch_und_Archiv/Der_Heroischer_Mensch_2026-06-15/Der_Heroische_Mensch_2026-06-15/CLI_Version/heroic_program/build/Der_Heroische_Mensch/PKG-00.toc",
+      "modality": "text",
+      "size_bytes": 4048,
+      "sha256": "559f65140411a60118eee4088aae9bb46f503b48f51e547196f90341b8eb4197",
+      "extraction": {
+        "status": "ok",
+        "chars": 3966,
+        "lines": 83
+      }
+    },
+    {
+      "path": "04_Buch_und_Archiv/Der_Heroischer_Mensch_2026-06-15/Der_Heroische_Mensch_2026-06-15/CLI_Version/heroic_program/build/Der_Heroische_Mensch/PYZ-00.pyz",
+      "modality": "other",
+      "size_bytes": 815548,
+      "sha256": "c418e7f0a422fab3d562ac8b98ff6826ff478679361bfb387cb2743941f3c783",
+      "extraction": {
+        "status": "extractor_missing",
+        "hint": "kein lokaler Extraktor fuer 'other'"
+      }
+    },
+    {
+      "path": "04_Buch_und_Archiv/Der_Heroischer_Mensch_2026-06-15/Der_Heroische_Mensch_2026-06-15/CLI_Version/heroic_program/build/Der_Heroische_Mensch/PYZ-00.toc",
+      "modality": "text",
+      "size_bytes": 12421,
+      "sha256": "0799190ae4c2f4f64b23ace3aef1249f194c92eee5efc08771e27961e32fbcd2",
+      "extraction": {
+        "status": "ok",
+        "chars": 12132,
+        "lines": 290
+      }
+    },
+    {
+      "path": "04_Buch_und_Archiv/Der_Heroischer_Mensch_2026-06-15/Der_Heroische_Mensch_2026-06-15/CLI_Version/heroic_program/build/Der_Heroische_Mensch/warn-Der_Heroische_Mensch.txt",
+      "modality": "text",
+      "size_bytes": 2361,
+      "sha256": "edc704fa5b04d411fa6c756aab1a085655e19d4f0d9373426afedbbb841ce9e3",
+      "extraction": {
+        "status": "ok",
+        "chars": 2331,
+        "lines": 31
+      }
+    },
+    {
+      "path": "04_Buch_und_Archiv/Der_Heroischer_Mensch_2026-06-15/Der_Heroische_Mensch_2026-06-15/CLI_Version/heroic_program/build/Der_Heroische_Mensch/xref-Der_Heroische_Mensch.html",
+      "modality": "text",
+      "size_bytes": 236139,
+      "sha256": "bf78f28738d57fd4d7d9027f179f1b2a9203444fb21ad786496f20aaf4222e53",
+      "extraction": {
+        "status": "ok",
+        "chars": 229184,
+        "lines": 6956
+      }
+    },
+    {
+      "path": "04_Buch_und_Archiv/Der_Heroischer_Mensch_2026-06-15/Der_Heroische_Mensch_2026-06-15/CLI_Version/heroic_program/build_windows_exe.bat",
+      "modality": "code",
+      "size_bytes": 1229,
+      "sha256": "11f6777ff1f8c3da24522107c83dc8ba7a2903b26636fe29c61bce9f4d6d98d4",
+      "extraction": {
+        "status": "ok",
+        "chars": 1187,
+        "lines": 43
+      }
+    },
+    {
+      "path": "04_Buch_und_Archiv/Der_Heroischer_Mensch_2026-06-15/Der_Heroische_Mensch_2026-06-15/CLI_Version/heroic_program/data/philosophers_nodes.json",
+      "modality": "data",
+      "size_bytes": 10625,
+      "sha256": "c31e67c8755d387d208a79f15b660c732f62a29ffb408f41fc4d1acc867ff39c",
+      "extraction": {
+        "status": "ok",
+        "chars": 10247,
+        "lines": 257
+      }
+    },
+    {
+      "path": "04_Buch_und_Archiv/Der_Heroischer_Mensch_2026-06-15/Der_Heroische_Mensch_2026-06-15/CLI_Version/heroic_program/Der_Heroische_Mensch.spec",
+      "modality": "data",
+      "size_bytes": 750,
+      "sha256": "d9ab318904f3ef526d65e6257a3630cd3f2d414ba3f25b03ea376d085fa324ec",
+      "extraction": {
+        "status": "ok",
+        "chars": 712,
+        "lines": 39
+      }
+    },
+    {
+      "path": "04_Buch_und_Archiv/Der_Heroischer_Mensch_2026-06-15/Der_Heroische_Mensch_2026-06-15/CLI_Version/heroic_program/dist/Der_Heroische_Mensch.exe",
+      "modality": "other",
+      "size_bytes": 5538522,
+      "sha256": "d9510fc457a0ea41e3df47832735d21c6f7d8a3297027c4af9ff983a0c345070",
+      "extraction": {
+        "status": "extractor_missing",
+        "hint": "kein lokaler Extraktor fuer 'other'"
+      }
+    },
+    {
+      "path": "04_Buch_und_Archiv/Der_Heroischer_Mensch_2026-06-15/Der_Heroische_Mensch_2026-06-15/CLI_Version/heroic_program/main.py",
+      "modality": "code",
+      "size_bytes": 14805,
+      "sha256": "d98d211a707f785ce4f707ed1b21bb90cf7e0e97ad2ff1e977c14cb265c807cc",
+      "extraction": {
+        "status": "ok",
+        "chars": 14428,
+        "lines": 273
+      }
+    },
+    {
+      "path": "04_Buch_und_Archiv/Der_Heroischer_Mensch_2026-06-15/Der_Heroische_Mensch_2026-06-15/CLI_Version/heroic_program/main.py.bak",
+      "modality": "other",
+      "size_bytes": 12017,
+      "sha256": "146a9e859c4042e94297a396a0eb5fb7be4ef4d387db434144f39441dd3e63c1",
+      "extraction": {
+        "status": "extractor_missing",
+        "hint": "kein lokaler Extraktor fuer 'other'"
+      }
+    },
+    {
+      "path": "04_Buch_und_Archiv/Der_Heroischer_Mensch_2026-06-15/Der_Heroische_Mensch_2026-06-15/CLI_Version/heroic_program/main.py.bak2",
+      "modality": "other",
+      "size_bytes": 11280,
+      "sha256": "86aad4d349f78a367d56335f32ff54c66092082d211f0130015fbf0d4f5808a0",
+      "extraction": {
+        "status": "extractor_missing",
+        "hint": "kein lokaler Extraktor fuer 'other'"
+      }
+    },
+    {
+      "path": "04_Buch_und_Archiv/Der_Heroischer_Mensch_2026-06-15/Der_Heroische_Mensch_2026-06-15/CLI_Version/heroic_program/main_final_backup.py",
+      "modality": "code",
+      "size_bytes": 13142,
+      "sha256": "9d5e20eb2c97602f7708ca7f554789b549835dd6c1e80b3beb9c92a32d8ab6ad",
+      "extraction": {
+        "status": "ok",
+        "chars": 12719,
+        "lines": 293
+      }
+    },
+    {
+      "path": "04_Buch_und_Archiv/Der_Heroischer_Mensch_2026-06-15/Der_Heroische_Mensch_2026-06-15/CLI_Version/heroic_program/README.md",
+      "modality": "text",
+      "size_bytes": 1285,
+      "sha256": "0c68601fb034868ed3f5c17ada20c4cf58927d0e9a17323e618d36e01747b437",
+      "extraction": {
+        "status": "ok",
+        "chars": 1217,
+        "lines": 47
+      }
+    },
+    {
+      "path": "04_Buch_und_Archiv/Der_Heroischer_Mensch_2026-06-15/Der_Heroische_Mensch_2026-06-15/CLI_Version/heroic_program/README_BUILD_EXE.md",
+      "modality": "text",
+      "size_bytes": 1298,
+      "sha256": "97eb5be81b67309176ffbeaed7994678cd4fef6880eb9859a43536a75e1ed814",
+      "extraction": {
+        "status": "ok",
+        "chars": 1229,
+        "lines": 59
+      }
+    },
+    {
+      "path": "04_Buch_und_Archiv/Der_Heroischer_Mensch_2026-06-15/Der_Heroische_Mensch_2026-06-15/CLI_Version/heroic_program/requirements.txt",
+      "modality": "text",
+      "size_bytes": 14,
+      "sha256": "7a9224b6a98e2b17923ad76d31416499d229d51d4ac0348212664753da8b23ab",
+      "extraction": {
+        "status": "ok",
+        "chars": 13,
+        "lines": 2
+      }
+    },
+    {
+      "path": "04_Buch_und_Archiv/Der_Heroischer_Mensch_2026-06-15/Der_Heroische_Mensch_2026-06-15/Dokumentation/Zwischenbericht_Stufe1_Stufe2.md",
+      "modality": "text",
+      "size_bytes": 2635,
+      "sha256": "9f979a88608c724a88a690599007944667ed74846ac4c95c86cdaa24ae26fc54",
+      "extraction": {
+        "status": "ok",
+        "chars": 2528,
+        "lines": 69
+      }
+    },
+    {
+      "path": "04_Buch_und_Archiv/Der_Heroischer_Mensch_2026-06-15/Der_Heroische_Mensch_2026-06-15/README.md",
+      "modality": "text",
+      "size_bytes": 1218,
+      "sha256": "f6b2ba1f639bfd1dc4d1bb2ba7b31464ca45d277cb7500c7513393c7f87bbbcc",
+      "extraction": {
+        "status": "ok",
+        "chars": 1152,
+        "lines": 38
+      }
+    },
+    {
+      "path": "04_Buch_und_Archiv/Der_Heroischer_Mensch_2026-06-15/Der_Heroische_Mensch_2026-06-15/Web_Version/web_app/app.py",
+      "modality": "code",
+      "size_bytes": 1989,
+      "sha256": "2e3d0be0539429b58f9c5979f020e42f70773a068e9fa625a823c4919e44fcc6",
+      "extraction": {
+        "status": "ok",
+        "chars": 1918,
+        "lines": 62
+      }
+    },
+    {
+      "path": "04_Buch_und_Archiv/Der_Heroischer_Mensch_2026-06-15/Der_Heroische_Mensch_2026-06-15/Web_Version/web_app/pages/01_Theorie.py",
+      "modality": "code",
+      "size_bytes": 1345,
+      "sha256": "e5f208752a0e5254c8671cd7a05cc3a58a36e5302356e71f053229c8274e14c6",
+      "extraction": {
+        "status": "ok",
+        "chars": 1278,
+        "lines": 42
+      }
+    },
+    {
+      "path": "04_Buch_und_Archiv/Der_Heroischer_Mensch_2026-06-15/Der_Heroische_Mensch_2026-06-15/Web_Version/web_app/pages/02_Quant.py",
+      "modality": "code",
+      "size_bytes": 3830,
+      "sha256": "331b07ab58de0c5ba8fa5d3858d43c7273660899c909df4fdb80cc6fa96ec769",
+      "extraction": {
+        "status": "ok",
+        "chars": 3732,
+        "lines": 74
+      }
+    },
+    {
+      "path": "04_Buch_und_Archiv/Der_Heroischer_Mensch_2026-06-15/Der_Heroische_Mensch_2026-06-15/Web_Version/web_app/pages/03_Knotenkarte.py",
+      "modality": "code",
+      "size_bytes": 2314,
+      "sha256": "f6da65604bab3f92ff60bcfac62b5ac47218109e456f64f8fb219e425b079e40",
+      "extraction": {
+        "status": "ok",
+        "chars": 2249,
+        "lines": 57
+      }
+    },
+    {
+      "path": "04_Buch_und_Archiv/Der_Heroischer_Mensch_2026-06-15/Der_Heroische_Mensch_2026-06-15/Web_Version/web_app/pages/04_Zentrale_Probleme.py",
+      "modality": "code",
+      "size_bytes": 5647,
+      "sha256": "959b0dc1e622f259099c94e484f8a4e07fad01519dbabd9fba2a77e245cee54b",
+      "extraction": {
+        "status": "ok",
+        "chars": 5474,
+        "lines": 106
+      }
+    },
+    {
+      "path": "04_Buch_und_Archiv/Der_Heroischer_Mensch_2026-06-15/Der_Heroische_Mensch_2026-06-15/Web_Version/web_app/pages/05_Eigenes_Problem.py",
+      "modality": "code",
+      "size_bytes": 2467,
+      "sha256": "400eb3b0bf1bded3635c3a8901cff07c0cc85839802113411dab3efb67e79866",
+      "extraction": {
+        "status": "ok",
+        "chars": 2393,
+        "lines": 66
+      }
+    },
+    {
+      "path": "04_Buch_und_Archiv/Der_Heroischer_Mensch_2026-06-15/Der_Heroische_Mensch_2026-06-15/Web_Version/web_app/README.md",
+      "modality": "text",
+      "size_bytes": 866,
+      "sha256": "2f5e9fe59c7d79dd75afc9146e086685440ec1450efcc63a1b259f368217fceb",
+      "extraction": {
+        "status": "ok",
+        "chars": 829,
+        "lines": 28
+      }
+    },
+    {
+      "path": "04_Buch_und_Archiv/Der_Heroischer_Mensch_2026-06-15/Der_Heroische_Mensch_2026-06-15/Web_Version/web_app/requirements.txt",
+      "modality": "text",
+      "size_bytes": 33,
+      "sha256": "4780c97612457761f6163d3c31cf2ef13636d085401d0fb5ad0405c5370eac21",
+      "extraction": {
+        "status": "ok",
+        "chars": 31,
+        "lines": 3
+      }
+    },
+    {
+      "path": "04_Buch_und_Archiv/Der_Heroischer_Mensch_2026-06-15/Der_Heroische_Mensch_2026-06-15/Web_Version/web_app/Zwischenbericht_Stufe1_Stufe2.md",
+      "modality": "text",
+      "size_bytes": 2635,
+      "sha256": "9f979a88608c724a88a690599007944667ed74846ac4c95c86cdaa24ae26fc54",
+      "extraction": {
+        "status": "ok",
+        "chars": 2528,
+        "lines": 69
+      }
+    },
+    {
+      "path": "04_Buch_und_Archiv/Der_Heroischer_Mensch_2026-06-15/Dokumentation/Zwischenbericht_Stufe1_Stufe2.md",
+      "modality": "text",
+      "size_bytes": 2635,
+      "sha256": "9f979a88608c724a88a690599007944667ed74846ac4c95c86cdaa24ae26fc54",
+      "extraction": {
+        "status": "ok",
+        "chars": 2528,
+        "lines": 69
+      }
+    },
+    {
+      "path": "04_Buch_und_Archiv/Der_Heroischer_Mensch_2026-06-15/heroic_program/build/Der_Heroische_Mensch/Analysis-00.toc",
+      "modality": "text",
+      "size_bytes": 35879,
+      "sha256": "86a0e8dc70dd8f7d4eddb581578198ca90995fc7686f5acfa2039bc821151731",
+      "extraction": {
+        "status": "ok",
+        "chars": 35072,
+        "lines": 808
+      }
+    },
+    {
+      "path": "04_Buch_und_Archiv/Der_Heroischer_Mensch_2026-06-15/heroic_program/build/Der_Heroische_Mensch/base_library.zip",
+      "modality": "bundle",
+      "size_bytes": 880490,
+      "sha256": "42e40398544b68db41b71cac073b8fee4a95a5cb6a7ce6b77fa9f61fa9545ab0",
+      "extraction": {
+        "status": "extractor_missing",
+        "hint": "kein lokaler Extraktor fuer 'bundle'"
+      }
+    },
+    {
+      "path": "04_Buch_und_Archiv/Der_Heroischer_Mensch_2026-06-15/heroic_program/build/Der_Heroische_Mensch/Der_Heroische_Mensch.pkg",
+      "modality": "other",
+      "size_bytes": 5190874,
+      "sha256": "92518d53d6f87d1a45676020ffb24f1f388ec7b4ceafe302c278f18b419f8007",
+      "extraction": {
+        "status": "extractor_missing",
+        "hint": "kein lokaler Extraktor fuer 'other'"
+      }
+    },
+    {
+      "path": "04_Buch_und_Archiv/Der_Heroischer_Mensch_2026-06-15/heroic_program/build/Der_Heroische_Mensch/EXE-00.toc",
+      "modality": "text",
+      "size_bytes": 5911,
+      "sha256": "2209be5228089b1a814ff208f3de81254c65260bcc4d2aa0b88462730086742d",
+      "extraction": {
+        "status": "ok",
+        "chars": 5807,
+        "lines": 105
+      }
+    },
+    {
+      "path": "04_Buch_und_Archiv/Der_Heroischer_Mensch_2026-06-15/heroic_program/build/Der_Heroische_Mensch/PKG-00.toc",
+      "modality": "text",
+      "size_bytes": 4048,
+      "sha256": "559f65140411a60118eee4088aae9bb46f503b48f51e547196f90341b8eb4197",
+      "extraction": {
+        "status": "ok",
+        "chars": 3966,
+        "lines": 83
+      }
+    },
+    {
+      "path": "04_Buch_und_Archiv/Der_Heroischer_Mensch_2026-06-15/heroic_program/build/Der_Heroische_Mensch/PYZ-00.pyz",
+      "modality": "other",
+      "size_bytes": 815548,
+      "sha256": "c418e7f0a422fab3d562ac8b98ff6826ff478679361bfb387cb2743941f3c783",
+      "extraction": {
+        "status": "extractor_missing",
+        "hint": "kein lokaler Extraktor fuer 'other'"
+      }
+    },
+    {
+      "path": "04_Buch_und_Archiv/Der_Heroischer_Mensch_2026-06-15/heroic_program/build/Der_Heroische_Mensch/PYZ-00.toc",
+      "modality": "text",
+      "size_bytes": 12421,
+      "sha256": "0799190ae4c2f4f64b23ace3aef1249f194c92eee5efc08771e27961e32fbcd2",
+      "extraction": {
+        "status": "ok",
+        "chars": 12132,
+        "lines": 290
+      }
+    },
+    {
+      "path": "04_Buch_und_Archiv/Der_Heroischer_Mensch_2026-06-15/heroic_program/build/Der_Heroische_Mensch/warn-Der_Heroische_Mensch.txt",
+      "modality": "text",
+      "size_bytes": 2361,
+      "sha256": "edc704fa5b04d411fa6c756aab1a085655e19d4f0d9373426afedbbb841ce9e3",
+      "extraction": {
+        "status": "ok",
+        "chars": 2331,
+        "lines": 31
+      }
+    },
+    {
+      "path": "04_Buch_und_Archiv/Der_Heroischer_Mensch_2026-06-15/heroic_program/build/Der_Heroische_Mensch/xref-Der_Heroische_Mensch.html",
+      "modality": "text",
+      "size_bytes": 236139,
+      "sha256": "bf78f28738d57fd4d7d9027f179f1b2a9203444fb21ad786496f20aaf4222e53",
+      "extraction": {
+        "status": "ok",
+        "chars": 229184,
+        "lines": 6956
+      }
+    },
+    {
+      "path": "04_Buch_und_Archiv/Der_Heroischer_Mensch_2026-06-15/heroic_program/build_windows_exe.bat",
+      "modality": "code",
+      "size_bytes": 1229,
+      "sha256": "11f6777ff1f8c3da24522107c83dc8ba7a2903b26636fe29c61bce9f4d6d98d4",
+      "extraction": {
+        "status": "ok",
+        "chars": 1187,
+        "lines": 43
+      }
+    },
+    {
+      "path": "04_Buch_und_Archiv/Der_Heroischer_Mensch_2026-06-15/heroic_program/data/philosophers_nodes.json",
+      "modality": "data",
+      "size_bytes": 10625,
+      "sha256": "c31e67c8755d387d208a79f15b660c732f62a29ffb408f41fc4d1acc867ff39c",
+      "extraction": {
+        "status": "ok",
+        "chars": 10247,
+        "lines": 257
+      }
+    },
+    {
+      "path": "04_Buch_und_Archiv/Der_Heroischer_Mensch_2026-06-15/heroic_program/Der_Heroische_Mensch.spec",
+      "modality": "data",
+      "size_bytes": 750,
+      "sha256": "d9ab318904f3ef526d65e6257a3630cd3f2d414ba3f25b03ea376d085fa324ec",
+      "extraction": {
+        "status": "ok",
+        "chars": 712,
+        "lines": 39
+      }
+    },
+    {
+      "path": "04_Buch_und_Archiv/Der_Heroischer_Mensch_2026-06-15/heroic_program/dist/Der_Heroische_Mensch.exe",
+      "modality": "other",
+      "size_bytes": 5538522,
+      "sha256": "d9510fc457a0ea41e3df47832735d21c6f7d8a3297027c4af9ff983a0c345070",
+      "extraction": {
+        "status": "extractor_missing",
+        "hint": "kein lokaler Extraktor fuer 'other'"
+      }
+    },
+    {
+      "path": "04_Buch_und_Archiv/Der_Heroischer_Mensch_2026-06-15/heroic_program/main.py",
+      "modality": "code",
+      "size_bytes": 14805,
+      "sha256": "d98d211a707f785ce4f707ed1b21bb90cf7e0e97ad2ff1e977c14cb265c807cc",
+      "extraction": {
+        "status": "ok",
+        "chars": 14428,
+        "lines": 273
+      }
+    },
+    {
+      "path": "04_Buch_und_Archiv/Der_Heroischer_Mensch_2026-06-15/heroic_program/main.py.bak",
+      "modality": "other",
+      "size_bytes": 12017,
+      "sha256": "146a9e859c4042e94297a396a0eb5fb7be4ef4d387db434144f39441dd3e63c1",
+      "extraction": {
+        "status": "extractor_missing",
+        "hint": "kein lokaler Extraktor fuer 'other'"
+      }
+    },
+    {
+      "path": "04_Buch_und_Archiv/Der_Heroischer_Mensch_2026-06-15/heroic_program/main.py.bak2",
+      "modality": "other",
+      "size_bytes": 11280,
+      "sha256": "86aad4d349f78a367d56335f32ff54c66092082d211f0130015fbf0d4f5808a0",
+      "extraction": {
+        "status": "extractor_missing",
+        "hint": "kein lokaler Extraktor fuer 'other'"
+      }
+    },
+    {
+      "path": "04_Buch_und_Archiv/Der_Heroischer_Mensch_2026-06-15/heroic_program/main_final_backup.py",
+      "modality": "code",
+      "size_bytes": 13142,
+      "sha256": "9d5e20eb2c97602f7708ca7f554789b549835dd6c1e80b3beb9c92a32d8ab6ad",
+      "extraction": {
+        "status": "ok",
+        "chars": 12719,
+        "lines": 293
+      }
+    },
+    {
+      "path": "04_Buch_und_Archiv/Der_Heroischer_Mensch_2026-06-15/heroic_program/README.md",
+      "modality": "text",
+      "size_bytes": 1285,
+      "sha256": "0c68601fb034868ed3f5c17ada20c4cf58927d0e9a17323e618d36e01747b437",
+      "extraction": {
+        "status": "ok",
+        "chars": 1217,
+        "lines": 47
+      }
+    },
+    {
+      "path": "04_Buch_und_Archiv/Der_Heroischer_Mensch_2026-06-15/heroic_program/README_BUILD_EXE.md",
+      "modality": "text",
+      "size_bytes": 1298,
+      "sha256": "97eb5be81b67309176ffbeaed7994678cd4fef6880eb9859a43536a75e1ed814",
+      "extraction": {
+        "status": "ok",
+        "chars": 1229,
+        "lines": 59
+      }
+    },
+    {
+      "path": "04_Buch_und_Archiv/Der_Heroischer_Mensch_2026-06-15/heroic_program/requirements.txt",
+      "modality": "text",
+      "size_bytes": 14,
+      "sha256": "7a9224b6a98e2b17923ad76d31416499d229d51d4ac0348212664753da8b23ab",
+      "extraction": {
+        "status": "ok",
+        "chars": 13,
+        "lines": 2
+      }
+    },
+    {
+      "path": "04_Buch_und_Archiv/Der_Heroischer_Mensch_2026-06-15/README.md",
+      "modality": "text",
+      "size_bytes": 1218,
+      "sha256": "f6b2ba1f639bfd1dc4d1bb2ba7b31464ca45d277cb7500c7513393c7f87bbbcc",
+      "extraction": {
+        "status": "ok",
+        "chars": 1152,
+        "lines": 38
+      }
+    },
+    {
+      "path": "04_Buch_und_Archiv/Der_Heroischer_Mensch_2026-06-15/Web_Version/web_app/app.py",
+      "modality": "code",
+      "size_bytes": 1989,
+      "sha256": "2e3d0be0539429b58f9c5979f020e42f70773a068e9fa625a823c4919e44fcc6",
+      "extraction": {
+        "status": "ok",
+        "chars": 1918,
+        "lines": 62
+      }
+    },
+    {
+      "path": "04_Buch_und_Archiv/Der_Heroischer_Mensch_2026-06-15/Web_Version/web_app/pages/01_Theorie.py",
+      "modality": "code",
+      "size_bytes": 1345,
+      "sha256": "e5f208752a0e5254c8671cd7a05cc3a58a36e5302356e71f053229c8274e14c6",
+      "extraction": {
+        "status": "ok",
+        "chars": 1278,
+        "lines": 42
+      }
+    },
+    {
+      "path": "04_Buch_und_Archiv/Der_Heroischer_Mensch_2026-06-15/Web_Version/web_app/pages/02_Quant.py",
+      "modality": "code",
+      "size_bytes": 3830,
+      "sha256": "331b07ab58de0c5ba8fa5d3858d43c7273660899c909df4fdb80cc6fa96ec769",
+      "extraction": {
+        "status": "ok",
+        "chars": 3732,
+        "lines": 74
+      }
+    },
+    {
+      "path": "04_Buch_und_Archiv/Der_Heroischer_Mensch_2026-06-15/Web_Version/web_app/pages/03_Knotenkarte.py",
+      "modality": "code",
+      "size_bytes": 2314,
+      "sha256": "f6da65604bab3f92ff60bcfac62b5ac47218109e456f64f8fb219e425b079e40",
+      "extraction": {
+        "status": "ok",
+        "chars": 2249,
+        "lines": 57
+      }
+    },
+    {
+      "path": "04_Buch_und_Archiv/Der_Heroischer_Mensch_2026-06-15/Web_Version/web_app/pages/04_Zentrale_Probleme.py",
+      "modality": "code",
+      "size_bytes": 5647,
+      "sha256": "959b0dc1e622f259099c94e484f8a4e07fad01519dbabd9fba2a77e245cee54b",
+      "extraction": {
+        "status": "ok",
+        "chars": 5474,
+        "lines": 106
+      }
+    },
+    {
+      "path": "04_Buch_und_Archiv/Der_Heroischer_Mensch_2026-06-15/Web_Version/web_app/pages/05_Eigenes_Problem.py",
+      "modality": "code",
+      "size_bytes": 2467,
+      "sha256": "400eb3b0bf1bded3635c3a8901cff07c0cc85839802113411dab3efb67e79866",
+      "extraction": {
+        "status": "ok",
+        "chars": 2393,
+        "lines": 66
+      }
+    },
+    {
+      "path": "04_Buch_und_Archiv/Der_Heroischer_Mensch_2026-06-15/Web_Version/web_app/README.md",
+      "modality": "text",
+      "size_bytes": 866,
+      "sha256": "2f5e9fe59c7d79dd75afc9146e086685440ec1450efcc63a1b259f368217fceb",
+      "extraction": {
+        "status": "ok",
+        "chars": 829,
+        "lines": 28
+      }
+    },
+    {
+      "path": "04_Buch_und_Archiv/Der_Heroischer_Mensch_2026-06-15/Web_Version/web_app/requirements.txt",
+      "modality": "text",
+      "size_bytes": 33,
+      "sha256": "4780c97612457761f6163d3c31cf2ef13636d085401d0fb5ad0405c5370eac21",
+      "extraction": {
+        "status": "ok",
+        "chars": 31,
+        "lines": 3
+      }
+    },
+    {
+      "path": "04_Buch_und_Archiv/Der_Heroischer_Mensch_2026-06-15/Web_Version/web_app/Zwischenbericht_Stufe1_Stufe2.md",
+      "modality": "text",
+      "size_bytes": 2635,
+      "sha256": "9f979a88608c724a88a690599007944667ed74846ac4c95c86cdaa24ae26fc54",
+      "extraction": {
+        "status": "ok",
+        "chars": 2528,
+        "lines": 69
+      }
+    },
+    {
+      "path": "06_Master_Archive/00_ALLE_AUSFUEHREN_Gesamtsynthese_MasterSeed_v7.5.md",
+      "modality": "text",
+      "size_bytes": 11,
+      "sha256": "83acce8cff053ecb1dd5f36bf2fad7bc51ee4720e1d17b0c43afa1b029264ec3",
+      "extraction": {
+        "status": "ok",
+        "chars": 11,
+        "lines": 1
+      }
+    },
+    {
+      "path": "06_Master_Archive/00_Framework_Core/ALTE-FRAU.95g_uknow.hero_Framework_v1.0.pdf",
+      "modality": "pdf",
+      "size_bytes": 4683,
+      "sha256": "6699fe1a2f14cb41aa9f676b7adb6e2062252008c9308114c2779f58e4c0165b",
+      "extraction": {
+        "status": "ok",
+        "pages": 2,
+        "chars": 2152,
+        "text_extractable": true
+      }
+    },
+    {
+      "path": "06_Master_Archive/00_Framework_Core/ALTE-FRAU.95g_uknow.hero_Framework_v2.0.pdf",
+      "modality": "pdf",
+      "size_bytes": 5027,
+      "sha256": "1ad5570e6c85d802e0bcb2cbf37f52a4d2e0ded7988aaa6b5908bfd8ec457ebd",
+      "extraction": {
+        "status": "ok",
+        "pages": 2,
+        "chars": 2850,
+        "text_extractable": true
+      }
+    },
+    {
+      "path": "06_Master_Archive/00_Framework_Core/ALTE_Frau_95g_10000_Generationen_Evolutionsframework_v2.0.pdf",
+      "modality": "pdf",
+      "size_bytes": 5940,
+      "sha256": "49144591be9849fcd5e8db2164493360712bc2bacc48eb713bcde6a92069dd88",
+      "extraction": {
+        "status": "ok",
+        "pages": 2,
+        "chars": 3475,
+        "text_extractable": true
+      }
+    },
+    {
+      "path": "06_Master_Archive/00_Framework_Core/ALTE_Frau_95g_10000_Generationen_Evolutionsframework_v3.0.pdf",
+      "modality": "pdf",
+      "size_bytes": 5126,
+      "sha256": "5181f578a02a92ce8c16b72cd328e225e8fe0307d46aa31139646c840333321d",
+      "extraction": {
+        "status": "ok",
+        "pages": 2,
+        "chars": 2244,
+        "text_extractable": true
+      }
+    },
+    {
+      "path": "06_Master_Archive/01_Reports/ALTE-FRAU.95g_uknow.hero_Execution_Plan_100000_Gen_v1.0.pdf",
+      "modality": "pdf",
+      "size_bytes": 5462,
+      "sha256": "4eb5b2ce1ad902c93ceceb4d706c9a47217e9b70454832710e3feca3df8c9c24",
+      "extraction": {
+        "status": "ok",
+        "pages": 2,
+        "chars": 3093,
+        "text_extractable": true
+      }
+    },
+    {
+      "path": "06_Master_Archive/01_Reports/ALTE-FRAU.95g_uknow.hero_Phase1_10000_Gen_Report_v1.0.pdf",
+      "modality": "pdf",
+      "size_bytes": 5183,
+      "sha256": "13b0aa44a8d7d7ab4141ba30256d1525e78c3a47e60455c7c8532e037876ce84",
+      "extraction": {
+        "status": "ok",
+        "pages": 2,
+        "chars": 2733,
+        "text_extractable": true
+      }
+    },
+    {
+      "path": "06_Master_Archive/01_Reports/ALTE-FRAU.95g_uknow.hero_Phase2_Coevolution_Report_v1.0.pdf",
+      "modality": "pdf",
+      "size_bytes": 5176,
+      "sha256": "2c8651965b3a38dc2d7f75040f02330c3ac3d37866f48c0983559e9f09cbdfea",
+      "extraction": {
+        "status": "ok",
+        "pages": 2,
+        "chars": 2743,
+        "text_extractable": true
+      }
+    },
+    {
+      "path": "06_Master_Archive/01_Reports/ALTE_Frau_95g_Generation_1_100_Execution_Report_v1.0.pdf",
+      "modality": "pdf",
+      "size_bytes": 5122,
+      "sha256": "3c0bf9c59e5ec1257a746296d4cfe3f9ada8a537b0097c113e085b12f6ad06a1",
+      "extraction": {
+        "status": "ok",
+        "pages": 2,
+        "chars": 2552,
+        "text_extractable": true
+      }
+    },
+    {
+      "path": "06_Master_Archive/04_Architecture/ALTE_Frau_95g_Co_Evolutionary_System_Closure_v1.0.pdf",
+      "modality": "pdf",
+      "size_bytes": 5483,
+      "sha256": "a33ebbb61572d050db9e0b713ee886fc0b053b62918dd07c6f65d1fd27a5db26",
+      "extraction": {
+        "status": "ok",
+        "pages": 2,
+        "chars": 2931,
+        "text_extractable": true
+      }
+    },
+    {
+      "path": "06_Master_Archive/04_Architecture/ALTE_Frau_95g_Deep_Research_Synthese_und_Buchkonzept_v1.0.pdf",
+      "modality": "pdf",
+      "size_bytes": 7402,
+      "sha256": "5e97d4a8777e4c655df511a571c85fdc90e87acda92502a661292cc35cd6110b",
+      "extraction": {
+        "status": "ok",
+        "pages": 3,
+        "chars": 4261,
+        "text_extractable": true
+      }
+    },
+    {
+      "path": "06_Master_Archive/04_Architecture/ALTE_Frau_95g_Migration_zu_schnellerer_Sprache_Rust_v1.0.pdf",
+      "modality": "pdf",
+      "size_bytes": 5528,
+      "sha256": "261caf23e18ac0ae597872b58a2bc5c7f5f1bfc64bc9a98e40ec3651d8fb75ac",
+      "extraction": {
+        "status": "ok",
+        "pages": 2,
+        "chars": 2877,
+        "text_extractable": true
+      }
+    },
+    {
+      "path": "06_Master_Archive/04_Architecture/ALTE_Frau_95g_Neuste_Optimierungsalgorithmen_Integration_v1.0.pdf",
+      "modality": "pdf",
+      "size_bytes": 7209,
+      "sha256": "27880281b689e8c1c8a3da58014e86d4b44ab1869a81409a35b67186f21bd391",
+      "extraction": {
+        "status": "ok",
+        "pages": 3,
+        "chars": 3997,
+        "text_extractable": true
+      }
+    },
+    {
+      "path": "06_Master_Archive/05_Books_and_Overviews/ALTE_Frau_95g_Bildgenerierungs_Pipeline_Rate_Limit_Loesung_v1.0.pdf",
+      "modality": "pdf",
+      "size_bytes": 8951,
+      "sha256": "278345e3fe0432e6c30b56485732103faf68bedf43b4a349f53d0b30ee0776bb",
+      "extraction": {
+        "status": "ok",
+        "pages": 4,
+        "chars": 5306,
+        "text_extractable": true
+      }
+    },
+    {
+      "path": "06_Master_Archive/05_Books_and_Overviews/ALTE_Frau_95g_Buch_Publishing_Track_v1.0.pdf",
+      "modality": "pdf",
+      "size_bytes": 5149,
+      "sha256": "2b1af68177eeda79c045e99e8a89dfdd871677faa2f644ec097f51e62eb8912e",
+      "extraction": {
+        "status": "ok",
+        "pages": 2,
+        "chars": 2300,
+        "text_extractable": true
+      }
+    },
+    {
+      "path": "06_Master_Archive/05_Books_and_Overviews/ALTE_Frau_95g_Framework_Execution_All_Tracks_v1.0.pdf",
+      "modality": "pdf",
+      "size_bytes": 5762,
+      "sha256": "0416016bce23d0faff002a3a2487e14d135ea5d485bb54b115f3cf754b5566a6",
+      "extraction": {
+        "status": "ok",
+        "pages": 2,
+        "chars": 3203,
+        "text_extractable": true
+      }
+    },
+    {
+      "path": "06_Master_Archive/05_Books_and_Overviews/ALTE_Frau_95g_Gesamtarchiv_Master_Reference_v1.0.pdf",
+      "modality": "pdf",
+      "size_bytes": 8753,
+      "sha256": "3bfe8339e04993dd8a3ff276b13f6979b56d99e8616d5621f270ae55cbc579de",
+      "extraction": {
+        "status": "ok",
+        "pages": 3,
+        "chars": 5649,
+        "text_extractable": true
+      }
+    },
+    {
+      "path": "06_Master_Archive/05_Books_and_Overviews/ALTE_Frau_95g_Heroische_Informatik_Kernprinzipien_v1.0.pdf",
+      "modality": "pdf",
+      "size_bytes": 4982,
+      "sha256": "3f1e54a64507f9369c82b70ac0ee7518f806491227ff6606a0f2b9ee4e2291a0",
+      "extraction": {
+        "status": "ok",
+        "pages": 2,
+        "chars": 2194,
+        "text_extractable": true
+      }
+    },
+    {
+      "path": "06_Master_Archive/05_Books_and_Overviews/ALTE_Frau_95g_Heroisches_Woerterbuch_v1.0.pdf",
+      "modality": "pdf",
+      "size_bytes": 5088,
+      "sha256": "7f8de98cccc7af15f11c1b7e6d4c86de2f42d98ae99a541b040ee080567a9354",
+      "extraction": {
+        "status": "ok",
+        "pages": 2,
+        "chars": 2114,
+        "text_extractable": true
+      }
+    },
+    {
+      "path": "06_Master_Archive/05_Books_and_Overviews/ALTE_Frau_95g_Real_Foto_Integration_Pipeline_v1.0.pdf",
+      "modality": "pdf",
+      "size_bytes": 5811,
+      "sha256": "44a1e3d666c84334479aa752a474b7e75c72ce6cba2e49232554c7e561cec1fb",
+      "extraction": {
+        "status": "ok",
+        "pages": 2,
+        "chars": 3063,
+        "text_extractable": true
+      }
+    },
+    {
+      "path": "06_Master_Archive/05_Books_and_Overviews/ALTE_Frau_95g_Roadmap_v1.0.pdf",
+      "modality": "pdf",
+      "size_bytes": 4648,
+      "sha256": "d765f3df3e10e8bfa6d80973d173a76dd2e10ea5bd8ea99643f02af090ab319c",
+      "extraction": {
+        "status": "ok",
+        "pages": 2,
+        "chars": 1772,
+        "text_extractable": true
+      }
+    },
+    {
+      "path": "06_Master_Archive/05_Books_and_Overviews/ALTE_Frau_95g_Visuelle_Identitaet_Meme_Serien_v1.0.pdf",
+      "modality": "pdf",
+      "size_bytes": 7155,
+      "sha256": "1b9c2eec4f4b43dc84f9c4e9f88d8d476c5b5562a02c810209e5c6f2e8ac8f1f",
+      "extraction": {
+        "status": "ok",
+        "pages": 3,
+        "chars": 4090,
+        "text_extractable": true
+      }
+    },
+    {
+      "path": "06_Master_Archive/05_Books_and_Overviews/ALTE_Frau_95g_Wissensarchiv_Dedupliziert_2026-06-19.pdf",
+      "modality": "pdf",
+      "size_bytes": 9653,
+      "sha256": "904a2024a9b95111741c448d2dd22588b16668044c4b316519c74d77b591624f",
+      "extraction": {
+        "status": "ok",
+        "pages": 4,
+        "chars": 5767,
+        "text_extractable": true
+      }
+    },
+    {
+      "path": "06_Master_Archive/05_Books_and_Overviews/Heroische_Philosophie_Grundlagen_der_selbstregenerativen_Intelligenz.pdf",
+      "modality": "pdf",
+      "size_bytes": 11372,
+      "sha256": "306f53c2e738f4208b6c7c39d0b819d62c06adce4193ef0e31b2806e426b5583",
+      "extraction": {
+        "status": "ok",
+        "pages": 4,
+        "chars": 9433,
+        "text_extractable": true
+      }
+    },
+    {
+      "path": "06_Master_Archive/highest-layer/reports/Virology_Troubleshooting_Benchmark_Report.pdf",
+      "modality": "pdf",
+      "size_bytes": 55883,
+      "sha256": "80a497bf11489737b0f45e2a152a18b83d8d2b6627f5cfa21aeca19436d98096",
+      "extraction": {
+        "status": "ok",
+        "pages": 7,
+        "chars": 7984,
+        "text_extractable": true
+      }
+    },
+    {
+      "path": "docs/01_vision/GEMINI_SYNTHESIS_v9_REVIEW.md",
+      "modality": "text",
+      "size_bytes": 8039,
+      "sha256": "d6c0f10f8ff12104380b9fe6acdb691d4ac6caebf76bb81d8c7463e9fba3a5a0",
+      "extraction": {
+        "status": "ok",
+        "chars": 7752,
+        "lines": 139
+      }
+    },
+    {
+      "path": "docs/01_vision/GROK_EXPORT_REQUEST.md",
+      "modality": "text",
+      "size_bytes": 4105,
+      "sha256": "4bacb556b30954fb137e4c5d7729da09d20f7d0e93bc50bb2d5093125d44036c",
+      "extraction": {
+        "status": "ok",
+        "chars": 4028,
+        "lines": 52
+      }
+    },
+    {
+      "path": "docs/01_vision/IDEEN_BACKLOG.md",
+      "modality": "text",
+      "size_bytes": 10579,
+      "sha256": "5a03cc1c8ca4ae338c08e2c06fa7541c409632466ae8ee53c29c3707ea2dbc14",
+      "extraction": {
+        "status": "ok",
+        "chars": 10331,
+        "lines": 123
+      }
+    },
+    {
+      "path": "docs/01_vision/V8_STATUS_REPORT.md",
+      "modality": "text",
+      "size_bytes": 8280,
+      "sha256": "f6c28314c44d439fd10808220771ca7d551a3c2c2a67a67d6ff5f22db7815128",
+      "extraction": {
+        "status": "ok",
+        "chars": 8050,
+        "lines": 140
+      }
+    },
+    {
+      "path": "docs/01_vision/V8_STRATEGY.md",
+      "modality": "text",
+      "size_bytes": 1063,
+      "sha256": "c16dafebc6af56ef33628c0ae8d1b0c2397c1982ae6c3ae62ce67f0026d43e2a",
+      "extraction": {
+        "status": "ok",
+        "chars": 1022,
+        "lines": 37
+      }
+    },
+    {
+      "path": "docs/01_vision/V8_SYNTHESIS.md",
+      "modality": "text",
+      "size_bytes": 2405,
+      "sha256": "867a0170d41ce0bb7bf8b0aac96f863286d8c4aed40159ed428bd6c2911b2fcb",
+      "extraction": {
+        "status": "ok",
+        "chars": 2339,
+        "lines": 36
+      }
+    },
+    {
+      "path": "docs/02_architecture/dependency_atlas.json",
+      "modality": "data",
+      "size_bytes": 181903,
+      "sha256": "44c7cac4715afd9a08d59c9ade580568cef4ac060e6fb48cef66a55383f2e327",
+      "extraction": {
+        "status": "ok",
+        "chars": 175652,
+        "lines": 6252
+      }
+    },
+    {
+      "path": "docs/02_architecture/DEPENDENCY_ATLAS.md",
+      "modality": "text",
+      "size_bytes": 11517,
+      "sha256": "d5c4cd94cec92f721292c1e051158c8ea573aecdf85f76315277c11affde9362",
+      "extraction": {
+        "status": "ok",
+        "chars": 11272,
+        "lines": 242
+      }
+    },
+    {
+      "path": "docs/02_architecture/FUSION_HERO_OS_v7.5_MASTER_UNIFIED.md",
+      "modality": "text",
+      "size_bytes": 840,
+      "sha256": "2ab149b33ccfedabbaebfa30206f0d3d848f748f1ce95af0eb1a8a13b5919320",
+      "extraction": {
+        "status": "ok",
+        "chars": 813,
+        "lines": 20
+      }
+    },
+    {
+      "path": "docs/02_architecture/HEROIC_CORE_ORCHESTRATOR.md",
+      "modality": "text",
+      "size_bytes": 3604,
+      "sha256": "0088d53cf81268e87e8c14f9916e56eda7e8e42e8d871f3d070978f141eec21e",
+      "extraction": {
+        "status": "ok",
+        "chars": 3498,
+        "lines": 60
+      }
+    },
+    {
+      "path": "docs/02_architecture/HEROIC_MATH_ENGINE.md",
+      "modality": "text",
+      "size_bytes": 891,
+      "sha256": "f50b66e12ca778a1eae63e6438972d90efb080979a62660c4f48a49be224b985",
+      "extraction": {
+        "status": "ok",
+        "chars": 861,
+        "lines": 24
+      }
+    },
+    {
+      "path": "docs/02_architecture/MULTIMODAL_PROTOCOL_v1.0.md",
+      "modality": "text",
+      "size_bytes": 2917,
+      "sha256": "330b52b4a9d8122e5f77bff6d421c3589ebfd01e495a5b25077e9e4f6f19bcee",
+      "extraction": {
+        "status": "ok",
+        "chars": 2873,
+        "lines": 55
+      }
+    },
+    {
+      "path": "docs/03_integration/CROSS_REPO_ALIGNMENT_v7.5.md",
+      "modality": "text",
+      "size_bytes": 1066,
+      "sha256": "7b4ae060618d017d6001d38b7371874fda527a2c964720291390d4330849ac3f",
+      "extraction": {
+        "status": "ok",
+        "chars": 1033,
+        "lines": 23
+      }
+    },
+    {
+      "path": "docs/04_execution/PMS_OPERATOR_CATALOG_v7.5.md",
+      "modality": "text",
+      "size_bytes": 7724,
+      "sha256": "96208e27f46a10fe441e523598183e9b71303c0e780c4017e5461ee0afdd33c5",
+      "extraction": {
+        "status": "ok",
+        "chars": 7348,
+        "lines": 170
+      }
+    },
+    {
+      "path": "docs/99_archive/00_UNIFIED_CORES_SKILLS_MERGE_v7.8_MasterSeed.md",
+      "modality": "text",
+      "size_bytes": 10507,
+      "sha256": "f410e87eaf65faa6a418496d9f8b725e6be0c29c78379ab057335feee1da63aa",
+      "extraction": {
+        "status": "ok",
+        "chars": 10309,
+        "lines": 118
+      }
+    },
+    {
+      "path": "docs/99_archive/ALL_UNIFIED_VERSIONS_HORKRUX_SYNC_v7.8.md",
+      "modality": "text",
+      "size_bytes": 8981,
+      "sha256": "a3e38d52b18841cfd3678ccf9d7813859f0ab11559fb7eaa55271fc02e83b2e2",
+      "extraction": {
+        "status": "ok",
+        "chars": 8778,
+        "lines": 115
+      }
+    },
+    {
+      "path": "docs/99_archive/ARCHIVE_README.md",
+      "modality": "text",
+      "size_bytes": 1654,
+      "sha256": "12942fd25a683e37fb3c2fc89bd18f3ccde9ae62be9e8279e074e58a96cdaab8",
+      "extraction": {
+        "status": "ok",
+        "chars": 1612,
+        "lines": 39
+      }
+    },
+    {
+      "path": "docs/99_archive/console_outputs_2026-06-30.md",
+      "modality": "text",
+      "size_bytes": 5267,
+      "sha256": "351608ac6811e9726c3831f2053941d69b2424d2661941b749181fa0598020e1",
+      "extraction": {
+        "status": "ok",
+        "chars": 5118,
+        "lines": 119
+      }
+    },
+    {
+      "path": "docs/99_archive/CORE_ANCHOR_v7.4.md",
+      "modality": "text",
+      "size_bytes": 2619,
+      "sha256": "415ca15faac7e6a303098ffac808197ff46ccfb3523fe3f7b51d3a147b62dcce",
+      "extraction": {
+        "status": "ok",
+        "chars": 2553,
+        "lines": 60
+      }
+    },
+    {
+      "path": "docs/99_archive/EVOLVE_AND_PUSH_v7.10.md",
+      "modality": "text",
+      "size_bytes": 8422,
+      "sha256": "91fe7bcfe72dada933198845d175c876884d71d43b8bbc3da973604f564015cc",
+      "extraction": {
+        "status": "ok",
+        "chars": 8228,
+        "lines": 114
+      }
+    },
+    {
+      "path": "docs/99_archive/FUSION_HERO_OS_v7.4_COMPLETE_DELTA_SUMMARY.md",
+      "modality": "text",
+      "size_bytes": 5786,
+      "sha256": "293acee8a22c6a1938b6b6df37a802c8fd649a007bb133ea799e9586222f27c9",
+      "extraction": {
+        "status": "ok",
+        "chars": 5601,
+        "lines": 135
+      }
+    },
+    {
+      "path": "docs/99_archive/FUSION_HERO_OS_v7.5_MASTER_UNIFIED.md",
+      "modality": "text",
+      "size_bytes": 3526,
+      "sha256": "e674154e3efc8fdf8d675eb31a615b466d9dd2ac509423207e681466f9b4a0aa",
+      "extraction": {
+        "status": "ok",
+        "chars": 3385,
+        "lines": 86
+      }
+    },
+    {
+      "path": "docs/99_archive/Fusion_MasterSeed_Extensions_v7.12.md",
+      "modality": "text",
+      "size_bytes": 702,
+      "sha256": "fdb4047eb5da63096590ee89e363b4418f03cc3bcb34e3e7254c3a25cc1549f2",
+      "extraction": {
+        "status": "ok",
+        "chars": 678,
+        "lines": 17
+      }
+    },
+    {
+      "path": "docs/99_archive/Fusion_MasterSeed_v7.11.md",
+      "modality": "text",
+      "size_bytes": 3964,
+      "sha256": "8326ffd0141d7573258f87b6fc3dbc1f4c8e762bda8069245796a046bf43e276",
+      "extraction": {
+        "status": "ok",
+        "chars": 3832,
+        "lines": 93
+      }
+    },
+    {
+      "path": "docs/99_archive/Heroik_Formalisierungs_Audit.html",
+      "modality": "text",
+      "size_bytes": 27367,
+      "sha256": "a853ee97efdcf99a24d2a2efea84887fb510c6d9b5e1727820b48ca649bb48fe",
+      "extraction": {
+        "status": "ok",
+        "chars": 26834,
+        "lines": 418
+      }
+    },
+    {
+      "path": "docs/99_archive/HORKRUX_MEDIA_SECRET_SYNC_v7.9.md",
+      "modality": "text",
+      "size_bytes": 11813,
+      "sha256": "caf32df85ed9a2afb96ba0a74148e88cbfbc5dfedd08b1fcf002e5ef774d8ad7",
+      "extraction": {
+        "status": "ok",
+        "chars": 11620,
+        "lines": 111
+      }
+    },
+    {
+      "path": "docs/99_archive/legacy_frameworks_overview.md",
+      "modality": "text",
+      "size_bytes": 1125,
+      "sha256": "7efe4db59226c4ff6eee7ef1542139a80d5b127269839de8c9f4da733d4c9e0b",
+      "extraction": {
+        "status": "ok",
+        "chars": 1096,
+        "lines": 27
+      }
+    },
+    {
+      "path": "docs/99_archive/MIGRATION_KONZEPT_v7.12_HardFork.md",
+      "modality": "text",
+      "size_bytes": 3547,
+      "sha256": "bfbe2bbd926a069f10cb450c74e6fd29c3f55677c2202820f3841a369f52c050",
+      "extraction": {
+        "status": "ok",
+        "chars": 3410,
+        "lines": 90
+      }
+    },
+    {
+      "path": "docs/99_archive/PMS_OPERATOR_CATALOG_v7.5.md",
+      "modality": "text",
+      "size_bytes": 222,
+      "sha256": "5ed66bad544babc309ea99b80ab4fd8b218b8d60dc3c3fb159c1eeca91dd1389",
+      "extraction": {
+        "status": "ok",
+        "chars": 217,
+        "lines": 6
+      }
+    },
+    {
+      "path": "docs/99_archive/V8_STRATEGY.md",
+      "modality": "text",
+      "size_bytes": 191,
+      "sha256": "d70b644dd2ca596c79bc6dcc4ffec8856614b84b6938b201f2f51101671620e8",
+      "extraction": {
+        "status": "ok",
+        "chars": 186,
+        "lines": 6
+      }
+    },
+    {
+      "path": "docs/99_archive/V8_SYNTHESIS.md",
+      "modality": "text",
+      "size_bytes": 193,
+      "sha256": "0f581511e1198671269969f1601505b3cca18fc7b83818c545df06f7d0b58898",
+      "extraction": {
+        "status": "ok",
+        "chars": 188,
+        "lines": 6
+      }
+    },
+    {
+      "path": "docs/agent_context/claude_memory/github-repos.md",
+      "modality": "text",
+      "size_bytes": 1261,
+      "sha256": "db0341433c6ce37466852da4e54c431c4c2d6621ece2b4dfe6326db919216081",
+      "extraction": {
+        "status": "ok",
+        "chars": 1242,
+        "lines": 16
+      }
+    },
+    {
+      "path": "docs/agent_context/claude_memory/heroic-qubo-algorithm-audit.md",
+      "modality": "text",
+      "size_bytes": 3863,
+      "sha256": "ad452361167a42d4d2f14a2e43311bdd8ba2da57a39d0a7b37629204023b575b",
+      "extraction": {
+        "status": "ok",
+        "chars": 3726,
+        "lines": 83
+      }
+    },
+    {
+      "path": "docs/agent_context/claude_memory/MEMORY.md",
+      "modality": "text",
+      "size_bytes": 876,
+      "sha256": "e81d6c3297fd96de40116046edc82373999fde2268ff82c7b45fa908b08547ed",
+      "extraction": {
+        "status": "ok",
+        "chars": 855,
+        "lines": 8
+      }
+    },
+    {
+      "path": "docs/agent_context/claude_memory/pending-code-honesty-audit.md",
+      "modality": "text",
+      "size_bytes": 3881,
+      "sha256": "0eee7d0b50d53d9229e648e99596b39b6b37ef9cf5f2a6c27efd932630810987",
+      "extraction": {
+        "status": "ok",
+        "chars": 3779,
+        "lines": 37
+      }
+    },
+    {
+      "path": "docs/agent_context/claude_memory/project-architecture.md",
+      "modality": "text",
+      "size_bytes": 5724,
+      "sha256": "bc1631d947bfd50a7d165b7f824a9ef43293285d00451dcee31bb1624b69a85e",
+      "extraction": {
+        "status": "ok",
+        "chars": 5633,
+        "lines": 37
+      }
+    },
+    {
+      "path": "docs/agent_context/claude_memory/repo-background-automation.md",
+      "modality": "text",
+      "size_bytes": 1381,
+      "sha256": "6ea4bbaadcb7557d95a0718c2db65efff84c53256248a49a6bfba86499f5bf4b",
+      "extraction": {
+        "status": "ok",
+        "chars": 1355,
+        "lines": 17
+      }
+    },
+    {
+      "path": "docs/android/Heroic-Extension-Node-NonRoot-v1.0.md",
+      "modality": "text",
+      "size_bytes": 4203,
+      "sha256": "f193244d7e6a8b24a265acc12ebeee3c3fd97095d998975b83ada0c979b13cae",
+      "extraction": {
+        "status": "ok",
+        "chars": 4078,
+        "lines": 85
+      }
+    },
+    {
+      "path": "docs/architecture/2026-07-09-three-mesh-heroic-fusion-android.md",
+      "modality": "text",
+      "size_bytes": 3685,
+      "sha256": "a562d23df0e6a3366de190d022540f33a6eb35c4fd7aca923a5725007d4d6286",
+      "extraction": {
+        "status": "ok",
+        "chars": 3604,
+        "lines": 77
+      }
+    },
+    {
+      "path": "docs/CROSS_REPO_ALIGNMENT_v7.5.md",
+      "modality": "text",
+      "size_bytes": 1968,
+      "sha256": "9e79696bef69ab7372e97006449affad6a1ab35b9138b9239cfe5bb6fac6da0d",
+      "extraction": {
+        "status": "ok",
+        "chars": 1921,
+        "lines": 34
+      }
+    },
+    {
+      "path": "docs/DETAILED_AGENT_STRUCTURE_v1.md",
+      "modality": "text",
+      "size_bytes": 2681,
+      "sha256": "8aae7a630ec16da8e6e053e0f5c0c209dba7a3029004f88b171e055a554e06f3",
+      "extraction": {
+        "status": "ok",
+        "chars": 2618,
+        "lines": 59
+      }
+    },
+    {
+      "path": "docs/HEROIC_CORE_PMS_ALIGNMENT.md",
+      "modality": "text",
+      "size_bytes": 1812,
+      "sha256": "72cdb911baf274473d98b0352044c82fd36dcbd492868731b0fba3749ffdb4ae",
+      "extraction": {
+        "status": "ok",
+        "chars": 1759,
+        "lines": 39
+      }
+    },
+    {
+      "path": "docs/HEROIC_CORE_v7.12_GLOBAL_ALIGNMENT_SYNC_2026-07-02.md",
+      "modality": "text",
+      "size_bytes": 2324,
+      "sha256": "51571661bada86d27b44ebc9d4ff976dfa0fa6651ceca09c4ed14b292401dd3f",
+      "extraction": {
+        "status": "ok",
+        "chars": 2271,
+        "lines": 47
+      }
+    },
+    {
+      "path": "docs/HEROIC_SKILL.md",
+      "modality": "text",
+      "size_bytes": 11493,
+      "sha256": "0b0cf69c807072202ffc22eb8b45bc8442450ad872659e060a497d96ae714dfb",
+      "extraction": {
+        "status": "ok",
+        "chars": 11059,
+        "lines": 262
+      }
+    },
+    {
+      "path": "docs/Heroismus/Axiom_I_1stTier.md",
+      "modality": "text",
+      "size_bytes": 1626,
+      "sha256": "684e4f91192f8d7bb2f67bb8b59e91b61cc25aa7b76308314ce80350f8767380",
+      "extraction": {
+        "status": "ok",
+        "chars": 1585,
+        "lines": 19
+      }
+    },
+    {
+      "path": "docs/Heroismus/Axiom_I_Die_Integration_des_1st-Tier.md",
+      "modality": "text",
+      "size_bytes": 188,
+      "sha256": "f52f467f6562d58ad5c639ef04e96e375f9f0eeef074d038b6d7ebd1a95c923e",
+      "extraction": {
+        "status": "ok",
+        "chars": 188,
+        "lines": 1
+      }
+    },
+    {
+      "path": "docs/Heroismus/Axiom_II_Somatic.md",
+      "modality": "text",
+      "size_bytes": 1110,
+      "sha256": "dd59d3b70deb00cba87a68ba6e7c4e0ab060a8ccafcdcc21dbaf1150177a001b",
+      "extraction": {
+        "status": "ok",
+        "chars": 1086,
+        "lines": 13
+      }
+    },
+    {
+      "path": "docs/Heroismus/Axiom_III_Psycholysis.md",
+      "modality": "text",
+      "size_bytes": 1016,
+      "sha256": "1776d34311a886be200d0ecd683b6e00b1694be8df979de58ba80cb3fd546c96",
+      "extraction": {
+        "status": "ok",
+        "chars": 986,
+        "lines": 15
+      }
+    },
+    {
+      "path": "docs/Heroismus/Axiom_IV_CEC.md",
+      "modality": "text",
+      "size_bytes": 1169,
+      "sha256": "cde5985751370dd19eae7dd86321a7cf5fac81ee629b90a822a2bfec10152d46",
+      "extraction": {
+        "status": "ok",
+        "chars": 1135,
+        "lines": 13
+      }
+    },
+    {
+      "path": "docs/Heroismus/Axiom_IV_Die_rekursive_Closure.md",
+      "modality": "text",
+      "size_bytes": 2381,
+      "sha256": "a0bbd52c6a78016083e42fb6a94480c5a90bdab605ca1d3a841bcaed9bbee5aa",
+      "extraction": {
+        "status": "ok",
+        "chars": 2319,
+        "lines": 20
+      }
+    },
+    {
+      "path": "docs/INFRASTRUCTURE_STATUS.md",
+      "modality": "text",
+      "size_bytes": 45,
+      "sha256": "05894b42572b9fa1c0b21265b80448228aa193d31eda084e08a5192d0098039b",
+      "extraction": {
+        "status": "ok",
+        "chars": 45,
+        "lines": 1
+      }
+    },
+    {
+      "path": "docs/KONSOLIDIERUNG_2026-07-09.md",
+      "modality": "text",
+      "size_bytes": 2729,
+      "sha256": "79b0fe3e433e7084552c85df3da571005d254ec8481be6d6d3aa2bf8abfc30d6",
+      "extraction": {
+        "status": "ok",
+        "chars": 2627,
+        "lines": 52
+      }
+    },
+    {
+      "path": "docs/OPTION_B_INTEGRATION_ARCHITECTURE.md",
+      "modality": "text",
+      "size_bytes": 71,
+      "sha256": "e03b4aec84f2c81a0edc5d69dcdd30d792e382a272155ff9e419d3e126452922",
+      "extraction": {
+        "status": "ok",
+        "chars": 71,
+        "lines": 1
+      }
+    },
+    {
+      "path": "docs/ORGANIGRAMM_FUSION_HERO_OS_2026-07-05.html",
+      "modality": "text",
+      "size_bytes": 18610,
+      "sha256": "dc7b1fa50895cdb1e43a446ea3000204f1f300ca267e79552e6bc42ede2170ab",
+      "extraction": {
+        "status": "ok",
+        "chars": 18059,
+        "lines": 391
+      }
+    },
+    {
+      "path": "docs/ORGANIGRAMM_FUSION_HERO_OS_2026-07-05.pdf",
+      "modality": "pdf",
+      "size_bytes": 234671,
+      "sha256": "b971c6ad27f738cb87344efb29445f1a3ebbaaa1492f383a4dd382e86faf8ee5",
+      "extraction": {
+        "status": "ok",
+        "pages": 5,
+        "chars": 7656,
+        "text_extractable": true
+      }
+    },
+    {
+      "path": "docs/OVERVIEW.md",
+      "modality": "text",
+      "size_bytes": 3587,
+      "sha256": "b7924e5f5fe6ae376a4f19016513aa21f7120bb6f1aa7a00b41aebdbe022c00d",
+      "extraction": {
+        "status": "ok",
+        "chars": 3457,
+        "lines": 48
+      }
+    },
+    {
+      "path": "docs/PMS_OPERATOR_CATALOG_v7.5.md",
+      "modality": "text",
+      "size_bytes": 496,
+      "sha256": "afe40bac373dfeca631225d9f1b7f1abfe0428f803f265bde5a76c78051e6c20",
+      "extraction": {
+        "status": "ok",
+        "chars": 484,
+        "lines": 11
+      }
+    },
+    {
+      "path": "docs/PROJECT_STRUCTURE_v7.4.md",
+      "modality": "text",
+      "size_bytes": 5251,
+      "sha256": "3b0e177d270b209ff244a33b37cceb7a16273e9486c5f6a2d84db1ccc85bf106",
+      "extraction": {
+        "status": "ok",
+        "chars": 4831,
+        "lines": 125
+      }
+    },
+    {
+      "path": "docs/SKILL.md",
+      "modality": "text",
+      "size_bytes": 51418,
+      "sha256": "b50421c401a13b18cb5b5f23571a6bba2a47c4d5808506afc0f97e6f5b948839",
+      "extraction": {
+        "status": "ok",
+        "chars": 50596,
+        "lines": 430
+      }
+    },
+    {
+      "path": "docs/Tails_as_Ultimate_Tarnkappe_v8.2.md",
+      "modality": "text",
+      "size_bytes": 4629,
+      "sha256": "f4786e6ac8848bc0d3c4bc95b7604e97a3f120e8a4d2c4a7710cdbf6d3645345",
+      "extraction": {
+        "status": "ok",
+        "chars": 4498,
+        "lines": 85
+      }
+    },
+    {
+      "path": "docs/Tarnkappe_Cloak_Practical_Guide_v8.2.md",
+      "modality": "text",
+      "size_bytes": 4144,
+      "sha256": "b5fb65af0897a2e5b2d1ec9025e70f0c99701861e0dc89e09ca87f04fb617def",
+      "extraction": {
+        "status": "ok",
+        "chars": 3997,
+        "lines": 116
+      }
+    },
+    {
+      "path": "docs/THEORY_INTEGRATION_PLAN.md",
+      "modality": "text",
+      "size_bytes": 45,
+      "sha256": "05894b42572b9fa1c0b21265b80448228aa193d31eda084e08a5192d0098039b",
+      "extraction": {
+        "status": "ok",
+        "chars": 45,
+        "lines": 1
+      }
+    },
+    {
+      "path": "docs/v8/2026-07-05-evening-evolution-update.md",
+      "modality": "text",
+      "size_bytes": 1779,
+      "sha256": "e1462bc1ff9236927087145ed586d5fed176f146eceb778ba1aa1b56bc24a433",
+      "extraction": {
+        "status": "ok",
+        "chars": 1741,
+        "lines": 27
+      }
+    },
+    {
+      "path": "docs/v8/architecture/FULL_OS_Themenfelder_Integration_April_Mai_Juni_v8.md",
+      "modality": "text",
+      "size_bytes": 7131,
+      "sha256": "afe733b0e124b8b1064d67bc28cb2983faea295654006cd29d4a754f693924aa",
+      "extraction": {
+        "status": "ok",
+        "chars": 6974,
+        "lines": 123
+      }
+    },
+    {
+      "path": "docs/v8/BESTVERSION_CONSOLIDATION_MANIFEST.md",
+      "modality": "text",
+      "size_bytes": 1377,
+      "sha256": "ca075a5ea4c932102abe58b0fe5aea9efd8ae6b65071dd3d554c1c6185a7ff82",
+      "extraction": {
+        "status": "ok",
+        "chars": 1332,
+        "lines": 38
+      }
+    },
+    {
+      "path": "docs/v8/bestversion_inventory.json",
+      "modality": "data",
+      "size_bytes": 11276,
+      "sha256": "d2f7b7bd494c25839385ca8e441eac84a2080aea42577e18ca23902bead55a22",
+      "extraction": {
+        "status": "ok",
+        "chars": 10907,
+        "lines": 370
+      }
+    },
+    {
+      "path": "docs/v8/BRANCH_STRATEGY_v8.md",
+      "modality": "text",
+      "size_bytes": 1683,
+      "sha256": "bfc22d48dad191ad2c6e7fac07e3ccbc037dd7f15a575bce64363324ebecc465",
+      "extraction": {
+        "status": "ok",
+        "chars": 1613,
+        "lines": 51
+      }
+    },
+    {
+      "path": "docs/v8/CHERRY_PICK_LOG.md",
+      "modality": "text",
+      "size_bytes": 1715,
+      "sha256": "0c5741240a27be9889890f512bc7d7785ecd10cbd1c1deb869fb3f84b2014f39",
+      "extraction": {
+        "status": "ok",
+        "chars": 1656,
+        "lines": 50
+      }
+    },
+    {
+      "path": "docs/v8/cherry_pick_summary.json",
+      "modality": "data",
+      "size_bytes": 1217,
+      "sha256": "f9ea1a0b5aa0be49b162c006ba14285e46f027356c01ba1e4a838b096d0327fc",
+      "extraction": {
+        "status": "ok",
+        "chars": 1182,
+        "lines": 36
+      }
+    },
+    {
+      "path": "docs/v8/concepts/Ungueltig_Anti-Agent.md",
+      "modality": "text",
+      "size_bytes": 619,
+      "sha256": "3067716e24ad0953b3c823c7603fda4d3d7226f2a9fd9c4cf42f8d7f8fccdb28",
+      "extraction": {
+        "status": "ok",
+        "chars": 598,
+        "lines": 15
+      }
+    },
+    {
+      "path": "docs/v8/erkenntnisse_index.yaml",
+      "modality": "data",
+      "size_bytes": 7033,
+      "sha256": "21e932bc509c336c1aea6ccdaf447148bb13af6460a7af817685b3075a363823",
+      "extraction": {
+        "status": "ok",
+        "chars": 6854,
+        "lines": 166
+      }
+    },
+    {
+      "path": "docs/v8/ERKENNTNISSE_LETZTE_TAGE_2026-07-05.md",
+      "modality": "text",
+      "size_bytes": 6629,
+      "sha256": "b50ae0f5079e86f489c6a46ed64471085d300963bf07cd4fa457b43e8269e174",
+      "extraction": {
+        "status": "ok",
+        "chars": 6517,
+        "lines": 78
+      }
+    },
+    {
+      "path": "docs/v8/FULL_APRIL_THEMENFELDER_OS_ARCHITECTURE_INTEGRATION_v8.md",
+      "modality": "text",
+      "size_bytes": 8225,
+      "sha256": "9276f4cd50f6e540d709f2aa3f84bc98755c37063f7bb718289644462407fd90",
+      "extraction": {
+        "status": "ok",
+        "chars": 8069,
+        "lines": 78
+      }
+    },
+    {
+      "path": "docs/v8/FULL_MAI_JUNI_THEMENFELDER_OS_ARCHITECTURE_INTEGRATION_v8.md",
+      "modality": "text",
+      "size_bytes": 8068,
+      "sha256": "d5c2d67f2423b58fa81040fc4d384a091f097e26990664763554359418192c1b",
+      "extraction": {
+        "status": "ok",
+        "chars": 7935,
+        "lines": 81
+      }
+    },
+    {
+      "path": "docs/v8/FULL_OS_ARCHITECTURE_SCIENTIFIC_INTEGRATION_Mindfulness_Habit_Quantum_v8.md",
+      "modality": "text",
+      "size_bytes": 8099,
+      "sha256": "e8c149de4477da707d9b8ac30f4501ee199ed62adbcd8689cb1561cfdda3725b",
+      "extraction": {
+        "status": "ok",
+        "chars": 7906,
+        "lines": 107
+      }
+    },
+    {
+      "path": "docs/v8/GROK_DEEP_RESEARCH_EXPORT_Empirical_Mathematical_Anchors_v8.md",
+      "modality": "text",
+      "size_bytes": 6978,
+      "sha256": "3b9cf970e0c6d8ff4d0ae63f161a54e5fc1f5c8caabdf49f41f13f044575a732",
+      "extraction": {
+        "status": "ok",
+        "chars": 6899,
+        "lines": 61
+      }
+    },
+    {
+      "path": "docs/v8/horkrux-registry.example.yaml",
+      "modality": "data",
+      "size_bytes": 1563,
+      "sha256": "b9a620b253e4fb66d745c16c2fc09a22bf3fe92ca74591891b0782824ea2ad81",
+      "extraction": {
+        "status": "ok",
+        "chars": 1508,
+        "lines": 56
+      }
+    },
+    {
+      "path": "docs/v8/HORKRUX_MESH.md",
+      "modality": "text",
+      "size_bytes": 986,
+      "sha256": "3abc90959b246f5199345689e6069d7545647cd52ddcd244e43fe0a68a210cdf",
+      "extraction": {
+        "status": "ok",
+        "chars": 950,
+        "lines": 25
+      }
+    },
+    {
+      "path": "docs/v8/HorkruxMeshCoreModule.md",
+      "modality": "text",
+      "size_bytes": 766,
+      "sha256": "e353db4f3415bf9d7fd44b098ae9c0c6036a558755710c7fa714371de1b56d30",
+      "extraction": {
+        "status": "ok",
+        "chars": 740,
+        "lines": 27
+      }
+    },
+    {
+      "path": "docs/v8/LEGACY_VS_V8_BOTTOM_UP_CONSOLIDATION.md",
+      "modality": "text",
+      "size_bytes": 8571,
+      "sha256": "a4811570cf1e962c9e77c66163195f7b3ac69228685d0ddadd855a7aa6a3c084",
+      "extraction": {
+        "status": "ok",
+        "chars": 8432,
+        "lines": 110
+      }
+    },
+    {
+      "path": "docs/v8/MERGE_COMPLETION.md",
+      "modality": "text",
+      "size_bytes": 1617,
+      "sha256": "9aeecd2a96f5677f05bfbcf808ceaeb470c68d0f81aa4304cc62b623e3465bd2",
+      "extraction": {
+        "status": "ok",
+        "chars": 1565,
+        "lines": 45
+      }
+    },
+    {
+      "path": "docs/v8/philosophy/GLOBAL-PREUPLOAD.cfg",
+      "modality": "other",
+      "size_bytes": 826,
+      "sha256": "f711c3c21bd5ca8dec2bf11a9ae0bffb0c13d0095d08501f514d19627c28afb9",
+      "extraction": {
+        "status": "extractor_missing",
+        "hint": "kein lokaler Extraktor fuer 'other'"
+      }
+    },
+    {
+      "path": "docs/v8/philosophy/Heroik_Formalisierungs_Audit.html",
+      "modality": "text",
+      "size_bytes": 27367,
+      "sha256": "a853ee97efdcf99a24d2a2efea84887fb510c6d9b5e1727820b48ca649bb48fe",
+      "extraction": {
+        "status": "ok",
+        "chars": 26834,
+        "lines": 418
+      }
+    },
+    {
+      "path": "docs/v8/philosophy/snippets/additional.xml",
+      "modality": "text",
+      "size_bytes": 2044,
+      "sha256": "af1ab98705bb2c174bab6e261e4645413197829ad547ae4be62376471368621e",
+      "extraction": {
+        "status": "ok",
+        "chars": 2016,
+        "lines": 29
+      }
+    },
+    {
+      "path": "docs/v8/philosophy/snippets/fuse.xml",
+      "modality": "text",
+      "size_bytes": 3601,
+      "sha256": "6afcfad588f431e7837f5d726ad227142153cd368e19279097f545bad2353756",
+      "extraction": {
+        "status": "ok",
+        "chars": 3531,
+        "lines": 71
+      }
+    },
+    {
+      "path": "docs/v8/philosophy/snippets/remove.xml",
+      "modality": "text",
+      "size_bytes": 5005,
+      "sha256": "e132b3744b51b45a4e77908054a82bdace4794f3f42d80ae6dc104d51aa19c9b",
+      "extraction": {
+        "status": "ok",
+        "chars": 4901,
+        "lines": 105
+      }
+    },
+    {
+      "path": "docs/v8/PROJECT_STRUCTURE_v8.md",
+      "modality": "text",
+      "size_bytes": 10635,
+      "sha256": "12faeaab5527005727ff65dca92e03f2c588b09e988ed3e93b0d3cc91704b724",
+      "extraction": {
+        "status": "ok",
+        "chars": 10279,
+        "lines": 155
+      }
+    },
+    {
+      "path": "docs/v8/research/2026-07-01_Frontend_ServerHub_Research.md",
+      "modality": "text",
+      "size_bytes": 1318,
+      "sha256": "5ace91fdcebb75f17f7532abff42e0243bbdd5cf9d3370a29d63a5aab0c53f3d",
+      "extraction": {
+        "status": "ok",
+        "chars": 1266,
+        "lines": 28
+      }
+    },
+    {
+      "path": "docs/v8/seeds/asr_optimized_prompt.txt",
+      "modality": "text",
+      "size_bytes": 439,
+      "sha256": "7bbb116d4f3e7cd524e9468ed83660ed8524a887c792c6544dd9f9dafdb85afa",
+      "extraction": {
+        "status": "ok",
+        "chars": 429,
+        "lines": 1
+      }
+    },
+    {
+      "path": "docs/v8/seeds/asr_turntaking.md",
+      "modality": "text",
+      "size_bytes": 652,
+      "sha256": "e54423469c61d15c98fcdb71f10fba7bb746d53becd9a697cb8afb2b06a36b53",
+      "extraction": {
+        "status": "ok",
+        "chars": 636,
+        "lines": 16
+      }
+    },
+    {
+      "path": "docs/v8/seeds/heroic_space.md",
+      "modality": "text",
+      "size_bytes": 720,
+      "sha256": "b18d3431f58e04172e3b39a9647193b0fa10236b44573ea24804a133f89494e6",
+      "extraction": {
+        "status": "ok",
+        "chars": 709,
+        "lines": 12
+      }
+    },
+    {
+      "path": "docs/v8/seeds/master_core.md",
+      "modality": "text",
+      "size_bytes": 809,
+      "sha256": "7693d19ccdbd15e839cf1fba172a395f5d2ebbbee5c6cea621219bae0556a051",
+      "extraction": {
+        "status": "ok",
+        "chars": 776,
+        "lines": 29
+      }
+    },
+    {
+      "path": "docs/V8_STRATEGY.md",
+      "modality": "text",
+      "size_bytes": 4027,
+      "sha256": "6fb6419904396e3865de2f8ac886842170cfc100d72923839c05c1796a54addb",
+      "extraction": {
+        "status": "ok",
+        "chars": 3920,
+        "lines": 73
+      }
+    },
+    {
+      "path": "docs/V8_SYNTHESIS.md",
+      "modality": "text",
+      "size_bytes": 4831,
+      "sha256": "cf658740212dd8d4d2652c7b524cb95f39bc30d35294a0ee771f88d9d6fdbca5",
+      "extraction": {
+        "status": "ok",
+        "chars": 4656,
+        "lines": 105
+      }
+    },
+    {
+      "path": "archive/docs/historical_roadmaps.md",
+      "modality": "text",
+      "size_bytes": 105,
+      "sha256": "92c6d39a7190fb34ab39bb1afc6639a0a98cbab1869e36ae801c69d5520a369e",
+      "extraction": {
+        "status": "ok",
+        "chars": 100,
+        "lines": 4
+      }
+    },
+    {
+      "path": "archive/experimental/README.md",
+      "modality": "text",
+      "size_bytes": 159,
+      "sha256": "621fdc698302ae6c4779956f90ade759bd18d1bf80a9c38eddbbb0e6b153610b",
+      "extraction": {
+        "status": "ok",
+        "chars": 154,
+        "lines": 4
+      }
+    },
+    {
+      "path": "archive/README.md",
+      "modality": "text",
+      "size_bytes": 853,
+      "sha256": "a5611bb3a881154c2d7689298cde325364c850ba5f658bb6d508f0a44166b748",
+      "extraction": {
+        "status": "ok",
+        "chars": 791,
+        "lines": 21
+      }
+    },
+    {
+      "path": "archive/theory/early_concepts.md",
+      "modality": "text",
+      "size_bytes": 186,
+      "sha256": "74cd1f353d0fb5829dbaccffa0df08804688efa328e26412dfb71b30af9af637",
+      "extraction": {
+        "status": "ok",
+        "chars": 179,
+        "lines": 4
+      }
+    },
+    {
+      "path": "archive/v7/README.md",
+      "modality": "text",
+      "size_bytes": 132,
+      "sha256": "a6a0ad498653a92f045ddd1c1ea3441601746227cfe8d2545870dbc3efa22496",
+      "extraction": {
+        "status": "ok",
+        "chars": 127,
+        "lines": 4
+      }
+    },
+    {
+      "path": "archive/v7.4_migration_notes.md",
+      "modality": "text",
+      "size_bytes": 616,
+      "sha256": "65448dac7fd21ec04765949efd326ed8cf76cb0035c2557d9be4ceca37a3af88",
+      "extraction": {
+        "status": "ok",
+        "chars": 597,
+        "lines": 20
+      }
+    },
+    {
+      "path": "memes/cyberpunk_campfire/masterseed_visual.png",
+      "modality": "image",
+      "size_bytes": 5498,
+      "sha256": "a1e12f20c5658a22db94e0bb55619cac08b219a1d9d1cf0b1bbbd05ace837278",
+      "extraction": {
+        "status": "ok",
+        "format": "PNG",
+        "width": 256,
+        "height": 256
+      }
+    },
+    {
+      "path": "03_VR_Assets/heroic_evolution_fractal.jpg",
+      "modality": "image",
+      "size_bytes": 28769,
+      "sha256": "9542b61fe3935b866d3229ade8a68360b9f642ba7ebc912a4ea42044df7c0f83",
+      "extraction": {
+        "status": "ok",
+        "format": "JPEG",
+        "width": 512,
+        "height": 512
+      }
+    },
+    {
+      "path": "03_VR_Assets/vr_mister_Contributor_hero_equirectangular.jpg",
+      "modality": "image",
+      "size_bytes": 78715,
+      "sha256": "7cf727bc8d3faa03830adb111dcc5473a3ed13040b3a419536af58f9789fd90f",
+      "extraction": {
+        "status": "ok",
+        "format": "JPEG",
+        "width": 1024,
+        "height": 512
+      }
+    },
+    {
+      "path": "visual_seeds/95g_Hacker_PrimarySeed_2026-07-04.jpg",
+      "modality": "image",
+      "size_bytes": 50328,
+      "sha256": "49fb0348cd6b741a579bd1bf5739609e9ca3cbe7be651a2a5e9bf46491aff868",
+      "extraction": {
+        "status": "ok",
+        "format": "JPEG",
+        "width": 512,
+        "height": 768
+      }
+    },
+    {
+      "path": "visual_seeds/95g_Hacker_VisualSeed_Registration_v8.md",
+      "modality": "text",
+      "size_bytes": 2907,
+      "sha256": "8f3b491cc92ee2238595bc0cfa6c5c9a09d5d3cbc436e2364b4e44e3771e3358",
+      "extraction": {
+        "status": "ok",
+        "chars": 2819,
+        "lines": 49
+      }
+    },
+    {
+      "path": "tts/INDEPENDENT_VOICE_APP_INTEGRATION_v1.md",
+      "modality": "text",
+      "size_bytes": 2795,
+      "sha256": "fe3bf547f5076fe6948fb6439310b8d89f9e0f5f4ef9463e69510ef3f90fcec1",
+      "extraction": {
+        "status": "ok",
+        "chars": 2712,
+        "lines": 61
+      }
+    },
+    {
+      "path": "tts/tts_router.py",
+      "modality": "code",
+      "size_bytes": 6090,
+      "sha256": "d10c918e318b052875df00e54cb9faee6a334c88554c446bf429b58f8e168170",
+      "extraction": {
+        "status": "ok",
+        "chars": 5939,
+        "lines": 152
+      }
+    }
+  ]
+}

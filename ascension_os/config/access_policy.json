@@ -1,0 +1,78 @@
+{
+  "version": 1,
+  "updated": "2026-07-10",
+  "scope": "Fusion-Hero-OS / AscensionOS — Zugriffsregelung fuer private Gadgets",
+  "superuser": {
+    "name": "Superuser",
+    "account": "user@example.com",
+    "tailnet": "example.ts.net"
+  },
+  "devices": [
+    {
+      "hostname": "phone-node",
+      "tailscale_ip": "100.64.0.11",
+      "role": "enduser",
+      "owner": "Superuser",
+      "gadgets": {
+        "private": "allow-all",
+        "note": "Endgeraet des Superusers: darf ALLE privaten Gadgets des AscensionOS-Tracks nutzen/ausfuehren."
+      },
+      "services": [
+        {
+          "id": "bluetooth-audio-relay",
+          "type": "audio-stream-receiver",
+          "app": "AudioRelay (audiorelay.net, Android-Client com.azefsw.audioconnect)",
+          "port": 59100,
+          "direction": "receives PC-Systemsound von desktop-kpki9e4, gibt ihn ueber die am Handy gekoppelten Bluetooth-Kopfhoerer aus",
+          "peer_device": "desktop-kpki9e4",
+          "connect_mode": "manual (Tailscale-IP/MagicDNS statt LAN-Broadcast, da kein gemeinsames physisches Subnetz)",
+          "added": "2026-07-11",
+          "note": "Grund: desktop-kpki9e4 hat keine eigene Bluetooth-Hardware; Audio wird ueber das Tailnet zum Handy geroutet."
+        }
+      ]
+    },
+    {
+      "hostname": "desktop-kpki9e4",
+      "tailscale_ip": "100.64.0.12",
+      "role": "workstation",
+      "owner": "Superuser",
+      "gadgets": { "private": "allow-all" },
+      "services": [
+        {
+          "id": "bluetooth-audio-relay",
+          "type": "audio-stream-sender",
+          "app": "AudioRelay (audiorelay.net)",
+          "port": 59100,
+          "peer_device": "phone-node",
+          "note": "Siehe Eintrag bei phone-node fuer Details. Windows-Firewall-Regel fuer Port 59100 noetig; Tailscale-Netzwerkprofil muss auf 'Privat' stehen, sonst blockt Windows den Port."
+        }
+      ]
+    },
+    {
+      "hostname": "claude-agent",
+      "tailscale_ip": "100.64.0.13",
+      "role": "agent",
+      "gadgets": { "private": "deny", "note": "Agenten nutzen definierte APIs, keine privaten Gadgets" }
+    },
+    {
+      "hostname": "grok-agent",
+      "tailscale_ip": "100.64.0.14",
+      "role": "agent",
+      "gadgets": { "private": "deny" }
+    },
+    {
+      "hostname": "kepler-agent",
+      "tailscale_ip": "100.64.0.15",
+      "role": "agent",
+      "gadgets": { "private": "deny" }
+    }
+  ],
+  "defaults": {
+    "gadgets": { "private": "deny" },
+    "note": "Unbekannte Geraete haben keinen Zugriff auf private Gadgets."
+  },
+  "enforcement": {
+    "app_layer": "Gadgets/Dienste pruefen die Tailscale-Quell-IP (100.x) gegen die devices-Liste dieser Datei.",
+    "network_layer": "Entwurf fuer die Tailnet-ACL: siehe tailscale-acl.draft.hujson (manuell in der Admin-Konsole aktivieren)."
+  }
+}

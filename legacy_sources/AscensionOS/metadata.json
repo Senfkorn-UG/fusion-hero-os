@@ -1,0 +1,6 @@
+{
+  "name": "Fusion Hero OS",
+  "description": "A futuristic cybernetic operating system desktop featuring high-thinking auto-battlers, molecular gastronomy simulators, and AI cores.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
