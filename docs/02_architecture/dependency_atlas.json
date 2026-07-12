@@ -1,0 +1,6251 @@
+{
+  "generated_from": "fusion_hero_os.core.dependency_atlas",
+  "nodes": [
+    {
+      "name": "fusion_hero_os",
+      "path": "fusion_hero_os/__init__.py",
+      "kind": "python",
+      "layer": "mainframe",
+      "placeholder_markers": 1
+    },
+    {
+      "name": "fusion_hero_os.bridge",
+      "path": "fusion_hero_os/bridge/__init__.py",
+      "kind": "python",
+      "layer": "mainframe",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "fusion_hero_os.bridge.gateway",
+      "path": "fusion_hero_os/bridge/gateway.py",
+      "kind": "python",
+      "layer": "mainframe",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "fusion_hero_os.bridge.router",
+      "path": "fusion_hero_os/bridge/router.py",
+      "kind": "python",
+      "layer": "mainframe",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "fusion_hero_os.config",
+      "path": "fusion_hero_os/config.py",
+      "kind": "python",
+      "layer": "mainframe",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "fusion_hero_os.core",
+      "path": "fusion_hero_os/core/__init__.py",
+      "kind": "python",
+      "layer": "knowledge",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "fusion_hero_os.core.base_module",
+      "path": "fusion_hero_os/core/base_module.py",
+      "kind": "python",
+      "layer": "knowledge",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "fusion_hero_os.core.cec",
+      "path": "fusion_hero_os/core/cec.py",
+      "kind": "python",
+      "layer": "knowledge",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "fusion_hero_os.core.dashboard",
+      "path": "fusion_hero_os/core/dashboard/__init__.py",
+      "kind": "python",
+      "layer": "knowledge",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "fusion_hero_os.core.dashboard.orchestration",
+      "path": "fusion_hero_os/core/dashboard/orchestration.py",
+      "kind": "python",
+      "layer": "knowledge",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "fusion_hero_os.core.dashboard.workspace",
+      "path": "fusion_hero_os/core/dashboard/workspace.py",
+      "kind": "python",
+      "layer": "knowledge",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "fusion_hero_os.core.dependency_atlas",
+      "path": "fusion_hero_os/core/dependency_atlas.py",
+      "kind": "python",
+      "layer": "knowledge",
+      "placeholder_markers": 15
+    },
+    {
+      "name": "fusion_hero_os.core.dispatcher",
+      "path": "fusion_hero_os/core/dispatcher.py",
+      "kind": "python",
+      "layer": "knowledge",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "fusion_hero_os.core.heroic_core",
+      "path": "fusion_hero_os/core/heroic_core.py",
+      "kind": "python",
+      "layer": "knowledge",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "fusion_hero_os.core.heroic_core_orchestrator",
+      "path": "fusion_hero_os/core/heroic_core_orchestrator.py",
+      "kind": "python",
+      "layer": "knowledge",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "fusion_hero_os.core.heroic_math_engine",
+      "path": "fusion_hero_os/core/heroic_math_engine.py",
+      "kind": "python",
+      "layer": "knowledge",
+      "placeholder_markers": 1
+    },
+    {
+      "name": "fusion_hero_os.core.inference_scheduler_qubo",
+      "path": "fusion_hero_os/core/inference_scheduler_qubo.py",
+      "kind": "python",
+      "layer": "knowledge",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "fusion_hero_os.core.layer_registry",
+      "path": "fusion_hero_os/core/layer_registry.py",
+      "kind": "python",
+      "layer": "knowledge",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "fusion_hero_os.core.masterseed_sync",
+      "path": "fusion_hero_os/core/masterseed_sync.py",
+      "kind": "python",
+      "layer": "knowledge",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "fusion_hero_os.core.models",
+      "path": "fusion_hero_os/core/models.py",
+      "kind": "python",
+      "layer": "knowledge",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "fusion_hero_os.core.psycholysis_trigger",
+      "path": "fusion_hero_os/core/psycholysis_trigger.py",
+      "kind": "python",
+      "layer": "knowledge",
+      "placeholder_markers": 1
+    },
+    {
+      "name": "fusion_hero_os.core.quantum_cognition",
+      "path": "fusion_hero_os/core/quantum_cognition.py",
+      "kind": "python",
+      "layer": "knowledge",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "fusion_hero_os.core.rhe",
+      "path": "fusion_hero_os/core/rhe.py",
+      "kind": "python",
+      "layer": "knowledge",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "fusion_hero_os.core.universal_llm_router",
+      "path": "fusion_hero_os/core/universal_llm_router.py",
+      "kind": "python",
+      "layer": "knowledge",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "fusion_hero_os.engine",
+      "path": "fusion_hero_os/engine/__init__.py",
+      "kind": "python",
+      "layer": "mainframe",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "fusion_hero_os.engine.mainframe",
+      "path": "fusion_hero_os/engine/mainframe.py",
+      "kind": "python",
+      "layer": "mainframe",
+      "placeholder_markers": 3
+    },
+    {
+      "name": "fusion_hero_os.engine.mining_qubo",
+      "path": "fusion_hero_os/engine/mining_qubo.py",
+      "kind": "python",
+      "layer": "mainframe",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "fusion_hero_os.engine.rust_backend",
+      "path": "fusion_hero_os/engine/rust_backend.py",
+      "kind": "python",
+      "layer": "mainframe",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "fusion_hero_os.integrations",
+      "path": "fusion_hero_os/integrations/__init__.py",
+      "kind": "python",
+      "layer": "mainframe",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "fusion_hero_os.integrations.phone_link",
+      "path": "fusion_hero_os/integrations/phone_link/__init__.py",
+      "kind": "python",
+      "layer": "mainframe",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "fusion_hero_os.integrations.phone_link.reader",
+      "path": "fusion_hero_os/integrations/phone_link/reader.py",
+      "kind": "python",
+      "layer": "mainframe",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "fusion_hero_os.mcp",
+      "path": "fusion_hero_os/mcp/__init__.py",
+      "kind": "python",
+      "layer": "mainframe",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "fusion_hero_os.mcp.fhero_mcp_server",
+      "path": "fusion_hero_os/mcp/fhero_mcp_server.py",
+      "kind": "python",
+      "layer": "mainframe",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "fusion_hero_os.methodology",
+      "path": "fusion_hero_os/methodology/__init__.py",
+      "kind": "python",
+      "layer": "mainframe",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "fusion_hero_os.methodology.connectors",
+      "path": "fusion_hero_os/methodology/connectors.py",
+      "kind": "python",
+      "layer": "mainframe",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "fusion_hero_os.methodology.core_modules",
+      "path": "fusion_hero_os/methodology/core_modules.py",
+      "kind": "python",
+      "layer": "mainframe",
+      "placeholder_markers": 2
+    },
+    {
+      "name": "fusion_hero_os.methodology.knowledge",
+      "path": "fusion_hero_os/methodology/knowledge.py",
+      "kind": "python",
+      "layer": "mainframe",
+      "placeholder_markers": 2
+    },
+    {
+      "name": "fusion_hero_os.modules",
+      "path": "fusion_hero_os/modules/__init__.py",
+      "kind": "python",
+      "layer": "mainframe",
+      "placeholder_markers": 1
+    },
+    {
+      "name": "fusion_hero_os.modules.alte_frau_95g",
+      "path": "fusion_hero_os/modules/alte_frau_95g/__init__.py",
+      "kind": "python",
+      "layer": "mainframe",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "fusion_hero_os.modules.automatic_archiving",
+      "path": "fusion_hero_os/modules/automatic_archiving.py",
+      "kind": "python",
+      "layer": "mainframe",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "fusion_hero_os.modules.code_review",
+      "path": "fusion_hero_os/modules/code_review.py",
+      "kind": "python",
+      "layer": "mainframe",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "fusion_hero_os.modules.conversation_context",
+      "path": "fusion_hero_os/modules/conversation_context.py",
+      "kind": "python",
+      "layer": "mainframe",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "fusion_hero_os.modules.formal_mathematics",
+      "path": "fusion_hero_os/modules/formal_mathematics.py",
+      "kind": "python",
+      "layer": "mainframe",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "fusion_hero_os.modules.generational_evolution",
+      "path": "fusion_hero_os/modules/generational_evolution.py",
+      "kind": "python",
+      "layer": "mainframe",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "fusion_hero_os.modules.heroic_llm_ea",
+      "path": "fusion_hero_os/modules/heroic_llm_ea/__init__.py",
+      "kind": "python",
+      "layer": "mainframe",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "fusion_hero_os.modules.heroic_llm_ea.evolution",
+      "path": "fusion_hero_os/modules/heroic_llm_ea/evolution.py",
+      "kind": "python",
+      "layer": "mainframe",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "fusion_hero_os.modules.heroic_llm_ea.fitness",
+      "path": "fusion_hero_os/modules/heroic_llm_ea/fitness.py",
+      "kind": "python",
+      "layer": "mainframe",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "fusion_hero_os.modules.heroic_llm_ea.memory",
+      "path": "fusion_hero_os/modules/heroic_llm_ea/memory.py",
+      "kind": "python",
+      "layer": "mainframe",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "fusion_hero_os.modules.heroic_llm_ea.orchestrator",
+      "path": "fusion_hero_os/modules/heroic_llm_ea/orchestrator.py",
+      "kind": "python",
+      "layer": "mainframe",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "fusion_hero_os.modules.heroic_llm_ea.providers",
+      "path": "fusion_hero_os/modules/heroic_llm_ea/providers.py",
+      "kind": "python",
+      "layer": "mainframe",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "fusion_hero_os.modules.image_orchestrator",
+      "path": "fusion_hero_os/modules/image_orchestrator/__init__.py",
+      "kind": "python",
+      "layer": "mainframe",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "fusion_hero_os.modules.image_orchestrator.job_queue",
+      "path": "fusion_hero_os/modules/image_orchestrator/job_queue.py",
+      "kind": "python",
+      "layer": "mainframe",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "fusion_hero_os.modules.image_orchestrator.orchestrator",
+      "path": "fusion_hero_os/modules/image_orchestrator/orchestrator.py",
+      "kind": "python",
+      "layer": "mainframe",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "fusion_hero_os.modules.image_orchestrator.pipeline",
+      "path": "fusion_hero_os/modules/image_orchestrator/pipeline.py",
+      "kind": "python",
+      "layer": "mainframe",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "fusion_hero_os.modules.image_orchestrator.prompt_builder",
+      "path": "fusion_hero_os/modules/image_orchestrator/prompt_builder.py",
+      "kind": "python",
+      "layer": "mainframe",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "fusion_hero_os.modules.image_orchestrator.providers",
+      "path": "fusion_hero_os/modules/image_orchestrator/providers.py",
+      "kind": "python",
+      "layer": "mainframe",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "fusion_hero_os.modules.image_orchestrator.rate_limiter",
+      "path": "fusion_hero_os/modules/image_orchestrator/rate_limiter.py",
+      "kind": "python",
+      "layer": "mainframe",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "fusion_hero_os.modules.live_process_tracking",
+      "path": "fusion_hero_os/modules/live_process_tracking.py",
+      "kind": "python",
+      "layer": "mainframe",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "fusion_hero_os.modules.mainframe_laden",
+      "path": "fusion_hero_os/modules/mainframe_laden/__init__.py",
+      "kind": "python",
+      "layer": "mainframe",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "fusion_hero_os.modules.mer",
+      "path": "fusion_hero_os/modules/mer.py",
+      "kind": "python",
+      "layer": "mainframe",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "fusion_hero_os.modules.phone_link",
+      "path": "fusion_hero_os/modules/phone_link.py",
+      "kind": "python",
+      "layer": "mainframe",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "fusion_hero_os.modules.qubo_integration",
+      "path": "fusion_hero_os/modules/qubo_integration.py",
+      "kind": "python",
+      "layer": "mainframe",
+      "placeholder_markers": 1
+    },
+    {
+      "name": "fusion_hero_os.modules.self_modify",
+      "path": "fusion_hero_os/modules/self_modify.py",
+      "kind": "python",
+      "layer": "mainframe",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "fusion_hero_os.modules.skill_creator",
+      "path": "fusion_hero_os/modules/skill_creator/__init__.py",
+      "kind": "python",
+      "layer": "mainframe",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "fusion_hero_os.modules.timespace_token",
+      "path": "fusion_hero_os/modules/timespace_token/__init__.py",
+      "kind": "python",
+      "layer": "mainframe",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "fusion_hero_os.modules.timespace_token.bottleneck",
+      "path": "fusion_hero_os/modules/timespace_token/bottleneck.py",
+      "kind": "python",
+      "layer": "mainframe",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "fusion_hero_os.modules.timespace_token.geometry",
+      "path": "fusion_hero_os/modules/timespace_token/geometry.py",
+      "kind": "python",
+      "layer": "mainframe",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "fusion_hero_os.modules.timespace_token.manager",
+      "path": "fusion_hero_os/modules/timespace_token/manager.py",
+      "kind": "python",
+      "layer": "mainframe",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "fusion_hero_os.modules.timespace_token.module",
+      "path": "fusion_hero_os/modules/timespace_token/module.py",
+      "kind": "python",
+      "layer": "mainframe",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "fusion_hero_os.modules.weltraudaimonia",
+      "path": "fusion_hero_os/modules/weltraudaimonia.py",
+      "kind": "python",
+      "layer": "mainframe",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "fusion_hero_os.orchestration",
+      "path": "fusion_hero_os/orchestration/__init__.py",
+      "kind": "python",
+      "layer": "mainframe",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "fusion_hero_os.orchestration.agents",
+      "path": "fusion_hero_os/orchestration/agents.py",
+      "kind": "python",
+      "layer": "mainframe",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "fusion_hero_os.providers",
+      "path": "fusion_hero_os/providers/__init__.py",
+      "kind": "python",
+      "layer": "intelligence",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "fusion_hero_os.providers.base",
+      "path": "fusion_hero_os/providers/base.py",
+      "kind": "python",
+      "layer": "intelligence",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "fusion_hero_os.providers.claude_provider",
+      "path": "fusion_hero_os/providers/claude_provider.py",
+      "kind": "python",
+      "layer": "intelligence",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "fusion_hero_os.providers.everyapi_provider",
+      "path": "fusion_hero_os/providers/everyapi_provider.py",
+      "kind": "python",
+      "layer": "intelligence",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "fusion_hero_os.providers.grok_provider",
+      "path": "fusion_hero_os/providers/grok_provider.py",
+      "kind": "python",
+      "layer": "intelligence",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "fusion_hero_os.providers.internal_provider",
+      "path": "fusion_hero_os/providers/internal_provider.py",
+      "kind": "python",
+      "layer": "intelligence",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "fusion_hero_os.registry",
+      "path": "fusion_hero_os/registry.py",
+      "kind": "python",
+      "layer": "mainframe",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "ascension_os",
+      "path": "ascension_os/__init__.py",
+      "kind": "python",
+      "layer": "ascension",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "ascension_os.core.ascension_core",
+      "path": "ascension_os/core/ascension_core.py",
+      "kind": "python",
+      "layer": "ascension",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "ascension_os.core.coevolutionary_closure",
+      "path": "ascension_os/core/coevolutionary_closure.py",
+      "kind": "python",
+      "layer": "ascension",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "ascension_os.core.persistent_sisyphos",
+      "path": "ascension_os/core/persistent_sisyphos.py",
+      "kind": "python",
+      "layer": "ascension",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "ascension_os.evolution",
+      "path": "ascension_os/evolution/__init__.py",
+      "kind": "python",
+      "layer": "ascension",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "ascension_os.evolution.generational_engine",
+      "path": "ascension_os/evolution/generational_engine.py",
+      "kind": "python",
+      "layer": "ascension",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "core.heroic_core_orchestrator",
+      "path": "core/heroic_core_orchestrator.py",
+      "kind": "python",
+      "layer": "knowledge",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "core.heroic_math_engine",
+      "path": "core/heroic_math_engine.py",
+      "kind": "python",
+      "layer": "knowledge",
+      "placeholder_markers": 2
+    },
+    {
+      "name": "kernel",
+      "path": "kernel/__init__.py",
+      "kind": "python",
+      "layer": "kernel",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "kernel.bridge",
+      "path": "kernel/bridge/__init__.py",
+      "kind": "python",
+      "layer": "kernel",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "kernel.bridge.fhos_ipc_client",
+      "path": "kernel/bridge/fhos_ipc_client.py",
+      "kind": "python",
+      "layer": "kernel",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "kernel.bridge.fhos_ipc_server",
+      "path": "kernel/bridge/fhos_ipc_server.py",
+      "kind": "python",
+      "layer": "kernel",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "kernel.bridge.protocol",
+      "path": "kernel/bridge/protocol.py",
+      "kind": "python",
+      "layer": "kernel",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "src.core.dynamic_orchestration_core",
+      "path": "src/core/dynamic_orchestration_core.py",
+      "kind": "python",
+      "layer": "surface",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "src.layers.hero_guide_core",
+      "path": "src/layers/hero_guide_core.py",
+      "kind": "python",
+      "layer": "surface",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "tests.conftest",
+      "path": "tests/conftest.py",
+      "kind": "python",
+      "layer": "proof",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "tests.test_automation_scheduler",
+      "path": "tests/test_automation_scheduler.py",
+      "kind": "python",
+      "layer": "proof",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "tests.test_connectivity",
+      "path": "tests/test_connectivity.py",
+      "kind": "python",
+      "layer": "proof",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "tests.test_conversation_context_faden",
+      "path": "tests/test_conversation_context_faden.py",
+      "kind": "python",
+      "layer": "proof",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "tests.test_dependency_atlas",
+      "path": "tests/test_dependency_atlas.py",
+      "kind": "python",
+      "layer": "proof",
+      "placeholder_markers": 3
+    },
+    {
+      "name": "tests.test_dispatcher",
+      "path": "tests/test_dispatcher.py",
+      "kind": "python",
+      "layer": "proof",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "tests.test_erkenntnisse_index",
+      "path": "tests/test_erkenntnisse_index.py",
+      "kind": "python",
+      "layer": "proof",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "tests.test_faden_store",
+      "path": "tests/test_faden_store.py",
+      "kind": "python",
+      "layer": "proof",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "tests.test_fhero_mcp_server",
+      "path": "tests/test_fhero_mcp_server.py",
+      "kind": "python",
+      "layer": "proof",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "tests.test_fusion_settings",
+      "path": "tests/test_fusion_settings.py",
+      "kind": "python",
+      "layer": "proof",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "tests.test_grok_export_modules",
+      "path": "tests/test_grok_export_modules.py",
+      "kind": "python",
+      "layer": "proof",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "tests.test_heroic_core_orchestrator",
+      "path": "tests/test_heroic_core_orchestrator.py",
+      "kind": "python",
+      "layer": "proof",
+      "placeholder_markers": 2
+    },
+    {
+      "name": "tests.test_heroic_math_engine",
+      "path": "tests/test_heroic_math_engine.py",
+      "kind": "python",
+      "layer": "proof",
+      "placeholder_markers": 1
+    },
+    {
+      "name": "tests.test_import_safety",
+      "path": "tests/test_import_safety.py",
+      "kind": "python",
+      "layer": "proof",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "tests.test_inference_scheduler_qubo",
+      "path": "tests/test_inference_scheduler_qubo.py",
+      "kind": "python",
+      "layer": "proof",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "tests.test_internal_llm_sa",
+      "path": "tests/test_internal_llm_sa.py",
+      "kind": "python",
+      "layer": "proof",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "tests.test_ipc_bridge",
+      "path": "tests/test_ipc_bridge.py",
+      "kind": "python",
+      "layer": "proof",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "tests.test_journal_pipeline",
+      "path": "tests/test_journal_pipeline.py",
+      "kind": "python",
+      "layer": "proof",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "tests.test_layer_registry",
+      "path": "tests/test_layer_registry.py",
+      "kind": "python",
+      "layer": "proof",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "tests.test_masterseed_semilattice",
+      "path": "tests/test_masterseed_semilattice.py",
+      "kind": "python",
+      "layer": "proof",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "tests.test_masterseed_sync",
+      "path": "tests/test_masterseed_sync.py",
+      "kind": "python",
+      "layer": "proof",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "tests.test_mining_qubo",
+      "path": "tests/test_mining_qubo.py",
+      "kind": "python",
+      "layer": "proof",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "tests.test_phone_link",
+      "path": "tests/test_phone_link.py",
+      "kind": "python",
+      "layer": "proof",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "tests.test_process_exclusivity",
+      "path": "tests/test_process_exclusivity.py",
+      "kind": "python",
+      "layer": "proof",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "tests.test_psycholysis_trigger",
+      "path": "tests/test_psycholysis_trigger.py",
+      "kind": "python",
+      "layer": "proof",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "tests.test_quantum_cognition",
+      "path": "tests/test_quantum_cognition.py",
+      "kind": "python",
+      "layer": "proof",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "tests.test_qubo_ising_bridge",
+      "path": "tests/test_qubo_ising_bridge.py",
+      "kind": "python",
+      "layer": "proof",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "tests.test_registry",
+      "path": "tests/test_registry.py",
+      "kind": "python",
+      "layer": "proof",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "tests.test_solver",
+      "path": "tests/test_solver.py",
+      "kind": "python",
+      "layer": "proof",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "tests.test_suite_integration",
+      "path": "tests/test_suite_integration.py",
+      "kind": "python",
+      "layer": "proof",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "tests.test_supabase_sync",
+      "path": "tests/test_supabase_sync.py",
+      "kind": "python",
+      "layer": "proof",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "tests.test_watch_party",
+      "path": "tests/test_watch_party.py",
+      "kind": "python",
+      "layer": "proof",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "tests.test_watch_sync_server",
+      "path": "tests/test_watch_sync_server.py",
+      "kind": "python",
+      "layer": "proof",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "tools.hero-docs-server.hero-docs-server",
+      "path": "tools/hero-docs-server/hero-docs-server.py",
+      "kind": "python",
+      "layer": "tooling",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "scripts.apply_cherry_picks",
+      "path": "scripts/apply_cherry_picks.py",
+      "kind": "python",
+      "layer": "tooling",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "scripts.check_erkenntnisse_index",
+      "path": "scripts/check_erkenntnisse_index.py",
+      "kind": "python",
+      "layer": "tooling",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "scripts.check_proof_registry",
+      "path": "scripts/check_proof_registry.py",
+      "kind": "python",
+      "layer": "tooling",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "scripts.dispatcher_status",
+      "path": "scripts/dispatcher_status.py",
+      "kind": "python",
+      "layer": "tooling",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.audit_agent",
+      "path": "03_Code/audit_agent.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.core",
+      "path": "03_Code/core/__init__.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.core.agent_backend_router",
+      "path": "03_Code/core/agent_backend_router.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.core.agent_control",
+      "path": "03_Code/core/agent_control.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.core.automation_scheduler_node",
+      "path": "03_Code/core/automation_scheduler_node.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.core.backends",
+      "path": "03_Code/core/backends/__init__.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.core.backends.base",
+      "path": "03_Code/core/backends/base.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.core.classical",
+      "path": "03_Code/core/classical.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.core.claude_science",
+      "path": "03_Code/core/claude_science.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 1
+    },
+    {
+      "name": "03_Code.core.coevolution_router",
+      "path": "03_Code/core/coevolution_router.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.core.conversation_context_core",
+      "path": "03_Code/core/conversation_context_core.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.core.cost_estimator_node",
+      "path": "03_Code/core/cost_estimator_node.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.core.cpu_adaptive_tuner",
+      "path": "03_Code/core/cpu_adaptive_tuner.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.core.creative_problem_solving",
+      "path": "03_Code/core/creative_problem_solving.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 11
+    },
+    {
+      "name": "03_Code.core.CriticalMetaAnalysisCoreModule",
+      "path": "03_Code/core/CriticalMetaAnalysisCoreModule.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.core.domain",
+      "path": "03_Code/core/domain/__init__.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.core.domain.config",
+      "path": "03_Code/core/domain/config.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.core.domain.qubo_problem",
+      "path": "03_Code/core/domain/qubo_problem.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.core.domain.solver_result",
+      "path": "03_Code/core/domain/solver_result.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.core.dynamic_orchestration_core",
+      "path": "03_Code/core/dynamic_orchestration_core.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 1
+    },
+    {
+      "name": "03_Code.core.entwicklungsquant_bus",
+      "path": "03_Code/core/entwicklungsquant_bus.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.core.entwicklungsquant_live",
+      "path": "03_Code/core/entwicklungsquant_live.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.core.faden_strength_coevolution",
+      "path": "03_Code/core/faden_strength_coevolution.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.core.first_install_bootstrap",
+      "path": "03_Code/core/first_install_bootstrap.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.core.foundation_loader",
+      "path": "03_Code/core/foundation_loader.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.core.fusion_hero_node",
+      "path": "03_Code/core/fusion_hero_node.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 7
+    },
+    {
+      "name": "03_Code.core.geisterjagd_banach_viz",
+      "path": "03_Code/core/geisterjagd_banach_viz.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.core.GenerationalEvolutionProtocolCoreModule",
+      "path": "03_Code/core/GenerationalEvolutionProtocolCoreModule.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.core.ghosthunt_hook",
+      "path": "03_Code/core/ghosthunt_hook.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.core.google_multi_account_sync_core",
+      "path": "03_Code/core/google_multi_account_sync_core.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.core.gpu_compute_booster",
+      "path": "03_Code/core/gpu_compute_booster.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.core.gpu_memory_allocator",
+      "path": "03_Code/core/gpu_memory_allocator.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.core.gpu_vram_prioritizer",
+      "path": "03_Code/core/gpu_vram_prioritizer.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.core.heroic_orchestration",
+      "path": "03_Code/core/heroic_orchestration.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.core.heroic_science_audit",
+      "path": "03_Code/core/heroic_science_audit.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.core.hyperthreading_config",
+      "path": "03_Code/core/hyperthreading_config.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.core.judge_panel",
+      "path": "03_Code/core/judge_panel.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 2
+    },
+    {
+      "name": "03_Code.core.llama_subagent_tester",
+      "path": "03_Code/core/llama_subagent_tester.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.core.local_llama",
+      "path": "03_Code/core/local_llama.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.core.medienserver_bridge",
+      "path": "03_Code/core/medienserver_bridge.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.core.memory_guard",
+      "path": "03_Code/core/memory_guard.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.core.module_registry",
+      "path": "03_Code/core/module_registry.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.core.parallel_internal_optimizer",
+      "path": "03_Code/core/parallel_internal_optimizer.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.core.portal_rate_budget_node",
+      "path": "03_Code/core/portal_rate_budget_node.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.core.process_exclusivity",
+      "path": "03_Code/core/process_exclusivity.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.core.provider_switcher",
+      "path": "03_Code/core/provider_switcher.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.core.qb_qubo",
+      "path": "03_Code/core/qb_qubo.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.core.qubo_llama_bridge",
+      "path": "03_Code/core/qubo_llama_bridge.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.core.resource_coupler",
+      "path": "03_Code/core/resource_coupler.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.core.resource_workflow",
+      "path": "03_Code/core/resource_workflow.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.core.SelfModifyCoreModule",
+      "path": "03_Code/core/SelfModifyCoreModule.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.core.session_handover_node",
+      "path": "03_Code/core/session_handover_node.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.core.ssd_longterm_cache",
+      "path": "03_Code/core/ssd_longterm_cache.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.core.structured_output",
+      "path": "03_Code/core/structured_output.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.core.suite_bridge",
+      "path": "03_Code/core/suite_bridge.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.core.suite_pipeline",
+      "path": "03_Code/core/suite_pipeline.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.core.v8_core_bridge",
+      "path": "03_Code/core/v8_core_bridge.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.core.virtual_gpu_hyperthreading",
+      "path": "03_Code/core/virtual_gpu_hyperthreading.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.core.windows_substrate",
+      "path": "03_Code/core/windows_substrate.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.Dashboard.agent_resource_allocator",
+      "path": "03_Code/Dashboard/agent_resource_allocator.py",
+      "kind": "python",
+      "layer": "surface",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.Dashboard.api_extensions",
+      "path": "03_Code/Dashboard/api_extensions.py",
+      "kind": "python",
+      "layer": "surface",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.Dashboard.app",
+      "path": "03_Code/Dashboard/app.py",
+      "kind": "python",
+      "layer": "surface",
+      "placeholder_markers": 2
+    },
+    {
+      "name": "03_Code.Dashboard.app2",
+      "path": "03_Code/Dashboard/app2.py",
+      "kind": "python",
+      "layer": "surface",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.Dashboard.architecture_routes",
+      "path": "03_Code/Dashboard/architecture_routes.py",
+      "kind": "python",
+      "layer": "surface",
+      "placeholder_markers": 2
+    },
+    {
+      "name": "03_Code.Dashboard.autoloader",
+      "path": "03_Code/Dashboard/autoloader.py",
+      "kind": "python",
+      "layer": "surface",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.Dashboard.backends.base",
+      "path": "03_Code/Dashboard/backends/base.py",
+      "kind": "python",
+      "layer": "surface",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.Dashboard.backends.classical",
+      "path": "03_Code/Dashboard/backends/classical.py",
+      "kind": "python",
+      "layer": "surface",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.Dashboard.boot_optimizer",
+      "path": "03_Code/Dashboard/boot_optimizer.py",
+      "kind": "python",
+      "layer": "surface",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.Dashboard.connectivity",
+      "path": "03_Code/Dashboard/connectivity.py",
+      "kind": "python",
+      "layer": "surface",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.Dashboard.cyber_layer_windows",
+      "path": "03_Code/Dashboard/cyber_layer_windows.py",
+      "kind": "python",
+      "layer": "surface",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.Dashboard.domain.entities",
+      "path": "03_Code/Dashboard/domain/entities.py",
+      "kind": "python",
+      "layer": "surface",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.Dashboard.faden_store",
+      "path": "03_Code/Dashboard/faden_store.py",
+      "kind": "python",
+      "layer": "surface",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.Dashboard.fusion_profile",
+      "path": "03_Code/Dashboard/fusion_profile.py",
+      "kind": "python",
+      "layer": "surface",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.Dashboard.fusion_settings",
+      "path": "03_Code/Dashboard/fusion_settings.py",
+      "kind": "python",
+      "layer": "surface",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.Dashboard.grok_bridge",
+      "path": "03_Code/Dashboard/grok_bridge.py",
+      "kind": "python",
+      "layer": "surface",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.Dashboard.gui",
+      "path": "03_Code/Dashboard/gui/__init__.py",
+      "kind": "python",
+      "layer": "surface",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.Dashboard.gui.config",
+      "path": "03_Code/Dashboard/gui/config.py",
+      "kind": "python",
+      "layer": "surface",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.Dashboard.gui.era_design",
+      "path": "03_Code/Dashboard/gui/era_design.py",
+      "kind": "python",
+      "layer": "surface",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.Dashboard.gui.fusion_gui",
+      "path": "03_Code/Dashboard/gui/fusion_gui.py",
+      "kind": "python",
+      "layer": "surface",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.Dashboard.gui.input_bridge",
+      "path": "03_Code/Dashboard/gui/input_bridge.py",
+      "kind": "python",
+      "layer": "surface",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.Dashboard.gui.interactions",
+      "path": "03_Code/Dashboard/gui/interactions.py",
+      "kind": "python",
+      "layer": "surface",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.Dashboard.gui.layer_panels",
+      "path": "03_Code/Dashboard/gui/layer_panels.py",
+      "kind": "python",
+      "layer": "surface",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.Dashboard.gui.task_panels",
+      "path": "03_Code/Dashboard/gui/task_panels.py",
+      "kind": "python",
+      "layer": "surface",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.Dashboard.gui.theme_3d",
+      "path": "03_Code/Dashboard/gui/theme_3d.py",
+      "kind": "python",
+      "layer": "surface",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.Dashboard.gui.web_scripts",
+      "path": "03_Code/Dashboard/gui/web_scripts.py",
+      "kind": "python",
+      "layer": "surface",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.Dashboard.heroic_core_gui(2)",
+      "path": "03_Code/Dashboard/heroic_core_gui(2).py",
+      "kind": "python",
+      "layer": "surface",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.Dashboard.heroic_core_gui",
+      "path": "03_Code/Dashboard/heroic_core_gui.py",
+      "kind": "python",
+      "layer": "surface",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.Dashboard.heroic_core_mainframe",
+      "path": "03_Code/Dashboard/heroic_core_mainframe.py",
+      "kind": "python",
+      "layer": "surface",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.Dashboard.hyperthreading_config",
+      "path": "03_Code/Dashboard/hyperthreading_config.py",
+      "kind": "python",
+      "layer": "surface",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.Dashboard.input_gateway",
+      "path": "03_Code/Dashboard/input_gateway.py",
+      "kind": "python",
+      "layer": "surface",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.Dashboard.layered_signal_network",
+      "path": "03_Code/Dashboard/layered_signal_network.py",
+      "kind": "python",
+      "layer": "surface",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.Dashboard.mainframe_integration",
+      "path": "03_Code/Dashboard/mainframe_integration.py",
+      "kind": "python",
+      "layer": "surface",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.Dashboard.meta_layer_windows",
+      "path": "03_Code/Dashboard/meta_layer_windows.py",
+      "kind": "python",
+      "layer": "surface",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.Dashboard.module_registry",
+      "path": "03_Code/Dashboard/module_registry.py",
+      "kind": "python",
+      "layer": "surface",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.Dashboard.process_worker",
+      "path": "03_Code/Dashboard/process_worker.py",
+      "kind": "python",
+      "layer": "surface",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.Dashboard.scripts.build_geisteskrankheiten_4d_kompendium",
+      "path": "03_Code/Dashboard/scripts/build_geisteskrankheiten_4d_kompendium.py",
+      "kind": "python",
+      "layer": "surface",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.Dashboard.scripts.build_geisteskrankheiten_4d_v4",
+      "path": "03_Code/Dashboard/scripts/build_geisteskrankheiten_4d_v4.py",
+      "kind": "python",
+      "layer": "surface",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.Dashboard.scripts.build_geisteskrankheiten_4d_v5",
+      "path": "03_Code/Dashboard/scripts/build_geisteskrankheiten_4d_v5.py",
+      "kind": "python",
+      "layer": "surface",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.Dashboard.scripts.build_geisteskrankheiten_4d_v6",
+      "path": "03_Code/Dashboard/scripts/build_geisteskrankheiten_4d_v6.py",
+      "kind": "python",
+      "layer": "surface",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.Dashboard.scripts.build_geisteskrankheiten_4d_v7",
+      "path": "03_Code/Dashboard/scripts/build_geisteskrankheiten_4d_v7.py",
+      "kind": "python",
+      "layer": "surface",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.Dashboard.scripts.improve_geisteskrankheiten_4d",
+      "path": "03_Code/Dashboard/scripts/improve_geisteskrankheiten_4d.py",
+      "kind": "python",
+      "layer": "surface",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.Dashboard.scripts.ingest_graphics_training",
+      "path": "03_Code/Dashboard/scripts/ingest_graphics_training.py",
+      "kind": "python",
+      "layer": "surface",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.Dashboard.scripts.ingest_v3_training",
+      "path": "03_Code/Dashboard/scripts/ingest_v3_training.py",
+      "kind": "python",
+      "layer": "surface",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.Dashboard.scripts.ingest_v4_training",
+      "path": "03_Code/Dashboard/scripts/ingest_v4_training.py",
+      "kind": "python",
+      "layer": "surface",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.Dashboard.scripts.ingest_v5_training",
+      "path": "03_Code/Dashboard/scripts/ingest_v5_training.py",
+      "kind": "python",
+      "layer": "surface",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.Dashboard.scripts.ingest_v6_training",
+      "path": "03_Code/Dashboard/scripts/ingest_v6_training.py",
+      "kind": "python",
+      "layer": "surface",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.Dashboard.scripts.ingest_v7_training",
+      "path": "03_Code/Dashboard/scripts/ingest_v7_training.py",
+      "kind": "python",
+      "layer": "surface",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.Dashboard.scripts.kompendium_pdf_renderer",
+      "path": "03_Code/Dashboard/scripts/kompendium_pdf_renderer.py",
+      "kind": "python",
+      "layer": "surface",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.Dashboard.scripts.mer_diagram_generator",
+      "path": "03_Code/Dashboard/scripts/mer_diagram_generator.py",
+      "kind": "python",
+      "layer": "surface",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.Dashboard.scripts.run_heroic_science_audit",
+      "path": "03_Code/Dashboard/scripts/run_heroic_science_audit.py",
+      "kind": "python",
+      "layer": "surface",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.Dashboard.supabase_background",
+      "path": "03_Code/Dashboard/supabase_background.py",
+      "kind": "python",
+      "layer": "surface",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.Dashboard.supabase_client",
+      "path": "03_Code/Dashboard/supabase_client.py",
+      "kind": "python",
+      "layer": "surface",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.Dashboard.supabase_store",
+      "path": "03_Code/Dashboard/supabase_store.py",
+      "kind": "python",
+      "layer": "surface",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.Dashboard.vr_routes",
+      "path": "03_Code/Dashboard/vr_routes.py",
+      "kind": "python",
+      "layer": "surface",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.Dashboard.watch_party",
+      "path": "03_Code/Dashboard/watch_party.py",
+      "kind": "python",
+      "layer": "surface",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.Dashboard.watch_realtime_server",
+      "path": "03_Code/Dashboard/watch_realtime_server.py",
+      "kind": "python",
+      "layer": "surface",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.Dashboard.watch_sync_server",
+      "path": "03_Code/Dashboard/watch_sync_server.py",
+      "kind": "python",
+      "layer": "surface",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.Dashboard.windows_perf_tuner",
+      "path": "03_Code/Dashboard/windows_perf_tuner.py",
+      "kind": "python",
+      "layer": "surface",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.Dashboard.windows_skin",
+      "path": "03_Code/Dashboard/windows_skin.py",
+      "kind": "python",
+      "layer": "surface",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.Dashboard.worker_runner",
+      "path": "03_Code/Dashboard/worker_runner.py",
+      "kind": "python",
+      "layer": "surface",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.Dashboard.worker_tasks",
+      "path": "03_Code/Dashboard/worker_tasks.py",
+      "kind": "python",
+      "layer": "surface",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.Dashboard.workspace",
+      "path": "03_Code/Dashboard/workspace.py",
+      "kind": "python",
+      "layer": "surface",
+      "placeholder_markers": 1
+    },
+    {
+      "name": "03_Code.hero_guide_ide",
+      "path": "03_Code/hero_guide_ide.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.heroic-highest-layer.benchmarks.virology_troubleshooting_benchmark",
+      "path": "03_Code/heroic-highest-layer/benchmarks/virology_troubleshooting_benchmark.py",
+      "kind": "python",
+      "layer": "vr",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.heroic-highest-layer.example",
+      "path": "03_Code/heroic-highest-layer/example.py",
+      "kind": "python",
+      "layer": "vr",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.heroic-highest-layer.highest_layer",
+      "path": "03_Code/heroic-highest-layer/highest_layer.py",
+      "kind": "python",
+      "layer": "vr",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.heroic-highest-layer.reports.create_virology_benchmark_report",
+      "path": "03_Code/heroic-highest-layer/reports/create_virology_benchmark_report.py",
+      "kind": "python",
+      "layer": "vr",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.heroic-highest-layer.vr_example",
+      "path": "03_Code/heroic-highest-layer/vr_example.py",
+      "kind": "python",
+      "layer": "vr",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.internal_llm.download_model",
+      "path": "03_Code/internal_llm/download_model.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.internal_llm.export_data",
+      "path": "03_Code/internal_llm/export_data.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.internal_llm.heroic_llama_optimizer",
+      "path": "03_Code/internal_llm/heroic_llama_optimizer.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.internal_llm.llama_cli_backend",
+      "path": "03_Code/internal_llm/llama_cli_backend.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.internal_llm.llama_server_backend",
+      "path": "03_Code/internal_llm/llama_server_backend.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.internal_llm.system_prompt_normalize",
+      "path": "03_Code/internal_llm/system_prompt_normalize.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.internal_llm.train",
+      "path": "03_Code/internal_llm/train.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.knowledge_graph",
+      "path": "03_Code/knowledge_graph.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.llm_frameworks",
+      "path": "03_Code/llm_frameworks/__init__.py",
+      "kind": "python",
+      "layer": "orchestration",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.llm_frameworks.base",
+      "path": "03_Code/llm_frameworks/base.py",
+      "kind": "python",
+      "layer": "orchestration",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.llm_frameworks.claude",
+      "path": "03_Code/llm_frameworks/claude.py",
+      "kind": "python",
+      "layer": "orchestration",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.llm_frameworks.gemini",
+      "path": "03_Code/llm_frameworks/gemini.py",
+      "kind": "python",
+      "layer": "orchestration",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.llm_frameworks.gpt",
+      "path": "03_Code/llm_frameworks/gpt.py",
+      "kind": "python",
+      "layer": "orchestration",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.llm_frameworks.grok",
+      "path": "03_Code/llm_frameworks/grok.py",
+      "kind": "python",
+      "layer": "orchestration",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.llm_frameworks.ollama",
+      "path": "03_Code/llm_frameworks/ollama.py",
+      "kind": "python",
+      "layer": "orchestration",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.llm_frameworks.openrouter",
+      "path": "03_Code/llm_frameworks/openrouter.py",
+      "kind": "python",
+      "layer": "orchestration",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.llm_frameworks.registry",
+      "path": "03_Code/llm_frameworks/registry.py",
+      "kind": "python",
+      "layer": "orchestration",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.llm_status",
+      "path": "03_Code/llm_status.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.model_connectors",
+      "path": "03_Code/model_connectors.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.reference.agents",
+      "path": "03_Code/reference/agents.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.reference.app",
+      "path": "03_Code/reference/app.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 2
+    },
+    {
+      "name": "03_Code.reference.connectors",
+      "path": "03_Code/reference/connectors.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.reference.core_modules",
+      "path": "03_Code/reference/core_modules.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 2
+    },
+    {
+      "name": "03_Code.reference.heroic_core_mainframe",
+      "path": "03_Code/reference/heroic_core_mainframe.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.reference.knowledge",
+      "path": "03_Code/reference/knowledge.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 2
+    },
+    {
+      "name": "03_Code.reference.mainframe",
+      "path": "03_Code/reference/mainframe.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 3
+    },
+    {
+      "name": "03_Code.reference.rest_api_server",
+      "path": "03_Code/reference/rest_api_server.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.scripts.test_agent_anti_agent_backends",
+      "path": "03_Code/scripts/test_agent_anti_agent_backends.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.scripts.test_agent_control",
+      "path": "03_Code/scripts/test_agent_control.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.scripts.test_llama_subagents",
+      "path": "03_Code/scripts/test_llama_subagents.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.scripts.test_science_routing",
+      "path": "03_Code/scripts/test_science_routing.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.scripts.test_subagent_context_window",
+      "path": "03_Code/scripts/test_subagent_context_window.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.StarrLernenderAntiLoopGuardCoreModule_v1",
+      "path": "03_Code/StarrLernenderAntiLoopGuardCoreModule_v1.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.suite",
+      "path": "03_Code/suite/__init__.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.suite.audio-bridge.bridge",
+      "path": "03_Code/suite/audio-bridge/bridge.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.suite.audio-bridge.test_tone",
+      "path": "03_Code/suite/audio-bridge/test_tone.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.suite.fusion.fusion_benchmark_poll",
+      "path": "03_Code/suite/fusion/fusion_benchmark_poll.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.suite.fusion.fusion_bottleneck_cleanup",
+      "path": "03_Code/suite/fusion/fusion_bottleneck_cleanup.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.suite.fusion.fusion_bottleneck_diag",
+      "path": "03_Code/suite/fusion/fusion_bottleneck_diag.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.suite.fusion.fusion_gpu_check",
+      "path": "03_Code/suite/fusion/fusion_gpu_check.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.suite.fusion.fusion_gpu_enable",
+      "path": "03_Code/suite/fusion/fusion_gpu_enable.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.suite.fusion.fusion_load_check",
+      "path": "03_Code/suite/fusion/fusion_load_check.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.suite.fusion.fusion_next_action",
+      "path": "03_Code/suite/fusion/fusion_next_action.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.suite.fusion.fusion_poll_weiter",
+      "path": "03_Code/suite/fusion/fusion_poll_weiter.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.suite.fusion.fusion_solve_bottleneck",
+      "path": "03_Code/suite/fusion/fusion_solve_bottleneck.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.suite.fusion.fusion_status",
+      "path": "03_Code/suite/fusion/fusion_status.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.suite.fusion.fusion_weiter",
+      "path": "03_Code/suite/fusion/fusion_weiter.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.suite.fusion.fusion_workspace_check",
+      "path": "03_Code/suite/fusion/fusion_workspace_check.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.suite.ghosthunting.geisterjagd_banach_viz",
+      "path": "03_Code/suite/ghosthunting/geisterjagd_banach_viz.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.suite.ghosthunting.hook",
+      "path": "03_Code/suite/ghosthunting/hook.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.suite.ghosthunting.run_ghosthunt",
+      "path": "03_Code/suite/ghosthunting/run_ghosthunt.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.suite.gpu.check_gpu_capacity",
+      "path": "03_Code/suite/gpu/check_gpu_capacity.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.suite.gpu.fusion_gpu_check",
+      "path": "03_Code/suite/gpu/fusion_gpu_check.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.suite.gpu.fusion_gpu_enable",
+      "path": "03_Code/suite/gpu/fusion_gpu_enable.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.suite.gpu.gpu_capacity_check",
+      "path": "03_Code/suite/gpu/gpu_capacity_check.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.suite.gpu.query_vcache_capacity",
+      "path": "03_Code/suite/gpu/query_vcache_capacity.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.suite.gpu.test_gpu_qubo",
+      "path": "03_Code/suite/gpu/test_gpu_qubo.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.suite.gpu.test_virtual_gpu_ht",
+      "path": "03_Code/suite/gpu/test_virtual_gpu_ht.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.suite.launcher",
+      "path": "03_Code/suite/launcher.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.suite.layers.00_middle.middle_out",
+      "path": "03_Code/suite/layers/00_middle/middle_out.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.suite.layers.01_foundation.private_masterseed",
+      "path": "03_Code/suite/layers/01_foundation/private_masterseed.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.suite.layers.02_qubo.qubo_layer",
+      "path": "03_Code/suite/layers/02_qubo/qubo_layer.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.suite.layers.03_gpu.gpu_layer",
+      "path": "03_Code/suite/layers/03_gpu/gpu_layer.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.suite.layers.04_llm.llm_layer",
+      "path": "03_Code/suite/layers/04_llm/llm_layer.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.suite.layers.05_fusion.fusion_layer",
+      "path": "03_Code/suite/layers/05_fusion/fusion_layer.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.suite.layers.06_execution.execution_layer",
+      "path": "03_Code/suite/layers/06_execution/execution_layer.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.suite.layers.07_highest.highest_layer",
+      "path": "03_Code/suite/layers/07_highest/highest_layer.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.suite.process_layers",
+      "path": "03_Code/suite/process_layers.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.suite.qubo.blockchain",
+      "path": "03_Code/suite/qubo/blockchain.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.suite.qubo.cache_integration",
+      "path": "03_Code/suite/qubo/cache_integration.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.suite.qubo.check_env",
+      "path": "03_Code/suite/qubo/check_env.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.suite.qubo.check_qubo_sig",
+      "path": "03_Code/suite/qubo/check_qubo_sig.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.suite.qubo.config",
+      "path": "03_Code/suite/qubo/config.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.suite.qubo.core_pinning",
+      "path": "03_Code/suite/qubo/core_pinning.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.suite.qubo.crypto_identity",
+      "path": "03_Code/suite/qubo/crypto_identity.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.suite.qubo.demo_self_opt",
+      "path": "03_Code/suite/qubo/demo_self_opt.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.suite.qubo.ergebnisbericht",
+      "path": "03_Code/suite/qubo/ergebnisbericht.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.suite.qubo.gpu_demo",
+      "path": "03_Code/suite/qubo/gpu_demo.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.suite.qubo.ledger",
+      "path": "03_Code/suite/qubo/ledger.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.suite.qubo.main",
+      "path": "03_Code/suite/qubo/main.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.suite.qubo.miner",
+      "path": "03_Code/suite/qubo/miner.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.suite.qubo.optimizer",
+      "path": "03_Code/suite/qubo/optimizer.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.suite.qubo.pool",
+      "path": "03_Code/suite/qubo/pool.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.suite.qubo.qubo_solver",
+      "path": "03_Code/suite/qubo/qubo_solver.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.suite.qubo.temp_monitor",
+      "path": "03_Code/suite/qubo/temp_monitor.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 1
+    },
+    {
+      "name": "03_Code.suite.qubo.test_client",
+      "path": "03_Code/suite/qubo/test_client.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.suite.qubo.wallet",
+      "path": "03_Code/suite/qubo/wallet.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.suite.tests.run_all",
+      "path": "03_Code/suite/tests/run_all.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.suite.tests.test_claude_science_enhancements",
+      "path": "03_Code/suite/tests/test_claude_science_enhancements.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.suite.tests.test_coevo",
+      "path": "03_Code/suite/tests/test_coevo.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.suite.tests.test_coevolution_router",
+      "path": "03_Code/suite/tests/test_coevolution_router.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.suite.tests.test_creative_problem_solving",
+      "path": "03_Code/suite/tests/test_creative_problem_solving.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 1
+    },
+    {
+      "name": "03_Code.suite.tests.test_fusion_hero_node",
+      "path": "03_Code/suite/tests/test_fusion_hero_node.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 1
+    },
+    {
+      "name": "03_Code.suite.tests.test_ghosthunt_hook",
+      "path": "03_Code/suite/tests/test_ghosthunt_hook.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.suite.tests.test_layer_integration",
+      "path": "03_Code/suite/tests/test_layer_integration.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.suite.tests.test_middle_out",
+      "path": "03_Code/suite/tests/test_middle_out.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.suite.tests.test_springloop",
+      "path": "03_Code/suite/tests/test_springloop.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.suite.tests.test_structured_output",
+      "path": "03_Code/suite/tests/test_structured_output.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.suite.tools.bench",
+      "path": "03_Code/suite/tools/bench.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.suite.tools.extract_pdf_force",
+      "path": "03_Code/suite/tools/extract_pdf_force.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.suite.tools.fusion_bottleneck_cleanup",
+      "path": "03_Code/suite/tools/fusion_bottleneck_cleanup.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.suite.tools.fusion_bottleneck_diag",
+      "path": "03_Code/suite/tools/fusion_bottleneck_diag.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.suite.tools.fusion_next_action",
+      "path": "03_Code/suite/tools/fusion_next_action.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.suite.tools.fusion_status",
+      "path": "03_Code/suite/tools/fusion_status.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.suite.tools.heavy_job",
+      "path": "03_Code/suite/tools/heavy_job.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.suite.tools.stress_test_big_benchmark",
+      "path": "03_Code/suite/tools/stress_test_big_benchmark.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.suite.tools.test_ssd_langzeit",
+      "path": "03_Code/suite/tools/test_ssd_langzeit.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.suite.tools.test_vcache_adapt",
+      "path": "03_Code/suite/tools/test_vcache_adapt.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.suite.tools.trigger_heavy_job",
+      "path": "03_Code/suite/tools/trigger_heavy_job.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.timespace_token_management",
+      "path": "03_Code/timespace_token_management.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.TokenManagementSystem",
+      "path": "03_Code/TokenManagementSystem.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.tools.core_disk_cleanup",
+      "path": "03_Code/tools/core_disk_cleanup.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.tools.extract_pdf_force",
+      "path": "03_Code/tools/extract_pdf_force.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.tools.generate_missing_assets",
+      "path": "03_Code/tools/generate_missing_assets.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.tools.gpu_fan_automation_amd",
+      "path": "03_Code/tools/gpu_fan_automation_amd.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.tools.qb_qubo",
+      "path": "03_Code/tools/qb_qubo.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "03_Code.tools.scan_multithreaded",
+      "path": "03_Code/tools/scan_multithreaded.py",
+      "kind": "python",
+      "layer": "suite",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "rust_engine_crate",
+      "path": "rust_engine_crate/Cargo.toml",
+      "kind": "rust-crate",
+      "layer": "mainframe",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "pms_rust_kernel_crate",
+      "path": "pms_rust_kernel_crate/Cargo.toml",
+      "kind": "rust-crate",
+      "layer": "knowledge",
+      "placeholder_markers": 0
+    },
+    {
+      "name": "fusion-hero-os",
+      "path": "package.json",
+      "kind": "js-package",
+      "layer": "surface",
+      "placeholder_markers": 0
+    }
+  ],
+  "edges": [
+    {
+      "src": "fusion_hero_os.bridge",
+      "dst": "fusion_hero_os.bridge.gateway",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "fusion_hero_os.bridge",
+      "dst": "fusion_hero_os.bridge.router",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "fusion_hero_os.bridge.router",
+      "dst": "fusion_hero_os.core.dispatcher",
+      "deferred": true,
+      "resolved_by": "path"
+    },
+    {
+      "src": "fusion_hero_os.bridge.router",
+      "dst": "fusion_hero_os.core.dispatcher",
+      "deferred": true,
+      "resolved_by": "path"
+    },
+    {
+      "src": "fusion_hero_os.core",
+      "dst": "fusion_hero_os.registry",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "fusion_hero_os.core.dispatcher",
+      "dst": "fusion_hero_os.config",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "fusion_hero_os.core.dispatcher",
+      "dst": "fusion_hero_os.core.base_module",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "fusion_hero_os.core.dispatcher",
+      "dst": "fusion_hero_os.modules",
+      "deferred": true,
+      "resolved_by": "path"
+    },
+    {
+      "src": "fusion_hero_os.core.heroic_core",
+      "dst": "fusion_hero_os.core.heroic_core_orchestrator",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "fusion_hero_os.core.heroic_core",
+      "dst": "fusion_hero_os.core.universal_llm_router",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "fusion_hero_os.core.heroic_core",
+      "dst": "fusion_hero_os.core.psycholysis_trigger",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "fusion_hero_os.core.heroic_core_orchestrator",
+      "dst": "fusion_hero_os.core.universal_llm_router",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "fusion_hero_os.core.heroic_core_orchestrator",
+      "dst": "fusion_hero_os.core.heroic_core",
+      "deferred": true,
+      "resolved_by": "path"
+    },
+    {
+      "src": "fusion_hero_os.core.heroic_core_orchestrator",
+      "dst": "ascension_os.core.ascension_core",
+      "deferred": true,
+      "resolved_by": "path"
+    },
+    {
+      "src": "fusion_hero_os.core.inference_scheduler_qubo",
+      "dst": "03_Code.core.qb_qubo",
+      "deferred": false,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "fusion_hero_os.core.layer_registry",
+      "dst": "ascension_os.core.ascension_core",
+      "deferred": true,
+      "resolved_by": "path"
+    },
+    {
+      "src": "fusion_hero_os.core.masterseed_sync",
+      "dst": "fusion_hero_os.core.heroic_core_orchestrator",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "fusion_hero_os.core.models",
+      "dst": "fusion_hero_os.providers.base",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "fusion_hero_os.core.universal_llm_router",
+      "dst": "fusion_hero_os.core.heroic_core_orchestrator",
+      "deferred": true,
+      "resolved_by": "path"
+    },
+    {
+      "src": "fusion_hero_os.core.universal_llm_router",
+      "dst": "fusion_hero_os.providers.base",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "fusion_hero_os.core.universal_llm_router",
+      "dst": "fusion_hero_os.providers.claude_provider",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "fusion_hero_os.core.universal_llm_router",
+      "dst": "fusion_hero_os.providers.grok_provider",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "fusion_hero_os.core.universal_llm_router",
+      "dst": "fusion_hero_os.providers.everyapi_provider",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "fusion_hero_os.core.universal_llm_router",
+      "dst": "fusion_hero_os.providers.internal_provider",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "fusion_hero_os.core.universal_llm_router",
+      "dst": "fusion_hero_os.core.psycholysis_trigger",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "fusion_hero_os.engine.mainframe",
+      "dst": "ascension_os.evolution.generational_engine",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "fusion_hero_os.engine.mining_qubo",
+      "dst": "fusion_hero_os.methodology.connectors",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "fusion_hero_os.engine.mining_qubo",
+      "dst": "fusion_hero_os.engine.mainframe",
+      "deferred": true,
+      "resolved_by": "path"
+    },
+    {
+      "src": "fusion_hero_os.integrations.phone_link",
+      "dst": "fusion_hero_os.integrations.phone_link.reader",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "fusion_hero_os.mcp.fhero_mcp_server",
+      "dst": "fusion_hero_os.core.inference_scheduler_qubo",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "fusion_hero_os.modules",
+      "dst": "fusion_hero_os.core.base_module",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "fusion_hero_os.modules",
+      "dst": "fusion_hero_os.modules.automatic_archiving",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "fusion_hero_os.modules",
+      "dst": "fusion_hero_os.modules.code_review",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "fusion_hero_os.modules",
+      "dst": "fusion_hero_os.modules.conversation_context",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "fusion_hero_os.modules",
+      "dst": "fusion_hero_os.modules.formal_mathematics",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "fusion_hero_os.modules",
+      "dst": "fusion_hero_os.modules.generational_evolution",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "fusion_hero_os.modules",
+      "dst": "fusion_hero_os.modules.live_process_tracking",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "fusion_hero_os.modules",
+      "dst": "fusion_hero_os.modules.mer",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "fusion_hero_os.modules",
+      "dst": "fusion_hero_os.modules.qubo_integration",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "fusion_hero_os.modules",
+      "dst": "fusion_hero_os.modules.self_modify",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "fusion_hero_os.modules",
+      "dst": "fusion_hero_os.modules.weltraudaimonia",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "fusion_hero_os.modules",
+      "dst": "fusion_hero_os.modules.heroic_llm_ea",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "fusion_hero_os.modules",
+      "dst": "fusion_hero_os.modules.image_orchestrator",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "fusion_hero_os.modules",
+      "dst": "fusion_hero_os.modules.timespace_token",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "fusion_hero_os.modules",
+      "dst": "fusion_hero_os.modules.phone_link",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "fusion_hero_os.modules.automatic_archiving",
+      "dst": "fusion_hero_os.core.base_module",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "fusion_hero_os.modules.automatic_archiving",
+      "dst": "fusion_hero_os.methodology.core_modules",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "fusion_hero_os.modules.code_review",
+      "dst": "fusion_hero_os.core.base_module",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "fusion_hero_os.modules.conversation_context",
+      "dst": "fusion_hero_os.core.base_module",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "fusion_hero_os.modules.formal_mathematics",
+      "dst": "fusion_hero_os.core.base_module",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "fusion_hero_os.modules.formal_mathematics",
+      "dst": "fusion_hero_os.methodology.core_modules",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "fusion_hero_os.modules.generational_evolution",
+      "dst": "fusion_hero_os.core.base_module",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "fusion_hero_os.modules.generational_evolution",
+      "dst": "fusion_hero_os.engine.mainframe",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "fusion_hero_os.modules.heroic_llm_ea",
+      "dst": "fusion_hero_os.modules.heroic_llm_ea.orchestrator",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "fusion_hero_os.modules.heroic_llm_ea",
+      "dst": "fusion_hero_os.modules.heroic_llm_ea.providers",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "fusion_hero_os.modules.heroic_llm_ea.evolution",
+      "dst": "fusion_hero_os.modules.heroic_llm_ea.fitness",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "fusion_hero_os.modules.heroic_llm_ea.evolution",
+      "dst": "fusion_hero_os.modules.heroic_llm_ea.memory",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "fusion_hero_os.modules.heroic_llm_ea.fitness",
+      "dst": "fusion_hero_os.methodology.core_modules",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "fusion_hero_os.modules.heroic_llm_ea.orchestrator",
+      "dst": "fusion_hero_os.core.base_module",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "fusion_hero_os.modules.heroic_llm_ea.orchestrator",
+      "dst": "fusion_hero_os.modules.heroic_llm_ea.evolution",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "fusion_hero_os.modules.heroic_llm_ea.orchestrator",
+      "dst": "fusion_hero_os.modules.heroic_llm_ea.fitness",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "fusion_hero_os.modules.heroic_llm_ea.orchestrator",
+      "dst": "fusion_hero_os.modules.heroic_llm_ea.memory",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "fusion_hero_os.modules.heroic_llm_ea.orchestrator",
+      "dst": "fusion_hero_os.modules.heroic_llm_ea.providers",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "fusion_hero_os.modules.image_orchestrator",
+      "dst": "fusion_hero_os.modules.image_orchestrator.orchestrator",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "fusion_hero_os.modules.image_orchestrator",
+      "dst": "fusion_hero_os.modules.image_orchestrator.providers",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "fusion_hero_os.modules.image_orchestrator",
+      "dst": "fusion_hero_os.modules.image_orchestrator.rate_limiter",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "fusion_hero_os.modules.image_orchestrator.orchestrator",
+      "dst": "fusion_hero_os.core.base_module",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "fusion_hero_os.modules.image_orchestrator.orchestrator",
+      "dst": "fusion_hero_os.modules.image_orchestrator.job_queue",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "fusion_hero_os.modules.image_orchestrator.orchestrator",
+      "dst": "fusion_hero_os.modules.image_orchestrator.pipeline",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "fusion_hero_os.modules.image_orchestrator.orchestrator",
+      "dst": "fusion_hero_os.modules.image_orchestrator.providers",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "fusion_hero_os.modules.image_orchestrator.orchestrator",
+      "dst": "fusion_hero_os.modules.image_orchestrator.rate_limiter",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "fusion_hero_os.modules.image_orchestrator.pipeline",
+      "dst": "fusion_hero_os.modules.image_orchestrator.job_queue",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "fusion_hero_os.modules.image_orchestrator.pipeline",
+      "dst": "fusion_hero_os.modules.image_orchestrator.prompt_builder",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "fusion_hero_os.modules.image_orchestrator.pipeline",
+      "dst": "fusion_hero_os.modules.image_orchestrator.providers",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "fusion_hero_os.modules.image_orchestrator.pipeline",
+      "dst": "fusion_hero_os.modules.image_orchestrator.rate_limiter",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "fusion_hero_os.modules.live_process_tracking",
+      "dst": "fusion_hero_os.core.base_module",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "fusion_hero_os.modules.mer",
+      "dst": "fusion_hero_os.core.base_module",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "fusion_hero_os.modules.phone_link",
+      "dst": "fusion_hero_os.core.base_module",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "fusion_hero_os.modules.phone_link",
+      "dst": "fusion_hero_os.integrations.phone_link.reader",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "fusion_hero_os.modules.qubo_integration",
+      "dst": "fusion_hero_os.core.base_module",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "fusion_hero_os.modules.qubo_integration",
+      "dst": "fusion_hero_os.engine.mainframe",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "fusion_hero_os.modules.self_modify",
+      "dst": "fusion_hero_os.core.base_module",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "fusion_hero_os.modules.self_modify",
+      "dst": "fusion_hero_os.engine.mainframe",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "fusion_hero_os.modules.timespace_token",
+      "dst": "fusion_hero_os.modules.timespace_token.module",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "fusion_hero_os.modules.timespace_token",
+      "dst": "fusion_hero_os.modules.timespace_token.manager",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "fusion_hero_os.modules.timespace_token.manager",
+      "dst": "fusion_hero_os.modules.timespace_token.bottleneck",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "fusion_hero_os.modules.timespace_token.manager",
+      "dst": "fusion_hero_os.modules.timespace_token.geometry",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "fusion_hero_os.modules.timespace_token.manager",
+      "dst": "03_Code.TokenManagementSystem",
+      "deferred": false,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "fusion_hero_os.modules.timespace_token.module",
+      "dst": "fusion_hero_os.core.base_module",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "fusion_hero_os.modules.timespace_token.module",
+      "dst": "fusion_hero_os.modules.timespace_token.geometry",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "fusion_hero_os.modules.timespace_token.module",
+      "dst": "fusion_hero_os.modules.timespace_token.manager",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "fusion_hero_os.modules.timespace_token.module",
+      "dst": "03_Code.TokenManagementSystem",
+      "deferred": false,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "fusion_hero_os.modules.weltraudaimonia",
+      "dst": "fusion_hero_os.core.base_module",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "fusion_hero_os.providers",
+      "dst": "fusion_hero_os.providers.base",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "fusion_hero_os.providers",
+      "dst": "fusion_hero_os.providers.claude_provider",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "fusion_hero_os.providers",
+      "dst": "fusion_hero_os.providers.grok_provider",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "fusion_hero_os.providers",
+      "dst": "fusion_hero_os.providers.everyapi_provider",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "fusion_hero_os.providers",
+      "dst": "fusion_hero_os.providers.internal_provider",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "fusion_hero_os.providers.claude_provider",
+      "dst": "fusion_hero_os.providers.base",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "fusion_hero_os.providers.everyapi_provider",
+      "dst": "fusion_hero_os.providers.base",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "fusion_hero_os.providers.grok_provider",
+      "dst": "fusion_hero_os.providers.base",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "fusion_hero_os.providers.internal_provider",
+      "dst": "fusion_hero_os.providers.base",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "ascension_os.core.ascension_core",
+      "dst": "fusion_hero_os.core.universal_llm_router",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "ascension_os.core.ascension_core",
+      "dst": "fusion_hero_os.core.psycholysis_trigger",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "ascension_os.core.ascension_core",
+      "dst": "fusion_hero_os.core.heroic_core",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "ascension_os.core.ascension_core",
+      "dst": "ascension_os.evolution.generational_engine",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "ascension_os.core.ascension_core",
+      "dst": "ascension_os.core.coevolutionary_closure",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "ascension_os.core.ascension_core",
+      "dst": "ascension_os.core.persistent_sisyphos",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "ascension_os.core.persistent_sisyphos",
+      "dst": "fusion_hero_os.core.universal_llm_router",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "ascension_os.core.persistent_sisyphos",
+      "dst": "ascension_os.core.coevolutionary_closure",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "core.heroic_core_orchestrator",
+      "dst": "fusion_hero_os.core.heroic_core_orchestrator",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "kernel.bridge.fhos_ipc_client",
+      "dst": "fusion_hero_os.bridge.router",
+      "deferred": true,
+      "resolved_by": "path"
+    },
+    {
+      "src": "kernel.bridge.fhos_ipc_server",
+      "dst": "fusion_hero_os.bridge.router",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "tests.test_automation_scheduler",
+      "dst": "03_Code.core.automation_scheduler_node",
+      "deferred": false,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "tests.test_connectivity",
+      "dst": "03_Code.Dashboard.connectivity",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "tests.test_connectivity",
+      "dst": "03_Code.Dashboard.connectivity",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "tests.test_connectivity",
+      "dst": "03_Code.Dashboard.connectivity",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "tests.test_connectivity",
+      "dst": "tests.conftest",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "tests.test_conversation_context_faden",
+      "dst": "03_Code.core.conversation_context_core",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "tests.test_conversation_context_faden",
+      "dst": "03_Code.Dashboard.faden_store",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "tests.test_dependency_atlas",
+      "dst": "fusion_hero_os.core.dependency_atlas",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "tests.test_dispatcher",
+      "dst": "fusion_hero_os.core.base_module",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "tests.test_dispatcher",
+      "dst": "fusion_hero_os.core.dispatcher",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "tests.test_dispatcher",
+      "dst": "fusion_hero_os.modules",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "tests.test_dispatcher",
+      "dst": "fusion_hero_os.modules.conversation_context",
+      "deferred": true,
+      "resolved_by": "path"
+    },
+    {
+      "src": "tests.test_dispatcher",
+      "dst": "fusion_hero_os.modules.generational_evolution",
+      "deferred": true,
+      "resolved_by": "path"
+    },
+    {
+      "src": "tests.test_dispatcher",
+      "dst": "fusion_hero_os.modules.qubo_integration",
+      "deferred": true,
+      "resolved_by": "path"
+    },
+    {
+      "src": "tests.test_erkenntnisse_index",
+      "dst": "fusion_hero_os.core.layer_registry",
+      "deferred": true,
+      "resolved_by": "path"
+    },
+    {
+      "src": "tests.test_faden_store",
+      "dst": "03_Code.Dashboard.faden_store",
+      "deferred": false,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "tests.test_fhero_mcp_server",
+      "dst": "fusion_hero_os.mcp.fhero_mcp_server",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "tests.test_fusion_settings",
+      "dst": "03_Code.Dashboard.fusion_settings",
+      "deferred": false,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "tests.test_grok_export_modules",
+      "dst": "03_Code.TokenManagementSystem",
+      "deferred": false,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "tests.test_grok_export_modules",
+      "dst": "fusion_hero_os.modules.timespace_token",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "tests.test_grok_export_modules",
+      "dst": "fusion_hero_os.modules.timespace_token.bottleneck",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "tests.test_grok_export_modules",
+      "dst": "fusion_hero_os.modules.heroic_llm_ea",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "tests.test_grok_export_modules",
+      "dst": "fusion_hero_os.modules.heroic_llm_ea.providers",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "tests.test_grok_export_modules",
+      "dst": "fusion_hero_os.modules.image_orchestrator",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "tests.test_grok_export_modules",
+      "dst": "fusion_hero_os.modules.image_orchestrator.rate_limiter",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "tests.test_grok_export_modules",
+      "dst": "fusion_hero_os.modules.image_orchestrator.prompt_builder",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "tests.test_grok_export_modules",
+      "dst": "fusion_hero_os.core.dispatcher",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "tests.test_heroic_core_orchestrator",
+      "dst": "fusion_hero_os.core.heroic_core_orchestrator",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "tests.test_heroic_math_engine",
+      "dst": "fusion_hero_os.core.heroic_math_engine",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "tests.test_heroic_math_engine",
+      "dst": "fusion_hero_os.core.heroic_math_engine",
+      "deferred": true,
+      "resolved_by": "path"
+    },
+    {
+      "src": "tests.test_inference_scheduler_qubo",
+      "dst": "fusion_hero_os.core.inference_scheduler_qubo",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "tests.test_ipc_bridge",
+      "dst": "fusion_hero_os.bridge.gateway",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "tests.test_ipc_bridge",
+      "dst": "fusion_hero_os.bridge.router",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "tests.test_layer_registry",
+      "dst": "fusion_hero_os.core.layer_registry",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "tests.test_masterseed_semilattice",
+      "dst": "fusion_hero_os.core.heroic_core_orchestrator",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "tests.test_masterseed_semilattice",
+      "dst": "fusion_hero_os.core.masterseed_sync",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "tests.test_masterseed_sync",
+      "dst": "fusion_hero_os.core.heroic_core_orchestrator",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "tests.test_masterseed_sync",
+      "dst": "fusion_hero_os.core.masterseed_sync",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "tests.test_masterseed_sync",
+      "dst": "fusion_hero_os.engine.mainframe",
+      "deferred": true,
+      "resolved_by": "path"
+    },
+    {
+      "src": "tests.test_mining_qubo",
+      "dst": "fusion_hero_os.engine.mining_qubo",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "tests.test_phone_link",
+      "dst": "fusion_hero_os.integrations.phone_link.reader",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "tests.test_phone_link",
+      "dst": "fusion_hero_os.modules.phone_link",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "tests.test_psycholysis_trigger",
+      "dst": "fusion_hero_os.core.psycholysis_trigger",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "tests.test_quantum_cognition",
+      "dst": "fusion_hero_os.core.quantum_cognition",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "tests.test_registry",
+      "dst": "fusion_hero_os.registry",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "tests.test_solver",
+      "dst": "fusion_hero_os.engine.mainframe",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "tests.test_suite_integration",
+      "dst": "03_Code.core.qb_qubo",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "tests.test_suite_integration",
+      "dst": "03_Code.core.ghosthunt_hook",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "tests.test_suite_integration",
+      "dst": "03_Code.core.suite_bridge",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "tests.test_suite_integration",
+      "dst": "03_Code.core.suite_pipeline",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "tests.test_suite_integration",
+      "dst": "03_Code.core.heroic_orchestration",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "tests.test_supabase_sync",
+      "dst": "03_Code.Dashboard.watch_party",
+      "deferred": false,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "tests.test_supabase_sync",
+      "dst": "03_Code.Dashboard.supabase_store",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "tests.test_supabase_sync",
+      "dst": "03_Code.Dashboard.supabase_store",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "tests.test_supabase_sync",
+      "dst": "03_Code.Dashboard.fusion_settings",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "tests.test_watch_party",
+      "dst": "03_Code.Dashboard.watch_party",
+      "deferred": false,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "tests.test_watch_sync_server",
+      "dst": "03_Code.Dashboard.watch_party",
+      "deferred": false,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "tests.test_watch_sync_server",
+      "dst": "03_Code.Dashboard.watch_sync_server",
+      "deferred": false,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "tests.test_watch_sync_server",
+      "dst": "tests.conftest",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "tests.test_watch_sync_server",
+      "dst": "tests.conftest",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "tests.test_watch_sync_server",
+      "dst": "tests.conftest",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "tests.test_watch_sync_server",
+      "dst": "tests.conftest",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "scripts.dispatcher_status",
+      "dst": "fusion_hero_os.core.dispatcher",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "03_Code.audit_agent",
+      "dst": "03_Code.hero_guide_ide",
+      "deferred": false,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.audit_agent",
+      "dst": "03_Code.knowledge_graph",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core",
+      "dst": "03_Code.core.heroic_orchestration",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "03_Code.core",
+      "dst": "03_Code.core.hyperthreading_config",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "03_Code.core",
+      "dst": "03_Code.core.virtual_gpu_hyperthreading",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "03_Code.core",
+      "dst": "03_Code.core.ssd_longterm_cache",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "03_Code.core.agent_backend_router",
+      "dst": "03_Code.core.local_llama",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.agent_backend_router",
+      "dst": "03_Code.model_connectors",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.agent_backend_router",
+      "dst": "03_Code.Dashboard.grok_bridge",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.agent_backend_router",
+      "dst": "03_Code.core.local_llama",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.agent_backend_router",
+      "dst": "03_Code.Dashboard.grok_bridge",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.agent_control",
+      "dst": "03_Code.core.foundation_loader",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.agent_control",
+      "dst": "03_Code.core.conversation_context_core",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.agent_control",
+      "dst": "fusion_hero_os.methodology.core_modules",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.agent_control",
+      "dst": "fusion_hero_os.methodology.core_modules",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.agent_control",
+      "dst": "03_Code.core.CriticalMetaAnalysisCoreModule",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.agent_control",
+      "dst": "03_Code.core.agent_backend_router",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.automation_scheduler_node",
+      "dst": "03_Code.core.qb_qubo",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.automation_scheduler_node",
+      "dst": "03_Code.Dashboard.fusion_profile",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.classical",
+      "dst": "03_Code.core.qb_qubo",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.coevolution_router",
+      "dst": "03_Code.core.judge_panel",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.conversation_context_core",
+      "dst": "03_Code.core.resource_workflow",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.conversation_context_core",
+      "dst": "03_Code.Dashboard.faden_store",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.conversation_context_core",
+      "dst": "03_Code.TokenManagementSystem",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.cpu_adaptive_tuner",
+      "dst": "03_Code.core.hyperthreading_config",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.cpu_adaptive_tuner",
+      "dst": "03_Code.core.resource_coupler",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.creative_problem_solving",
+      "dst": "03_Code.core.agent_backend_router",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.dynamic_orchestration_core",
+      "dst": "03_Code.core.agent_backend_router",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.dynamic_orchestration_core",
+      "dst": "03_Code.core.claude_science",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.dynamic_orchestration_core",
+      "dst": "03_Code.core.claude_science",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.dynamic_orchestration_core",
+      "dst": "03_Code.core.agent_control",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.dynamic_orchestration_core",
+      "dst": "03_Code.core.qubo_llama_bridge",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.dynamic_orchestration_core",
+      "dst": "03_Code.core.local_llama",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.dynamic_orchestration_core",
+      "dst": "03_Code.core.heroic_orchestration",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.entwicklungsquant_live",
+      "dst": "03_Code.core.entwicklungsquant_bus",
+      "deferred": false,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.entwicklungsquant_live",
+      "dst": "03_Code.core.automation_scheduler_node",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.entwicklungsquant_live",
+      "dst": "03_Code.core.conversation_context_core",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.entwicklungsquant_live",
+      "dst": "03_Code.Dashboard.faden_store",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.first_install_bootstrap",
+      "dst": "03_Code.core.heroic_orchestration",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.first_install_bootstrap",
+      "dst": "03_Code.core.module_registry",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.first_install_bootstrap",
+      "dst": "03_Code.Dashboard.supabase_client",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.first_install_bootstrap",
+      "dst": "03_Code.core.provider_switcher",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.first_install_bootstrap",
+      "dst": "03_Code.core.claude_science",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.first_install_bootstrap",
+      "dst": "03_Code.core.windows_substrate",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.first_install_bootstrap",
+      "dst": "fusion_hero_os.methodology.connectors",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.first_install_bootstrap",
+      "dst": "03_Code.core.agent_control",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.first_install_bootstrap",
+      "dst": "03_Code.core.resource_coupler",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.first_install_bootstrap",
+      "dst": "03_Code.core.gpu_compute_booster",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.first_install_bootstrap",
+      "dst": "03_Code.core.memory_guard",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.fusion_hero_node",
+      "dst": "03_Code.core.creative_problem_solving",
+      "deferred": false,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.fusion_hero_node",
+      "dst": "03_Code.core.hyperthreading_config",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.fusion_hero_node",
+      "dst": "03_Code.core.resource_workflow",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.fusion_hero_node",
+      "dst": "03_Code.core.hyperthreading_config",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.fusion_hero_node",
+      "dst": "03_Code.core.resource_workflow",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.fusion_hero_node",
+      "dst": "03_Code.core.cost_estimator_node",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.fusion_hero_node",
+      "dst": "03_Code.core.conversation_context_core",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.GenerationalEvolutionProtocolCoreModule",
+      "dst": "03_Code.core.module_registry",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.GenerationalEvolutionProtocolCoreModule",
+      "dst": "03_Code.core.module_registry",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.ghosthunt_hook",
+      "dst": "03_Code.core.geisterjagd_banach_viz",
+      "deferred": false,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.ghosthunt_hook",
+      "dst": "03_Code.core.qb_qubo",
+      "deferred": false,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.gpu_compute_booster",
+      "dst": "03_Code.core.gpu_memory_allocator",
+      "deferred": false,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.gpu_memory_allocator",
+      "dst": "03_Code.core.virtual_gpu_hyperthreading",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.gpu_vram_prioritizer",
+      "dst": "03_Code.core.gpu_memory_allocator",
+      "deferred": false,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.gpu_vram_prioritizer",
+      "dst": "03_Code.core.gpu_compute_booster",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.gpu_vram_prioritizer",
+      "dst": "03_Code.core.gpu_memory_allocator",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.heroic_orchestration",
+      "dst": "fusion_hero_os.orchestration.agents",
+      "deferred": false,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.heroic_orchestration",
+      "dst": "src.core.dynamic_orchestration_core",
+      "deferred": false,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.heroic_orchestration",
+      "dst": "03_Code.suite.qubo.cache_integration",
+      "deferred": false,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.heroic_orchestration",
+      "dst": "03_Code.core.ghosthunt_hook",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.heroic_orchestration",
+      "dst": "03_Code.core.claude_science",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.heroic_orchestration",
+      "dst": "03_Code.core.agent_control",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.heroic_orchestration",
+      "dst": "03_Code.core.agent_backend_router",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.heroic_orchestration",
+      "dst": "03_Code.core.hyperthreading_config",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.heroic_orchestration",
+      "dst": "03_Code.core.agent_backend_router",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.heroic_orchestration",
+      "dst": "03_Code.core.conversation_context_core",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.heroic_orchestration",
+      "dst": "03_Code.suite.qubo.qubo_solver",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.heroic_orchestration",
+      "dst": "03_Code.core.virtual_gpu_hyperthreading",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.heroic_orchestration",
+      "dst": "03_Code.core.hyperthreading_config",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.heroic_orchestration",
+      "dst": "03_Code.core.suite_bridge",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.heroic_orchestration",
+      "dst": "03_Code.core.conversation_context_core",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.heroic_orchestration",
+      "dst": "03_Code.core.agent_control",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.heroic_orchestration",
+      "dst": "03_Code.core.agent_control",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.heroic_orchestration",
+      "dst": "03_Code.core.llama_subagent_tester",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.heroic_orchestration",
+      "dst": "03_Code.core.virtual_gpu_hyperthreading",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.heroic_orchestration",
+      "dst": "03_Code.core.agent_control",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.heroic_orchestration",
+      "dst": "03_Code.core.conversation_context_core",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.heroic_orchestration",
+      "dst": "03_Code.core.virtual_gpu_hyperthreading",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.heroic_science_audit",
+      "dst": "fusion_hero_os.methodology.core_modules",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.heroic_science_audit",
+      "dst": "03_Code.core.claude_science",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.hyperthreading_config",
+      "dst": "03_Code.core.gpu_memory_allocator",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.hyperthreading_config",
+      "dst": "03_Code.core.virtual_gpu_hyperthreading",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.hyperthreading_config",
+      "dst": "03_Code.core.ssd_longterm_cache",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.judge_panel",
+      "dst": "03_Code.core.structured_output",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.llama_subagent_tester",
+      "dst": "03_Code.core.local_llama",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.llama_subagent_tester",
+      "dst": "03_Code.core.qubo_llama_bridge",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.llama_subagent_tester",
+      "dst": "03_Code.core.local_llama",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.llama_subagent_tester",
+      "dst": "03_Code.core.resource_workflow",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.llama_subagent_tester",
+      "dst": "03_Code.core.resource_workflow",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.llama_subagent_tester",
+      "dst": "03_Code.core.conversation_context_core",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.llama_subagent_tester",
+      "dst": "03_Code.core.conversation_context_core",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.llama_subagent_tester",
+      "dst": "03_Code.core.conversation_context_core",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.llama_subagent_tester",
+      "dst": "03_Code.core.resource_workflow",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.llama_subagent_tester",
+      "dst": "03_Code.core.conversation_context_core",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.llama_subagent_tester",
+      "dst": "03_Code.core.conversation_context_core",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.local_llama",
+      "dst": "03_Code.internal_llm.llama_cli_backend",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.local_llama",
+      "dst": "03_Code.core.qubo_llama_bridge",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.local_llama",
+      "dst": "03_Code.core.qubo_llama_bridge",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.local_llama",
+      "dst": "03_Code.core.claude_science",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.local_llama",
+      "dst": "03_Code.core.qubo_llama_bridge",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.local_llama",
+      "dst": "03_Code.core.qubo_llama_bridge",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.memory_guard",
+      "dst": "03_Code.core.gpu_compute_booster",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.memory_guard",
+      "dst": "03_Code.core.gpu_memory_allocator",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.memory_guard",
+      "dst": "03_Code.core.virtual_gpu_hyperthreading",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.memory_guard",
+      "dst": "03_Code.core.gpu_memory_allocator",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.memory_guard",
+      "dst": "03_Code.core.cpu_adaptive_tuner",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.module_registry",
+      "dst": "03_Code.Dashboard.supabase_client",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.module_registry",
+      "dst": "03_Code.core.foundation_loader",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.module_registry",
+      "dst": "03_Code.heroic-highest-layer.highest_layer",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.module_registry",
+      "dst": "03_Code.core.suite_bridge",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.parallel_internal_optimizer",
+      "dst": "03_Code.internal_llm.system_prompt_normalize",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.parallel_internal_optimizer",
+      "dst": "03_Code.core.claude_science",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.parallel_internal_optimizer",
+      "dst": "03_Code.core.llama_subagent_tester",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.parallel_internal_optimizer",
+      "dst": "03_Code.core.conversation_context_core",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.parallel_internal_optimizer",
+      "dst": "03_Code.core.module_registry",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.parallel_internal_optimizer",
+      "dst": "03_Code.Dashboard.supabase_store",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.parallel_internal_optimizer",
+      "dst": "03_Code.core.resource_workflow",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.parallel_internal_optimizer",
+      "dst": "03_Code.core.hyperthreading_config",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.portal_rate_budget_node",
+      "dst": "03_Code.core.entwicklungsquant_bus",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.provider_switcher",
+      "dst": "03_Code.core.local_llama",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.provider_switcher",
+      "dst": "03_Code.core.claude_science",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.provider_switcher",
+      "dst": "03_Code.core.agent_backend_router",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.provider_switcher",
+      "dst": "03_Code.core.claude_science",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.provider_switcher",
+      "dst": "03_Code.core.local_llama",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.qubo_llama_bridge",
+      "dst": "03_Code.core.heroic_orchestration",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.qubo_llama_bridge",
+      "dst": "03_Code.core.qb_qubo",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.qubo_llama_bridge",
+      "dst": "03_Code.core.heroic_orchestration",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.qubo_llama_bridge",
+      "dst": "03_Code.core.qb_qubo",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.resource_coupler",
+      "dst": "03_Code.core.gpu_memory_allocator",
+      "deferred": false,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.resource_coupler",
+      "dst": "03_Code.core.cpu_adaptive_tuner",
+      "deferred": false,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.resource_coupler",
+      "dst": "03_Code.core.gpu_compute_booster",
+      "deferred": false,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.resource_coupler",
+      "dst": "03_Code.core.virtual_gpu_hyperthreading",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.resource_coupler",
+      "dst": "03_Code.core.virtual_gpu_hyperthreading",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.resource_coupler",
+      "dst": "03_Code.core.gpu_compute_booster",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.resource_coupler",
+      "dst": "03_Code.core.gpu_vram_prioritizer",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.session_handover_node",
+      "dst": "03_Code.core.automation_scheduler_node",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.session_handover_node",
+      "dst": "03_Code.Dashboard.faden_store",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.session_handover_node",
+      "dst": "03_Code.core.conversation_context_core",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.suite_pipeline",
+      "dst": "03_Code.core.ghosthunt_hook",
+      "deferred": false,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.core.v8_core_bridge",
+      "dst": "fusion_hero_os.bridge.gateway",
+      "deferred": true,
+      "resolved_by": "path"
+    },
+    {
+      "src": "03_Code.core.v8_core_bridge",
+      "dst": "fusion_hero_os.bridge.gateway",
+      "deferred": true,
+      "resolved_by": "path"
+    },
+    {
+      "src": "03_Code.Dashboard.agent_resource_allocator",
+      "dst": "03_Code.Dashboard.fusion_profile",
+      "deferred": false,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.agent_resource_allocator",
+      "dst": "03_Code.core.hyperthreading_config",
+      "deferred": false,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.agent_resource_allocator",
+      "dst": "03_Code.model_connectors",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.api_extensions",
+      "dst": "fusion_hero_os.integrations.phone_link",
+      "deferred": true,
+      "resolved_by": "path"
+    },
+    {
+      "src": "03_Code.Dashboard.api_extensions",
+      "dst": "fusion_hero_os.integrations.phone_link.reader",
+      "deferred": true,
+      "resolved_by": "path"
+    },
+    {
+      "src": "03_Code.Dashboard.api_extensions",
+      "dst": "fusion_hero_os.integrations.phone_link.reader",
+      "deferred": true,
+      "resolved_by": "path"
+    },
+    {
+      "src": "03_Code.Dashboard.api_extensions",
+      "dst": "03_Code.Dashboard.connectivity",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.api_extensions",
+      "dst": "03_Code.Dashboard.connectivity",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.api_extensions",
+      "dst": "03_Code.Dashboard.fusion_settings",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.api_extensions",
+      "dst": "03_Code.Dashboard.fusion_settings",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.api_extensions",
+      "dst": "03_Code.Dashboard.fusion_settings",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.api_extensions",
+      "dst": "03_Code.Dashboard.fusion_settings",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.api_extensions",
+      "dst": "03_Code.Dashboard.fusion_settings",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.api_extensions",
+      "dst": "03_Code.Dashboard.faden_store",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.api_extensions",
+      "dst": "03_Code.Dashboard.faden_store",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.api_extensions",
+      "dst": "03_Code.Dashboard.faden_store",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.api_extensions",
+      "dst": "03_Code.Dashboard.faden_store",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.api_extensions",
+      "dst": "03_Code.Dashboard.faden_store",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.api_extensions",
+      "dst": "03_Code.Dashboard.watch_party",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.api_extensions",
+      "dst": "03_Code.Dashboard.watch_party",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.api_extensions",
+      "dst": "03_Code.Dashboard.watch_party",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.api_extensions",
+      "dst": "03_Code.Dashboard.watch_sync_server",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.api_extensions",
+      "dst": "03_Code.Dashboard.watch_party",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.api_extensions",
+      "dst": "03_Code.Dashboard.watch_sync_server",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.api_extensions",
+      "dst": "03_Code.Dashboard.watch_sync_server",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.api_extensions",
+      "dst": "03_Code.Dashboard.watch_party",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.api_extensions",
+      "dst": "03_Code.Dashboard.watch_sync_server",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.api_extensions",
+      "dst": "03_Code.Dashboard.watch_party",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.api_extensions",
+      "dst": "03_Code.Dashboard.app",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.api_extensions",
+      "dst": "03_Code.Dashboard.app",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.api_extensions",
+      "dst": "03_Code.core.local_llama",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.api_extensions",
+      "dst": "03_Code.core.local_llama",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.api_extensions",
+      "dst": "03_Code.core.local_llama",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.api_extensions",
+      "dst": "03_Code.Dashboard.autoloader",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.api_extensions",
+      "dst": "03_Code.Dashboard.autoloader",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.api_extensions",
+      "dst": "03_Code.hero_guide_ide",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.api_extensions",
+      "dst": "03_Code.audit_agent",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.api_extensions",
+      "dst": "03_Code.hero_guide_ide",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.api_extensions",
+      "dst": "03_Code.audit_agent",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.api_extensions",
+      "dst": "03_Code.knowledge_graph",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.api_extensions",
+      "dst": "03_Code.knowledge_graph",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.api_extensions",
+      "dst": "03_Code.audit_agent",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.api_extensions",
+      "dst": "03_Code.heroic-highest-layer.highest_layer",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.api_extensions",
+      "dst": "03_Code.audit_agent",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.api_extensions",
+      "dst": "03_Code.Dashboard.supabase_store",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.api_extensions",
+      "dst": "03_Code.Dashboard.app",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.app",
+      "dst": "03_Code.Dashboard.supabase_client",
+      "deferred": false,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.app",
+      "dst": "03_Code.Dashboard.supabase_store",
+      "deferred": false,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.app",
+      "dst": "03_Code.Dashboard.watch_party",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.app",
+      "dst": "03_Code.Dashboard.watch_party",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.app",
+      "dst": "03_Code.Dashboard.watch_party",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.app",
+      "dst": "03_Code.Dashboard.vr_routes",
+      "deferred": false,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.app",
+      "dst": "03_Code.Dashboard.architecture_routes",
+      "deferred": false,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.app",
+      "dst": "03_Code.Dashboard.api_extensions",
+      "deferred": false,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.app",
+      "dst": "03_Code.Dashboard.supabase_background",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.app",
+      "dst": "03_Code.Dashboard.connectivity",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.app",
+      "dst": "03_Code.Dashboard.fusion_settings",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.app",
+      "dst": "03_Code.Dashboard.watch_sync_server",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.app",
+      "dst": "03_Code.Dashboard.watch_sync_server",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.app",
+      "dst": "03_Code.heroic-highest-layer.highest_layer",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.app",
+      "dst": "03_Code.Dashboard.connectivity",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.architecture_routes",
+      "dst": "fusion_hero_os.core.dependency_atlas",
+      "deferred": true,
+      "resolved_by": "path"
+    },
+    {
+      "src": "03_Code.Dashboard.autoloader",
+      "dst": "03_Code.Dashboard.boot_optimizer",
+      "deferred": false,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.autoloader",
+      "dst": "03_Code.Dashboard.fusion_profile",
+      "deferred": false,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.autoloader",
+      "dst": "03_Code.core.hyperthreading_config",
+      "deferred": false,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.autoloader",
+      "dst": "03_Code.Dashboard.meta_layer_windows",
+      "deferred": false,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.autoloader",
+      "dst": "03_Code.core.module_registry",
+      "deferred": false,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.autoloader",
+      "dst": "03_Code.Dashboard.windows_skin",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.autoloader",
+      "dst": "03_Code.Dashboard.windows_perf_tuner",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.autoloader",
+      "dst": "03_Code.Dashboard.process_worker",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.autoloader",
+      "dst": "03_Code.Dashboard.layered_signal_network",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.autoloader",
+      "dst": "03_Code.Dashboard.grok_bridge",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.autoloader",
+      "dst": "03_Code.Dashboard.process_worker",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.autoloader",
+      "dst": "03_Code.Dashboard.boot_optimizer",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.autoloader",
+      "dst": "03_Code.Dashboard.app",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.backends.classical",
+      "dst": "03_Code.core.qb_qubo",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.connectivity",
+      "dst": "03_Code.Dashboard.supabase_store",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.connectivity",
+      "dst": "03_Code.Dashboard.supabase_store",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.connectivity",
+      "dst": "fusion_hero_os.integrations.phone_link",
+      "deferred": true,
+      "resolved_by": "path"
+    },
+    {
+      "src": "03_Code.Dashboard.connectivity",
+      "dst": "03_Code.Dashboard.watch_party",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.connectivity",
+      "dst": "03_Code.Dashboard.app",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.connectivity",
+      "dst": "03_Code.Dashboard.faden_store",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.cyber_layer_windows",
+      "dst": "03_Code.Dashboard.windows_skin",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.cyber_layer_windows",
+      "dst": "03_Code.Dashboard.windows_perf_tuner",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.faden_store",
+      "dst": "03_Code.Dashboard.supabase_store",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.faden_store",
+      "dst": "03_Code.Dashboard.supabase_store",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.faden_store",
+      "dst": "03_Code.Dashboard.supabase_store",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.fusion_settings",
+      "dst": "fusion_hero_os.modules",
+      "deferred": true,
+      "resolved_by": "path"
+    },
+    {
+      "src": "03_Code.Dashboard.fusion_settings",
+      "dst": "03_Code.Dashboard.supabase_store",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.fusion_settings",
+      "dst": "03_Code.Dashboard.fusion_profile",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.fusion_settings",
+      "dst": "03_Code.Dashboard.supabase_store",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.gui.era_design",
+      "dst": "03_Code.Dashboard.windows_skin",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.gui.era_design",
+      "dst": "03_Code.Dashboard.windows_skin",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.heroic_core_mainframe",
+      "dst": "03_Code.core.hyperthreading_config",
+      "deferred": false,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.heroic_core_mainframe",
+      "dst": "03_Code.core.qb_qubo",
+      "deferred": false,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.hyperthreading_config",
+      "dst": "03_Code.core.hyperthreading_config",
+      "deferred": false,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.input_gateway",
+      "dst": "03_Code.Dashboard.grok_bridge",
+      "deferred": false,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.layered_signal_network",
+      "dst": "03_Code.Dashboard.fusion_profile",
+      "deferred": false,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.mainframe_integration",
+      "dst": "03_Code.Dashboard.heroic_core_mainframe",
+      "deferred": false,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.meta_layer_windows",
+      "dst": "03_Code.Dashboard.windows_perf_tuner",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.module_registry",
+      "dst": "03_Code.core.hyperthreading_config",
+      "deferred": false,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.module_registry",
+      "dst": "03_Code.Dashboard.agent_resource_allocator",
+      "deferred": false,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.module_registry",
+      "dst": "03_Code.Dashboard.fusion_profile",
+      "deferred": false,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.module_registry",
+      "dst": "03_Code.Dashboard.boot_optimizer",
+      "deferred": false,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.module_registry",
+      "dst": "03_Code.core.google_multi_account_sync_core",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.module_registry",
+      "dst": "src.core.dynamic_orchestration_core",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.module_registry",
+      "dst": "03_Code.heroic-highest-layer.highest_layer",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.module_registry",
+      "dst": "03_Code.hero_guide_ide",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.module_registry",
+      "dst": "03_Code.knowledge_graph",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.module_registry",
+      "dst": "03_Code.Dashboard.grok_bridge",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.module_registry",
+      "dst": "03_Code.Dashboard.meta_layer_windows",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.module_registry",
+      "dst": "03_Code.Dashboard.autoloader",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.module_registry",
+      "dst": "03_Code.Dashboard.heroic_core_mainframe",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.process_worker",
+      "dst": "03_Code.Dashboard.worker_tasks",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.process_worker",
+      "dst": "03_Code.Dashboard.app",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.process_worker",
+      "dst": "03_Code.core.module_registry",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.scripts.build_geisteskrankheiten_4d_kompendium",
+      "dst": "03_Code.Dashboard.scripts.kompendium_pdf_renderer",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.scripts.build_geisteskrankheiten_4d_kompendium",
+      "dst": "03_Code.Dashboard.scripts.mer_diagram_generator",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.scripts.build_geisteskrankheiten_4d_v7",
+      "dst": "03_Code.Dashboard.scripts.kompendium_pdf_renderer",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.supabase_background",
+      "dst": "03_Code.Dashboard.supabase_store",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.supabase_background",
+      "dst": "03_Code.Dashboard.supabase_store",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.supabase_background",
+      "dst": "03_Code.Dashboard.watch_sync_server",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.supabase_background",
+      "dst": "fusion_hero_os.integrations.phone_link",
+      "deferred": true,
+      "resolved_by": "path"
+    },
+    {
+      "src": "03_Code.Dashboard.supabase_background",
+      "dst": "03_Code.Dashboard.watch_sync_server",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.supabase_background",
+      "dst": "03_Code.Dashboard.watch_party",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.supabase_background",
+      "dst": "03_Code.Dashboard.watch_sync_server",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.supabase_background",
+      "dst": "03_Code.Dashboard.watch_realtime_server",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.supabase_store",
+      "dst": "03_Code.Dashboard.supabase_client",
+      "deferred": false,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.supabase_store",
+      "dst": "03_Code.Dashboard.fusion_settings",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.supabase_store",
+      "dst": "03_Code.Dashboard.watch_sync_server",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.vr_routes",
+      "dst": "03_Code.heroic-highest-layer.highest_layer",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.vr_routes",
+      "dst": "03_Code.heroic-highest-layer.highest_layer",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.vr_routes",
+      "dst": "03_Code.heroic-highest-layer.highest_layer",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.vr_routes",
+      "dst": "03_Code.heroic-highest-layer.highest_layer",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.watch_party",
+      "dst": "03_Code.Dashboard.connectivity",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.watch_party",
+      "dst": "03_Code.Dashboard.watch_sync_server",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.watch_party",
+      "dst": "03_Code.Dashboard.watch_sync_server",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.watch_party",
+      "dst": "03_Code.Dashboard.watch_sync_server",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.watch_party",
+      "dst": "03_Code.Dashboard.supabase_store",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.watch_party",
+      "dst": "03_Code.Dashboard.watch_sync_server",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.watch_party",
+      "dst": "03_Code.Dashboard.supabase_store",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.watch_realtime_server",
+      "dst": "03_Code.Dashboard.watch_sync_server",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.watch_realtime_server",
+      "dst": "03_Code.Dashboard.supabase_client",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.watch_realtime_server",
+      "dst": "03_Code.Dashboard.watch_sync_server",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.watch_realtime_server",
+      "dst": "03_Code.Dashboard.watch_party",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.watch_sync_server",
+      "dst": "03_Code.Dashboard.watch_party",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.watch_sync_server",
+      "dst": "03_Code.Dashboard.supabase_client",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.watch_sync_server",
+      "dst": "03_Code.Dashboard.supabase_store",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.watch_sync_server",
+      "dst": "03_Code.Dashboard.supabase_store",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.watch_sync_server",
+      "dst": "03_Code.Dashboard.supabase_store",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.windows_perf_tuner",
+      "dst": "03_Code.Dashboard.cyber_layer_windows",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.windows_perf_tuner",
+      "dst": "03_Code.Dashboard.cyber_layer_windows",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.worker_runner",
+      "dst": "03_Code.Dashboard.worker_tasks",
+      "deferred": false,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.worker_tasks",
+      "dst": "03_Code.Dashboard.grok_bridge",
+      "deferred": false,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.worker_tasks",
+      "dst": "03_Code.core.module_registry",
+      "deferred": false,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.worker_tasks",
+      "dst": "03_Code.Dashboard.fusion_profile",
+      "deferred": false,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.worker_tasks",
+      "dst": "03_Code.Dashboard.meta_layer_windows",
+      "deferred": false,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.worker_tasks",
+      "dst": "03_Code.core.hyperthreading_config",
+      "deferred": false,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.worker_tasks",
+      "dst": "03_Code.Dashboard.layered_signal_network",
+      "deferred": false,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.worker_tasks",
+      "dst": "03_Code.Dashboard.heroic_core_mainframe",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.worker_tasks",
+      "dst": "03_Code.Dashboard.app",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.worker_tasks",
+      "dst": "03_Code.Dashboard.autoloader",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.worker_tasks",
+      "dst": "03_Code.Dashboard.windows_perf_tuner",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.worker_tasks",
+      "dst": "03_Code.audit_agent",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.workspace",
+      "dst": "src.core.dynamic_orchestration_core",
+      "deferred": false,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.Dashboard.workspace",
+      "dst": "03_Code.core.heroic_orchestration",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.hero_guide_ide",
+      "dst": "03_Code.knowledge_graph",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.hero_guide_ide",
+      "dst": "03_Code.knowledge_graph",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.heroic-highest-layer.benchmarks.virology_troubleshooting_benchmark",
+      "dst": "03_Code.heroic-highest-layer.highest_layer",
+      "deferred": false,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.heroic-highest-layer.example",
+      "dst": "03_Code.heroic-highest-layer.highest_layer",
+      "deferred": false,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.heroic-highest-layer.vr_example",
+      "dst": "03_Code.heroic-highest-layer.highest_layer",
+      "deferred": false,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.internal_llm.heroic_llama_optimizer",
+      "dst": "03_Code.internal_llm.llama_server_backend",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.internal_llm.heroic_llama_optimizer",
+      "dst": "03_Code.internal_llm.system_prompt_normalize",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.internal_llm.heroic_llama_optimizer",
+      "dst": "03_Code.internal_llm.llama_cli_backend",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.internal_llm.train",
+      "dst": "03_Code.internal_llm.heroic_llama_optimizer",
+      "deferred": false,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.internal_llm.train",
+      "dst": "03_Code.internal_llm.download_model",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.internal_llm.train",
+      "dst": "03_Code.internal_llm.export_data",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.internal_llm.train",
+      "dst": "03_Code.internal_llm.download_model",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.knowledge_graph",
+      "dst": "03_Code.hero_guide_ide",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.llm_frameworks",
+      "dst": "03_Code.llm_frameworks.base",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "03_Code.llm_frameworks",
+      "dst": "03_Code.llm_frameworks.registry",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "03_Code.llm_frameworks.claude",
+      "dst": "03_Code.llm_frameworks.base",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "03_Code.llm_frameworks.gemini",
+      "dst": "03_Code.llm_frameworks.base",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "03_Code.llm_frameworks.gpt",
+      "dst": "03_Code.llm_frameworks.base",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "03_Code.llm_frameworks.grok",
+      "dst": "03_Code.llm_frameworks.base",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "03_Code.llm_frameworks.ollama",
+      "dst": "03_Code.llm_frameworks.base",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "03_Code.llm_frameworks.openrouter",
+      "dst": "03_Code.llm_frameworks.base",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "03_Code.llm_frameworks.registry",
+      "dst": "03_Code.llm_frameworks.base",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "03_Code.llm_frameworks.registry",
+      "dst": "03_Code.llm_frameworks.grok",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "03_Code.llm_frameworks.registry",
+      "dst": "03_Code.llm_frameworks.claude",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "03_Code.llm_frameworks.registry",
+      "dst": "03_Code.llm_frameworks.gpt",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "03_Code.llm_frameworks.registry",
+      "dst": "03_Code.llm_frameworks.gemini",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "03_Code.llm_frameworks.registry",
+      "dst": "03_Code.llm_frameworks.openrouter",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "03_Code.llm_frameworks.registry",
+      "dst": "03_Code.llm_frameworks.ollama",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "03_Code.reference.agents",
+      "dst": "03_Code.core.virtual_gpu_hyperthreading",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.reference.agents",
+      "dst": "03_Code.core.agent_control",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.reference.app",
+      "dst": "fusion_hero_os.engine.mainframe",
+      "deferred": false,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.reference.app",
+      "dst": "fusion_hero_os.orchestration.agents",
+      "deferred": false,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.reference.mainframe",
+      "dst": "03_Code.core.virtual_gpu_hyperthreading",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.reference.mainframe",
+      "dst": "fusion_hero_os.engine.rust_backend",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.scripts.test_agent_anti_agent_backends",
+      "dst": "03_Code.core.agent_backend_router",
+      "deferred": false,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.scripts.test_agent_anti_agent_backends",
+      "dst": "03_Code.core.heroic_orchestration",
+      "deferred": false,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.scripts.test_llama_subagents",
+      "dst": "03_Code.core.llama_subagent_tester",
+      "deferred": false,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.scripts.test_subagent_context_window",
+      "dst": "03_Code.core.conversation_context_core",
+      "deferred": false,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.scripts.test_subagent_context_window",
+      "dst": "03_Code.core.heroic_orchestration",
+      "deferred": false,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.scripts.test_subagent_context_window",
+      "dst": "03_Code.core.llama_subagent_tester",
+      "deferred": false,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.suite.ghosthunting.hook",
+      "dst": "03_Code.core.ghosthunt_hook",
+      "deferred": false,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.suite.gpu.check_gpu_capacity",
+      "dst": "03_Code.core.virtual_gpu_hyperthreading",
+      "deferred": false,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.suite.gpu.gpu_capacity_check",
+      "dst": "03_Code.core.virtual_gpu_hyperthreading",
+      "deferred": false,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.suite.gpu.query_vcache_capacity",
+      "dst": "03_Code.core.virtual_gpu_hyperthreading",
+      "deferred": false,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.suite.gpu.test_gpu_qubo",
+      "dst": "03_Code.core.qb_qubo",
+      "deferred": false,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.suite.gpu.test_virtual_gpu_ht",
+      "dst": "03_Code.core.hyperthreading_config",
+      "deferred": false,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.suite.gpu.test_virtual_gpu_ht",
+      "dst": "03_Code.core.virtual_gpu_hyperthreading",
+      "deferred": false,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.suite.process_layers",
+      "dst": "03_Code.core.suite_pipeline",
+      "deferred": false,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.suite.qubo.check_qubo_sig",
+      "dst": "03_Code.core.qb_qubo",
+      "deferred": false,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.suite.qubo.demo_self_opt",
+      "dst": "03_Code.suite.qubo.optimizer",
+      "deferred": false,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.suite.qubo.gpu_demo",
+      "dst": "03_Code.suite.qubo.miner",
+      "deferred": false,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.suite.qubo.main",
+      "dst": "03_Code.suite.qubo.miner",
+      "deferred": false,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.suite.qubo.main",
+      "dst": "03_Code.suite.qubo.core_pinning",
+      "deferred": false,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.suite.qubo.main",
+      "dst": "03_Code.suite.qubo.cache_integration",
+      "deferred": false,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.suite.qubo.main",
+      "dst": "fusion_hero_os.config",
+      "deferred": false,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.suite.qubo.main",
+      "dst": "03_Code.core.virtual_gpu_hyperthreading",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.suite.qubo.miner",
+      "dst": "03_Code.suite.qubo.qubo_solver",
+      "deferred": false,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.suite.qubo.miner",
+      "dst": "03_Code.suite.qubo.optimizer",
+      "deferred": false,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.suite.qubo.miner",
+      "dst": "03_Code.suite.qubo.blockchain",
+      "deferred": false,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.suite.qubo.miner",
+      "dst": "03_Code.suite.qubo.crypto_identity",
+      "deferred": false,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.suite.qubo.optimizer",
+      "dst": "03_Code.suite.qubo.cache_integration",
+      "deferred": false,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.suite.qubo.pool",
+      "dst": "03_Code.suite.qubo.blockchain",
+      "deferred": false,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.suite.qubo.pool",
+      "dst": "03_Code.suite.qubo.ledger",
+      "deferred": false,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.suite.qubo.pool",
+      "dst": "03_Code.suite.qubo.crypto_identity",
+      "deferred": false,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.suite.qubo.qubo_solver",
+      "dst": "03_Code.suite.qubo.cache_integration",
+      "deferred": false,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.suite.qubo.test_client",
+      "dst": "03_Code.suite.qubo.miner",
+      "deferred": false,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.suite.qubo.wallet",
+      "dst": "fusion_hero_os.config",
+      "deferred": false,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.suite.qubo.wallet",
+      "dst": "03_Code.suite.qubo.crypto_identity",
+      "deferred": false,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.suite.tests.test_claude_science_enhancements",
+      "dst": "03_Code.core.claude_science",
+      "deferred": false,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.suite.tests.test_coevolution_router",
+      "dst": "03_Code.core.coevolution_router",
+      "deferred": false,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.suite.tests.test_coevolution_router",
+      "dst": "03_Code.core.judge_panel",
+      "deferred": false,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.suite.tests.test_creative_problem_solving",
+      "dst": "03_Code.core.creative_problem_solving",
+      "deferred": false,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.suite.tests.test_fusion_hero_node",
+      "dst": "03_Code.core.creative_problem_solving",
+      "deferred": false,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.suite.tests.test_fusion_hero_node",
+      "dst": "03_Code.core.fusion_hero_node",
+      "deferred": false,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.suite.tests.test_structured_output",
+      "dst": "03_Code.core.structured_output",
+      "deferred": false,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.suite.tests.test_structured_output",
+      "dst": "03_Code.core.claude_science",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.suite.tests.test_structured_output",
+      "dst": "03_Code.core.claude_science",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.suite.tests.test_structured_output",
+      "dst": "03_Code.core.claude_science",
+      "deferred": true,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.suite.tools.heavy_job",
+      "dst": "03_Code.core.qb_qubo",
+      "deferred": false,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.suite.tools.stress_test_big_benchmark",
+      "dst": "03_Code.core.hyperthreading_config",
+      "deferred": false,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.suite.tools.stress_test_big_benchmark",
+      "dst": "03_Code.core.virtual_gpu_hyperthreading",
+      "deferred": false,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.suite.tools.stress_test_big_benchmark",
+      "dst": "03_Code.core.qb_qubo",
+      "deferred": false,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.suite.tools.test_ssd_langzeit",
+      "dst": "03_Code.core.virtual_gpu_hyperthreading",
+      "deferred": false,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.suite.tools.test_vcache_adapt",
+      "dst": "03_Code.core.virtual_gpu_hyperthreading",
+      "deferred": false,
+      "resolved_by": "basename"
+    },
+    {
+      "src": "03_Code.timespace_token_management",
+      "dst": "fusion_hero_os.modules.timespace_token",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "03_Code.timespace_token_management",
+      "dst": "fusion_hero_os.modules.timespace_token.bottleneck",
+      "deferred": false,
+      "resolved_by": "path"
+    },
+    {
+      "src": "03_Code.timespace_token_management",
+      "dst": "03_Code.TokenManagementSystem",
+      "deferred": true,
+      "resolved_by": "basename"
+    }
+  ],
+  "external_dependencies": {
+    "core": 117,
+    "numpy": 58,
+    "psutil": 31,
+    "pytest": 18,
+    "fastapi": 18,
+    "cupy": 15,
+    "gui": 15,
+    "torch": 13,
+    "domain": 12,
+    "yaml": 11,
+    "requests": 11,
+    "httpx": 11,
+    "ghosthunting": 10,
+    "nicegui": 8,
+    "reportlab": 8,
+    "kernel": 7,
+    "fpdf": 7,
+    "foundation": 6,
+    "numba": 5,
+    "dotenv": 4,
+    "backends": 4,
+    "cryptography": 4,
+    "pydantic": 3,
+    "supabase": 3,
+    "llm_frameworks": 3,
+    "pdfminer": 2,
+    "tomllib": 1,
+    "rust_engine": 1,
+    "anthropic": 1,
+    "openai": 1,
+    "journal": 1,
+    "fusion_integration_hub": 1,
+    "qrcode": 1,
+    "svglib": 1,
+    "huggingface_hub": 1,
+    "llama_cpp": 1,
+    "engine": 1,
+    "uvicorn": 1,
+    "flask": 1,
+    "dimod": 1,
+    "neal": 1,
+    "pynvml": 1,
+    "PIL": 1,
+    "crates.io:pyo3": 1,
+    "crates.io:numpy": 1,
+    "crates.io:rayon": 1,
+    "crates.io:serde": 1,
+    "crates.io:serde_json": 1,
+    "crates.io:serde_yaml": 1,
+    "crates.io:sha2": 1,
+    "npm:@supabase/server": 1,
+    "npm:@sveltejs/adapter-auto": 1,
+    "npm:@sveltejs/kit": 1,
+    "npm:@sveltejs/vite-plugin-svelte": 1,
+    "npm:svelte": 1,
+    "npm:svelte-check": 1,
+    "npm:typescript": 1,
+    "npm:vite": 1
+  },
+  "unresolved_imports": [],
+  "cycles": [],
+  "epistemik": {
+    "unresolved_count": 0,
+    "cycle_count": 0,
+    "placeholder_marker_total": 74,
+    "files_with_markers": 28,
+    "top_marker_files": [
+      {
+        "path": "fusion_hero_os/core/dependency_atlas.py",
+        "markers": 15
+      },
+      {
+        "path": "03_Code/core/creative_problem_solving.py",
+        "markers": 11
+      },
+      {
+        "path": "03_Code/core/fusion_hero_node.py",
+        "markers": 7
+      },
+      {
+        "path": "fusion_hero_os/engine/mainframe.py",
+        "markers": 3
+      },
+      {
+        "path": "tests/test_dependency_atlas.py",
+        "markers": 3
+      },
+      {
+        "path": "03_Code/reference/mainframe.py",
+        "markers": 3
+      },
+      {
+        "path": "fusion_hero_os/methodology/core_modules.py",
+        "markers": 2
+      },
+      {
+        "path": "fusion_hero_os/methodology/knowledge.py",
+        "markers": 2
+      },
+      {
+        "path": "core/heroic_math_engine.py",
+        "markers": 2
+      },
+      {
+        "path": "tests/test_heroic_core_orchestrator.py",
+        "markers": 2
+      }
+    ]
+  }
+}
