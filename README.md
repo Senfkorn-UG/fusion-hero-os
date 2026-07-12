@@ -20,8 +20,12 @@ Registry: `mesh_connectors.yaml`
 
 | Knoten | Rolle | MagicDNS |
 |--------|-------|----------|
-| `mainframe` | Orchestrator (Linux Heimserver) | `mainframe.tail391adb.ts.net` |
-| `desktop` | Grok-Workstation (Windows) | `desktop-kpki9e4.tail391adb.ts.net` |
+| `mainframe` | Orchestrator (**Windows-Desktop**, kanonisch) | `desktop-kpki9e4.tail391adb.ts.net` |
+| `desktop` | Alias → mainframe (gleicher PC) | `desktop-kpki9e4.tail391adb.ts.net` |
+| `phone` | Mobile Client (Android) | `redmi-note-13-pro-5g.tail391adb.ts.net` |
+| `legacy-linux` | Archiviert (früherer Linux-Knoten) | `mainframe.tail391adb.ts.net` |
+
+Kanonische Rollen: `src/normal_os/integration/mesh_roles.yaml`
 
 ### MCP-Konnektor-Segmente (je eigenständig)
 
@@ -80,11 +84,12 @@ sudo ./tailscale_control.sh mesh-connector github
 
 ## Erreichbare URLs (nach Funnel + MagicDNS)
 
-- **Hero Docs Server**: `https://mainframe.tail391adb.ts.net`
-- **MasterSeed Status**: `https://mainframe.tail391adb.ts.net/status`
-- **Tailscale Status**: `https://mainframe.tail391adb.ts.net/tailscale/status`
-- **Mesh Overview**: `https://mainframe.tail391adb.ts.net/mesh/status`
-- **Einzelner Konnektor**: `https://mainframe.tail391adb.ts.net/mesh/github/status`
+- **Hero Docs Server**: `https://desktop-kpki9e4.tail391adb.ts.net`
+- **MasterSeed Status**: `https://desktop-kpki9e4.tail391adb.ts.net/status`
+- **Tailscale Status**: `https://desktop-kpki9e4.tail391adb.ts.net/tailscale/status`
+- **Mesh Overview**: `https://desktop-kpki9e4.tail391adb.ts.net/mesh/status`
+- **Einzelner Konnektor**: `https://desktop-kpki9e4.tail391adb.ts.net/mesh/github/status`
+- **Fusion Dashboard (lokal/Mainframe)**: `http://127.0.0.1:8000` / `http://desktop-kpki9e4.tail391adb.ts.net:8000`
 
 ## Dateien
 
