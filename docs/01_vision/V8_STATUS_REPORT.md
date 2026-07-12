@@ -1,8 +1,55 @@
 # Fusion-Hero-OS v8 – Statusbericht
 
-**Datum:** 2026-07-01 (Code-Honesty-Korrektur: 2026-07-02; v8.3-Konsolidierung: 2026-07-10)
+**Datum:** 2026-07-01 (Code-Honesty-Korrektur: 2026-07-02; v8.3-Konsolidierung: 2026-07-10; v8.4-Korrektur: 2026-07-12)
 **Version:** v8 (Doku/Struktur konsolidiert; Kernfunktionalität teilweise/aspirational)
 **Status:** Struktur abgeschlossen. Core-Module mit v8-Headern versehen (kosmetisch, kein funktionales Rework). Mathematische Fundierung: NICHT abgeschlossen — siehe Abschnitt 2.3.
+
+---
+
+## 0.1 v8.4-Korrektur (2026-07-12) — CI-Konsolidierung + TODO-Fixes
+
+Auf Anfrage "identifiziere offene Issues und TODOs, korrigiere sie":
+
+1. **CI-Konsolidierung (Issue #26):** 4 parallel existierende, ueberlappende
+   Workflow-Dateien (`ci.yml`, `fusion-hero-os-ci-v8.yml`,
+   `Fusion-Hero-OS_CI_v8_FUsion_branch_resolved.yml`,
+   `fusion-hero-os-hyperthread.yml`) zu **einer** Datei
+   (`.github/workflows/fusion-hero-os-ci.yml`) zusammengefuehrt. Die drei
+   entfernten Varianten waren echte Teilmengen bzw. reine Platzhalter-Echos
+   von `ci.yml` (dem einzigen mit echten Gates: pytest, Proof-Registry,
+   Erkenntnis-Index, Dependency-Atlas, Doc-Versions). Der "Block direct push
+   to main"-Job aus der Hyperthread-Variante wurde **bewusst nicht**
+   uebernommen: er haette jeden regulaeren PR-Merge-Commit auf `main`
+   ebenfalls rot markiert und widerspricht damit dem tatsaechlich gelebten
+   Merge-Workflow dieses Repos.
+2. **CI-Blocker (weiterhin offen, ausserhalb Code-Reichweite):** Alle Runs
+   auf `main` seit 2026-07-11 schlagen sofort mit "recent account payments
+   have failed or your spending limit needs to be increased" fehl
+   (GitHub-Actions-Billing). Muss vom Kontoinhaber in den Billing-Settings
+   behoben werden.
+3. **`tts/tts_router.py` — Piper-Backend:** gab bisher stillschweigend
+   `b"PIPER_FAKE_AUDIO_DATA"` zurueck. Jetzt echter `piper`-Subprocess-Call
+   (konfigurierbar via `PIPER_BINARY` + `PIPER_MODEL_<PROFILE>` /
+   `PIPER_MODEL_PATH`), sonst **fail-closed** (`TTSBackendUnavailableError`)
+   statt Fake-Audio. Tests: `tests/test_tts_router_piper_honesty.py`.
+4. **`03_Code/reference/rest_api_server.py` — `/api/input-factors`:**
+   `gpu_count` war hartcodiert `0`. Jetzt echte Erkennung ueber
+   `torch.cuda` bzw. `nvidia-smi` (Fallback `0`, kein Fake-Wert).
+5. **`03_Code/reference/rest_api_server.py` — `/mod/apply`:** gab bisher
+   immer `"approved"` zurueck (hartcodiertes PeerReview). Jetzt echte
+   Integration mit `01_Framework/heroic-core-foundation` (`checks.geltung`
+   + `checks.hygiene`) — Code wird tatsaechlich gescannt, `"flagged"` bei
+   gefundenen Hygiene-Issues. Tests: `tests/test_rest_api_server_todos.py`.
+6. **`tailscale_phone_notify.py`:** reiner Konsolen-Print ersetzt durch
+   echten, generischen Webhook-Versand (z. B. ntfy.sh) ueber
+   `PHONE_NOTIFY_WEBHOOK_URL` — ohne Konfiguration weiterhin nur Log, kein
+   Fake-Erfolg.
+7. **Bewusst nicht angefasst:** Die TODOs in
+   `legacy_sources/normalOS/...` und `legacy_sources/FuHOS_pub/...` liegen
+   in kuratierten Snapshots separater Repos (`95guknow/normalOS`,
+   `95guknow/FuHOS_pub`) — Korrektur gehoert dorthin, nicht in diesen Spiegel
+   (siehe Commit "chore(legacy): alle 95guknow-Repos als kuratierte
+   Snapshots spiegeln").
 
 ---
 

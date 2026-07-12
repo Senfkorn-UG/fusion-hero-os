@@ -1,10 +1,17 @@
-name: CI
+name: Fusion Hero OS CI (consolidated v8)
+
+# Konsolidiert aus 4 zuvor parallel existierenden, ueberlappenden Workflows
+# (ci.yml, fusion-hero-os-ci-v8.yml, Fusion-Hero-OS_CI_v8_FUsion_branch_resolved.yml,
+# fusion-hero-os-hyperthread.yml) - siehe Issue #26. `ci.yml` war der einzige mit
+# echten Regression-Gates (pytest, Proof-Registry, Erkenntnis-Index,
+# Dependency-Atlas, Doc-Versions); die anderen drei waren Teilmengen oder
+# reine Platzhalter-Echos und wurden entfernt statt dupliziert.
 
 on:
   push:
-    branches: [ main, develop, v2-beta, v8/* ]
+    branches: [ main, develop, ascension, v2-beta, 'feature/**', 'v8/**', 'heroic/**' ]
   pull_request:
-    branches: [ main, develop, v8/* ]
+    branches: [ main, develop, ascension, v2-beta, 'v8/**' ]
 
 jobs:
   determine-matrix:
@@ -16,7 +23,7 @@ jobs:
       - name: Set check level
         id: set-level
         run: |
-          if [[ "${{ github.ref_name }}" == "main" || "${{ github.ref_name }}" == "develop" ]]; then
+          if [[ "${{ github.ref_name }}" == "main" || "${{ github.ref_name }}" == "develop" || "${{ github.ref_name }}" == "ascension" ]]; then
             echo 'level=full' >> $GITHUB_OUTPUT
           else
             echo 'level=light' >> $GITHUB_OUTPUT
@@ -65,10 +72,26 @@ jobs:
       run: |
         ruff check fusion_hero_os/ 03_Code/reference/rest_api_server.py || true
 
+    - name: Import-Check (light + full)
+      run: |
+        python -c "import fusion_hero_os; print('fusion_hero_os OK')"
+        python -c "from fusion_hero_os.core import heroic_math_engine; print('heroic_math_engine OK')" || true
+
     - name: Run Heroic Math Engine Verification
       if: matrix.check-level == 'full'
       run: |
         python -m fusion_hero_os.core.heroic_math_engine
+
+    - name: AscensionOS Track Structure (soft check, non-blocking)
+      run: |
+        if [ -d "ascension_os" ]; then
+          echo "ascension_os/ gefunden."
+          if [ ! -f "ascension_os/core/ascension_core.py" ]; then
+            echo "::warning::ascension_os/core/ascension_core.py fehlt noch."
+          fi
+        else
+          echo "::warning::ascension_os/ nicht vorhanden (nur relevant auf 'ascension'-Track)."
+        fi
 
     - name: Module Registry Status
       run: |
@@ -91,26 +114,19 @@ jobs:
         fi
 
     - name: Erkenntnis-Index Gate (Docs <-> Layer)
-      # Jedes indexierte Erkenntnis-Doc existiert, mappt auf bekannte Layer,
-      # und kein dokumentierter Widerspruch ist offen (v8.3-Konsolidierung).
       run: |
         python scripts/check_erkenntnisse_index.py
 
     - name: Dependency-Atlas Gate (Imports <-> Layer)
-      # Maschinell abgeleiteter Abhaengigkeitsgraph: fatal bei unaufgeloesten
-      # gerooteten Imports und neuen Top-Level-Import-Zyklen (Claim DEP-ATLAS).
       run: |
         python -m fusion_hero_os.core.dependency_atlas --check
 
     - name: Multimodal-Protokoll Gate (Archiv-Inventar)
-      # Archiv-Sweep vollstaendig, keine Extraktionsfehler (Claim MULTIMODAL-PROTOCOL).
       run: |
         pip install pypdf Pillow
         python -m fusion_hero_os.core.multimodal_protocol --check
 
     - name: Doc-Versions Gate (versionierte Benennung)
-      # Jedes aktive Dokument traegt eine sichtbare Versionierung (Kopfzeile
-      # '**Stand:**', Frontmatter 'version:' oder Versionsmarker im Namen).
       run: |
         python scripts/check_doc_versions.py
 
