@@ -16,9 +16,20 @@ Write-Host "[Disk] C: frei: $freeGb GB" -ForegroundColor $(if ($freeGb -lt 20) {
 
 # Tailscale + Mesh-Peers
 Write-Host "[Tailscale Mesh]" -ForegroundColor Cyan
+$mainframeHost = "desktop-kpki9e4"
+$rolesScript = Join-Path $FusionRoot "src\normal_os\integration\mesh_roles.py"
+if (Test-Path $rolesScript) {
+    try {
+        $roleJson = & $Python $rolesScript 2>$null | ConvertFrom-Json
+        if ($roleJson.mainframe.hostname) { $mainframeHost = $roleJson.mainframe.hostname }
+    } catch {}
+}
 $tsJson = & "C:\Program Files\Tailscale\tailscale.exe" status --json 2>&1 | ConvertFrom-Json -ErrorAction SilentlyContinue
 if ($tsJson -and $tsJson.Self.Online) {
-    Write-Host "  Desktop: $($tsJson.Self.DNSName) ($($tsJson.Self.TailscaleIPs[0])) online" -ForegroundColor Green
+    $selfHost = $tsJson.Self.HostName
+    $isMainframe = ($selfHost -like "*$mainframeHost*")
+    $mfLabel = if ($isMainframe) { "MAINFRAME (dieser PC)" } else { "Peer" }
+    Write-Host "  $mfLabel : $($tsJson.Self.DNSName) ($($tsJson.Self.TailscaleIPs[0])) online" -ForegroundColor Green
     $peerCount = 0
     if ($tsJson.Peer) {
         $tsJson.Peer.PSObject.Properties | ForEach-Object {

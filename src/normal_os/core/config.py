@@ -106,7 +106,43 @@ class MasterSeedConfig(BaseModel):
     genesis_hash: str = "000000000000000000im0000000000000000000000000000000000000000000"
     criticality_target: float = 0.22
     strict_contraction_enforced: bool = True
-    verify_integrity_enabled: bool = False  # TODO: implement real verification
+    verify_integrity_enabled: bool = False  # Banach-State-Hash; Output-Echtwelt → EchtweltVerifierConfig
+
+
+class EchtweltVerifierConfig(BaseModel):
+    """Output-Prüfung gegen Echtweltquellen (URLs, Web, Task-Sources)."""
+    enabled: bool = True
+    min_score: float = 0.5
+    timeout_seconds: float = 8.0
+    max_claims: int = 5
+
+
+class NLIBackwardVerifierConfig(BaseModel):
+    """Stufe 2: Span-Attribution + NLI backward-pass gegen RAG-Quellen."""
+    enabled: bool = True
+    min_attribution_rate: float = 0.5
+    min_entails_rate: float = 0.5
+    max_sentences: int = 12
+    span_window_chars: int = 280
+    use_huggingface: bool = False
+    timeout_seconds: float = 12.0
+
+
+class ProvenanceTraceConfig(BaseModel):
+    """Stufe 3: OpenTelemetry/PROV Execution Provenance."""
+    enabled: bool = True
+    min_completeness: float = 0.6
+    store_dir: str = ""
+    max_traces: int = 500
+
+
+class VerificationOrchestratorConfig(BaseModel):
+    """Unified Verification Orchestrator + Recovery Loop."""
+    enabled: bool = True
+    recovery_enabled: bool = True
+    max_recovery_iterations: int = 2
+    default_stakes: str = "medium"
+    latency_budget_ms: int = 900
 
 
 class PMSEvidenceSpineConfig(BaseModel):
@@ -175,6 +211,11 @@ class MeshConnectorConfig(BaseModel):
 class TailscaleMeshConfig(BaseModel):
     """Tailscale Mesh Registry & Control"""
     enabled: bool = True
+    mainframe_hostname: str = "desktop-kpki9e4"
+    mainframe_role: str = "orchestrator"
+    mainframe_node_id: str = "mainframe"
+    tailnet: str = "tail391adb.ts.net"
+    roles_config: str = "./integration/mesh_roles.yaml"
     control_script: str = "./tailscale_control.sh"
     funnel_script: str = "./tailscale_funnel.sh"
     mesh_registry_path: str = "./integration/tailscale_mesh_registry.py"
@@ -328,6 +369,12 @@ class AscensionOSConfig(BaseModel):
     # Heroic Core
     heroic_core: HeroicCoreConfig = Field(default_factory=HeroicCoreConfig)
     master_seed: MasterSeedConfig = Field(default_factory=MasterSeedConfig)
+    echtwelt_verifier: EchtweltVerifierConfig = Field(default_factory=EchtweltVerifierConfig)
+    nli_backward_verifier: NLIBackwardVerifierConfig = Field(default_factory=NLIBackwardVerifierConfig)
+    provenance_trace: ProvenanceTraceConfig = Field(default_factory=ProvenanceTraceConfig)
+    verification_orchestrator: VerificationOrchestratorConfig = Field(
+        default_factory=VerificationOrchestratorConfig
+    )
     pms_evidence_spine: PMSEvidenceSpineConfig = Field(default_factory=PMSEvidenceSpineConfig)
     quad_core_bridge: QuadCoreBridgeConfig = Field(default_factory=QuadCoreBridgeConfig)
     heroic_math_engine: HeroicMathEngineConfig = Field(default_factory=HeroicMathEngineConfig)

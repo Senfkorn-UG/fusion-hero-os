@@ -79,11 +79,37 @@ set FUSION_DUAL_AGENT=1
 set FUSION_ORCH_DUAL_AGENT=1
 set FUSION_FIRST_INSTALL_AUTO=1
 
-REM Globale Agenten-Kontrolle (Multi-Strategie: geltung, peer_review, meta, audit)
+REM Globale Agenten-Kontrolle (Multi-Strategie: geltung, peer_review, meta, audit, echtwelt, nli_backward)
 set FUSION_AGENT_CONTROL=1
 set FUSION_AGENT_CONTROL_FAIL_CLOSED=1
-set FUSION_AGENT_CONTROL_STRATEGIES=geltung,peer_review,meta,audit
+set FUSION_AGENT_CONTROL_STRATEGIES=geltung,peer_review,meta,audit,echtwelt,nli_backward,provenance
 set FUSION_AGENT_CONTROL_MIN_VOTES=2
+
+REM Echtweltquellen-Prüfung (URLs, DuckDuckGo, Task-Sources)
+set FUSION_ECHTWELT_VERIFY=1
+set FUSION_ECHTWELT_MIN_SCORE=0.5
+set FUSION_ECHTWELT_TIMEOUT=8
+set FUSION_ECHTWELT_MAX_CLAIMS=5
+
+REM Stufe 2: NLI backward-pass (Span-Attribution gegen RAG-Quellen)
+set FUSION_NLI_VERIFY=1
+set FUSION_NLI_MIN_ATTRIBUTION=0.5
+set FUSION_NLI_MIN_ENTAILS=0.5
+set FUSION_NLI_MAX_SENTENCES=12
+set FUSION_NLI_SPAN_WINDOW=280
+set FUSION_NLI_TIMEOUT=12
+
+REM Stufe 3: Execution Provenance (OpenTelemetry + PROV)
+set FUSION_PROV_TRACE=1
+set FUSION_PROV_MIN_COMPLETENESS=0.6
+set FUSION_PROV_MAX_TRACES=500
+
+rem Unified Verification Orchestrator + Recovery Loop
+set FUSION_VERIFY_ORCHESTRATOR=1
+set FUSION_VERIFY_RECOVERY=1
+set FUSION_VERIFY_RECOVERY_MAX_ITERS=2
+set FUSION_VERIFY_STAKES=medium
+set FUSION_VERIFY_LATENCY_MS=900
 
 REM Supabase Persistenz (swmmoxhdzarmoupyssqe)
 set FUSION_SUPABASE_SYNC=1

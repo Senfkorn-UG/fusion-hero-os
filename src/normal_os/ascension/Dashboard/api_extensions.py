@@ -34,6 +34,16 @@ class AgentControlPayload(BaseModel):
     dom: str = "General"
     geltung: str = "model"
     strategies: Optional[List[str]] = None
+    sources: Optional[List[Dict[str, Any]]] = None
+
+
+class FullVerificationPayload(AgentControlPayload):
+    recovery: Optional[bool] = None
+    max_recovery_iters: Optional[int] = None
+    stakes: str = "medium"
+    latency_budget_ms: int = 900
+    has_retrieved_docs: bool = True
+    needs_real_world: bool = True
 
 
 class AutoLoadPayload(BaseModel):
@@ -116,11 +126,113 @@ async def api_agent_control_verify(payload: AgentControlPayload):
     if not text:
         return {"status": "error", "error": "empty text"}
     ctx = {"dom": payload.dom, "geltung": payload.geltung, "query": text}
+    if payload.sources:
+        ctx["sources"] = payload.sources
     if payload.strategies:
         os.environ["FUSION_AGENT_CONTROL_STRATEGIES"] = ",".join(payload.strategies)
     result = await asyncio.to_thread(verify_text, text, ctx)
     result["status"] = "ok" if result.get("passed") else "failed"
     result["strategies_configured"] = strategy_order()
+    return result
+
+
+@router.post("/api/verification/nli-backward")
+async def api_nli_backward_verify(payload: AgentControlPayload):
+    from core.nli_backward_verifier import verify_text as verify_nli
+
+    text = (payload.text or payload.query or "").strip()
+    if not text:
+        return {"status": "error", "error": "empty text"}
+    ctx: Dict[str, Any] = {"dom": payload.dom, "geltung": payload.geltung}
+    if payload.sources:
+        ctx["sources"] = payload.sources
+    report = await asyncio.to_thread(verify_nli, text, ctx)
+    out = report.to_dict()
+    out["status"] = "ok" if report.passed else "failed"
+    return out
+
+
+@router.post("/api/verification/provenance/capture")
+async def api_provenance_capture(payload: AgentControlPayload):
+    from core.provenance_trace import build_trace_from_task, save_trace, verify_trace
+
+    text = (payload.text or payload.query or "").strip()
+    task: Dict[str, Any] = {
+        "query": text,
+        "dom": payload.dom,
+        "geltung": payload.geltung,
+        "id": "api-prov-capture",
+        "assigned_agent": "api",
+    }
+    if payload.sources:
+        task["sources"] = payload.sources
+    trace = await asyncio.to_thread(build_trace_from_task, task, {"response": text})
+    tid = await asyncio.to_thread(save_trace, trace)
+    report = await asyncio.to_thread(verify_trace, trace)
+    return {
+        "status": "ok" if report.passed else "failed",
+        "trace_id": tid,
+        "verification": report.to_dict(),
+        "trace": trace,
+    }
+
+
+@router.get("/api/verification/provenance/recent")
+async def api_provenance_recent(limit: int = 20):
+    from core.provenance_trace import list_recent
+
+    return {"traces": await asyncio.to_thread(list_recent, limit)}
+
+
+@router.get("/api/verification/provenance/{trace_id}")
+async def api_provenance_get(trace_id: str):
+    from core.provenance_trace import get_trace, verify_trace
+
+    trace = await asyncio.to_thread(get_trace, trace_id)
+    if not trace:
+        return {"status": "error", "error": "trace_not_found"}
+    report = await asyncio.to_thread(verify_trace, trace)
+    return {
+        "status": "ok",
+        "trace_id": trace_id,
+        "verification": report.to_dict(),
+        "trace": trace,
+    }
+
+
+@router.get("/api/verification/full/status")
+async def api_verification_full_status():
+    from core.verification_orchestrator import status as orch_status
+
+    return orch_status()
+
+
+@router.post("/api/verification/full")
+async def api_verification_full(payload: FullVerificationPayload):
+    from core.verification_orchestrator import run_full_verification
+
+    text = (payload.text or payload.query or "").strip()
+    if not text:
+        return {"status": "error", "error": "empty text"}
+    ctx: Dict[str, Any] = {
+        "dom": payload.dom,
+        "geltung": payload.geltung,
+        "stakes": payload.stakes,
+        "latency_budget_ms": payload.latency_budget_ms,
+        "has_retrieved_docs": payload.has_retrieved_docs,
+        "needs_real_world": payload.needs_real_world,
+    }
+    if payload.sources:
+        ctx["sources"] = payload.sources
+    if payload.strategies:
+        os.environ["FUSION_AGENT_CONTROL_STRATEGIES"] = ",".join(payload.strategies)
+    result = await asyncio.to_thread(
+        run_full_verification,
+        text,
+        ctx,
+        recovery=payload.recovery,
+        max_iters=payload.max_recovery_iters,
+    )
     return result
 
 

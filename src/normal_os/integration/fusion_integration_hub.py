@@ -248,6 +248,13 @@ def get_unified_status() -> dict:
     vr_status = _get_vr_status()
     graph = _build_graph(unified, mesh, llm)
 
+    mainframe_role = {}
+    try:
+        from mesh_roles import status as mesh_roles_status
+        mainframe_role = mesh_roles_status()
+    except Exception as e:
+        mainframe_role = {"error": str(e)}
+
     mesh_ok = mesh.get("connectors_registered", 0) > 0 or not mesh.get("error")
     llm_ok = llm.get("any_live", False)
     net_ok = tailscale.get("online", False)
@@ -281,6 +288,7 @@ def get_unified_status() -> dict:
         "endpoints": unified.get("endpoints", {}),
         "workstation": workstation,
         "phone_mesh": phone_check,
+        "mainframe_role": mainframe_role,
         "graph": graph,
     }
 
@@ -341,6 +349,10 @@ def orchestrate(
         }
     except Exception as e:
         return {"error": str(e), "provider": provider, "role": orch_role}
+
+
+get_full_status = get_unified_status
+build_graph = _build_graph
 
 
 if __name__ == "__main__":

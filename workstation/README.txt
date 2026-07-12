@@ -33,9 +33,10 @@ DESKTOP-STRUKTUR (nach Restore 2026-07-09)
   Desktop\Apps\ (Shortcuts) | Desktop\normalOS\ (Start/Status)
 
 TAILSCALE MESH
-  Desktop: desktop-kpki9e4.tail391adb.ts.net (100.80.63.0)
+  Mainframe (= dieser Windows-PC): desktop-kpki9e4.tail391adb.ts.net
+  Rolle: orchestrator (kanonisch, siehe mesh_roles.yaml)
   Phone:   redmi-note-13-pro-5g.tail391adb.ts.net (Android)
-  Mainframe: mainframe.tail391adb.ts.net (offline)
+  Legacy-Linux: mainframe.tail391adb.ts.net (archiviert/offline)
   Vom Handy: http://desktop-kpki9e4.tail391adb.ts.net:8000 / :8088 / :8765
 
 VERALTETE ORDNER (nicht mehr nutzen)

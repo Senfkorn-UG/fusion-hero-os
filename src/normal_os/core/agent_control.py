@@ -6,7 +6,10 @@
 #   3. meta         — Epistemische Inflation (CriticalMetaAnalysisCoreModule)
 #   4. audit        — Pre/Post-Strukturprüfung (AuditAgent-Muster aus Mainframe)
 #   5. foundation   — Externes Foundation-Gate (heroic-core-foundation, optional)
-#   6. consensus    — Mehrheitsentscheid über aktive Strategien (fail-closed)
+#   6. echtwelt     — Output-Prüfung gegen Echtweltquellen (URLs, Web, Task-Sources)
+#   7. nli_backward — Stufe 2: Span-Attribution + NLI gegen RAG-Quellen
+#   8. provenance   — Stufe 3: OpenTelemetry/PROV Execution Provenance
+#   9. consensus    — Mehrheitsentscheid über aktive Strategien (fail-closed)
 
 from __future__ import annotations
 
@@ -22,7 +25,7 @@ _REF = os.path.abspath(os.path.join(_HERE, "..", "reference"))
 if _REF not in sys.path:
     sys.path.insert(0, _REF)
 
-_DEFAULT_STRATEGIES = ("geltung", "peer_review", "meta", "audit")
+_DEFAULT_STRATEGIES = ("geltung", "peer_review", "meta", "audit", "echtwelt", "nli_backward", "provenance")
 _HISTORY: List[Dict[str, Any]] = []
 _MAX_HISTORY = 200
 
@@ -127,6 +130,33 @@ def _get_meta():
         except Exception:
             _meta = False
     return _meta if _meta is not False else None
+
+
+def _prov_available() -> bool:
+    try:
+        from provenance_trace import is_enabled
+
+        return is_enabled()
+    except Exception:
+        return False
+
+
+def _nli_available() -> bool:
+    try:
+        from nli_backward_verifier import is_enabled
+
+        return is_enabled()
+    except Exception:
+        return False
+
+
+def _echtwelt_available() -> bool:
+    try:
+        from echtwelt_verifier import is_enabled
+
+        return is_enabled()
+    except Exception:
+        return False
 
 
 def _extract_text(task: Dict[str, Any], result: Any = None) -> str:
@@ -284,6 +314,119 @@ def _strategy_audit(task: Dict[str, Any], text: str, phase: str) -> StrategyResu
     )
 
 
+def _strategy_echtwelt(task: Dict[str, Any], text: str, phase: str) -> StrategyResult:
+    """Alternative 6: Echtweltquellen — Output gegen URLs/Web/Task-Sources prüfen."""
+    if phase == "pre":
+        return StrategyResult("echtwelt", True, 0.5, {"skipped": True, "reason": "post_only"})
+
+    check_text = text or _extract_text(task)
+    if not check_text.strip():
+        return StrategyResult("echtwelt", True, 1.0, {"skipped": True, "reason": "empty_output"})
+
+    try:
+        from echtwelt_verifier import is_enabled as echtwelt_enabled, verify_text as verify_echtwelt
+
+        if not echtwelt_enabled():
+            return StrategyResult("echtwelt", True, 0.5, {"skipped": True, "reason": "disabled"})
+
+        report = verify_echtwelt(check_text[:12000], task)
+        passed = bool(report.passed)
+        score = float(report.score)
+        return StrategyResult(
+            "echtwelt",
+            passed,
+            score,
+            {
+                "report": report.to_dict(),
+                "claims_found": report.claims_found,
+                "claims_verified": report.claims_verified,
+                "claims_unverified": report.claims_unverified,
+            },
+        )
+    except Exception as exc:
+        return StrategyResult("echtwelt", True, 0.5, {"skipped": True, "fallback": True}, str(exc))
+
+
+def _strategy_nli_backward(task: Dict[str, Any], text: str, phase: str) -> StrategyResult:
+    """Alternative 7: NLI backward-pass — Span-Attribution gegen RAG-Quellen."""
+    if phase == "pre":
+        return StrategyResult("nli_backward", True, 0.5, {"skipped": True, "reason": "post_only"})
+
+    check_text = text or _extract_text(task)
+    if not check_text.strip():
+        return StrategyResult("nli_backward", True, 1.0, {"skipped": True, "reason": "empty_output"})
+
+    try:
+        from nli_backward_verifier import is_enabled as nli_enabled, verify_text as verify_nli
+
+        if not nli_enabled():
+            return StrategyResult("nli_backward", True, 0.5, {"skipped": True, "reason": "disabled"})
+
+        report = verify_nli(check_text[:12000], task)
+        if report.skipped:
+            return StrategyResult(
+                "nli_backward",
+                True,
+                1.0,
+                {"skipped": True, "reason": report.notes, "report": report.to_dict()},
+            )
+
+        passed = bool(report.passed)
+        score = float(report.score)
+        return StrategyResult(
+            "nli_backward",
+            passed,
+            score,
+            {
+                "report": report.to_dict(),
+                "attribution_rate": report.attribution_rate,
+                "entails_rate": report.entails_rate,
+                "sentences_checked": report.sentences_checked,
+            },
+        )
+    except Exception as exc:
+        return StrategyResult("nli_backward", True, 0.5, {"skipped": True, "fallback": True}, str(exc))
+
+
+def _strategy_provenance(task: Dict[str, Any], text: str, phase: str) -> StrategyResult:
+    """Alternative 8: Stufe 3 — OpenTelemetry/PROV Execution Provenance."""
+    try:
+        from provenance_trace import is_enabled as prov_enabled, verify_task_context
+
+        if not prov_enabled():
+            return StrategyResult("provenance", True, 0.5, {"skipped": True, "reason": "disabled"})
+
+        if phase == "pre":
+            # Pre: Trace-ID anlegen wenn noch nicht vorhanden
+            if not task.get("trace_id"):
+                task["trace_id"] = task.get("id") or f"task_{int(time.time())}"
+            return StrategyResult(
+                "provenance",
+                True,
+                0.8,
+                {"phase": "pre", "trace_id": task.get("trace_id"), "deferred": "post"},
+            )
+
+        check_text = text or _extract_text(task)
+        report = verify_task_context(task, check_text)
+        if report.skipped:
+            return StrategyResult("provenance", True, 1.0, {"skipped": True, "report": report.to_dict()})
+
+        return StrategyResult(
+            "provenance",
+            bool(report.passed),
+            float(report.score),
+            {
+                "report": report.to_dict(),
+                "trace_id": report.trace_id,
+                "completeness": report.completeness,
+                "missing": report.missing,
+            },
+        )
+    except Exception as exc:
+        return StrategyResult("provenance", True, 0.5, {"skipped": True, "fallback": True}, str(exc))
+
+
 def _strategy_foundation(task: Dict[str, Any], text: str, phase: str) -> StrategyResult:
     """Alternative 5: Externes Foundation-Gate (optional, graceful fallback)."""
     if phase == "pre":
@@ -311,6 +454,9 @@ _STRATEGY_FN: Dict[str, Callable[[Dict[str, Any], str, str], StrategyResult]] = 
     "peer_review": _strategy_peer_review,
     "meta": _strategy_meta,
     "audit": _strategy_audit,
+    "echtwelt": _strategy_echtwelt,
+    "nli_backward": _strategy_nli_backward,
+    "provenance": _strategy_provenance,
     "foundation": _strategy_foundation,
 }
 
@@ -387,7 +533,9 @@ def post_dispatch(task: Dict[str, Any], result: Any = None) -> ControlResult:
     """Post-Agent-Kontrolle nach Ausführung."""
     text = _extract_text(task, result)
     if isinstance(result, dict):
-        task = {**task, **{k: v for k, v in result.items() if k in ("response", "synthesised_response", "qubo_result")}}
+        for key, val in result.items():
+            if key in ("response", "synthesised_response", "qubo_result"):
+                task[key] = val
     cr = _run_strategies(task, "post", text)
     if os.getenv("FUSION_DUAL_AGENT", "1") == "1" and task.get("agent_kind") != "anti_agent":
         try:
@@ -413,6 +561,21 @@ def post_dispatch(task: Dict[str, Any], result: Any = None) -> ControlResult:
     except Exception:
         pass
     task["control_post"] = cr.to_dict()
+    try:
+        from provenance_trace import capture_task_run, is_enabled as prov_enabled
+
+        if prov_enabled():
+            cap = capture_task_run(
+                task,
+                result,
+                control_pre=task.get("control_pre"),
+                control_post=cr.to_dict(),
+            )
+            task["provenance_trace"] = cap.get("trace")
+            task["trace_id"] = cap.get("trace_id")
+            task["provenance_verification"] = cap.get("verification")
+    except Exception:
+        pass
     return cr
 
 
@@ -491,6 +654,9 @@ def status() -> Dict[str, Any]:
             "peer_review": _get_peer_review() is not None,
             "formal_math": _get_formal_math() is not None,
             "meta_analysis": _get_meta() is not None,
+            "echtwelt": _echtwelt_available(),
+            "nli_backward": _nli_available(),
+            "provenance": _prov_available(),
         },
         "history_len": len(_HISTORY),
         "blocked_total": blocked_count,
