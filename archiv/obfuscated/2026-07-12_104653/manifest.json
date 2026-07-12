@@ -1,0 +1,84 @@
+{
+  "archiv_version": "1.0",
+  "created_at": "2026-07-12T10:46:55.721998+00:00",
+  "repo": "fusion-hero-os",
+  "algorithm": "sha256+gpg-aes256+obfuscation",
+  "passphrase_hint": "sha256(FUSION_ARCHIV_GPG_PASSPHRASE or default salt)",
+  "passphrase_sha256": "4a94121d38756d34d53b266f8e5686c78abd2508f0442894a744d620ece8d176",
+  "entry_count": 9,
+  "entries": [
+    {
+      "path": ".fusion/provenance/traces.jsonl",
+      "sha256": "dc920500914f7eb1e205d25cb200f6974c37d39ec4265476d4bcb4a6485635b7",
+      "size_bytes": 21511,
+      "blob": "blobs/dc920500914f_.fusion_provenance_traces.jsonl.obf",
+      "gpg": "symmetric-aes256",
+      "obfuscation": "interleaved_sha256_b64rev"
+    },
+    {
+      "path": "archiv/README.md",
+      "sha256": "6e7fd45ec345df38281b9f9e481f71718e42a222316a9ff693b3613145a2ede1",
+      "size_bytes": 1095,
+      "blob": "blobs/6e7fd45ec345_archiv_README.md.obf",
+      "gpg": "symmetric-aes256",
+      "obfuscation": "interleaved_sha256_b64rev"
+    },
+    {
+      "path": "archiv/obfuscated/recover_obfuscated.py",
+      "sha256": "c09145dc478017ee96de7fc5c9d4bcce6e6c79cd6a2d8136786e200d5e123e4e",
+      "size_bytes": 2152,
+      "blob": "blobs/c09145dc4780_archiv_obfuscated_recover_obfuscated.py.obf",
+      "gpg": "symmetric-aes256",
+      "obfuscation": "interleaved_sha256_b64rev"
+    },
+    {
+      "path": "scripts/archiv_anchor_uncommitted.py",
+      "sha256": "399e37f9a102497588d4a4ec386b774181c636f201343557937e106b3dc672d2",
+      "size_bytes": 8023,
+      "blob": "blobs/399e37f9a102_scripts_archiv_anchor_uncommitted.py.obf",
+      "gpg": "symmetric-aes256",
+      "obfuscation": "interleaved_sha256_b64rev"
+    },
+    {
+      "path": "src/normal_os/internal_llm/output/conversation_context.json",
+      "sha256": "2720558c60242d4b11c91f8e9d41288d8c371a2b4e7377cf9d93933f2dfd9c3b",
+      "size_bytes": 4083,
+      "blob": "blobs/2720558c6024_src_normal_os_internal_llm_output_conversation_context.json.obf",
+      "gpg": "symmetric-aes256",
+      "obfuscation": "interleaved_sha256_b64rev"
+    },
+    {
+      "path": "src/normal_os/llm/router.py.b64",
+      "sha256": "cbd3132bd08c000dc55e666bfe6770b454e72a1b9e287b555c4ece6c825de5b0",
+      "size_bytes": 32,
+      "blob": "blobs/cbd3132bd08c_src_normal_os_llm_router.py.b64.obf",
+      "gpg": "symmetric-aes256",
+      "obfuscation": "interleaved_sha256_b64rev"
+    },
+    {
+      "path": "src/normal_os/llm/test.txt",
+      "sha256": "2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824",
+      "size_bytes": 5,
+      "blob": "blobs/2cf24dba5fb0_src_normal_os_llm_test.txt.obf",
+      "gpg": "symmetric-aes256",
+      "obfuscation": "interleaved_sha256_b64rev"
+    },
+    {
+      "path": "src/normal_os/llm/test_write.py",
+      "sha256": "6ae8a75555209fd6c44157c0aed8016e763ff435a19cf186f76863140143ff72",
+      "size_bytes": 12,
+      "blob": "blobs/6ae8a7555520_src_normal_os_llm_test_write.py.obf",
+      "gpg": "symmetric-aes256",
+      "obfuscation": "interleaved_sha256_b64rev"
+    },
+    {
+      "path": "workstation/.env",
+      "sha256": "4f8c27480a5343f2765823dd95a678429b7170833b74f4817a440412c39d5bb2",
+      "size_bytes": 675,
+      "blob": "blobs/4f8c27480a53_workstation_.env.obf",
+      "gpg": "symmetric-aes256",
+      "obfuscation": "interleaved_sha256_b64rev"
+    }
+  ],
+  "manifest_sha256": "d9be3dc469a7e9b5bbc507afe2e298537ff0e04567e1d59b189eeec5e31c0a1b"
+}

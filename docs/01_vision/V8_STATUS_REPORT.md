@@ -1,8 +1,86 @@
 # Fusion-Hero-OS v8 – Statusbericht
 
-**Datum:** 2026-07-01 (Code-Honesty-Korrektur: 2026-07-02)
+**Datum:** 2026-07-01 (Code-Honesty-Korrektur: 2026-07-02; v8.3-Konsolidierung: 2026-07-10; v8.4-Korrektur: 2026-07-12)
 **Version:** v8 (Doku/Struktur konsolidiert; Kernfunktionalität teilweise/aspirational)
 **Status:** Struktur abgeschlossen. Core-Module mit v8-Headern versehen (kosmetisch, kein funktionales Rework). Mathematische Fundierung: NICHT abgeschlossen — siehe Abschnitt 2.3.
+
+---
+
+## 0.1 v8.4-Korrektur (2026-07-12) — CI-Konsolidierung + TODO-Fixes
+
+Auf Anfrage "identifiziere offene Issues und TODOs, korrigiere sie":
+
+1. **CI-Konsolidierung (Issue #26):** 4 parallel existierende, ueberlappende
+   Workflow-Dateien (`ci.yml`, `fusion-hero-os-ci-v8.yml`,
+   `Fusion-Hero-OS_CI_v8_FUsion_branch_resolved.yml`,
+   `fusion-hero-os-hyperthread.yml`) zu **einer** Datei
+   (`.github/workflows/fusion-hero-os-ci.yml`) zusammengefuehrt. Die drei
+   entfernten Varianten waren echte Teilmengen bzw. reine Platzhalter-Echos
+   von `ci.yml` (dem einzigen mit echten Gates: pytest, Proof-Registry,
+   Erkenntnis-Index, Dependency-Atlas, Doc-Versions). Der "Block direct push
+   to main"-Job aus der Hyperthread-Variante wurde **bewusst nicht**
+   uebernommen: er haette jeden regulaeren PR-Merge-Commit auf `main`
+   ebenfalls rot markiert und widerspricht damit dem tatsaechlich gelebten
+   Merge-Workflow dieses Repos.
+2. **CI-Blocker (weiterhin offen, ausserhalb Code-Reichweite):** Alle Runs
+   auf `main` seit 2026-07-11 schlagen sofort mit "recent account payments
+   have failed or your spending limit needs to be increased" fehl
+   (GitHub-Actions-Billing). Muss vom Kontoinhaber in den Billing-Settings
+   behoben werden.
+3. **`tts/tts_router.py` — Piper-Backend:** gab bisher stillschweigend
+   `b"PIPER_FAKE_AUDIO_DATA"` zurueck. Jetzt echter `piper`-Subprocess-Call
+   (konfigurierbar via `PIPER_BINARY` + `PIPER_MODEL_<PROFILE>` /
+   `PIPER_MODEL_PATH`), sonst **fail-closed** (`TTSBackendUnavailableError`)
+   statt Fake-Audio. Tests: `tests/test_tts_router_piper_honesty.py`.
+4. **`03_Code/reference/rest_api_server.py` — `/api/input-factors`:**
+   `gpu_count` war hartcodiert `0`. Jetzt echte Erkennung ueber
+   `torch.cuda` bzw. `nvidia-smi` (Fallback `0`, kein Fake-Wert).
+5. **`03_Code/reference/rest_api_server.py` — `/mod/apply`:** gab bisher
+   immer `"approved"` zurueck (hartcodiertes PeerReview). Jetzt echte
+   Integration mit `01_Framework/heroic-core-foundation` (`checks.geltung`
+   + `checks.hygiene`) — Code wird tatsaechlich gescannt, `"flagged"` bei
+   gefundenen Hygiene-Issues. Tests: `tests/test_rest_api_server_todos.py`.
+6. **`tailscale_phone_notify.py`:** reiner Konsolen-Print ersetzt durch
+   echten, generischen Webhook-Versand (z. B. ntfy.sh) ueber
+   `PHONE_NOTIFY_WEBHOOK_URL` — ohne Konfiguration weiterhin nur Log, kein
+   Fake-Erfolg.
+7. **Bewusst nicht angefasst:** Die TODOs in
+   `legacy_sources/normalOS/...` und `legacy_sources/FuHOS_pub/...` liegen
+   in kuratierten Snapshots separater Repos (`95guknow/normalOS`,
+   `95guknow/FuHOS_pub`) — Korrektur gehoert dorthin, nicht in diesen Spiegel
+   (siehe Commit "chore(legacy): alle 95guknow-Repos als kuratierte
+   Snapshots spiegeln").
+
+---
+
+## 0. v8.3-Konsolidierung (2026-07-10) — "Alles mit allem"
+
+Nachtrag zum verbindlichen Stand; alle Punkte sind durch Tests/CI-Gates gedeckt:
+
+1. **Paket-Regression behoben:** `fusion_hero_os/core/heroic_core_orchestrator.py`,
+   `ascension_os/core/ascension_core.py` und `fusion_hero_os/engine/mainframe.py`
+   waren durch unvollständige Delta-Fragmente ersetzt worden (Commits 745a6e2,
+   5cd32ab/781269f, 793d540/1942af0) — `import fusion_hero_os` schlug komplett
+   fehl. Vollversionen aus der Git-Historie wiederhergestellt und die gemeinten
+   Erweiterungen (Ascension-Modus, Rust-Backend-Helper) korrekt ausformuliert.
+   Root-`core/heroic_core_orchestrator.py` ist jetzt ein Re-Export-Shim (keine
+   zweite driftende Kopie mehr).
+2. **Installierbarkeit/CI:** `pyproject.toml` vervollständigt (build-system,
+   dependencies, `[dev]`-Extra) — `pip install -e ".[dev]"`, `pytest tests/`
+   (180 Tests), `python -m fusion_hero_os.registry` und beide Gates laufen grün.
+3. **Layer-Graph vollständig:** `fusion_unified.yaml` um die Layer `kernel`,
+   `ascension`, `tarnkappe`, `android`, `knowledge` + `layer_edges` erweitert
+   (13 Layer). Neues Modul `fusion_hero_os/core/layer_registry.py` liefert
+   einheitlichen Offline-Status je Layer; `fusion_integration_hub.py` und
+   `hero-docs-server.py` exponieren ihn (`/layers/status`, `/erkenntnisse/status`).
+4. **Erkenntnis-Index eingeführt:** `docs/v8/erkenntnisse_index.yaml` (17 Docs,
+   Layer-Mapping, Geltungsstatus) + CI-Gate `scripts/check_erkenntnisse_index.py`.
+5. **Widersprüche aufgelöst:** BEST_VERSION (v8/main = Kanon, v9.4 = Roadmap),
+   Android Root vs. Non-Root (Non-Root = Beschluss), Root-v7.x-Duplikate
+   (Volltexte in `docs/99_archive/`, Root = Redirect-Stubs).
+6. **Echter Bugfix:** `core/process_exclusivity` ist jetzt reentrant (RLock +
+   Tiefenzähler) — vorher übersprang `apply_command → push_room_to_server`
+   die Watch-Room-Persistenz still, sobald das Lock-Modul importierbar war.
 
 ---
 

@@ -1,5 +1,7 @@
 # MASTERSEED UPDATE INSTRUCTION v8/main
 
+> **Stand:** v8.3.0 · 2026-07-11
+
 **Herausgegeben von der primären Fusion Hero OS v8/main Instanz (ALTE_Frau_95g Heroic Core Framework)**
 **Datum**: 2026-07-06
 **Befehl**: SOFORTIGES SELF-UPDATE FÜR ALLE MASTERSEEDS

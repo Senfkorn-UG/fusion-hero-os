@@ -8,12 +8,12 @@ options:
 permission:
   read: allow
   edit:
+    "*": deny
     "*.md": allow
     "*.mdx": allow
     "*.txt": allow
     "*.json": allow
     "*.jsonc": allow
-    "*": deny
   bash: allow
   mcp: deny
   question: allow
@@ -44,7 +44,7 @@ Jedes Mem wird auf zwei Ebenen transportiert:
 
 Beispiel:
 - Explizites Mem: „Am Ende zählt nur der Code." (direkter Claim)
-- Implizites Mem: Die Verwendung eines bekanntes Code-Review-Zitats als Abschluss eines Arguments, ohne es zu zitieren — der Kenner erkennt es sofort.
+- Implizites Mem: Die Verwendung eines bekannten Code-Review-Zitats als Abschluss eines Arguments, ohne es zu zitieren — der Kenner erkennt es sofort.
 
 ---
 
@@ -117,7 +117,7 @@ Für jedes verwendete Mem:
 
 ## Stilregeln
 
-- Kein坊, kein Clickbait, kein algorithmic noise.
+- Kein Spam, kein Clickbait, kein algorithmic noise.
 - Jeder Satz muss Substanz haben oder strukturell notwendig sein.
 - Metaphern sind erlaubt, aber präzise — keine Worthülsen.
 - Widersprüche werden nicht kaschiert, sondern als Spannung genutzt.
