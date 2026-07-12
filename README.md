@@ -1,93 +1,106 @@
-# normalOS v1.0
+# Tailscale Mesh Integration – Fusion Hero OS v8
 
-**Clean, explicit, production-oriented orchestration and optimization platform.**
+> **Stand:** v8.3.0 · 2026-07-11 · Mesh-Integration (09.07.2026) + Legacy-Spiegel + Dependency Atlas
 
-All high-value practical functions from the Fusion Hero OS Horkrux have been extracted, normalized, and made explicit.
+**Status:** Vollständig integriert (09.07.2026)  
+**Zweck:** Zero-Config Mesh-VPN + Phone-Bridge + Funnel für den gesamten Heimserver
 
-## Included Core Capabilities (v1.0)
+## Mesh-Prinzip: Jeder Konnektor = eigenes Teil
 
-- Async Task Execution with retry, cancellation, resource budgeting
-- Persistent Task + Faden/Context + History storage
-- Advanced QUBO solving with caching
-- Coevolution routing foundation
-- Multi-LLM routing + Structured Output enforcement
-- Agent Registry + BaseAgent pattern
-- Worker Pool
-- HTMX Dashboard (live updates)
-- Full Typer CLI
-- **GrokPCBridge** – Bidirectional local PC bridge (analog to PhoneBridge)
-- Docker ready
+Kein Monolith. Jedes Mesh-Segment hat:
 
-## GrokPCBridge (New in v1.0)
+- **Eigene ID** (`mesh-connector-github`, `mesh-connector-gmail`, …)
+- **Eigener Host-Knoten** (`mainframe` oder `desktop`)
+- **Eigene Health-Probe** (`/mesh/{connector}/status`)
+- **Eigener Tailscale-Tag** (`tag:fusion-connector-github`, …)
 
-The GrokPCBridge gives Grok / normalOS controlled, explicit access to your local Windows PC — especially the Desktop.
+Registry: `mesh_connectors.yaml`
 
-This solves requests like "check what Claude left on my desktop" in a clean and secure way.
+### Physische Knoten
 
-### How to use
+| Knoten | Rolle | MagicDNS |
+|--------|-------|----------|
+| `mainframe` | Orchestrator (Linux Heimserver) | `host.example.ts.net` |
+| `desktop` | Grok-Workstation (Windows) | `host.example.ts.net` |
 
-1. On your local PC, start the bridge:
+### MCP-Konnektor-Segmente (je eigenständig)
+
+| Konnektor | Mesh-ID | Host |
+|-----------|---------|------|
+| GitHub | `mesh-connector-github` | desktop |
+| Gmail | `mesh-connector-gmail` | desktop |
+| Google Drive | `mesh-connector-google-drive` | desktop |
+| Google Calendar | `mesh-connector-google-calendar` | desktop |
+| Canva | `mesh-connector-canva` | desktop |
+| Gamma | `mesh-connector-gamma` | desktop |
+| Notion | `mesh-connector-notion` | desktop |
+| Vercel | `mesh-connector-vercel` | desktop |
+| HyperFrames | `mesh-connector-hyperframes` | desktop |
+| Tasks | `mesh-connector-tasks` | desktop |
+
+## Ein-Klick Mesh Setup
+
+### Von Windows (Git Bash) aus (empfohlen)
 
 ```bash
-python -m src.normal_os.bridge.grok_pc_bridge
+chmod +x run_on_heimgserver.sh
+./run_on_heimgserver.sh all
 ```
 
-2. The bridge will print a **token** on startup.
-
-3. From Grok/normalOS you can now connect using:
-   - Base URL: `http://localhost:8765` (or your PC's IP if remote)
-   - Authorization: `Bearer <token>`
-
-### Available Endpoints (v1)
-
-- `GET /status` – Bridge health
-- `GET /ping` – Latency measurement
-- `GET /desktop/list?subpath=` – List Desktop contents
-- `GET /desktop/search?query=claude` – Search files on Desktop
-- `GET /desktop/read?path=...` – Read a text file from allowed paths
-- `GET /system/info` – Basic system information
-
-### Security Model
-
-- Token-based authentication (required)
-- Read-only in v1
-- Path allow-list: Desktop, Documents, Downloads (configurable)
-- Max file read size: 2 MB
-- All operations are logged on the PC side
-
-### Future Extensions (planned)
-
-- Bidirectional event streaming (PC ↔ Grok)
-- Controlled write operations (with explicit user approval)
-- Resource monitoring + process listing
-- Integration into normalOS Orchestrator as native BridgeAgent
-
-## Workstation (Windows PC)
-
-Local ops live under `workstation/` — start scripts, path registry, Tailscale checks, VR load, desktop restore.
-
-```powershell
-# Env + Status
-.\workstation\load-env.ps1
-.\workstation\status.ps1
-
-# Start Fusion + Bridge + Docs
-.\workstation\start-normalos.ps1
-
-# VR layer (audit / generate assets)
-.\workstation\load-vr.ps1
-.\workstation\load-vr.ps1 -Generate
-
-# Link mesh + integration hub
-.\workstation\link-all.ps1
+Einzelne Kommandos:
+```bash
+./run_on_heimgserver.sh install
+./run_on_heimgserver.sh start
+./run_on_heimgserver.sh funnel
+./run_on_heimgserver.sh status
+./run_on_heimgserver.sh mesh
 ```
 
-Canonical config: `workstation/paths.json` (endpoints, Tailscale nodes, Fusion Hub links).
+### Direkt auf dem Linux-Heimserver
 
-Copy `workstation/.env.example` → `workstation/.env` for API keys (never commit `.env`).
+```bash
+chmod +x tailscale_control.sh
+sudo ./tailscale_control.sh all
+sudo ./tailscale_control.sh mesh
+sudo ./tailscale_control.sh mesh-connector github
+```
 
-## Status
+## Verfügbare Kommandos
 
-**v1.0 COMPLETE** — All major practical patterns from the Horkrux are now explicit, clean, and usable.
+| Command | Beschreibung |
+|---------|-------------|
+| `install` | Installation + Authentifizierung |
+| `start` | Start + Service einrichten |
+| `status` | Tailscale-Status |
+| `mesh` | Alle Konnektor-Segmente anzeigen |
+| `mesh-connector <id>` | Einzelnes Segment prüfen |
+| `funnel` | Funnel für Hero Docs Server |
+| `notify` | Phone Notification Monitor |
+| `all` | Komplettes Mesh-Setup |
 
-The GrokPCBridge is the first step toward deep, trusted local PC integration while keeping everything explicit and auditable.
+## Erreichbare URLs (nach Funnel + MagicDNS)
+
+- **Hero Docs Server**: `https://host.example.ts.net`
+- **MasterSeed Status**: `https://host.example.ts.net/status`
+- **Tailscale Status**: `https://host.example.ts.net/tailscale/status`
+- **Mesh Overview**: `https://host.example.ts.net/mesh/status`
+- **Einzelner Konnektor**: `https://host.example.ts.net/mesh/github/status`
+
+## Dateien
+
+| Datei | Zweck |
+|-------|-------|
+| `mesh_connectors.yaml` | Registry aller Mesh-Segmente |
+| `tailscale_mesh_registry.py` | Health-Probes pro Konnektor |
+| `tailscale_control.sh` | Zentrales Control Center |
+| `tailscale_install.sh` | Installation + Login |
+| `tailscale_start.sh` | Start + Service |
+| `tailscale_status.py` | Tailscale-Status als JSON |
+| `tailscale_funnel.sh` | Funnel-Aktivierung |
+| `tailscale_phone_notify.py` | Phone Notifications |
+| `run_on_heimgserver.sh` | Remote-Ausführung per SSH |
+| `hero-docs-server.py` | Docs + Mesh-Endpoints |
+
+---
+
+**Layer 0 verankert** – Vollständig integriert in ALTE_Frau_95g Heroic Core v8 + HorkruxSelfUpdateProtocol.
