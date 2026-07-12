@@ -98,10 +98,21 @@ def test_recovery_loop_bounded():
     assert len(out["recovery_steps"]) >= 1
 
 
+def test_llm_recovery_heuristic():
+    os.environ["FUSION_VERIFY_LLM_RECOVERY"] = "1"
+    from verification_orchestrator import _revise_text_heuristic
+
+    text = "Paris liegt in Deutschland."
+    hints = ["NLI (contradicts): Paris liegt in Deutschland."]
+    out = _revise_text_heuristic(text, hints)
+    assert "[model]" in out.lower()
+
+
 if __name__ == "__main__":
     test_status_includes_agent_control()
     test_full_verification_passes_clean_text()
     test_collect_recovery_hints_nli()
     test_enrich_sources_from_nli_span()
     test_recovery_loop_bounded()
-    print("OK: 5 tests")
+    test_llm_recovery_heuristic()
+    print("OK: 6 tests")
