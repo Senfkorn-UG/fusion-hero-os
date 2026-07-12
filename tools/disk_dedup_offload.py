@@ -269,6 +269,48 @@ def offload_plan(roots: List[Path]) -> List[Dict]:
     return plan
 
 
+def offload_execute(plan: List[Dict], dest_root: Path, index_out: Path) -> Dict:
+    """Sicher auslagern: KOPIEREN -> Groesse verifizieren -> erst dann Original loeschen.
+
+    Kein Datenverlust: das lokale Original wird nur entfernt, wenn die Kopie
+    am Ziel existiert und byte-genau die gleiche Groesse hat. Schreibt einen
+    Auslagerungs-Index (fuer die Verankerung im Vault-Repo).
+    """
+    dest_root.mkdir(parents=True, exist_ok=True)
+    index = {"dest_root": str(dest_root), "entries": [], "freed_bytes": 0, "skipped": []}
+    for item in plan:
+        src = Path(item["path"])
+        if not src.is_file():
+            index["skipped"].append({"path": item["path"], "reason": "verschwunden"})
+            continue
+        try:
+            rel = src.relative_to(USER_ROOT)
+        except ValueError:
+            rel = Path(src.name)
+        dst = dest_root / rel
+        dst.parent.mkdir(parents=True, exist_ok=True)
+        src_size = src.stat().st_size
+        src_hash = _sha256(src)
+        try:
+            shutil.copy2(str(src), str(dst))
+        except OSError as e:
+            index["skipped"].append({"path": item["path"], "reason": f"copy-fehler: {e}"})
+            continue
+        # Verifikation: Ziel existiert + gleiche Groesse
+        if not dst.is_file() or dst.stat().st_size != src_size:
+            index["skipped"].append({"path": item["path"], "reason": "verify-fehler, Original bleibt"})
+            continue
+        src.unlink()  # erst jetzt sicher loeschen
+        index["freed_bytes"] += src_size
+        index["entries"].append({
+            "original": str(src), "offloaded_to": str(dst),
+            "sha256": src_hash, "size_bytes": src_size, "purpose": item["purpose"],
+        })
+    index_out.parent.mkdir(parents=True, exist_ok=True)
+    index_out.write_text(json.dumps(index, indent=2, ensure_ascii=False), encoding="utf-8")
+    return index
+
+
 # ---------------------------------------------------------------------------
 # CLI
 # ---------------------------------------------------------------------------
