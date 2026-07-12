@@ -1,12 +1,61 @@
+# Node / frontend
 node_modules
-
-# Output
 .output
 .vercel
 .netlify
 .wrangler
 /.svelte-kit
 /build
+vite.config.js.timestamp-*
+vite.config.ts.timestamp-*
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+.venv/
+venv/
+ENV/
+env/
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Numba / Rust
+*.nbc
+*.nbi
+**/target/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Environment
+.env
+.env.local
+.env.*
+!.env.example
+!.env.test
 
 # OS
 .DS_Store
@@ -15,52 +64,25 @@ Thumbs.db
 
 # Logs
 *.log
-
-# Env
-.env
-.env.*
-!.env.example
-!.env.test
-
-# Vite
-vite.config.js.timestamp-*
-vite.config.ts.timestamp-*
-
-# Python (Fusion Hero OS Engine)
-__pycache__/
-*.py[cod]
-*.egg-info/
-.venv/
-venv/
-.pytest_cache/
-.ruff_cache/
-
-# Numba JIT-Cache (.nbc/.nbi Kernel-Compile-Artefakte)
-*.nbc
-*.nbi
-
-# Rust-Build-Artefakte (PyO3-/Kernel-Crates)
-**/target/
-
-# Laufzeit-Audit-Log (pms-Kernel, waechst pro Lauf)
 pms_audit.jsonl
 
-# Generierte Pipeline-Artefakte
+# Workstation runtime (secrets + logs)
+workstation/.env
+workstation/*-log.txt
+workstation/disk-audit.txt
+workstation/_last_hub_status.json
+
+# Runtime / generated
+.fusion/
+.wa_selenium_profile/
 Archiv_*.zip
 00_Uebersicht.md
-
-# Leerer Platzhalter
 asd.md
-
-# LLM-Modelle & Trainingsdaten
 *.gguf
 03_Code/internal_llm/models/
 03_Code/internal_llm/output/
 03_Code/internal_llm/data.jsonl
-.fusion/
-.wa_selenium_profile/
-
-# Legacy import secrets (never commit)
+src/normal_os/internal_llm/output/
 legacy_sources/**/token.txt
 legacy_sources/**/header.txt
 legacy_sources/**/body.json
