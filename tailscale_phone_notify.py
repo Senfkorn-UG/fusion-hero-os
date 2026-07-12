@@ -15,6 +15,7 @@ import subprocess
 import json
 import time
 import os
+import urllib.request
 from datetime import datetime
 
 def get_tailscale_status():
@@ -41,15 +42,34 @@ def get_tailscale_status():
 def send_phone_notification(message: str, title: str = "Tailscale"):
     """
     Sendet eine Benachrichtigung ans Handy.
-    Hier wird später phonelink-control aufgerufen.
-    Aktuell: Gibt nur aus (kann später erweitert werden).
+
+    Echter, generischer Webhook-Versand (z. B. ntfy.sh, Pushover-Proxy, eigener
+    Endpoint), sobald PHONE_NOTIFY_WEBHOOK_URL gesetzt ist. Ohne Konfiguration
+    bleibt es beim reinen Konsolen-Log - ehrlich, kein Fake-Erfolg (siehe
+    docs/01_vision/V8_STATUS_REPORT.md, Code-Honesty-Konvention). Ein
+    proprietäres 'phonelink-control' Paket existiert nicht; dieser generische
+    Webhook-Pfad ist der reale Ersatz dafür.
     """
     timestamp = datetime.now().strftime("%H:%M:%S")
     print(f"[{timestamp}] 📱 PHONE NOTIFICATION → {title}: {message}")
 
-    # TODO: Hier später echten phonelink-control Call einbauen:
-    # from phonelink_control import send_notification
-    # send_notification(title=title, message=message)
+    webhook_url = os.environ.get("PHONE_NOTIFY_WEBHOOK_URL", "")
+    if not webhook_url:
+        return  # Kein echter Endpunkt konfiguriert - kein Fake-Versand.
+
+    try:
+        payload = json.dumps({"title": title, "message": message}).encode("utf-8")
+        req = urllib.request.Request(
+            webhook_url,
+            data=payload,
+            headers={"Content-Type": "application/json", "Title": title},
+            method="POST",
+        )
+        with urllib.request.urlopen(req, timeout=5) as resp:
+            if resp.status >= 300:
+                print(f"[{datetime.now().strftime('%H:%M:%S')}] Phone-Notify Webhook antwortete mit Status {resp.status}")
+    except Exception as e:
+        print(f"[{datetime.now().strftime('%H:%M:%S')}] Phone-Notify Webhook fehlgeschlagen: {e}")
 
 def monitor_tailscale(interval_seconds: int = 30):
     """Überwacht Tailscale und sendet Notification bei Status-Änderung"""

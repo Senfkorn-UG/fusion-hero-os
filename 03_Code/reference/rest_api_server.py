@@ -10,8 +10,48 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import uvicorn
 import os
+import sys
+import subprocess
 from datetime import datetime
 from typing import Dict, List
+
+# === HEROIC ORCHESTRATION INTEGRATION (01_Framework/heroic-core-foundation) ===
+_FOUNDATION_CHECKS_PATH = os.path.join(
+    os.path.dirname(os.path.abspath(__file__)), "..", "..", "01_Framework", "heroic-core-foundation"
+)
+if _FOUNDATION_CHECKS_PATH not in sys.path:
+    sys.path.insert(0, _FOUNDATION_CHECKS_PATH)
+try:
+    from checks.geltung import check_geltung
+    from checks.hygiene import check_hygiene
+    _HEROIC_ORCHESTRATION_AVAILABLE = True
+except Exception:
+    _HEROIC_ORCHESTRATION_AVAILABLE = False
+
+
+def _detect_gpu_count() -> int:
+    """Best-effort real GPU detection. Returns 0 if none found - no fake numbers."""
+    try:
+        import torch  # optional dependency, not required at import time
+
+        if torch.cuda.is_available():
+            return torch.cuda.device_count()
+    except Exception:
+        pass
+    try:
+        result = subprocess.run(
+            ["nvidia-smi", "--query-gpu=count", "--format=csv,noheader"],
+            capture_output=True,
+            text=True,
+            timeout=3,
+        )
+        if result.returncode == 0:
+            lines = [line for line in result.stdout.strip().splitlines() if line.strip()]
+            if lines:
+                return len(lines)
+    except Exception:
+        pass
+    return 0
 
 # === FASTAPI APP ===
 app = FastAPI(
@@ -86,7 +126,7 @@ async def input_factors():
             "logical_cpus": cpu_count,
             "physical_cpus": psutil.cpu_count(logical=False),
             "hyperthreading_env": "FUSION_HYPERTHREADING" in os.environ,
-            "gpu_count": 0  # TODO: Integrate GPU detection
+            "gpu_count": _detect_gpu_count()
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -154,12 +194,30 @@ async def process_input(task: TaskInput):
 
 @app.post("/mod/apply")
 async def apply_modification(mod: CodeModification):
-    """Apply Code Modification (PeerReview)"""
-    # TODO: Integrate with heroic_orchestration
+    """Apply Code Modification (PeerReview) - echte Integration mit
+    01_Framework/heroic-core-foundation (Geltungskategorien + Epistemic-Hygiene-Checks)."""
+    if not _HEROIC_ORCHESTRATION_AVAILABLE:
+        raise HTTPException(
+            status_code=503,
+            detail="heroic-core-foundation checks nicht verfuegbar (Layer 1/3 Import fehlgeschlagen)"
+        )
+
+    geltung_counts = check_geltung(mod.code)
+    hygiene_issues = check_hygiene(mod.code)
+    hygiene_list = [
+        {"kind": issue.kind, "line": issue.line, "text": issue.text}
+        for issue in hygiene_issues
+    ]
+    layer3_pass = len(hygiene_issues) == 0
+
     return {
-        "status": "approved",
-        "peer_review": ["Layer 1: PASS", "Layer 3: PASS"],
-        "geltung": "proven"
+        "status": "approved" if layer3_pass else "flagged",
+        "peer_review": [
+            f"Layer 1 (Geltungskategorien): {geltung_counts}",
+            f"Layer 3 (Epistemic Hygiene): {'PASS' if layer3_pass else str(len(hygiene_issues)) + ' issue(s) found'}",
+        ],
+        "hygiene_issues": hygiene_list,
+        "geltung": "proven" if layer3_pass else "flagged_for_review",
     }
 
 @app.get("/api/events")
