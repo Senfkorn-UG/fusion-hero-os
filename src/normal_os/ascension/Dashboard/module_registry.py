@@ -29,7 +29,7 @@ try:
 except Exception:
     MEDIENSERVER = Path(os.getenv("FUSION_MEDIENSERVER", r"G:\Meine Ablage\Fusion_Hero_OS_v1.2"))
 
-for p in (CODE_ROOT, DASHBOARD, FOUNDATION_ROOT, HIGHEST_LAYER_ROOT, ROOT):
+for p in (ROOT, CODE_ROOT, DASHBOARD, FOUNDATION_ROOT, HIGHEST_LAYER_ROOT):
     if p.exists() and str(p) not in sys.path:
         sys.path.insert(0, str(p))
 

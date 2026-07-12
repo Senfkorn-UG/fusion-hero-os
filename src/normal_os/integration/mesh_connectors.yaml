@@ -2,24 +2,33 @@
 # Prinzip: Jeder Konnektor ist ein eigenständiges Mesh-Segment.
 # Kein Monolith — jede Verbindung hat eigene Identität, Health-Probe und Routing.
 
-mesh_version: "1.0"
+mesh_version: "1.1"
 tailnet: example.ts.net
 principle: "Jeder Konnektor = ein einzelnes Teil des Mesh (eigene ID, Host, Health, Tag)"
 
 # Physische Mesh-Knoten (Tailscale Devices)
+# Kanonisch: mesh_roles.yaml — Windows-Desktop = Mainframe
 nodes:
   mainframe:
     role: orchestrator
-    hostname: mainframe
+    hostname: desktop-kpki9e4
     magicdns: host.example.ts.net
-    platform: linux
+    platform: windows
+    canonical: true
+    aliases: [desktop]
     tailscale_tag: tag:fusion-node-mainframe
     services:
+      - fusion-dashboard
       - hero-docs-server
+      - normalos-bridge
       - tailscale-control
+      - fusion-integration-hub
+      - grok-cli
+      - mcp-bridges
 
   desktop:
     role: grok-workstation
+    alias_of: mainframe
     hostname: desktop-kpki9e4
     magicdns: host.example.ts.net
     platform: windows
@@ -37,6 +46,14 @@ nodes:
     services:
       - tailscale-app
       - phone-link-bridge
+
+  legacy-linux:
+    role: archived
+    hostname: mainframe
+    magicdns: host.example.ts.net
+    platform: linux
+    status: offline
+    note: "Früherer Linux-Knoten — Mainframe auf Windows-Desktop (2026-07-12)"
 
 # MCP-Konnektoren — jeweils eigenes Mesh-Segment (logisch isoliert)
 connectors:
@@ -123,6 +140,8 @@ connectors:
 # Routing-Schema (Funnel + MagicDNS)
 routing:
   base_url: "https://host.example.ts.net"
+  mainframe_hostname: desktop-kpki9e4
+  roles_config: mesh_roles.yaml
   unified: "/fusion/status"
   fusion_graph: "/fusion/graph"
   mesh_overview: "/mesh/status"

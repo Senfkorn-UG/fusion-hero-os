@@ -1,0 +1,62 @@
+# Fusion Hero OS — Kanonische Tailscale-Mesh-Rollen (Single Source of Truth)
+# Der Windows-Desktop ist der Mainframe (Orchestrator). Linux-Knoten ist archiviert.
+
+mesh_roles_version: "1.1"
+updated: "2026-07-12"
+tailnet: example.ts.net
+principle: "Windows-Desktop = Mainframe — zentraler Orchestrator im Tailscale-Mesh"
+
+# Rolle → physischer Knoten (kanonisch)
+role_assignments:
+  mainframe:
+    node_id: mainframe
+    role: orchestrator
+    hostname: desktop-kpki9e4
+    magicdns: host.example.ts.net
+    platform: windows
+    tailscale_tag: tag:fusion-node-mainframe
+    canonical: true
+    aliases: [desktop]
+    services:
+      - fusion-dashboard
+      - hero-docs-server
+      - normalos-bridge
+      - tailscale-control
+      - fusion-integration-hub
+      - grok-cli
+      - mcp-bridges
+      - ollama
+
+  workstation:
+    node_id: desktop
+    role: grok-workstation
+    same_as: mainframe
+    hostname: desktop-kpki9e4
+    magicdns: host.example.ts.net
+    platform: windows
+    tailscale_tag: tag:fusion-node-desktop
+
+  mobile:
+    node_id: phone
+    role: mobile-client
+    hostname: phone-node
+    magicdns: host.example.ts.net
+    platform: android
+    tailscale_tag: tag:fusion-node-phone
+    login_required: user@example.com
+    login_warning: "Nicht GitHub — gleicher Login wie Desktop (Google)"
+
+  legacy:
+    node_id: legacy-linux
+    role: archived
+    hostname: mainframe
+    magicdns: host.example.ts.net
+    platform: linux
+    status: offline
+    note: "Früherer Linux-Knoten — Mainframe-Rolle auf Windows-Desktop übertragen (2026-07-12)"
+
+# Routing (Funnel + MagicDNS) — zeigt auf Windows-Mainframe
+routing:
+  base_url: https://host.example.ts.net
+  mainframe_hostname: desktop-kpki9e4
+  funnel_port: 8088

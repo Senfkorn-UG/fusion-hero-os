@@ -116,7 +116,19 @@ def _build_registry() -> None:
               "Klassische Mathematik-Module")
     _register("agent_control", 2, "orchestration",
               lambda: _try_import("agent_control", "status")(),
-              "Globale Agenten-Kontrolle (Multi-Strategie)")
+              "Globale Agenten-Kontrolle (Multi-Strategie + Echtwelt)")
+    _register("echtwelt_verifier", 2, "orchestration",
+              lambda: _try_import("echtwelt_verifier", "is_enabled")(),
+              "Output-Prüfung gegen Echtweltquellen")
+    _register("nli_backward_verifier", 2, "orchestration",
+              lambda: _try_import("nli_backward_verifier", "is_enabled")(),
+              "Stufe 2: Span-Attribution + NLI gegen RAG-Quellen")
+    _register("provenance_trace", 2, "orchestration",
+              lambda: _try_import("provenance_trace", "is_enabled")(),
+              "Stufe 3: OpenTelemetry/PROV Execution Provenance")
+    _register("verification_orchestrator", 2, "orchestration",
+              lambda: _try_import("verification_orchestrator", "status")(),
+              "Unified Verification + Recovery Loop")
     _register("geisterjagd_banach_viz", 2, "viz",
               lambda: _try_import("geisterjagd_banach_viz", "get_viz")().snapshot(),
               "Geisterjagd + Banach-Kontraktion Visualisierung")

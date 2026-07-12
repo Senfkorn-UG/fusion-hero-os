@@ -28,17 +28,30 @@ def _load_registry():
 
 def _load_registry_fallback():
     """Minimal inline fallback if PyYAML is not installed."""
+    try:
+        from mesh_roles import mesh_nodes_for_registry, get_roles_registry
+        reg = get_roles_registry()
+        nodes = mesh_nodes_for_registry()
+        tailnet = reg.get("tailnet", "example.ts.net")
+    except Exception:
+        nodes = {
+            "mainframe": {
+                "role": "orchestrator",
+                "hostname": "desktop-kpki9e4",
+                "platform": "windows",
+            },
+            "desktop": {"role": "grok-workstation", "hostname": "desktop-kpki9e4"},
+        }
+        tailnet = "example.ts.net"
+
     connectors = [
         "github", "gmail", "google_drive", "google_calendar",
         "canva", "gamma", "notion", "vercel", "hyperframes", "tasks",
     ]
     return {
-        "mesh_version": "1.0",
-        "tailnet": "example.ts.net",
-        "nodes": {
-            "mainframe": {"role": "orchestrator", "hostname": "mainframe"},
-            "desktop": {"role": "grok-workstation", "hostname": "desktop-kpki9e4"},
-        },
+        "mesh_version": "1.1",
+        "tailnet": tailnet,
+        "nodes": nodes,
         "connectors": {
             name: {
                 "mesh_id": f"mesh-connector-{name.replace('_', '-')}",
@@ -140,11 +153,22 @@ def get_mesh_status() -> dict:
 
     registered = sum(1 for s in segments.values() if s["segment_status"] == "registered")
 
+    mainframe_role = {}
+    try:
+        from mesh_roles import get_mainframe, is_mainframe_self
+        mainframe_role = {
+            "node": get_mainframe(),
+            "is_self": is_mainframe_self(),
+        }
+    except Exception:
+        pass
+
     return {
         "timestamp": datetime.now().isoformat(),
         "mesh_version": registry.get("mesh_version"),
         "tailnet": registry.get("tailnet"),
         "principle": registry.get("principle"),
+        "mainframe_role": mainframe_role,
         "tailscale": tailscale,
         "nodes": registry.get("nodes", {}),
         "connector_count": len(segments),

@@ -1,7 +1,7 @@
 [project]
 name = "ascension-os"
 version = "9.5.0"
-description = "AscensionOS — Fusion Hero OS Coevolutionary Variant (CEC, Persistent Sisyphos, AscensionCore, Heroic Core, Kernel AI)"
+description = "AscensionOS - Fusion Hero OS Coevolutionary Variant (CEC, Persistent Sisyphos, AscensionCore, Heroic Core, Kernel AI)"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
@@ -32,6 +32,10 @@ dependencies = [
     "structlog>=24.1.0",
     "pytest>=8.0.0",
     "pytest-asyncio>=0.23.0",
+    "google-generativeai>=0.8.0",
+    "openai>=1.30.0",
+    "mistralai>=0.6.0",
+    "huggingface-hub>=0.22.0",
 ]
 [project.optional-dependencies]
 dev = ["ruff>=0.5.0", "mypy>=1.10.0", "pre-commit>=3.6.0"]

@@ -6,6 +6,10 @@
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+INTEGRATION_DIR="${FUSION_INTEGRATION_DIR:-$(cd "$SCRIPT_DIR/../src/normal_os/integration" 2>/dev/null && pwd)}"
+if [ ! -f "$INTEGRATION_DIR/tailscale_mesh_registry.py" ]; then
+    INTEGRATION_DIR="$SCRIPT_DIR"
+fi
 
 show_help() {
     echo "Tailscale Control Center – Fusion Hero OS"
@@ -18,6 +22,7 @@ show_help() {
     echo "  status           - Aktuellen Status anzeigen"
     echo "  mesh             - Gesamtes Mesh (alle Konnektor-Segmente) anzeigen"
     echo "  mesh-connector   - Einzelnes Konnektor-Segment prüfen (z.B. github)"
+    echo "  roles            - Kanonische Mesh-Rollen (Mainframe = Windows-Desktop)"
     echo "  fusion           - Verknüpfter Gesamtstatus (Mesh + LLM + Tailscale)"
     echo "  fusion-graph     - Integrationsgraph anzeigen"
     echo "  llm              - Alle LLM-Frameworks anzeigen"
@@ -46,7 +51,7 @@ case "$1" in
         ;;
     mesh)
         echo "→ Mesh Status (alle Konnektor-Segmente):"
-        python3 "$SCRIPT_DIR/tailscale_mesh_registry.py"
+        python3 "$INTEGRATION_DIR/tailscale_mesh_registry.py"
         ;;
     mesh-connector)
         if [ -z "$2" ]; then
@@ -55,15 +60,19 @@ case "$1" in
             exit 1
         fi
         echo "→ Mesh-Segment: $2"
-        python3 "$SCRIPT_DIR/tailscale_mesh_registry.py" "$2"
+        python3 "$INTEGRATION_DIR/tailscale_mesh_registry.py" "$2"
+        ;;
+    roles)
+        echo "→ Mesh-Rollen (Mainframe = Windows-Desktop):"
+        python3 "$INTEGRATION_DIR/mesh_roles.py"
         ;;
     fusion)
         echo "→ Unified Integration Status (alles verknüpft):"
-        python3 "$SCRIPT_DIR/fusion_integration_hub.py" status
+        python3 "$INTEGRATION_DIR/fusion_integration_hub.py" status
         ;;
     fusion-graph)
         echo "→ Integrationsgraph:"
-        python3 "$SCRIPT_DIR/fusion_integration_hub.py" graph
+        python3 "$INTEGRATION_DIR/fusion_integration_hub.py" graph
         ;;
     llm)
         echo "→ LLM Framework Status:"

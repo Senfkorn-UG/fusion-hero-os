@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "updated": "2026-07-09",
+  "updated": "2026-07-12",
   "canonical": {
     "normalOS": "C:\\Users\\Admin\\normalOS",
     "normalOSWorkstation": "C:\\Users\\Admin\\normalOS\\workstation",
@@ -29,25 +29,41 @@
   },
   "tailscale": {
     "tailnet": "example.ts.net",
+    "mainframe_role": "orchestrator",
+    "mainframe_node": "mainframe",
+    "roles_config": "mesh_roles.yaml",
     "nodes": {
-      "desktop": {
+      "mainframe": {
+        "role": "orchestrator",
         "hostname": "desktop-kpki9e4",
         "magicdns": "host.example.ts.net",
-        "ip": "100.80.63.0",
+        "platform": "windows",
+        "canonical": true,
+        "aliases": ["desktop"],
+        "services": ["fusion-dashboard", "hero-docs-server", "normalos-bridge", "tailscale-control"]
+      },
+      "desktop": {
+        "role": "grok-workstation",
+        "alias_of": "mainframe",
+        "hostname": "desktop-kpki9e4",
+        "magicdns": "host.example.ts.net",
         "platform": "windows"
       },
       "phone": {
         "hostname": "phone-node",
         "magicdns": "host.example.ts.net",
         "platform": "android",
+        "role": "mobile-client",
         "login_required": "user@example.com",
         "login_warning": "Nicht GitHub — gleicher Login wie Desktop (Google)"
       },
-      "mainframe": {
+      "legacy-linux": {
+        "role": "archived",
         "hostname": "mainframe",
         "magicdns": "host.example.ts.net",
         "platform": "linux",
-        "status": "offline"
+        "status": "offline",
+        "note": "Früherer Linux-Knoten — Mainframe auf Windows-Desktop"
       }
     }
   },

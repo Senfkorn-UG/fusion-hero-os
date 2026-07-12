@@ -4,6 +4,13 @@
 
 set -e
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+INTEGRATION_DIR="${FUSION_INTEGRATION_DIR:-$(cd "$SCRIPT_DIR/../src/normal_os/integration" 2>/dev/null && pwd)}"
+MF_DNS="host.example.ts.net"
+if [ -f "$INTEGRATION_DIR/mesh_roles.py" ]; then
+    MF_DNS=$(python3 -c "import sys; sys.path.insert(0,'$INTEGRATION_DIR'); from mesh_roles import get_mainframe_magicdns; print(get_mainframe_magicdns())" 2>/dev/null || echo "$MF_DNS")
+fi
+
 echo "🚀 [Fusion Hero OS] Tailscale Funnel wird konfiguriert..."
 
 # Prüfen ob Tailscale läuft
@@ -21,11 +28,11 @@ echo ""
 echo "✅ Tailscale Funnel ist jetzt aktiv!"
 echo ""
 echo "Dein Hero Docs Server ist jetzt öffentlich erreichbar unter:"
-echo "   https://host.example.ts.net"
+echo "   https://$MF_DNS"
 echo ""
 echo "Weitere nützliche URLs:"
-echo "   MasterSeed Status:  https://host.example.ts.net/status"
-echo "   Tailscale Status:   https://host.example.ts.net/tailscale/status"
+echo "   MasterSeed Status:  https://$MF_DNS/status"
+echo "   Tailscale Status:   https://$MF_DNS/tailscale/status"
 echo ""
 echo "Um Funnel zu deaktivieren:"
 echo "   sudo tailscale funnel --port 8088 off"

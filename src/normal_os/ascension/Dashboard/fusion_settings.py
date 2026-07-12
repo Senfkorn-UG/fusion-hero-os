@@ -209,7 +209,7 @@ SETTINGS_SCHEMA: List[Dict[str, Any]] = [
         "description": "Pre/Post-Dispatch Geltungsprüfung für Agenten.",
         "type": "bool",
         "group": "agents",
-        "default": "0",
+        "default": "1",
     },
     {
         "key": "FUSION_ORCH_DUAL_AGENT",

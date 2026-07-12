@@ -36,6 +36,13 @@ app = FastAPI(title="Fusion Hero OS v8 — ALTE_Frau_95g Heroic Core Dashboard")
 # === Consolidated imports for agents + hyperthreading + task orchestration (from heroic_orchestration merge) ===
 import sys, os
 
+_NORMAL_OS = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+_ASCENSION = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+if _NORMAL_OS not in sys.path:
+    sys.path.insert(0, _NORMAL_OS)
+if _ASCENSION not in sys.path:
+    sys.path.append(_ASCENSION)
+
 _cors_origins = [
     o.strip()
     for o in os.getenv(
@@ -54,8 +61,8 @@ if _cors_origins:
         allow_methods=["*"],
         allow_headers=["*"],
     )
-if '03_Code' not in sys.path:
-    sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+if '03_Code' not in sys.path and _ASCENSION not in sys.path:
+    sys.path.append(_ASCENSION)
 try:
     from core.heroic_orchestration import (
         ensure_agents_loaded as _ensure_agents_shared,
