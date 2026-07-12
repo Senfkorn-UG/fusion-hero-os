@@ -1,0 +1,140 @@
+{
+  "archiv_version": "1.0",
+  "created_at": "2026-07-12T11:06:11.166941+00:00",
+  "repo": "fusion-hero-os",
+  "algorithm": "sha256+gpg-aes256+obfuscation",
+  "passphrase_hint": "sha256(FUSION_ARCHIV_GPG_PASSPHRASE or default salt)",
+  "passphrase_sha256": "4a94121d38756d34d53b266f8e5686c78abd2508f0442894a744d620ece8d176",
+  "entry_count": 16,
+  "entries": [
+    {
+      "path": ".env.example",
+      "sha256": "ef7219a2c6e169dbed8506fb81877cb91e25aaf0b85055290dbe1d22f0c79a49",
+      "size_bytes": 2078,
+      "blob": "blobs/ef7219a2c6e1_.env.example.obf",
+      "gpg": "symmetric-aes256",
+      "obfuscation": "interleaved_sha256_b64rev"
+    },
+    {
+      "path": ".fusion/provenance/traces.jsonl",
+      "sha256": "62226a442af8e967369223e2975de98d225954d35062cb3364eb15585bb1fa1d",
+      "size_bytes": 25789,
+      "blob": "blobs/62226a442af8_.fusion_provenance_traces.jsonl.obf",
+      "gpg": "symmetric-aes256",
+      "obfuscation": "interleaved_sha256_b64rev"
+    },
+    {
+      "path": "README.md",
+      "sha256": "f34f769acb6b54906bbc59530f7b55c947f48bdb5cf716bc5faa718783fb280b",
+      "size_bytes": 3980,
+      "blob": "blobs/f34f769acb6b_README.md.obf",
+      "gpg": "symmetric-aes256",
+      "obfuscation": "interleaved_sha256_b64rev"
+    },
+    {
+      "path": "scripts/gmail_triage_bridge.py",
+      "sha256": "2867a73e7e72b96215a404b33e4115b5ca974625984c904440075b3f49960d47",
+      "size_bytes": 2017,
+      "blob": "blobs/2867a73e7e72_scripts_gmail_triage_bridge.py.obf",
+      "gpg": "symmetric-aes256",
+      "obfuscation": "interleaved_sha256_b64rev"
+    },
+    {
+      "path": "src/normal_os/ascension/scripts/test_verification_orchestrator.py",
+      "sha256": "e4a8d1d9390e2253a846dd08896e70e35f3a51779556a8e005e6b562958f5fba",
+      "size_bytes": 3617,
+      "blob": "blobs/e4a8d1d9390e_src_normal_os_ascension_scripts_test_verification_orchestrator.py.obf",
+      "gpg": "symmetric-aes256",
+      "obfuscation": "interleaved_sha256_b64rev"
+    },
+    {
+      "path": "src/normal_os/core/verification_orchestrator.py",
+      "sha256": "0934fce9e0c2f89ba12e3c71f168bb7f57b747a5db04804c79b0f87860f4cf46",
+      "size_bytes": 13860,
+      "blob": "blobs/0934fce9e0c2_src_normal_os_core_verification_orchestrator.py.obf",
+      "gpg": "symmetric-aes256",
+      "obfuscation": "interleaved_sha256_b64rev"
+    },
+    {
+      "path": "src/normal_os/internal_llm/output/conversation_context.json",
+      "sha256": "2720558c60242d4b11c91f8e9d41288d8c371a2b4e7377cf9d93933f2dfd9c3b",
+      "size_bytes": 4083,
+      "blob": "blobs/2720558c6024_src_normal_os_internal_llm_output_conversation_context.json.obf",
+      "gpg": "symmetric-aes256",
+      "obfuscation": "interleaved_sha256_b64rev"
+    },
+    {
+      "path": "src/normal_os/llm/router.py.b64",
+      "sha256": "cbd3132bd08c000dc55e666bfe6770b454e72a1b9e287b555c4ece6c825de5b0",
+      "size_bytes": 32,
+      "blob": "blobs/cbd3132bd08c_src_normal_os_llm_router.py.b64.obf",
+      "gpg": "symmetric-aes256",
+      "obfuscation": "interleaved_sha256_b64rev"
+    },
+    {
+      "path": "src/normal_os/llm/test.txt",
+      "sha256": "2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824",
+      "size_bytes": 5,
+      "blob": "blobs/2cf24dba5fb0_src_normal_os_llm_test.txt.obf",
+      "gpg": "symmetric-aes256",
+      "obfuscation": "interleaved_sha256_b64rev"
+    },
+    {
+      "path": "src/normal_os/llm/test_write.py",
+      "sha256": "6ae8a75555209fd6c44157c0aed8016e763ff435a19cf186f76863140143ff72",
+      "size_bytes": 12,
+      "blob": "blobs/6ae8a7555520_src_normal_os_llm_test_write.py.obf",
+      "gpg": "symmetric-aes256",
+      "obfuscation": "interleaved_sha256_b64rev"
+    },
+    {
+      "path": "workstation/.env",
+      "sha256": "4f8c27480a5343f2765823dd95a678429b7170833b74f4817a440412c39d5bb2",
+      "size_bytes": 675,
+      "blob": "blobs/4f8c27480a53_workstation_.env.obf",
+      "gpg": "symmetric-aes256",
+      "obfuscation": "interleaved_sha256_b64rev"
+    },
+    {
+      "path": "workstation/check-audio-relay.ps1",
+      "sha256": "8fbb41b5032d904f7c02f12d6f2bdb261556fc02f357dfd33d46a56cfcce87ba",
+      "size_bytes": 1925,
+      "blob": "blobs/8fbb41b5032d_workstation_check-audio-relay.ps1.obf",
+      "gpg": "symmetric-aes256",
+      "obfuscation": "interleaved_sha256_b64rev"
+    },
+    {
+      "path": "workstation/followup-all.ps1",
+      "sha256": "3e53c94f5ad47d6104e6f54dc77e9f99864ff8a336f831f0ad43ee0f282cf08b",
+      "size_bytes": 1604,
+      "blob": "blobs/3e53c94f5ad4_workstation_followup-all.ps1.obf",
+      "gpg": "symmetric-aes256",
+      "obfuscation": "interleaved_sha256_b64rev"
+    },
+    {
+      "path": "workstation/followup-all.sh",
+      "sha256": "dac4b2edd383459d75bbee81e93f37f3a4c4288d0ec67c73b8c3d4964cd8b98c",
+      "size_bytes": 1871,
+      "blob": "blobs/dac4b2edd383_workstation_followup-all.sh.obf",
+      "gpg": "symmetric-aes256",
+      "obfuscation": "interleaved_sha256_b64rev"
+    },
+    {
+      "path": "workstation/inbox_export/.gitkeep",
+      "sha256": "c154152ff6e820b344bee66d441272fe5d2f065d9d68ac933a76eeabbb351791",
+      "size_bytes": 56,
+      "blob": "blobs/c154152ff6e8_workstation_inbox_export_.gitkeep.obf",
+      "gpg": "symmetric-aes256",
+      "obfuscation": "interleaved_sha256_b64rev"
+    },
+    {
+      "path": "workstation/tailscale_wsl_setup.sh",
+      "sha256": "9cb3fdc0a42abff4c116d137cd289513cbfa73240cf23a4089b02f5af9568b85",
+      "size_bytes": 847,
+      "blob": "blobs/9cb3fdc0a42a_workstation_tailscale_wsl_setup.sh.obf",
+      "gpg": "symmetric-aes256",
+      "obfuscation": "interleaved_sha256_b64rev"
+    }
+  ],
+  "manifest_sha256": "32e919d8b52281057e4129886282d726702596c4c8197d48046feb0c8735d207"
+}
