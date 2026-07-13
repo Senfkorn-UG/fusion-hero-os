@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-AscensionOS v9.5 - Substantielles AscensionCore (Coevolutionaer integriert)
+AscensionOS v9.6 - Substantielles AscensionCore (Coevolutionaer integriert)
 
 Dieses AscensionCore ist die zentrale Heimat fuer:
 - Alle grounded epistemischen Komponenten (Sisyphos, FailClosed, Psycholysis, MasterSeed)
@@ -12,6 +12,9 @@ Dieses AscensionCore ist die zentrale Heimat fuer:
   und QUBOAscensionOptimizer (v9.5 - "Next Evolution Steps" aus
   ASCENSION_EXPANSION_v8.md / 00_AscensionOS_Zusammenfuehrung_v8.md, vormals
   nur als Text/Referenz ohne Code)
+- Das HarmonisierungsCoreModule und Geisterjagdmodul (v9.6 - Self-Mod-Vorschlag
+  aus Core_Update_ALTE_Frau_95g_V4_Integration_2026-06-22.md, Kompendium der
+  Heroik Teil III: Harmonisierungs-Operation H, Alignment-Satz/Banach-Fixpunkt)
 
 Wiederhergestellt in der v8.3-Konsolidierung: Die Datei war durch
 Delta-Fragmente (5cd32ab, 781269f) ersetzt worden; Basis ist der letzte
@@ -76,10 +79,20 @@ try:
 except Exception:
     QUBOAscensionOptimizer = None
 
+try:
+    from .harmonisierung_module import HarmonisierungsCoreModule
+except Exception:
+    HarmonisierungsCoreModule = None
+
+try:
+    from .geisterjagd_module import Geisterjagdmodul
+except Exception:
+    Geisterjagdmodul = None
+
 
 class AscensionCore:
     """
-    Das substantielle AscensionCore v9.5.
+    Das substantielle AscensionCore v9.6.
 
     Coevolutionaer aufgebaut:
     - Haelt alle zentralen grounded Komponenten
@@ -90,10 +103,12 @@ class AscensionCore:
     - Loggt Psycholyse-Sessions mit Pflicht-Status-Tags
     - Visualisiert die Sisyphos-Oszillation (ASCII + SVG, keine neue Dependency)
     - Loest die Devil-vs-Christus-QUBO-Trajektorie ueber den bestehenden Solver
+    - Harmonisiert zwei Zustaende ueber H={b.q}.{q.b} mit Narzissmus-Filter (v9.6)
+    - Jagt "Geister" (latente Zustaende) zu einem manifesten Fixpunkt (v9.6)
     """
 
     def __init__(self):
-        self.version = "9.5-coevolutionary"
+        self.version = "9.6-coevolutionary"
 
         # Grounded Core Components
         self.llm: Optional["UnifiedHeroicLLMCore"] = (
@@ -136,6 +151,17 @@ class AscensionCore:
         self.oscillation_visualizer: Optional["SisyphosOscillationVisualizer"] = None
         if SisyphosOscillationVisualizer:
             self.oscillation_visualizer = SisyphosOscillationVisualizer(sisyphos=self.persistent_sisyphos)
+
+        # Harmonisierung + Geisterjagd (v9.6) - eigenstaendig, arbeiten auf
+        # uebergebenen Zustandsvektoren statt auf persistent_sisyphos.
+        self.harmonisierung: Optional["HarmonisierungsCoreModule"] = None
+        if HarmonisierungsCoreModule:
+            try:
+                self.harmonisierung = HarmonisierungsCoreModule()
+            except ImportError:
+                self.harmonisierung = None  # BanachContractionSeed nicht importierbar
+
+        self.geisterjagd: Optional["Geisterjagdmodul"] = Geisterjagdmodul() if Geisterjagdmodul else None
 
         self.mode = "ASCENSION"
 
@@ -214,6 +240,32 @@ class AscensionCore:
         }
 
     # ------------------------------------------------------------------
+    # Harmonisierung + Geisterjagd (v9.6)
+    # ------------------------------------------------------------------
+
+    def run_harmonization(self, state_a: Any, state_b: Any,
+                           participant_labels: Any = ("A", "B")) -> Dict[str, Any]:
+        """Vierschritt-Harmonisierung zweier Zustaende, siehe harmonisierung_module.py."""
+        if not self.harmonisierung:
+            return {"status": "HarmonisierungsCoreModule nicht verfuegbar"}
+        from dataclasses import asdict
+        result = self.harmonisierung.harmonize(state_a, state_b, participant_labels=tuple(participant_labels))
+        proposal = self.harmonisierung.propose_self_modification(result)
+        self.notify_coevolutionary_change(
+            "ascension_core", "harmonization",
+            {"zufriedenheitsquant": result.zufriedenheitsquant, "final_gap": result.final_gap},
+        )
+        return {"result": asdict(result), "self_modification_proposal": proposal}
+
+    def run_geisterjagd(self, latent_state: Any, A: Any, c: Any) -> Dict[str, Any]:
+        """Jagt einen 'Geist' (latenten Zustand) zu einem manifesten Fixpunkt, siehe geisterjagd_module.py."""
+        if not self.geisterjagd:
+            return {"status": "Geisterjagdmodul nicht verfuegbar"}
+        from dataclasses import asdict
+        result = self.geisterjagd.hunt(latent_state, A, c)
+        return asdict(result)
+
+    # ------------------------------------------------------------------
     # Status + Coevolution
     # ------------------------------------------------------------------
 
@@ -229,6 +281,8 @@ class AscensionCore:
             "psycholyse_logger_available": self.psycholyse_logger is not None,
             "oscillation_visualizer_available": self.oscillation_visualizer is not None,
             "qubo_ascension_optimizer_available": QUBOAscensionOptimizer is not None,
+            "harmonisierung_available": self.harmonisierung is not None,
+            "geisterjagd_available": self.geisterjagd is not None,
         }
 
         if self.sisyphos:
