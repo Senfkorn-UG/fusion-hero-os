@@ -1,4 +1,4 @@
-# apply-storage-policy.ps1 — GDrive als Standard-Speicher fuer nicht-operative Daten anwenden
+# apply-storage-policy.ps1 - GDrive als Standard-Speicher fuer nicht-operative Daten anwenden
 param(
     [switch]$PlanOnly,
     [switch]$FullSweep,
@@ -17,13 +17,13 @@ if (-not (Test-Path $policyFile)) {
 $policy = Get-Content $policyFile -Raw | ConvertFrom-Json
 if ($MinMb -le 0) { $MinMb = [int]$policy.thresholds.offload_min_mb }
 
-Write-Host "=== Fusion Hero — Storage Policy ===" -ForegroundColor Cyan
+Write-Host "=== Fusion Hero - Storage Policy ===" -ForegroundColor Cyan
 Write-Host "Policy: $($policy.policy_id)" -ForegroundColor DarkGray
 Write-Host $policy.principle -ForegroundColor DarkGray
 Write-Host "GDrive Ziel: $env:FUSION_GDRIVE_OFFLOAD" -ForegroundColor Green
 
 if (-not $env:FUSION_GDRIVE_OFFLOAD) {
-    Write-Host "WARNUNG: Google Drive nicht gemountet — Auslagerung uebersprungen" -ForegroundColor Yellow
+    Write-Host "WARNUNG: Google Drive nicht gemountet - Auslagerung uebersprungen" -ForegroundColor Yellow
     exit 2
 }
 
