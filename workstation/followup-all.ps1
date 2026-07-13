@@ -7,7 +7,7 @@ $Root = if ($env:FUSION_HERO_ROOT) { $env:FUSION_HERO_ROOT } else { (Resolve-Pat
 Write-Host "=== Fusion Hero OS — Follow-up All-in-One ===" -ForegroundColor Cyan
 Write-Host ""
 
-Write-Host "[1/6] Mesh Mainframe-Rolle" -ForegroundColor Yellow
+Write-Host "[1/7] Mesh Mainframe-Rolle" -ForegroundColor Yellow
 $roles = Join-Path $Root "src\normal_os\integration\mesh_roles.py"
 if (Test-Path $roles) {
     python "$roles" 2>$null | ConvertFrom-Json | Select-Object -ExpandProperty mainframe |
