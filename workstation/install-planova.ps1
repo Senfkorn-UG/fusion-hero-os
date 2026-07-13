@@ -219,9 +219,9 @@ function Find-BundleArtifact {
     if (-not (Test-Path $bundleRoot)) { return $null }
 
     $candidates = @(
-        (Get-ChildItem -Path (Join-Path $bundleRoot "msi") -Filter "*.msi" -ErrorAction SilentlyContinue | Sort-Object LastWriteTime -Descending | Select-Object -First 1),
         (Get-ChildItem -Path (Join-Path $bundleRoot "nsis") -Filter "*setup*.exe" -ErrorAction SilentlyContinue | Sort-Object LastWriteTime -Descending | Select-Object -First 1),
-        (Get-ChildItem -Path (Join-Path $bundleRoot "nsis") -Filter "*.exe" -ErrorAction SilentlyContinue | Sort-Object LastWriteTime -Descending | Select-Object -First 1)
+        (Get-ChildItem -Path (Join-Path $bundleRoot "nsis") -Filter "*.exe" -ErrorAction SilentlyContinue | Sort-Object LastWriteTime -Descending | Select-Object -First 1),
+        (Get-ChildItem -Path (Join-Path $bundleRoot "msi") -Filter "*.msi" -ErrorAction SilentlyContinue | Sort-Object LastWriteTime -Descending | Select-Object -First 1)
     )
     foreach ($c in $candidates) {
         if ($c) { return $c.FullName }
@@ -246,6 +246,18 @@ function Install-Artifact([string]$Artifact) {
         if ($Artifact -match "setup") {
             Write-Host "  NSIS Setup: $Artifact"
             Start-Process $Artifact -ArgumentList "/S" -Wait -NoNewWindow
+            Start-Sleep -Seconds 2
+            $pf = @(
+                (Join-Path ${env:ProgramFiles} "Planova\planova.exe"),
+                (Join-Path ${env:ProgramFiles(x86)} "Planova\planova.exe"),
+                (Join-Path $env:LOCALAPPDATA "Planova\planova.exe")
+            )
+            foreach ($pfExe in $pf) {
+                if (Test-Path $pfExe) {
+                    Copy-Item $pfExe (Join-Path $InstallDir "planova.exe") -Force
+                    break
+                }
+            }
         } else {
             Copy-Item $Artifact (Join-Path $InstallDir "planova.exe") -Force
         }
@@ -267,6 +279,9 @@ function Resolve-Executable {
     $candidates = @(
         (Join-Path $InstallDir "planova.exe"),
         (Join-Path $env:LOCALAPPDATA "Programs\planova\planova.exe"),
+        (Join-Path ${env:ProgramFiles} "Planova\planova.exe"),
+        (Join-Path ${env:ProgramFiles(x86)} "Planova\planova.exe"),
+        (Join-Path $env:LOCALAPPDATA "Planova\planova.exe"),
         (Join-Path $CloneDir "src-tauri\target\release\planova.exe")
     )
     foreach ($c in $candidates) {
