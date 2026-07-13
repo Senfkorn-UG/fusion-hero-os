@@ -23,3 +23,24 @@ Import-DotEnv $FusionEnv
 $env:FUSION_HERO_ROOT = if ($env:FUSION_HERO_ROOT) { $env:FUSION_HERO_ROOT } else { "C:\Users\Admin\fusion-hero-os" }
 $env:NORMALOS_ROOT = if ($env:NORMALOS_ROOT) { $env:NORMALOS_ROOT } else { "C:\Users\Admin\normalOS" }
 $env:NORMALOS_WORKSTATION = $Workstation
+
+# Google Drive — Standard-Speicher fuer nicht-operative Daten (storage_policy.json)
+$policyFile = Join-Path $Workstation "storage_policy.json"
+if (Test-Path $policyFile) {
+    $policy = Get-Content $policyFile -Raw | ConvertFrom-Json
+    $lib = $policy.google_drive.library
+    $cold = $policy.google_drive.cold_root
+    $photo = $policy.google_drive.photo_ingestion
+    foreach ($mountTpl in $policy.google_drive.mount_candidates) {
+        $mount = $mountTpl -replace '\{USERPROFILE\}', $env:USERPROFILE
+        $libPath = Join-Path $mount $lib
+        if (Test-Path $mount) {
+            $env:FUSION_GDRIVE_MOUNT = $mount
+            $env:FUSION_GDRIVE_LIBRARY = $libPath
+            $env:FUSION_GDRIVE_OFFLOAD = Join-Path $libPath $cold
+            $env:FUSION_GDRIVE_PHOTOS = Join-Path $libPath $photo
+            $env:FUSION_STORAGE_POLICY = $policy.policy_id
+            break
+        }
+    }
+}
