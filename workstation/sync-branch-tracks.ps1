@@ -65,9 +65,21 @@ try {
 
         git checkout $branch 2>&1 | ForEach-Object { Write-Host "  $_" }
         git pull origin $branch --no-rebase --no-edit 2>&1 | ForEach-Object { Write-Host "  $_" }
-        git merge origin/main -m "Merge origin/main into $branch (track sync)" --no-edit 2>&1 | ForEach-Object { Write-Host "  $_" }
+        git merge origin/main -m "Merge origin/main into $branch (track sync)" -X theirs --no-edit 2>&1 | ForEach-Object { Write-Host "  $_" }
 
         if ($LASTEXITCODE -ne 0) {
+            $conflicts = git diff --name-only --diff-filter=U 2>$null
+            if ($conflicts) {
+                Write-Host "  Konflikte mit -X theirs aufloesen: $($conflicts -join ', ')" -ForegroundColor DarkGray
+                foreach ($f in $conflicts) {
+                    git checkout --theirs $f 2>$null
+                    git add $f 2>$null
+                }
+                git commit -m "Merge origin/main into $branch (track sync)" --no-edit 2>&1 | Out-Null
+            }
+        }
+
+        if ($LASTEXITCODE -ne 0 -and -not (git diff --name-only --diff-filter=U 2>$null)) {
             Write-Status "failed" "Merge-Konflikt in $branch"
             throw "Merge fehlgeschlagen fuer $branch"
         }
