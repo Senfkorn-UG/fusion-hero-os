@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Resource Guardian | Fusion Hero OS</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/static/style.css">
+  <style> @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap'); </style>
+</head>
+<body class="bg-[#0a0a0f] text-[#e2e8f0]">
+  <div class="dashboard-shell">
+    <header class="hud-panel dashboard-header m-4 p-4">
+      <div class="dashboard-header-brand">
+        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-[#00d4aa] to-[#f59e0b] flex items-center justify-center text-black font-bold text-xl shrink-0">RG</div>
+        <div>
+          <h1 class="text-xl sm:text-2xl font-bold tracking-[2px] sm:tracking-[3px]">LAYERED RESOURCE GUARDIAN</h1>
+          <p class="text-xs text-[#94a3b8] header-subline">Temperatur · Kühlung · CPU · GPU · SSD — sofort / kurzfristig / mittelfristig</p>
+        </div>
+      </div>
+      <div class="dashboard-header-meta">
+        <button id="rg-start-btn" class="watch-btn watch-btn-primary">Start</button>
+        <button id="rg-stop-btn" class="watch-btn">Stop</button>
+        <a href="/" class="watch-header-btn" title="Zurueck zum Dashboard">← DASHBOARD</a>
+      </div>
+    </header>
+
+    <div class="hud-panel m-4 p-3">
+      <div id="rg-status-banner" class="text-xs text-[#94a3b8]">lade Status...</div>
+    </div>
+
+    <div id="rg-grid" class="dashboard-grid">
+
+      <div class="hud-panel" data-panel-id="layer-sofort">
+        <h2 class="text-[#00d4aa] text-sm mb-2 tracking-widest">SOFORT <span class="text-[10px] text-[#94a3b8]">(~10s, CPU+GPU)</span></h2>
+        <div id="layer-sofort-out" class="text-xs text-[#94a3b8] whitespace-pre-wrap">--</div>
+        <button data-layer="sofort" class="rg-trigger-btn watch-btn watch-btn-primary text-xs mt-2">Jetzt prüfen</button>
+      </div>
+
+      <div class="hud-panel" data-panel-id="layer-kurzfristig">
+        <h2 class="text-[#f59e0b] text-sm mb-2 tracking-widest">KURZFRISTIG <span class="text-[10px] text-[#94a3b8]">(~2min, +Kühlung+SSD)</span></h2>
+        <div id="layer-kurzfristig-out" class="text-xs text-[#94a3b8] whitespace-pre-wrap">--</div>
+        <button data-layer="kurzfristig" class="rg-trigger-btn watch-btn watch-btn-primary text-xs mt-2">Jetzt prüfen</button>
+      </div>
+
+      <div class="hud-panel" data-panel-id="layer-mittelfristig">
+        <h2 class="text-[#c084fc] text-sm mb-2 tracking-widest">MITTELFRISTIG <span class="text-[10px] text-[#94a3b8]">(~30min, voller Cross-Check)</span></h2>
+        <div id="layer-mittelfristig-out" class="text-xs text-[#94a3b8] whitespace-pre-wrap">--</div>
+        <button data-layer="mittelfristig" class="rg-trigger-btn watch-btn watch-btn-primary text-xs mt-2">Jetzt prüfen</button>
+      </div>
+
+      <div class="hud-panel" data-panel-id="escalations" style="grid-column: span 2;">
+        <h2 class="text-[#f59e0b] text-sm mb-2 tracking-widest">ESKALATIONEN (Kreuz-Check-Log)</h2>
+        <div id="rg-escalations-out" class="text-xs text-[#94a3b8] whitespace-pre-wrap max-h-48 overflow-y-auto">--</div>
+      </div>
+
+      <div class="hud-panel" data-panel-id="history">
+        <h2 class="text-[#00d4aa] text-sm mb-2 tracking-widest">HISTORIE</h2>
+        <div id="rg-history-out" class="text-xs text-[#94a3b8] whitespace-pre-wrap max-h-48 overflow-y-auto">--</div>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="/static/resources.js"></script>
+</body>
+</html>
