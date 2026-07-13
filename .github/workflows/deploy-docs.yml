@@ -1,0 +1,50 @@
+name: Deploy MkDocs to GitHub Pages
+
+on:
+  push:
+    branches: [ "main" ]
+    paths: ['docs/**', 'mkdocs.yml']
+  workflow_dispatch: # Manuelle Rekalibrierung
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false # Beim Deployment darf nicht abgebrochen werden
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository (MasterSeed)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Setup Python Hyperthreading
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+
+      - name: Install MkDocs Material Core
+        run: pip install mkdocs-material
+
+      - name: Build Static Portal (EfficiencyDistillation)
+        run: mkdocs build --clean
+
+      - name: Upload Documentation Artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./site
+
+      - name: Deploy to GitHub Pages (Layer 6 Access)
+        id: deployment
+        uses: actions/deploy-pages@v4
