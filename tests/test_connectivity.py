@@ -53,7 +53,8 @@ def test_local_network_base_uses_port_env(monkeypatch):
 def test_connectivity_routes_exist(path):
     from fastapi.testclient import TestClient
 
-    from app import app
+    from conftest import import_dashboard_app
+    app = import_dashboard_app().app
 
     client = TestClient(app)
     r = client.get(path)

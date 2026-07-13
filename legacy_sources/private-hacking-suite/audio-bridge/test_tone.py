@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env python3
+#!/usr/bin/env python3
 """
 Test Tone for Audio Bridge Latency Measurement + Compensation
 Plays 1kHz beeps with timestamps. Use with 'python bridge.py --calibrate'

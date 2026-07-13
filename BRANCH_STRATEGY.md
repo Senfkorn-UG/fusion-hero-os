@@ -1,40 +1,87 @@
-# Branching Strategy — Fusion Hero OS → AscensionOS (Hyperthreading Model)
+# Branching Strategy — Fusion Hero OS → AscensionOS (Final v8.8+)
 
-## Hyperthreading Development Model (ab v8.8)
+> **Stand:** v8.3.0 · 2026-07-13
 
-Wir führen **zwei parallele Tracks** (Hyperthreading), weil Option A und Option B unterschiedliche Ziele verfolgen:
+## Versionierung (kanonisch ab v8.3.0)
 
-### Track 1: `develop` – Option A (Evolutionary / Foundation)
-- **Ziel**: Stabile, saubere Weiterentwicklung des bestehenden Heroic Core.
-- AscensionOS wird als **Vision / Zielprogramm** positioniert, dem der aktuelle HeroicCore als Fundament dient.
-- Keine großen Breaking Changes an Namen.
-- Fokus auf Integration, Tests, saubere Grounding aller Module.
-- Wird regelmäßig nach `main` gemergt (stabile Releases).
+**Quelle der Wahrheit ist der annotierte Git-Tag `vMAJOR.MINOR.PATCH` auf
+`main` dieses Repos** (`95guknow/fusion-hero-os`), gespiegelt in der Datei
+`VERSION` im Root. Jeder Tag bekommt ein GitHub-Release. Alles andere ist
+abgeleitet — kein Dokument, Branch oder Manifest führt eine eigene Zählung.
 
-### Track 2: `ascension` – Option B (Strong Ascension Path)
-- **Ziel**: Radikalere, zukunftsorientierte Struktur für AscensionOS als eigenständiges Zielprogramm.
-- Neue Top-Level-Namen und Paketstruktur (`ascension_os/`).
-- `AscensionCore` als neuer zentraler Aggregator (kann HeroicCore langfristig ablösen oder stark erweitern).
-- Mehr Fokus auf Ascension-spezifische Konzepte, höhere Abstraktionsebene und langfristige Vision.
-- Kann später in `main` gemergt werden, wenn der Track reif ist, oder als langlebiger alternativer Strang geführt werden.
+- **MAJOR** = Ära. 8 = operativer FuHOS-Kanon. 9 wird erst vergeben, wenn der
+  Ascension-Track tatsächlich Kanon wird — bis dahin ist „v9.x" reines
+  Roadmap-Label und nie ein Release.
+- **MINOR** = Feature-/Konsolidierungsstand (neue Layer, Mesh-Ausbau, …).
+- **PATCH** = Fixes.
+- Vorab-Stände aus `develop`/`ascension`: `v8.4.0-rc.1` usw.
 
-## Branch-Übersicht
+**Mechanik:**
 
-| Branch      | Zweck                              | Hyperthread-Track | Merge-Ziel     |
-|-------------|------------------------------------|-------------------|----------------|
-| `main`      | Stabile Releases                   | -                 | -              |
-| `develop`   | Option A (konservativ)             | Track 1           | `main`         |
-| `ascension` | Option B (stark / visionär)       | Track 2           | `main` (später) oder eigenständig |
-| `feature/*` | Kurze fokussierte Arbeiten         | je nach Track     | develop / ascension |
+- `VERSION` (Root) trägt die Plattform-Version ohne `v`-Prefix.
+- `scripts/bump_version.py` setzt sie und gleicht alle Manifeste an
+  (`package.json` Root + workstation, `pyproject.toml`, beide Crate-
+  `Cargo.toml`). CI-Gate: `bump_version.py --check` (fail bei Drift).
+- Release: `python scripts/bump_version.py X.Y.Z` → Commit → Merge nach
+  `main` → `git tag -a vX.Y.Z` → `gh release create vX.Y.Z --generate-notes`.
+- Commits folgen Conventional Commits (`feat:`, `fix:`, `docs:`, …), damit
+  MINOR/PATCH ableitbar sind und Release-Notes automatisch entstehen.
+- **Keine Versionsnummern mehr in Branch- oder Dateinamen.** Neue Doku trägt
+  den Stand nur im Header (`> Stand: vX.Y.Z`). Bestehende `archive/v*`-
+  Branches und `_v7.x_`-Dateien bleiben unangetastete Historie.
 
-## Hyperthreading-Prinzip
-- Beide Tracks laufen parallel (wie Hyperthreading).
-- Wichtige Erkenntnisse können zwischen den Tracks ausgetauscht werden.
-- Am Ende soll **alles in AscensionOS münden** – entweder über den evolutionären oder den starken Pfad (oder eine Synthese beider).
+**Ökosystem:** Vorgänger-Repos (`fusion-hero-os-v1`, `Fusion_Hero_OS_v1.1`,
+`fusion-hero-core`, `alte-frau-95g-heroic-core`, `AscensionOS`, `FuHOS_pub`)
+sind auf GitHub archiviert. Aktive Satelliten-Repos (`normalOS`,
+`fusion-hero-vault`, `mister-Contributor-gui`, `dashboard`,
+`fusion-hero-os-daily-plans`) versionieren unabhängig nach demselben Schema
+und deklarieren ihre Plattform-Kompatibilität in `fuhos_compat.yaml`
+(z. B. `fuhos_compat: ">=8.3 <9"`).
 
-## Aktueller Stand (09.07.2026)
-- `develop` und `ascension` existieren parallel.
-- Beide Tracks starten vom gleichen v8.8 HeroicCore-Stand.
-- Hyperthreading-Modus ist aktiviert.
+## Aktuelles Modell (Hyperthreading + Archive)
 
-**Ziel**: Alles seit April entwickelte (Grounding, Dynamic Assignment, Sisyphos, Fail-Closed, Psycholysis, HeroicCore Aggregator etc.) soll in AscensionOS münden – über einen der beiden Tracks oder eine spätere Fusion.
+### `main` (Stable Release Line)
+- Geschützt. Direkte Pushes sind blockiert.
+- Nur Merges via Pull Request von `develop` oder `ascension`.
+
+### `develop` – Option A Track (Evolutionary)
+- Aktive Weiterentwicklung des bestehenden Heroic Core.
+
+### `ascension` – Option B Track (Strong Ascension Path)
+- Radikalere Entwicklungslinie für AscensionOS.
+- `ascension_os/` und `AscensionCore` sind jetzt auch auf `main` verfügbar.
+
+### `archive`
+- Sinnvoll organisiertes Archiv für alles Alte.
+
+## Bifurzierter Bottom-Up-Merge (WSL -> Windows -> GitHub)
+
+Fuer die Zweigstelle **WSL** (`fusion-hero-core`) und den **Mainframe** (`C:\Users\Admin\fusion-hero-os`):
+
+| Layer | Repo | Rolle |
+|-------|------|-------|
+| 0 (Leaf) | WSL `~/fusion-hero-core` | Entwicklung, kein GitHub-Push |
+| 1 (Mainframe) | Windows `fusion-hero-os` | Merge + Push (GitHub-Auth) |
+| 2 (Root) | `origin/main` | Kanon auf GitHub |
+
+**Skripte:** `workstation/merge-bottom-up.sh` (WSL) + `workstation/merge-bottom-up.ps1` (Windows)
+
+```bash
+# Vollstaendiger Lauf
+bash workstation/merge-bottom-up.sh
+
+# Nur Plan
+bash workstation/merge-bottom-up.sh --plan-only
+
+# Mit Commit-Message fuer WSL-Aenderungen
+bash workstation/merge-bottom-up.sh --message "feat: ..."
+```
+
+**Regeln:**
+- Merge-Strategie: `git pull --no-rebase` (kein Rebase auf Auto-Save-Historie)
+- Keine Duplikate im Repo-Root (`workstation/`, `tools/`, `src/` sind kanonisch)
+- Status: `~/.fusion/merge-bottom-up.status.json`
+
+**Hinweis:** `develop`/`ascension` sind derzeit hinter `main` — zuerst `main` in die Tracks mergen, nicht umgekehrt.
+
+**Ziel:** Alles seit April 2026 entwickelte soll in AscensionOS münden.

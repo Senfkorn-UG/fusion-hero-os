@@ -1,0 +1,47 @@
+// ENTWURF — Tailnet-Policy fuer example.ts.net
+// Aktivieren: Inhalt nach https://login.tailscale.com/admin/acls kopieren und speichern.
+// NICHT automatisch aktiv. Aktuell gilt die Default-Policy (alles darf zu allem).
+//
+// Hinweis: Alle Geraete laufen unter demselben Login (user@example.com),
+// daher unterscheidet diese Policy nach Host/IP, nicht nach Benutzeridentitaet.
+{
+  "hosts": {
+    // Endgeraet des Superusers Superuser
+    "phone-node":  "100.64.0.11",
+    // Workstation
+    "pc":             "100.64.0.12",
+    // Agent-Nodes (WSL auf dem PC)
+    "claude-agent":   "100.64.0.13",
+    "grok-agent":     "100.64.0.14",
+    "kepler-agent":   "100.64.0.15",
+  },
+
+  "acls": [
+    // Superuser-Geraete (Handy als Enduser + PC): voller Zugriff auf alles —
+    // damit duerfen auf dem Handy alle privaten Gadgets des AscensionOS laufen.
+    { "action": "accept", "src": ["phone-node", "pc"], "dst": ["*:*"] },
+
+    // Agenten: untereinander frei, zum PC nur auf die bekannten Dienst-Ports
+    // (Dashboard 8000, Docs 8088, Grok-Bridge 8765, Vite 5173).
+    {
+      "action": "accept",
+      "src": ["claude-agent", "grok-agent", "kepler-agent"],
+      "dst": [
+        "claude-agent:*",
+        "grok-agent:*",
+        "kepler-agent:*",
+        "pc:8000,8088,8765,5173",
+      ],
+    },
+  ],
+
+  "ssh": [
+    // Standard: eigene Geraete duerfen sich gegenseitig per Tailscale SSH erreichen
+    {
+      "action": "accept",
+      "src": ["autogroup:member"],
+      "dst": ["autogroup:self"],
+      "users": ["autogroup:nonroot", "root"],
+    },
+  ],
+}
