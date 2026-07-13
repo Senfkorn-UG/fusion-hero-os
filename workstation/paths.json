@@ -79,5 +79,20 @@
     "fusion-hero-core": "C:\\Users\\Admin\\fusion-hero-core",
     "hero-os": "C:\\Users\\Admin\\hero-os",
     "note": "Veraltet — nutze fusion-hero-os als einzige Quelle"
+  },
+  "storage": {
+    "policy_id": "google_drive_cold_default",
+    "policy_file": "workstation/storage_policy.json",
+    "principle": "Nicht-operative Dokumente und Daten liegen in Google Drive; lokal nur operative Systeme.",
+    "vault_repo": "95guknow/fusion-hero-vault",
+    "google_drive": {
+      "mount": "C:\\Users\\Admin\\Google Drive-Streaming",
+      "library": "Meine Ablage",
+      "cold_root": "FusionHero_Offload",
+      "resolved_offload": "C:\\Users\\Admin\\Google Drive-Streaming\\Meine Ablage\\FusionHero_Offload",
+      "photo_ingestion": "ALTE_Frau_95g_Photo_Ingestion"
+    },
+    "apply_script": "workstation/apply-storage-policy.ps1",
+    "status_file": "C:\\Users\\Admin\\.fusion\\storage-policy.status.json"
   }
 }

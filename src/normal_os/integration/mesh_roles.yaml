@@ -55,6 +55,16 @@ role_assignments:
     status: offline
     note: "Früherer Linux-Knoten — Mainframe-Rolle auf Windows-Desktop übertragen (2026-07-12)"
 
+# Speicher — Google Drive als Standard fuer nicht-operative Daten
+storage:
+  policy_id: google_drive_cold_default
+  policy_file: workstation/storage_policy.json
+  cold_default: google_drive
+  local_operational_only: true
+  gdrive_cold_root: "Meine Ablage/FusionHero_Offload"
+  vault_provenance: 95guknow/fusion-hero-vault
+  apply_script: workstation/apply-storage-policy.ps1
+
 # Routing (Funnel + MagicDNS) — zeigt auf Windows-Mainframe
 routing:
   base_url: https://desktop-kpki9e4.tail391adb.ts.net

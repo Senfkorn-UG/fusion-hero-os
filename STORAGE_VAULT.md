@@ -1,6 +1,37 @@
 # Speicher-Tresor & Auslagerung
 
-> **Stand:** v8.3.0 · 2026-07-11
+> **Stand:** v8.3.0 · 2026-07-13
+
+## Globale Speicherpolitik
+
+**Google Drive ist der Standard-Speicherort** fuer Dokumente, Archive, Medien und
+alle Daten, die nicht operativ noetig sind. Lokal bleiben Code, laufende Dienste,
+Build-Artefakte und aktive Projekte.
+
+| Artefakt | Pfad |
+|----------|------|
+| Policy (maschinenlesbar) | `workstation/storage_policy.json` |
+| Resolver | `tools/storage_policy.py` |
+| Anwenden | `workstation/apply-storage-policy.ps1` |
+| Mesh-Verankerung | `src/normal_os/integration/mesh_roles.yaml` → `storage` |
+| Pfade | `workstation/paths.json` → `storage` |
+| Status | `~/.fusion/storage-policy.status.json` |
+| GDrive-Ziel | `Meine Ablage/FusionHero_Offload` |
+
+```powershell
+# Standard-Auslagerung (Dedup + grosse Dateien > 50 MB)
+.\workstation\apply-storage-policy.ps1
+
+# Nur Plan
+.\workstation\apply-storage-policy.ps1 -PlanOnly
+
+# Vollsweep (Downloads/Desktop/Ordner)
+.\workstation\apply-storage-policy.ps1 -FullSweep
+```
+
+`load-env.ps1` setzt `FUSION_GDRIVE_OFFLOAD` automatisch aus der Policy.
+
+---
 
 Verankerung des privaten Auslagerungs-Tresors im Haupt-Repo. Große Binärdaten
 gehören weder hierher noch nach GitHub (100-MB-Dateilimit); sie liegen in
