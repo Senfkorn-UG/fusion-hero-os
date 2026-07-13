@@ -1,0 +1,1 @@
+The content is in /home/workdir/artifacts/automatic_archiving.py - please read it
