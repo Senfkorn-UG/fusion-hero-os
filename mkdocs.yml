@@ -1,0 +1,32 @@
+site_name: Fusion Hero OS v8
+site_description: Zentrales Framework für Rekonstruktivistischen Eudaimonismus
+site_author: 95guknow
+repo_url: https://github.com/95guknow/fusion-hero-os
+edit_uri: edit/main/docs/
+
+theme:
+  name: material
+  palette:
+    scheme: slate
+    primary: deep purple
+    accent: cyan
+  features:
+    - navigation.tabs
+    - navigation.top
+    - navigation.tracking
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.highlight:
+      anchor_linenums: true
+
+nav:
+  - Home: index.md
+  - Monorepo Architektur: monorepo-structure.md
+  - CI/CD Roadmap: workflow-roadmap.md
+  - Workflow Documentation: workflow-documentation.md
