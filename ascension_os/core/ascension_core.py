@@ -89,10 +89,15 @@ try:
 except Exception:
     Geisterjagdmodul = None
 
+try:
+    from .exposure_practice_module import ExposurePracticeModule
+except Exception:
+    ExposurePracticeModule = None
+
 
 class AscensionCore:
     """
-    Das substantielle AscensionCore v9.6.
+    Das substantielle AscensionCore v9.7.
 
     Coevolutionaer aufgebaut:
     - Haelt alle zentralen grounded Komponenten
@@ -105,10 +110,12 @@ class AscensionCore:
     - Loest die Devil-vs-Christus-QUBO-Trajektorie ueber den bestehenden Solver
     - Harmonisiert zwei Zustaende ueber H={b.q}.{q.b} mit Narzissmus-Filter (v9.6)
     - Jagt "Geister" (latente Zustaende) zu einem manifesten Fixpunkt (v9.6)
+    - Simulierter Uebungspartner fuer soziale Expositionsuebung, kein Dritter
+      beteiligt (v9.7, siehe exposure_practice_module.py)
     """
 
     def __init__(self):
-        self.version = "9.6-coevolutionary"
+        self.version = "9.7-coevolutionary"
 
         # Grounded Core Components
         self.llm: Optional["UnifiedHeroicLLMCore"] = (
@@ -162,6 +169,11 @@ class AscensionCore:
                 self.harmonisierung = None  # BanachContractionSeed nicht importierbar
 
         self.geisterjagd: Optional["Geisterjagdmodul"] = Geisterjagdmodul() if Geisterjagdmodul else None
+
+        # Expositions-Uebungspartner (v9.7) - nutzt self.llm fuer Antworten
+        self.exposure_practice: Optional["ExposurePracticeModule"] = None
+        if ExposurePracticeModule:
+            self.exposure_practice = ExposurePracticeModule(llm=self.llm)
 
         self.mode = "ASCENSION"
 
@@ -266,6 +278,44 @@ class AscensionCore:
         return asdict(result)
 
     # ------------------------------------------------------------------
+    # Expositions-Uebungspartner (v9.7) - kein Dritter beteiligt
+    # ------------------------------------------------------------------
+
+    def start_exposure_session(self, scenario: str = "dating_app_opener",
+                                difficulty: str = "mittel") -> Dict[str, Any]:
+        if not self.exposure_practice:
+            return {"status": "ExposurePracticeModule nicht verfuegbar"}
+        from dataclasses import asdict
+        return asdict(self.exposure_practice.start_session(scenario=scenario, difficulty=difficulty))
+
+    def exposure_respond(self, session_id: int, user_message: str) -> Dict[str, Any]:
+        if not self.exposure_practice:
+            return {"status": "ExposurePracticeModule nicht verfuegbar"}
+        session = next((s for s in self.exposure_practice.sessions if s.session_id == session_id), None)
+        if not session:
+            return {"error": f"Session {session_id} nicht gefunden"}
+        reply = self.exposure_practice.respond(session, user_message)
+        return {"reply": reply, "turn_count": len(session.turns)}
+
+    def end_exposure_session(self, session_id: int, shutdown_occurred: bool,
+                              self_rated_anxiety: Optional[float] = None, notes: str = "") -> Dict[str, Any]:
+        if not self.exposure_practice:
+            return {"status": "ExposurePracticeModule nicht verfuegbar"}
+        session = next((s for s in self.exposure_practice.sessions if s.session_id == session_id), None)
+        if not session:
+            return {"error": f"Session {session_id} nicht gefunden"}
+        from dataclasses import asdict
+        result = self.exposure_practice.end_session(
+            session, shutdown_occurred, self_rated_anxiety=self_rated_anxiety, notes=notes
+        )
+        return asdict(result)
+
+    def get_exposure_progress(self, last_n: Optional[int] = None) -> Dict[str, Any]:
+        if not self.exposure_practice:
+            return {"status": "ExposurePracticeModule nicht verfuegbar"}
+        return self.exposure_practice.get_progress(last_n=last_n)
+
+    # ------------------------------------------------------------------
     # Status + Coevolution
     # ------------------------------------------------------------------
 
@@ -283,6 +333,7 @@ class AscensionCore:
             "qubo_ascension_optimizer_available": QUBOAscensionOptimizer is not None,
             "harmonisierung_available": self.harmonisierung is not None,
             "geisterjagd_available": self.geisterjagd is not None,
+            "exposure_practice_available": self.exposure_practice is not None,
         }
 
         if self.sisyphos:
