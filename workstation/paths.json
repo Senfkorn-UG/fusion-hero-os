@@ -130,8 +130,10 @@
                                         "win_repo":  "C:\\Users\\Admin\\fusion-hero-os",
                                         "github_remote":  "https://github.com/95guknow/fusion-hero-os.git",
                                         "github_branch":  "main",
+                                        "wsl_push":  "via merge-bottom-up.sh only (kein direkter HTTPS-Push)",
                                         "merge_script_sh":  "workstation/merge-bottom-up.sh",
                                         "merge_script_ps1":  "workstation/merge-bottom-up.ps1",
+                                        "sync_tracks_script":  "workstation/sync-branch-tracks.ps1",
                                         "status_file":  "C:\\Users\\Admin\\.fusion\\merge-bottom-up.status.json",
                                         "log_file":  "C:\\Users\\Admin\\.fusion\\merge-bottom-up.log"
                                     }
