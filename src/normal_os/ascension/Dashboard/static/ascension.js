@@ -126,15 +126,88 @@
     });
   }
 
+  // --- Expositions-Uebungspartner (simuliert, kein Dritter beteiligt) ---
+  let expSessionId = null;
+
+  function appendChatLine(speaker, text) {
+    const chat = $('exp-chat');
+    const line = document.createElement('div');
+    line.className = speaker === 'user' ? 'text-[#00d4aa]' : 'text-[#c084fc]';
+    line.textContent = `${speaker === 'user' ? 'Du' : 'Übungspartner'}: ${text}`;
+    chat.appendChild(line);
+    chat.scrollTop = chat.scrollHeight;
+  }
+
+  function setExpControlsEnabled(enabled) {
+    $('exp-message').disabled = !enabled;
+    $('exp-message-form').querySelector('button').disabled = !enabled;
+    $('exp-end-btn').disabled = !enabled;
+  }
+
+  async function refreshExposureProgress() {
+    const p = await getJSON('/api/ascension/exposure/progress');
+    $('exp-progress').textContent = 'Fortschritt: ' + JSON.stringify(p);
+  }
+
+  function bindExposurePractice() {
+    $('exp-start-btn').addEventListener('click', async () => {
+      const scenario = $('exp-scenario').value;
+      const difficulty = $('exp-difficulty').value;
+      const r = await getJSON('/api/ascension/exposure/start', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ scenario, difficulty }),
+      });
+      if (r.error) { alert(r.error); return; }
+      expSessionId = r.session_id;
+      $('exp-chat').innerHTML = '';
+      setExpControlsEnabled(true);
+      appendChatLine('partner', `[Neue Session #${expSessionId}, ${scenario} / ${difficulty} - leg los]`);
+    });
+
+    $('exp-message-form').addEventListener('submit', async (ev) => {
+      ev.preventDefault();
+      if (expSessionId === null) return;
+      const message = $('exp-message').value.trim();
+      if (!message) return;
+      appendChatLine('user', message);
+      $('exp-message').value = '';
+      const r = await getJSON('/api/ascension/exposure/respond', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ session_id: expSessionId, message }),
+      });
+      if (r.reply) appendChatLine('partner', r.reply);
+    });
+
+    $('exp-end-btn').addEventListener('click', async () => {
+      if (expSessionId === null) return;
+      const shutdown_occurred = $('exp-shutdown').value === 'true';
+      const anxietyRaw = $('exp-anxiety').value;
+      const self_rated_anxiety = anxietyRaw === '' ? null : parseFloat(anxietyRaw);
+      await getJSON('/api/ascension/exposure/end', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ session_id: expSessionId, shutdown_occurred, self_rated_anxiety }),
+      });
+      appendChatLine('partner', '[Session beendet, danke fürs Üben]');
+      setExpControlsEnabled(false);
+      expSessionId = null;
+      await refreshExposureProgress();
+    });
+  }
+
   document.addEventListener('DOMContentLoaded', () => {
     refreshStatus();
     refreshStage9();
     refreshOscillation();
     refreshPsycholyse();
+    refreshExposureProgress();
     bindSisyphosForm();
     bindPsycholyseForm();
     bindQuboButton();
     bindHarmonizeForm();
     bindGeisterjagdForm();
+    bindExposurePractice();
   });
 })();

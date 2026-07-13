@@ -88,6 +88,42 @@
         <div id="geisterjagd-out" class="text-xs text-[#94a3b8] whitespace-pre-wrap mt-2">--</div>
       </div>
 
+      <div class="hud-panel" data-panel-id="exposure-practice" style="grid-column: span 2;">
+        <h2 class="text-[#00d4aa] text-sm mb-3 tracking-widest">EXPOSITIONS-ÜBUNGSPARTNER (simuliert, kein Dritter beteiligt)</h2>
+        <p class="text-[10px] text-[#94a3b8] mb-2">Übungswerkzeug, kein Ersatz für klinische Begleitung. Bei starkem Leidensdruck ist professionelle Unterstützung sinnvoll.</p>
+        <div class="flex gap-2 text-xs mb-2">
+          <select id="exp-scenario" class="bg-[#1e1e2e] border border-[#00d4aa] rounded px-2 py-1 text-[#e2e8f0]">
+            <option value="dating_app_opener">dating_app_opener</option>
+            <option value="small_talk_continuation">small_talk_continuation</option>
+            <option value="handling_a_lull">handling_a_lull</option>
+          </select>
+          <select id="exp-difficulty" class="bg-[#1e1e2e] border border-[#00d4aa] rounded px-2 py-1 text-[#e2e8f0]">
+            <option value="leicht">leicht</option>
+            <option value="mittel" selected>mittel</option>
+            <option value="schwer">schwer</option>
+          </select>
+          <button id="exp-start-btn" class="watch-btn watch-btn-primary">Neue Session</button>
+        </div>
+        <div id="exp-chat" class="text-xs space-y-1 bg-[#16161e] rounded p-2 mb-2 max-h-48 overflow-y-auto"></div>
+        <form id="exp-message-form" class="flex gap-2 text-xs mb-2">
+          <input id="exp-message" placeholder="deine Nachricht..." class="bg-[#1e1e2e] border border-[#00d4aa] rounded px-2 py-1 flex-1 text-[#e2e8f0]" disabled>
+          <button type="submit" class="watch-btn watch-btn-primary" disabled>Senden</button>
+        </form>
+        <div class="grid grid-cols-3 gap-2 text-xs items-end">
+          <label class="text-[#94a3b8]">Shutdown?
+            <select id="exp-shutdown" class="bg-[#1e1e2e] border border-[#00d4aa] rounded px-2 py-1 w-full text-[#e2e8f0]">
+              <option value="false">nein</option>
+              <option value="true">ja</option>
+            </select>
+          </label>
+          <label class="text-[#94a3b8]">Angstlevel 0-1
+            <input id="exp-anxiety" type="number" step="0.05" min="0" max="1" class="bg-[#1e1e2e] border border-[#00d4aa] rounded px-2 py-1 w-full text-[#e2e8f0]">
+          </label>
+          <button id="exp-end-btn" class="watch-btn watch-btn-primary" disabled>Session beenden</button>
+        </div>
+        <div id="exp-progress" class="text-xs text-[#94a3b8] whitespace-pre-wrap mt-2">Fortschritt: --</div>
+      </div>
+
     </div>
   </div>
 

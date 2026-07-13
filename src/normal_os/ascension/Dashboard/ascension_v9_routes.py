@@ -227,3 +227,62 @@ async def ascension_simulate(payload: SimulatePayload):
     if not core:
         return _unavailable("AscensionCore")
     return core.run_sisyphos_simulation(generations=payload.generations, n_runs=payload.n_runs)
+
+
+# ------------------------------------------------------------------
+# Expositions-Uebungspartner (v9.7) - simuliert, kein Dritter beteiligt
+# ------------------------------------------------------------------
+
+class ExposureStartPayload(BaseModel):
+    scenario: str = "dating_app_opener"
+    difficulty: str = "mittel"
+
+
+class ExposureRespondPayload(BaseModel):
+    session_id: int
+    message: str
+
+
+class ExposureEndPayload(BaseModel):
+    session_id: int
+    shutdown_occurred: bool
+    self_rated_anxiety: Optional[float] = None
+    notes: str = ""
+
+
+@router.post("/api/ascension/exposure/start")
+async def ascension_exposure_start(payload: ExposureStartPayload):
+    core = _core()
+    if not core:
+        return _unavailable("AscensionCore")
+    try:
+        return core.start_exposure_session(scenario=payload.scenario, difficulty=payload.difficulty)
+    except ValueError as e:
+        return {"error": str(e)}
+
+
+@router.post("/api/ascension/exposure/respond")
+async def ascension_exposure_respond(payload: ExposureRespondPayload):
+    core = _core()
+    if not core:
+        return _unavailable("AscensionCore")
+    return core.exposure_respond(payload.session_id, payload.message)
+
+
+@router.post("/api/ascension/exposure/end")
+async def ascension_exposure_end(payload: ExposureEndPayload):
+    core = _core()
+    if not core:
+        return _unavailable("AscensionCore")
+    return core.end_exposure_session(
+        payload.session_id, payload.shutdown_occurred,
+        self_rated_anxiety=payload.self_rated_anxiety, notes=payload.notes,
+    )
+
+
+@router.get("/api/ascension/exposure/progress")
+async def ascension_exposure_progress(last_n: Optional[int] = None):
+    core = _core()
+    if not core:
+        return _unavailable("AscensionCore")
+    return core.get_exposure_progress(last_n=last_n)
