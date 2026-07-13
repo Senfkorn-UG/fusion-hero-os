@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AscensionOS v9 | Fusion Hero OS</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/static/style.css">
+  <style> @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap'); </style>
+</head>
+<body class="bg-[#0a0a0f] text-[#e2e8f0]">
+  <div class="dashboard-shell">
+    <header class="hud-panel dashboard-header m-4 p-4">
+      <div class="dashboard-header-brand">
+        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-[#00d4aa] to-[#f59e0b] flex items-center justify-center text-black font-bold text-xl shrink-0">A9</div>
+        <div>
+          <h1 class="text-xl sm:text-2xl font-bold tracking-[2px] sm:tracking-[3px]">ASCENSIONOS v9</h1>
+          <p class="text-xs text-[#94a3b8] header-subline">Stage9 · Sisyphos-Oszillation · Psycholyse · QUBO · Harmonisierung · Geisterjagd</p>
+        </div>
+      </div>
+      <div class="dashboard-header-meta">
+        <a href="/" class="watch-header-btn" title="Zurueck zum Dashboard">← DASHBOARD</a>
+      </div>
+    </header>
+
+    <div id="ascension-grid" class="dashboard-grid">
+
+      <div class="hud-panel" data-panel-id="ascension-status">
+        <h2 class="text-[#00d4aa] text-sm mb-3 tracking-widest">CORE STATUS</h2>
+        <pre id="status-out" class="text-xs whitespace-pre-wrap text-[#94a3b8]">lade...</pre>
+      </div>
+
+      <div class="hud-panel" data-panel-id="stage9">
+        <h2 class="text-[#f59e0b] text-sm mb-3 tracking-widest">STAGE9-NAEHERUNG (heuristisch)</h2>
+        <div class="text-3xl font-bold" id="stage9-value">--/9</div>
+        <div class="text-xs text-[#94a3b8]" id="stage9-label">--</div>
+        <p class="text-[10px] text-[#94a3b8] mt-2" id="stage9-honest">Heuristischer Proxy, kein validiertes Messinstrument.</p>
+      </div>
+
+      <div class="hud-panel" data-panel-id="oscillation">
+        <h2 class="text-[#c084fc] text-sm mb-3 tracking-widest">SISYPHOS-OSZILLATION</h2>
+        <img id="oscillation-svg" src="/api/ascension/oscillation.svg" alt="Sisyphos load oscillation" class="w-full mb-2" style="background:#16161e;border-radius:4px;">
+        <div class="text-xs" id="oscillation-stats">--</div>
+        <form id="sisyphos-step-form" class="mt-2 flex gap-2 text-xs">
+          <input type="number" step="0.01" min="0" max="1" id="sisyphos-load" placeholder="load 0-1" class="bg-[#1e1e2e] border border-[#00d4aa] rounded px-2 py-1 w-24 text-[#e2e8f0]">
+          <button type="submit" class="watch-btn watch-btn-primary">Step</button>
+        </form>
+      </div>
+
+      <div class="hud-panel" data-panel-id="psycholyse">
+        <h2 class="text-[#7c3aed] text-sm mb-3 tracking-widest">PSYCHOLYSE-LOG</h2>
+        <div id="psycholyse-canary" class="text-xs text-[#f59e0b] mb-2">--</div>
+        <ul id="psycholyse-entries" class="text-xs space-y-1 text-[#94a3b8] max-h-40 overflow-y-auto"></ul>
+        <form id="psycholyse-form" class="mt-2 grid grid-cols-2 gap-2 text-xs">
+          <input id="psy-protocol" placeholder="protocol_type" class="bg-[#1e1e2e] border border-[#7c3aed] rounded px-2 py-1 col-span-2 text-[#e2e8f0]">
+          <select id="psy-status" class="bg-[#1e1e2e] border border-[#7c3aed] rounded px-2 py-1 col-span-2 text-[#e2e8f0]">
+            <option value="self_reported">self_reported</option>
+            <option value="observed">observed</option>
+            <option value="unverified">unverified</option>
+          </select>
+          <button type="submit" class="watch-btn watch-btn-primary col-span-2">Log Session</button>
+        </form>
+      </div>
+
+      <div class="hud-panel" data-panel-id="qubo">
+        <h2 class="text-[#00d4aa] text-sm mb-3 tracking-widest">DEVIL-VS-CHRISTUS QUBO</h2>
+        <button id="qubo-solve-btn" class="watch-btn watch-btn-primary text-xs mb-2">Trajektorie loesen</button>
+        <div id="qubo-out" class="text-xs text-[#94a3b8] whitespace-pre-wrap">--</div>
+      </div>
+
+      <div class="hud-panel" data-panel-id="harmonisierung">
+        <h2 class="text-[#f59e0b] text-sm mb-3 tracking-widest">HARMONISIERUNG (H = {b·q}·{q·b})</h2>
+        <form id="harmonize-form" class="text-xs space-y-2">
+          <input id="harmonize-a" placeholder="Zustand A, z.B. 0.2,0.8,0.3" class="bg-[#1e1e2e] border border-[#f59e0b] rounded px-2 py-1 w-full text-[#e2e8f0]">
+          <input id="harmonize-b" placeholder="Zustand B, z.B. 0.9,0.2,0.7" class="bg-[#1e1e2e] border border-[#f59e0b] rounded px-2 py-1 w-full text-[#e2e8f0]">
+          <button type="submit" class="watch-btn watch-btn-primary">Harmonisieren</button>
+        </form>
+        <div id="harmonize-out" class="text-xs text-[#94a3b8] whitespace-pre-wrap mt-2">--</div>
+      </div>
+
+      <div class="hud-panel" data-panel-id="geisterjagd">
+        <h2 class="text-[#c084fc] text-sm mb-3 tracking-widest">GEISTERJAGD (latent → manifest)</h2>
+        <p class="text-[10px] text-[#94a3b8] mb-2">Demo-Kontraktion A=[[0.5,0.1],[0,0.4]], c=[1,-0.5]. Konvergiert oder liefert explizit "Nothing".</p>
+        <form id="geisterjagd-form" class="text-xs space-y-2">
+          <input id="geist-latent" placeholder="latenter Zustand, z.B. 10,-10" class="bg-[#1e1e2e] border border-[#c084fc] rounded px-2 py-1 w-full text-[#e2e8f0]">
+          <button type="submit" class="watch-btn watch-btn-primary">Jagen</button>
+        </form>
+        <div id="geisterjagd-out" class="text-xs text-[#94a3b8] whitespace-pre-wrap mt-2">--</div>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="/static/ascension.js"></script>
+</body>
+</html>
