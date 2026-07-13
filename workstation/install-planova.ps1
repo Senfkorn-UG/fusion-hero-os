@@ -1,9 +1,10 @@
-# install-planova.ps1 — Planova Inneneinrichter (Tauri) auf Windows installieren
+# install-planova.ps1 - Planova Inneneinrichter (Tauri) auf Windows installieren
 param(
     [switch]$SkipBuild,
     [switch]$ForceDeps,
     [switch]$Background,
-    [switch]$PollOnly
+    [switch]$PollOnly,
+    [switch]$Auto
 )
 $ErrorActionPreference = "Stop"
 . (Join-Path $PSScriptRoot "load-env.ps1")
@@ -100,18 +101,28 @@ function Ensure-MingwPath {
     return $false
 }
 
-function Start-MingwInstall {
-    Write-Status "deps" "MinGW (WinLibs) wird installiert..."
-    $log = Join-Path (Split-Path $StatusFile -Parent) "winlibs-install.log"
-    $err = "$log.err"
-    if (Get-Process winget -ErrorAction SilentlyContinue) {
-        Write-Host "  winget laeuft bereits (WinLibs?)" -ForegroundColor DarkGray
-        return
-    }
-    Start-Process -FilePath winget -ArgumentList @(
-        "install", "--id", "BrechtSanders.WinLibs.POSIX.UCRT", "-e",
-        "--accept-package-agreements", "--accept-source-agreements"
-    ) -RedirectStandardOutput $log -RedirectStandardError $err -NoNewWindow | Out-Null
+function Install-MingwDirect {
+    $dlltool = Join-Path $MingwRoot "bin\dlltool.exe"
+    if (Test-Path $dlltool) { return $true }
+
+    Write-Status "deps" "MinGW (WinLibs ZIP) wird heruntergeladen..."
+    $zip = Join-Path $env:TEMP "winlibs-mingw.zip"
+    $url = "https://github.com/brechtsanders/winlibs_mingw/releases/download/16.1.0posix-14.0.0-ucrt-r2/winlibs-x86_64-posix-seh-gcc-16.1.0-mingw-w64ucrt-14.0.0-r2.zip"
+  Write-Host "  Download: WinLibs mingw64..." -ForegroundColor DarkGray
+    Invoke-WebRequest -Uri $url -OutFile $zip -UseBasicParsing
+    Write-Host "  Extrahieren nach $MingwRoot ..." -ForegroundColor DarkGray
+    $stage = Join-Path $env:TEMP "winlibs-stage"
+    if (Test-Path $stage) { Remove-Item $stage -Recurse -Force }
+    Expand-Archive -Path $zip -DestinationPath $stage -Force
+    $inner = Get-ChildItem $stage -Directory | Where-Object {
+        Test-Path (Join-Path $_.FullName "bin\dlltool.exe")
+    } | Select-Object -First 1
+    if (-not $inner) { throw "WinLibs ZIP: mingw64/bin/dlltool.exe nicht gefunden" }
+    if (Test-Path $MingwRoot) { Remove-Item $MingwRoot -Recurse -Force }
+    Move-Item $inner.FullName $MingwRoot
+    Remove-Item $stage -Recurse -Force -ErrorAction SilentlyContinue
+    Remove-Item $zip -Force -ErrorAction SilentlyContinue
+    return (Test-Path $dlltool)
 }
 
 function Ensure-Linker {
@@ -132,9 +143,11 @@ function Ensure-Linker {
         return
     }
 
-    Write-Host "  MinGW fehlt — starte WinLibs-Installation (Hintergrund moeglich)" -ForegroundColor Yellow
-    Start-MingwInstall
-    throw "MinGW noch nicht bereit. Erneut ausfuehren wenn winget fertig ist, oder: winget install BrechtSanders.WinLibs.POSIX.UCRT"
+    Write-Host "  MinGW fehlt - installiere WinLibs ZIP..." -ForegroundColor Yellow
+    if (-not (Install-MingwDirect)) { throw "MinGW Installation fehlgeschlagen" }
+    $env:Path = "$(Join-Path $MingwRoot 'bin');$env:Path"
+    & rustup toolchain install stable-x86_64-pc-windows-gnu 2>&1 | ForEach-Object { Write-Host $_ }
+    & rustup default stable-x86_64-pc-windows-gnu 2>&1 | ForEach-Object { Write-Host $_ }
 }
 
 function Ensure-PlanovaPatches {
@@ -177,9 +190,14 @@ function Build-Planova {
     Write-Status "build" "pnpm tauri build laeuft..."
     Push-Location $CloneDir
     try {
-        pnpm install 2>&1 | ForEach-Object { Write-Host $_ }
+        $env:Path = "$(Join-Path $MingwRoot 'bin');$env:USERPROFILE\.cargo\bin;$env:Path"
+        pnpm install --config.allow-builds.msw=true 2>&1 | ForEach-Object { Write-Host $_ }
+        if ($LASTEXITCODE -ne 0) {
+            pnpm install 2>&1 | ForEach-Object { Write-Host $_ }
+        }
         pnpm add -D @tauri-apps/cli@^2 2>&1 | ForEach-Object { Write-Host $_ }
         pnpm tauri build 2>&1 | ForEach-Object { Write-Host $_ }
+        if ($LASTEXITCODE -ne 0) { throw "pnpm tauri build fehlgeschlagen (exit $LASTEXITCODE)" }
     } finally {
         Pop-Location
     }
@@ -333,7 +351,7 @@ if ($PollOnly) {
     exit 0
 }
 
-if ($Background) {
+if ($Background -or $Auto) {
     $log = Join-Path (Split-Path $StatusFile -Parent) "planova-install.log"
     $args = @("-NoProfile", "-ExecutionPolicy", "Bypass", "-File", $MyInvocation.MyCommand.Path)
     if ($SkipBuild) { $args += "-SkipBuild" }
@@ -341,6 +359,7 @@ if ($Background) {
     Write-Status "queued" "Hintergrund-Installation gestartet"
     Start-Process powershell.exe -ArgumentList $args -RedirectStandardOutput $log -RedirectStandardError "$log.err" -NoNewWindow
     Write-Host "Hintergrund-Job gestartet. Status: $StatusFile"
+    Write-Host "Log: $log"
     exit 0
 }
 
