@@ -53,8 +53,9 @@ SAFE_EXCLUDE = (
     r"\npm-cache", r"\pip\cache", r"\.cache\\",
     r"\appdata\local\wsl", r"\appdata\local\google\drivefs",
     r"\_dedup_quarantine\\", r"\onedrive\\", r"\google drive-streaming\\",
-    r"\stable-diffusion-webui\\",  # eigene venv/models, separat behandeln
-    r"\.vscode\\", r"\.grok\\", r"\gitkraken",
+    r"\stable-diffusion-webui\\venv\\",
+    r"\stable-diffusion-webui\\repositories\\",
+    r"\.grok\\bin\\", r"\.grok\\skills\\",
     # Build-Artefakte: dort sind gleiche Hashes normal (Kopien/Hardlinks),
     # ein Verschieben wuerde ein Build zerstoeren.
     r"\target\release\\", r"\target\debug\\", r"\build\\", r"\deps\\",
@@ -67,13 +68,47 @@ MEDIA_EXT = {".mp4", ".mkv", ".webm", ".mov", ".avi", ".mp3", ".wav", ".flac"}
 DOC_EXT = {".pdf", ".docx", ".doc", ".pptx", ".xlsx", ".odt", ".epub"}
 IMAGE_EXT = {".jpg", ".jpeg", ".png", ".webp", ".gif", ".tiff", ".bmp"}
 CODE_EXT = {".py", ".rs", ".js", ".ts", ".c", ".cpp", ".java", ".go"}
+MODEL_EXT = {".gguf", ".safetensors", ".ckpt", ".pt", ".bin", ".onnx", ".pth"}
 
-# Wurzeln, die fuer Dedup/Offload ueberhaupt gescannt werden (Nutzerdaten).
-SCAN_ROOTS = ("Downloads", "Desktop", "Documents", "Pictures", "Videos",
-              "Music", "internal_llm")
+# Wurzeln fuer Dedup/Offload (Nutzerdaten, kein System)
+SCAN_ROOTS = (
+    "Downloads", "Desktop", "Documents", "Pictures", "Videos", "Music",
+    "internal_llm", "private-hacking-suite", "src", "kepler",
+    "stable-diffusion-webui/models", ".grok", ".codex", ".gemini",
+)
+
+# Ganze Ordner nach GDrive (relativ zu USER_ROOT -> Unterordner unter FusionHero_Offload)
+OFFLOAD_FOLDERS = (
+    ("stable-diffusion-webui/models", "SD_models"),
+    ("internal_llm/models", "LLM_models"),
+    ("private-hacking-suite", "Archives/private-hacking-suite"),
+    (".grok/sessions", "Archives/grok_sessions"),
+    (".grok/downloads", "Archives/grok_downloads"),
+)
 
 MIN_DEDUP_BYTES = 1 * 1024 * 1024        # Dateien < 1 MB ignorieren (Rauschen)
 OFFLOAD_MIN_BYTES = 100 * 1024 * 1024    # Offload-Kandidat ab 100 MB
+GDRIVE_OFFLOAD_REL = Path("Meine Ablage") / "FusionHero_Offload"
+
+
+def _gdrive_dest_root() -> Optional[Path]:
+    """Google Drive Streaming/ Mirror Ziel fuer FusionHero_Offload."""
+    env = os.environ.get("FUSION_GDRIVE_OFFLOAD")
+    if env:
+        return Path(env)
+    profile = Path(os.environ.get("USERPROFILE", r"C:\Users\Admin"))
+    for base in (
+        profile / "Google Drive-Streaming",
+        profile / "Google Drive",
+        Path("G:"),
+    ):
+        if not base.is_dir():
+            continue
+        for sub in (GDRIVE_OFFLOAD_REL, Path("My Drive") / "FusionHero_Offload"):
+            candidate = base / sub
+            if candidate.parent.is_dir():
+                return candidate
+    return None
 
 
 def purpose(path: Path) -> str:
@@ -91,6 +126,8 @@ def purpose(path: Path) -> str:
         return "image"
     if ext in CODE_EXT:
         return "project"
+    if ext in MODEL_EXT:
+        return "model"
     if "cache" in low or "temp" in low:
         return "cache"
     return "other"
@@ -250,19 +287,41 @@ def undo(manifest_path: Path) -> int:
 # Offload-Plan (offline nicht benoetigt)
 # ---------------------------------------------------------------------------
 
-def offload_plan(roots: List[Path]) -> List[Dict]:
-    """Grosse, offline entbehrliche Dateien: Installer, Archive, Medien."""
-    OFFLINE_DISPENSABLE = {"installer", "archive", "media"}
+def _offload_eligible(p: Path, size: int, purp: str, *, include_images: bool,
+                      min_bytes: int = OFFLOAD_MIN_BYTES) -> bool:
+    if size < min_bytes:
+        return False
+    low = str(p).lower().replace("/", "\\")
+    downloads = str(USER_ROOT / "Downloads").lower()
+    desktop = str(USER_ROOT / "Desktop").lower()
+    # Installer, Archive, Medien, Modelle — offline entbehrlich
+    if purp in {"installer", "archive", "media", "model"}:
+        return True
+    # Grosse Downloads/Desktop-Dateien (Spiele, ISOs, Setups)
+    if (downloads in low or desktop in low) and purp in {"other", "image", "document"}:
+        return True
+    # Handy-Fotos/DCIM optional nach GDrive
+    if include_images and "\\pictures\\" in low and purp == "image":
+        return True
+    # Alte Grok-Session-Logs
+    if "\\.grok\\sessions\\" in low and purp in {"other", "project"}:
+        return True
+    return False
+
+
+def offload_plan(roots: List[Path], *, include_images: bool = False,
+                 min_bytes: int = OFFLOAD_MIN_BYTES) -> List[Dict]:
+    """Grosse, offline entbehrliche Dateien: Installer, Archive, Medien, Downloads."""
     plan = []
     for p in _iter_files(roots):
         try:
             size = p.stat().st_size
         except OSError:
             continue
-        if size < OFFLOAD_MIN_BYTES:
+        if size < min_bytes:
             continue
         purp = purpose(p)
-        if purp in OFFLINE_DISPENSABLE:
+        if _offload_eligible(p, size, purp, include_images=include_images, min_bytes=min_bytes):
             plan.append({"path": str(p), "purpose": purp,
                          "size_bytes": size, "gb": round(size / 1024**3, 2)})
     plan.sort(key=lambda x: x["size_bytes"], reverse=True)
@@ -311,6 +370,63 @@ def offload_execute(plan: List[Dict], dest_root: Path, index_out: Path) -> Dict:
     return index
 
 
+def _folder_size(path: Path, *, apply_exclude: bool = True) -> Tuple[int, int]:
+    total, count = 0, 0
+    if not path.is_dir():
+        return 0, 0
+    for p in path.rglob("*"):
+        if not p.is_file():
+            continue
+        if apply_exclude and _excluded(p):
+            continue
+        try:
+            total += p.stat().st_size
+            count += 1
+        except OSError:
+            pass
+    return total, count
+
+
+def offload_folders_execute(dest_root: Path, index_out: Path,
+                            folders: Tuple[Tuple[str, str], ...] = OFFLOAD_FOLDERS) -> Dict:
+    """Ganze Ordner sicher nach GDrive kopieren, verifizieren, lokal entfernen."""
+    index = {"dest_root": str(dest_root), "folders": [], "freed_bytes": 0, "skipped": []}
+    for rel_src, rel_dest in folders:
+        src = USER_ROOT / rel_src.replace("/", os.sep)
+        if not src.is_dir():
+            index["skipped"].append({"folder": rel_src, "reason": "nicht vorhanden"})
+            continue
+        dst = dest_root / rel_dest.replace("/", os.sep)
+        src_bytes, src_files = _folder_size(src)
+        if src_files == 0:
+            index["skipped"].append({"folder": rel_src, "reason": "leer"})
+            continue
+        dst.parent.mkdir(parents=True, exist_ok=True)
+        if dst.exists():
+            shutil.rmtree(dst, ignore_errors=True)
+        try:
+            shutil.copytree(src, dst, dirs_exist_ok=True)
+        except OSError as e:
+            index["skipped"].append({"folder": rel_src, "reason": f"copy-fehler: {e}"})
+            continue
+        dst_bytes, dst_files = _folder_size(dst, apply_exclude=False)
+        if dst_files < src_files or dst_bytes < src_bytes:
+            index["skipped"].append({
+                "folder": rel_src,
+                "reason": f"verify: {dst_files}/{src_files} Dateien, {dst_bytes}/{src_bytes} bytes",
+            })
+            continue
+        shutil.rmtree(src, ignore_errors=True)
+        index["freed_bytes"] += src_bytes
+        index["folders"].append({
+            "original": str(src), "offloaded_to": str(dst),
+            "files": src_files, "size_bytes": src_bytes,
+        })
+    index_out.parent.mkdir(parents=True, exist_ok=True)
+    index_out.write_text(json.dumps(index, indent=2, ensure_ascii=False), encoding="utf-8")
+    return index
+
+
 # ---------------------------------------------------------------------------
 # CLI
 # ---------------------------------------------------------------------------
@@ -326,10 +442,30 @@ def main(argv: Optional[List[str]] = None) -> int:
     ap.add_argument("--quarantine", action="store_true",
                     help="mit --dedup: Duplikate in Quarantaene verschieben (reversibel)")
     ap.add_argument("--offload-plan", action="store_true", help="GDrive-Auslagerungskandidaten")
+    ap.add_argument("--offload-execute", action="store_true",
+                    help="Kandidaten nach FusionHero_Offload kopieren + verifizieren + lokal loeschen")
+    ap.add_argument("--include-images", action="store_true",
+                    help="Pictures/DCIM-Bilder (>min) mit auslagern")
+    ap.add_argument("--offload-min-mb", type=int, default=100,
+                    help="Mindestgroesse fuer Offload-Kandidaten in MB (default 100)")
+    ap.add_argument("--offload-dest", metavar="PATH",
+                    help="GDrive-Ziel (default: Meine Ablage/FusionHero_Offload)")
+    ap.add_argument("--offload-folders", action="store_true",
+                    help="Ganze Offload-Ordner (SD-Modelle, LLM, Archive) auslagern")
+    ap.add_argument("--full-sweep", action="store_true",
+                    help="Dedup + Ordner-Offload + Datei-Offload (min 20MB)")
     ap.add_argument("--undo", metavar="MANIFEST", help="Quarantaene aus Manifest zuruecknehmen")
     ap.add_argument("--json", action="store_true", help="Ergebnis als JSON")
     ap.add_argument("--run-label", default="run", help="Ordnername des Quarantaene-Laufs")
     args = ap.parse_args(argv)
+
+    if args.full_sweep:
+        args.dedup = True
+        args.quarantine = True
+        args.offload_folders = True
+        args.offload_execute = True
+        if args.offload_min_mb == 100:
+            args.offload_min_mb = 20
 
     roots = [USER_ROOT / r for r in SCAN_ROOTS]
 
@@ -364,17 +500,57 @@ def main(argv: Optional[List[str]] = None) -> int:
             mp = quarantine(groups, args.run_label)
             print(f"[Dedup] Duplikate in Quarantaene verschoben. Undo-Manifest: {mp}")
 
-    if args.offload_plan:
-        plan = offload_plan(roots)
-        total = sum(x["size_bytes"] for x in plan)
-        if args.json:
-            print(json.dumps(plan, indent=2, ensure_ascii=False))
-        else:
-            for x in plan[:40]:
-                print(f"  [{x['purpose']}] {x['gb']:>6.2f} GB  {x['path']}")
-            print(f"[Offload] {len(plan)} Kandidaten, auslagerbar: {_fmt_gb(total)}")
+    min_bytes = max(1, args.offload_min_mb) * 1024 * 1024
+    do_offload = args.offload_plan or args.offload_execute
 
-    if not any([args.report, args.dedup, args.offload_plan, args.undo]):
+    if do_offload:
+        plan = offload_plan(roots, include_images=args.include_images, min_bytes=min_bytes)
+        total = sum(x["size_bytes"] for x in plan)
+        if args.offload_plan or not args.offload_execute:
+            if args.json:
+                print(json.dumps(plan, indent=2, ensure_ascii=False))
+            else:
+                for x in plan[:40]:
+                    print(f"  [{x['purpose']}] {x['gb']:>6.2f} GB  {x['path']}")
+                print(f"[Offload] {len(plan)} Kandidaten, auslagerbar: {_fmt_gb(total)}")
+
+        if args.offload_execute:
+            dest = Path(args.offload_dest) if args.offload_dest else _gdrive_dest_root()
+            if not dest:
+                print("[Offload] FEHLER: Google Drive nicht gefunden. "
+                      "Setze FUSION_GDRIVE_OFFLOAD oder --offload-dest.", file=sys.stderr)
+                return 2
+            stamp = __import__("datetime").datetime.now().strftime("%Y-%m-%d_%H%M%S")
+            index_out = USER_ROOT / "_dedup_quarantine" / f"offload_{stamp}" / "offload_index.json"
+            result = offload_execute(plan, dest, index_out)
+            freed = result.get("freed_bytes", 0)
+            skipped = len(result.get("skipped", []))
+            done = len(result.get("entries", []))
+            print(f"[Offload] {done} Dateien ausgelagert, {_fmt_gb(freed)} freigegeben, "
+                  f"{skipped} uebersprungen")
+            print(f"[Offload] Ziel: {dest}")
+            print(f"[Offload] Index: {index_out}")
+            if args.json:
+                print(json.dumps(result, indent=2, ensure_ascii=False))
+
+    if args.offload_folders:
+        dest = Path(args.offload_dest) if args.offload_dest else _gdrive_dest_root()
+        if not dest:
+            print("[Folders] FEHLER: Google Drive nicht gefunden.", file=sys.stderr)
+            return 2
+        stamp = __import__("datetime").datetime.now().strftime("%Y-%m-%d_%H%M%S")
+        index_out = USER_ROOT / "_dedup_quarantine" / f"offload_folders_{stamp}" / "index.json"
+        result = offload_folders_execute(dest, index_out)
+        freed = result.get("freed_bytes", 0)
+        done = len(result.get("folders", []))
+        print(f"[Folders] {done} Ordner ausgelagert, {_fmt_gb(freed)} freigegeben")
+        for f in result.get("folders", []):
+            print(f"  -> {f['offloaded_to']} ({f['files']} Dateien)")
+        print(f"[Folders] Index: {index_out}")
+        if args.json:
+            print(json.dumps(result, indent=2, ensure_ascii=False))
+
+    if not any([args.report, args.dedup, do_offload, args.offload_folders, args.undo]):
         ap.print_help()
     return 0
 
