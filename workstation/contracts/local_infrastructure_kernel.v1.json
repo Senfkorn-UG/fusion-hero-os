@@ -1,0 +1,51 @@
+{
+  "contract_version": "1.0",
+  "module_id": "local_infrastructure_kernel",
+  "description": "Lokale Kernlogik: Probing, Schwellenwerte, Eskalation (Windows-Mainframe). API/GUI konsumiert; Modul liefert Daten.",
+  "transport": [
+    "python_import",
+    "status_file"
+  ],
+  "python_import": {
+    "path_env": "PYTHONPATH=src/normal_os/core",
+    "module": "local_infrastructure_kernel",
+    "functions": {
+      "is_available": "bool — Modul importierbar",
+      "status": "Metadaten ohne aktive Probes",
+      "probe": "Aktive Health-Probes (opt-in)",
+      "evaluate": "Schwellenwert-Check + Eskalationsstufe",
+      "run_cycle": "probe + evaluate + status.json schreiben"
+    }
+  },
+  "status_file": {
+    "default": "{USERPROFILE}/.fusion/local-infrastructure-kernel/status.json",
+    "windows": "C:\\Users\\Admin\\.fusion\\local-infrastructure-kernel\\status.json"
+  },
+  "thresholds_file": "workstation/local_infrastructure_thresholds.json",
+  "runner": "workstation/run-local-infrastructure-kernel.ps1",
+  "api_unavailable_response": {
+    "available": false,
+    "reason": "nicht verfügbar",
+    "module": "local_infrastructure_kernel",
+    "contract_version": "1.0"
+  },
+  "api_available_envelope": {
+    "available": true,
+    "module": "local_infrastructure_kernel",
+    "contract_version": "1.0"
+  },
+  "escalation_levels": [
+    "ok",
+    "warn",
+    "alert",
+    "critical"
+  ],
+  "probe_targets": [
+    "ram_util_pct",
+    "disk_c_util_pct",
+    "tailscale_online",
+    "service_dashboard",
+    "service_hero_docs",
+    "service_bridge"
+  ]
+}

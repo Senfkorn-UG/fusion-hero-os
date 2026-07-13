@@ -1,0 +1,48 @@
+{
+  "version": "1.0",
+  "updated": "2026-07-13",
+  "module": "local_infrastructure_kernel",
+  "metrics": {
+    "ram_util_pct": {
+      "warn": 80,
+      "alert": 88,
+      "critical": 92
+    },
+    "disk_c_util_pct": {
+      "warn": 85,
+      "alert": 90,
+      "critical": 95
+    },
+    "service_dashboard": {
+      "offline_is": "alert"
+    },
+    "service_hero_docs": {
+      "offline_is": "warn"
+    },
+    "service_bridge": {
+      "offline_is": "warn"
+    },
+    "tailscale_online": {
+      "false_is": "warn"
+    }
+  },
+  "escalation_actions": {
+    "warn": [
+      "log",
+      "gui_notify"
+    ],
+    "alert": [
+      "log",
+      "gui_notify",
+      "memory_guard_relieve",
+      "suggest_storage_offload"
+    ],
+    "critical": [
+      "log",
+      "gui_notify",
+      "memory_guard_relieve",
+      "stop_llama_server",
+      "trigger_storage_policy"
+    ]
+  }
+}
