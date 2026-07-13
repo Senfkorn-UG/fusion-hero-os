@@ -54,4 +54,34 @@ und deklarieren ihre Plattform-Kompatibilität in `fuhos_compat.yaml`
 ### `archive`
 - Sinnvoll organisiertes Archiv für alles Alte.
 
+## Bifurzierter Bottom-Up-Merge (WSL -> Windows -> GitHub)
+
+Fuer die Zweigstelle **WSL** (`fusion-hero-core`) und den **Mainframe** (`C:\Users\Admin\fusion-hero-os`):
+
+| Layer | Repo | Rolle |
+|-------|------|-------|
+| 0 (Leaf) | WSL `~/fusion-hero-core` | Entwicklung, kein GitHub-Push |
+| 1 (Mainframe) | Windows `fusion-hero-os` | Merge + Push (GitHub-Auth) |
+| 2 (Root) | `origin/main` | Kanon auf GitHub |
+
+**Skripte:** `workstation/merge-bottom-up.sh` (WSL) + `workstation/merge-bottom-up.ps1` (Windows)
+
+```bash
+# Vollstaendiger Lauf
+bash workstation/merge-bottom-up.sh
+
+# Nur Plan
+bash workstation/merge-bottom-up.sh --plan-only
+
+# Mit Commit-Message fuer WSL-Aenderungen
+bash workstation/merge-bottom-up.sh --message "feat: ..."
+```
+
+**Regeln:**
+- Merge-Strategie: `git pull --no-rebase` (kein Rebase auf Auto-Save-Historie)
+- Keine Duplikate im Repo-Root (`workstation/`, `tools/`, `src/` sind kanonisch)
+- Status: `~/.fusion/merge-bottom-up.status.json`
+
+**Hinweis:** `develop`/`ascension` sind derzeit hinter `main` — zuerst `main` in die Tracks mergen, nicht umgekehrt.
+
 **Ziel:** Alles seit April 2026 entwickelte soll in AscensionOS münden.

@@ -65,6 +65,13 @@ storage:
   vault_provenance: 95guknow/fusion-hero-vault
   apply_script: workstation/apply-storage-policy.ps1
 
+# Git - bifurzierter Bottom-Up-Merge (WSL -> Windows -> GitHub)
+git:
+  merge_policy: bottom_up
+  bottom_up_script: workstation/merge-bottom-up.ps1
+  wsl_script: workstation/merge-bottom-up.sh
+  status_file: "~/.fusion/merge-bottom-up.status.json"
+
 # Routing (Funnel + MagicDNS) — zeigt auf Windows-Mainframe
 routing:
   base_url: https://host.example.ts.net
