@@ -1342,11 +1342,9 @@ try:
 except Exception as _ext_err:
     print(f"[API] Extensions note: {_ext_err}")
 
-# === Layered Resource Guardian (Temperatur/Kuehlung/CPU/GPU/SSD) ===
-# API/GUI-Schicht; Kernmodul core/layered_resource_guardian.py wird lokal
-# implementiert, siehe docs/02_architecture/LAYERED_RESOURCE_GUARDIAN_SPEC.md
+# === AscensionOS v9.5/v9.6 (Stage9, Sisyphos-Oszillation, Psycholyse, QUBO, Harmonisierung, Geisterjagd) ===
 try:
-    from resource_guardian_routes import router as _resource_guardian_router
-    app.include_router(_resource_guardian_router)
-except Exception as _rg_err:
-    print(f"[API] Resource Guardian routes note: {_rg_err}")
+    from ascension_v9_routes import router as _ascension_v9_router
+    app.include_router(_ascension_v9_router)
+except Exception as _asc_v9_err:
+    print(f"[API] AscensionOS v9 routes note: {_asc_v9_err}")
