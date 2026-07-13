@@ -370,17 +370,20 @@ def offload_execute(plan: List[Dict], dest_root: Path, index_out: Path) -> Dict:
     return index
 
 
-def _folder_size(path: Path) -> Tuple[int, int]:
+def _folder_size(path: Path, *, apply_exclude: bool = True) -> Tuple[int, int]:
     total, count = 0, 0
     if not path.is_dir():
         return 0, 0
     for p in path.rglob("*"):
-        if p.is_file() and not _excluded(p):
-            try:
-                total += p.stat().st_size
-                count += 1
-            except OSError:
-                pass
+        if not p.is_file():
+            continue
+        if apply_exclude and _excluded(p):
+            continue
+        try:
+            total += p.stat().st_size
+            count += 1
+        except OSError:
+            pass
     return total, count
 
 
@@ -406,7 +409,7 @@ def offload_folders_execute(dest_root: Path, index_out: Path,
         except OSError as e:
             index["skipped"].append({"folder": rel_src, "reason": f"copy-fehler: {e}"})
             continue
-        dst_bytes, dst_files = _folder_size(dst)
+        dst_bytes, dst_files = _folder_size(dst, apply_exclude=False)
         if dst_files < src_files or dst_bytes < src_bytes:
             index["skipped"].append({
                 "folder": rel_src,
