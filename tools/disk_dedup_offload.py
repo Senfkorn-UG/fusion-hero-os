@@ -74,6 +74,27 @@ SCAN_ROOTS = ("Downloads", "Desktop", "Documents", "Pictures", "Videos",
 
 MIN_DEDUP_BYTES = 1 * 1024 * 1024        # Dateien < 1 MB ignorieren (Rauschen)
 OFFLOAD_MIN_BYTES = 100 * 1024 * 1024    # Offload-Kandidat ab 100 MB
+GDRIVE_OFFLOAD_REL = Path("Meine Ablage") / "FusionHero_Offload"
+
+
+def _gdrive_dest_root() -> Optional[Path]:
+    """Google Drive Streaming/ Mirror Ziel fuer FusionHero_Offload."""
+    env = os.environ.get("FUSION_GDRIVE_OFFLOAD")
+    if env:
+        return Path(env)
+    profile = Path(os.environ.get("USERPROFILE", r"C:\Users\Admin"))
+    for base in (
+        profile / "Google Drive-Streaming",
+        profile / "Google Drive",
+        Path("G:"),
+    ):
+        if not base.is_dir():
+            continue
+        for sub in (GDRIVE_OFFLOAD_REL, Path("My Drive") / "FusionHero_Offload"):
+            candidate = base / sub
+            if candidate.parent.is_dir():
+                return candidate
+    return None
 
 
 def purpose(path: Path) -> str:
@@ -250,19 +271,36 @@ def undo(manifest_path: Path) -> int:
 # Offload-Plan (offline nicht benoetigt)
 # ---------------------------------------------------------------------------
 
-def offload_plan(roots: List[Path]) -> List[Dict]:
-    """Grosse, offline entbehrliche Dateien: Installer, Archive, Medien."""
-    OFFLINE_DISPENSABLE = {"installer", "archive", "media"}
+def _offload_eligible(p: Path, size: int, purp: str, *, include_images: bool) -> bool:
+    if size < OFFLOAD_MIN_BYTES:
+        return False
+    low = str(p).lower().replace("/", "\\")
+    downloads = str(USER_ROOT / "Downloads").lower()
+    # Installer, Archive, Medien — offline entbehrlich
+    if purp in {"installer", "archive", "media"}:
+        return True
+    # Grosse Downloads (Spiele, ISOs ohne Standard-Endung)
+    if downloads in low and purp in {"other", "image", "document"}:
+        return True
+    # Handy-Fotos/DCIM optional nach GDrive
+    if include_images and "\\pictures\\" in low and purp == "image":
+        return True
+    return False
+
+
+def offload_plan(roots: List[Path], *, include_images: bool = False,
+                 min_bytes: int = OFFLOAD_MIN_BYTES) -> List[Dict]:
+    """Grosse, offline entbehrliche Dateien: Installer, Archive, Medien, Downloads."""
     plan = []
     for p in _iter_files(roots):
         try:
             size = p.stat().st_size
         except OSError:
             continue
-        if size < OFFLOAD_MIN_BYTES:
+        if size < min_bytes:
             continue
         purp = purpose(p)
-        if purp in OFFLINE_DISPENSABLE:
+        if _offload_eligible(p, size, purp, include_images=include_images):
             plan.append({"path": str(p), "purpose": purp,
                          "size_bytes": size, "gb": round(size / 1024**3, 2)})
     plan.sort(key=lambda x: x["size_bytes"], reverse=True)
@@ -326,6 +364,14 @@ def main(argv: Optional[List[str]] = None) -> int:
     ap.add_argument("--quarantine", action="store_true",
                     help="mit --dedup: Duplikate in Quarantaene verschieben (reversibel)")
     ap.add_argument("--offload-plan", action="store_true", help="GDrive-Auslagerungskandidaten")
+    ap.add_argument("--offload-execute", action="store_true",
+                    help="Kandidaten nach FusionHero_Offload kopieren + verifizieren + lokal loeschen")
+    ap.add_argument("--include-images", action="store_true",
+                    help="Pictures/DCIM-Bilder (>min) mit auslagern")
+    ap.add_argument("--offload-min-mb", type=int, default=100,
+                    help="Mindestgroesse fuer Offload-Kandidaten in MB (default 100)")
+    ap.add_argument("--offload-dest", metavar="PATH",
+                    help="GDrive-Ziel (default: Meine Ablage/FusionHero_Offload)")
     ap.add_argument("--undo", metavar="MANIFEST", help="Quarantaene aus Manifest zuruecknehmen")
     ap.add_argument("--json", action="store_true", help="Ergebnis als JSON")
     ap.add_argument("--run-label", default="run", help="Ordnername des Quarantaene-Laufs")
@@ -364,17 +410,40 @@ def main(argv: Optional[List[str]] = None) -> int:
             mp = quarantine(groups, args.run_label)
             print(f"[Dedup] Duplikate in Quarantaene verschoben. Undo-Manifest: {mp}")
 
-    if args.offload_plan:
-        plan = offload_plan(roots)
-        total = sum(x["size_bytes"] for x in plan)
-        if args.json:
-            print(json.dumps(plan, indent=2, ensure_ascii=False))
-        else:
-            for x in plan[:40]:
-                print(f"  [{x['purpose']}] {x['gb']:>6.2f} GB  {x['path']}")
-            print(f"[Offload] {len(plan)} Kandidaten, auslagerbar: {_fmt_gb(total)}")
+    min_bytes = max(1, args.offload_min_mb) * 1024 * 1024
+    do_offload = args.offload_plan or args.offload_execute
 
-    if not any([args.report, args.dedup, args.offload_plan, args.undo]):
+    if do_offload:
+        plan = offload_plan(roots, include_images=args.include_images, min_bytes=min_bytes)
+        total = sum(x["size_bytes"] for x in plan)
+        if args.offload_plan or not args.offload_execute:
+            if args.json:
+                print(json.dumps(plan, indent=2, ensure_ascii=False))
+            else:
+                for x in plan[:40]:
+                    print(f"  [{x['purpose']}] {x['gb']:>6.2f} GB  {x['path']}")
+                print(f"[Offload] {len(plan)} Kandidaten, auslagerbar: {_fmt_gb(total)}")
+
+        if args.offload_execute:
+            dest = Path(args.offload_dest) if args.offload_dest else _gdrive_dest_root()
+            if not dest:
+                print("[Offload] FEHLER: Google Drive nicht gefunden. "
+                      "Setze FUSION_GDRIVE_OFFLOAD oder --offload-dest.", file=sys.stderr)
+                return 2
+            stamp = __import__("datetime").datetime.now().strftime("%Y-%m-%d_%H%M%S")
+            index_out = USER_ROOT / "_dedup_quarantine" / f"offload_{stamp}" / "offload_index.json"
+            result = offload_execute(plan, dest, index_out)
+            freed = result.get("freed_bytes", 0)
+            skipped = len(result.get("skipped", []))
+            done = len(result.get("entries", []))
+            print(f"[Offload] {done} Dateien ausgelagert, {_fmt_gb(freed)} freigegeben, "
+                  f"{skipped} uebersprungen")
+            print(f"[Offload] Ziel: {dest}")
+            print(f"[Offload] Index: {index_out}")
+            if args.json:
+                print(json.dumps(result, indent=2, ensure_ascii=False))
+
+    if not any([args.report, args.dedup, do_offload, args.undo]):
         ap.print_help()
     return 0
 
