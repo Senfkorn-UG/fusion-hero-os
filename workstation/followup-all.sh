@@ -10,19 +10,19 @@ echo "║  Fusion Hero OS — Follow-up All-in-One   ║"
 echo "╚══════════════════════════════════════════╝"
 echo ""
 
-echo "[1/8] README/Mesh — bereits in mesh_roles.yaml verankert"
+echo "[1/9] README/Mesh — bereits in mesh_roles.yaml verankert"
 python3 -c "from pathlib import Path; import sys; sys.path.insert(0,'src/normal_os/integration'); from mesh_roles import get_mainframe_hostname; print('  Mainframe:', get_mainframe_hostname())" 2>/dev/null || true
 
 echo ""
-echo "[2/8] Verification LLM-Recovery Status"
+echo "[2/9] Verification LLM-Recovery Status"
 PYTHONPATH=src/normal_os/core python3 -c "from verification_orchestrator import status; import json; print(json.dumps({k:status()[k] for k in ('llm_recovery_enabled','recovery_enabled')}, indent=2))" 2>/dev/null || true
 
 echo ""
-echo "[3/8] Tailscale WSL"
+echo "[3/9] Tailscale WSL"
 bash "$ROOT/workstation/tailscale_wsl_setup.sh" 2>&1 | sed 's/^/  /'
 
 echo ""
-echo "[4/8] AudioRelay (Windows)"
+echo "[4/9] AudioRelay (Windows)"
 if command -v powershell.exe >/dev/null 2>&1; then
   powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$ROOT/workstation/check-audio-relay.ps1" 2>&1 | sed 's/^/  /'
   powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$ROOT/workstation/route-audio-to-phone.ps1" 2>&1 | sed 's/^/  /' || true
@@ -31,15 +31,15 @@ else
 fi
 
 echo ""
-echo "[5/8] Gmail Triage Bridge"
+echo "[5/9] Gmail Triage Bridge"
 python3 "$ROOT/scripts/gmail_triage_bridge.py" 2 2>&1 | sed 's/^/  /'
 
 echo ""
-echo "[6/8] Archiv-Anker (uncommitted)"
+echo "[6/9] Archiv-Anker (uncommitted)"
 python3 "$ROOT/scripts/archiv_anchor_uncommitted.py" --include-ignored 2>&1 | sed 's/^/  /' || true
 
 echo ""
-echo "[7/8] Planova Inneneinrichter (Windows)"
+echo "[7/9] Planova Inneneinrichter (Windows)"
 if command -v powershell.exe >/dev/null 2>&1; then
   PLAN_EXE="/mnt/c/Users/Admin/Programs/planova/planova.exe"
   if [ -f "$PLAN_EXE" ]; then
@@ -53,9 +53,29 @@ else
 fi
 
 echo ""
-echo "[8/8] GDrive Storage Policy (nicht-operative Daten)"
+echo "[8/9] GDrive Storage Policy (nicht-operative Daten)"
 if command -v powershell.exe >/dev/null 2>&1; then
   powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$ROOT/workstation/apply-storage-policy.ps1" 2>&1 | sed 's/^/  /' || true
+else
+  echo "  powershell.exe nicht verfuegbar"
+fi
+
+echo ""
+echo "[9/9] Bottom-Up Merge (WSL -> Windows -> GitHub)"
+if command -v powershell.exe >/dev/null 2>&1; then
+  WIN_REPO="/mnt/c/Users/Admin/fusion-hero-os"
+  WSL_HEAD=$(git -C "$ROOT" rev-parse HEAD 2>/dev/null || echo "")
+  WIN_HEAD=$(git -C "$WIN_REPO" rev-parse HEAD 2>/dev/null || echo "")
+  if [ -n "$WSL_HEAD" ] && [ -n "$WIN_HEAD" ] && [ "$WSL_HEAD" = "$WIN_HEAD" ]; then
+    ORIGIN_HEAD=$(git -C "$WIN_REPO" rev-parse origin/main 2>/dev/null || echo "")
+    if [ "$WIN_HEAD" = "$ORIGIN_HEAD" ]; then
+      echo "  Bereits sync (HEAD ${WSL_HEAD:0:7})"
+    else
+      bash "$ROOT/workstation/merge-bottom-up.sh" 2>&1 | sed 's/^/  /' || true
+    fi
+  else
+    bash "$ROOT/workstation/merge-bottom-up.sh" 2>&1 | sed 's/^/  /' || true
+  fi
 else
   echo "  powershell.exe nicht verfuegbar"
 fi
