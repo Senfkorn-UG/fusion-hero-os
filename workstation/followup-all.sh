@@ -31,12 +31,26 @@ else
 fi
 
 echo ""
-echo "[5/6] Gmail Triage Bridge"
+echo "[5/7] Gmail Triage Bridge"
 python3 "$ROOT/scripts/gmail_triage_bridge.py" 2 2>&1 | sed 's/^/  /'
 
 echo ""
-echo "[6/6] Archiv-Anker (uncommitted)"
+echo "[6/7] Archiv-Anker (uncommitted)"
 python3 "$ROOT/scripts/archiv_anchor_uncommitted.py" --include-ignored 2>&1 | sed 's/^/  /' || true
+
+echo ""
+echo "[7/7] Planova Inneneinrichter (Windows)"
+if command -v powershell.exe >/dev/null 2>&1; then
+  PLAN_EXE="/mnt/c/Users/Admin/Programs/planova/planova.exe"
+  if [ -f "$PLAN_EXE" ]; then
+    echo "  Bereits installiert: $PLAN_EXE"
+    powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$ROOT/workstation/install-planova.ps1" -SkipBuild 2>&1 | sed 's/^/  /' || true
+  else
+    powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$ROOT/workstation/install-planova.ps1" -Auto 2>&1 | sed 's/^/  /' || true
+  fi
+else
+  echo "  powershell.exe nicht verfuegbar"
+fi
 
 echo ""
 echo "=== Follow-up abgeschlossen ==="
