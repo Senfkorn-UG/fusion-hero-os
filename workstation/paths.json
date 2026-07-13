@@ -122,5 +122,18 @@
                                                            ]
                                          },
                             "export_hint":  "GLB manuell nach 03_VR_Assets kopieren fuer VR-Viewer"
-                        }
+                        },
+    "git":  {
+                "merge_policy":  "bottom_up",
+                "bottom_up_merge":  {
+                                        "wsl_repo":  "/home/admin_fuhos/fusion-hero-core",
+                                        "win_repo":  "C:\\Users\\Admin\\fusion-hero-os",
+                                        "github_remote":  "https://github.com/95guknow/fusion-hero-os.git",
+                                        "github_branch":  "main",
+                                        "merge_script_sh":  "workstation/merge-bottom-up.sh",
+                                        "merge_script_ps1":  "workstation/merge-bottom-up.ps1",
+                                        "status_file":  "C:\\Users\\Admin\\.fusion\\merge-bottom-up.status.json",
+                                        "log_file":  "C:\\Users\\Admin\\.fusion\\merge-bottom-up.log"
+                                    }
+            }
 }
