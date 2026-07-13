@@ -8,6 +8,9 @@ param(
 $ErrorActionPreference = "Continue"
 . (Join-Path $PSScriptRoot "load-env.ps1")
 
+# Git safe.directory fuer WSL-Zugriff von Windows
+git config --global --add safe.directory '%(prefix)///wsl.localhost/Ubuntu/home/admin_fuhos/fusion-hero-core' 2>$null
+
 $WinRepo = if ($env:FUSION_HERO_ROOT) { $env:FUSION_HERO_ROOT } else { "C:\Users\Admin\fusion-hero-os" }
 $WslRepo = "\\wsl.localhost\Ubuntu\home\admin_fuhos\fusion-hero-core"
 $StatusDir = Join-Path $env:USERPROFILE ".fusion"
@@ -25,7 +28,9 @@ $RootDuplicates = @(
     "offload-to-gdrive.ps1",
     "paths.json",
     "storage_policy.json",
-    "storage_policy.py"
+    "storage_policy.py",
+    "workstation/BRANCH_STRATEGY.md",
+    "workstation/mesh_roles.yaml"
 )
 
 $ExcludePatterns = @(
