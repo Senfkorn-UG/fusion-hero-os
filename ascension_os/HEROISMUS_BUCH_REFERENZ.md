@@ -61,7 +61,17 @@ NICHT in `ascension_os/` uebernommen oder ausgebaut: das Modul beschreibt
 gezielte Auslassungen gegenueber echten, nicht-einwilligenden Personen sowie
 manipulative "Interventionsphasen" gegen sie. Das widerspricht der in diesem
 Projekt sonst durchgehend gepflegten "Ehrlicher Status"-Kultur in Bezug auf
-Dritte und wurde daher nicht zu einer Daten-Pipeline ausgebaut.
+Dritte und wurde daher nicht zu einer Daten-Pipeline ausgebaut - unabhaengig
+davon, ob nur Daten der uebenden Person selbst gespeichert werden, da echte
+Matches beim tatsaechlichen Kontakt getaeuscht wuerden.
+
+Stattdessen: **`exposure_practice_module.py`** (v9.7) - ein simulierter
+Gespraechspartner (LLM-generiert, kein realer Mensch beteiligt) fuer soziale
+Expositionsuebung, mit reinem Selbst-Tracking (Shutdown ja/nein, Turns bis
+Disengagement, Angstlevel). Adressiert das dahinterliegende, legitime Ziel
+(Expositionstraining gegen Mutismus/Shutdown in Kontaktsituationen) ohne
+dass eine reale, nicht-einwilligende Person getaeuscht oder als Interventions-
+ziel behandelt wird.
 
 ## Offene Punkte fuer eine tiefere Integration
 
