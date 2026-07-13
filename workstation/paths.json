@@ -123,6 +123,14 @@
                                          },
                             "export_hint":  "GLB manuell nach 03_VR_Assets kopieren fuer VR-Viewer"
                         },
+    "local_kernel":  {
+                         "module":  "local_infrastructure_kernel",
+                         "contract":  "workstation/contracts/local_infrastructure_kernel.v1.json",
+                         "thresholds":  "workstation/local_infrastructure_thresholds.json",
+                         "runner":  "workstation/run-local-infrastructure-kernel.ps1",
+                         "python_path":  "src/normal_os/core",
+                         "status_file":  "C:\\Users\\Admin\\.fusion\\local-infrastructure-kernel\\status.json"
+                     },
     "git":  {
                 "merge_policy":  "bottom_up",
                 "bottom_up_merge":  {
