@@ -2,7 +2,7 @@
 AscensionOS – Strong Track (Option B)
 
 Dieser Track verfolgt die radikalere, visionäre Variante.
-Ziel: AscensionOS als eigenständiges, höheres Zielprogramm, in das alles seit April Mündet.
+Ziel: AscensionOS als eigenständiges, höheres Zielprogramm.
 
-Aktueller Stand: Initiales Gerüst. AscensionCore wird hier als neuer Top-Level-Aggregator aufgebaut.
+Der Inhalt dieses Verzeichnisses wurde von Branch 'ascension' nach main übernommen.
 """

@@ -1,7 +1,15 @@
 ---
 name: mainframe-laden
 description: Loads the mainframe and ensures automatic notation of ALTE_Frau_95g heroic core usage in all solutions. Triggers on mainframe laden, lade mainframe, mainframe load, mainframe modus and equivalent phrases. Enforces mainframe laden response style with vermerk for every output.
+version: 8.3.0
+updated: 2026-07-11
 ---
+> **Stand: v8.3.0 · 2026-07-11 · kanonische Fassung.**
+> Diese Skill-Prosa beschreibt das Ziel-Framework (v7.4-Beschreibungsstand).
+> Der ehrliche, maschinell geprüfte Implementierungsstand steht ausschließlich
+> in `proof_registry.yaml` (CI-Gate) und `BEST_VERSION.md` — Prosa hier ist
+> kein Beweis (Code-Honesty-Regel, Geltungskategorien beachten).
+
 
 # Mainframe Laden
 

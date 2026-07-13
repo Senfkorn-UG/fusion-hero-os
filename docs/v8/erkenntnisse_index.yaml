@@ -1,0 +1,165 @@
+# =====================================================================
+# ERKENNTNIS-INDEX — Fusion Hero OS v8.3 Konsolidierung (2026-07-10)
+# =====================================================================
+# Maschinenlesbarer Index aller Erkenntnis-Dokumente ("Erkenntnisse")
+# mit Layer-Zuordnung und Geltungsstatus.
+#
+# status:
+#   aktiv      — gilt, ist Teil des operativen Kanons v8/main
+#   superseded — durch ein neueres Doc ersetzt (siehe superseded_by)
+#   archiv     — historisch, nur Referenz (docs/99_archive/, legacy)
+#
+# Validiert durch: scripts/check_erkenntnisse_index.py (CI-Gate)
+# Konsumiert von:  fusion_hero_os/core/layer_registry.py
+#                  (/erkenntnisse/status im hero-docs-server)
+# =====================================================================
+
+version: "8.3"
+updated: "2026-07-10"
+
+docs:
+  # --- Kern-Erkenntnisse v8 -------------------------------------------
+  - id: erkenntnisse-letzte-tage
+    path: docs/v8/ERKENNTNISSE_LETZTE_TAGE_2026-07-05.md
+    version: v8
+    status: aktiv
+    layer_mapping: [knowledge, orchestration, intelligence]
+    summary: "Master-Erkenntnisdoc: 8 Insight-Cluster (Psycholyse, Axiomatik 1.24, High-Intellect-Protokoll, Embodiment, Visual Identity)"
+
+  - id: themenfelder-april
+    path: docs/v8/FULL_APRIL_THEMENFELDER_OS_ARCHITECTURE_INTEGRATION_v8.md
+    version: v8
+    status: aktiv
+    layer_mapping: [knowledge, orchestration]
+    summary: "April-Themenfelder auf alle OS-Layer gemappt"
+
+  - id: themenfelder-mai-juni
+    path: docs/v8/FULL_MAI_JUNI_THEMENFELDER_OS_ARCHITECTURE_INTEGRATION_v8.md
+    version: v8
+    status: aktiv
+    layer_mapping: [knowledge, orchestration]
+    summary: "Mai/Juni-Themenfelder auf alle OS-Layer gemappt"
+
+  - id: scientific-integration
+    path: docs/v8/FULL_OS_ARCHITECTURE_SCIENTIFIC_INTEGRATION_Mindfulness_Habit_Quantum_v8.md
+    version: v8
+    status: aktiv
+    layer_mapping: [knowledge, intelligence]
+    summary: "Wissenschaftliche Verankerung: Mindfulness/Habit/Quantenkognition"
+
+  - id: grok-empirical-anchors
+    path: docs/v8/GROK_DEEP_RESEARCH_EXPORT_Empirical_Mathematical_Anchors_v8.md
+    version: v8
+    status: aktiv
+    layer_mapping: [knowledge]
+    summary: "Empirisch-mathematische Anker (Deep-Research-Export)"
+
+  # --- Tarnkappe / Privacy (v8.2) --------------------------------------
+  - id: tarnkappe-practical
+    path: docs/Tarnkappe_Cloak_Practical_Guide_v8.2.md
+    version: v8.2
+    status: aktiv
+    layer_mapping: [tarnkappe, network]
+    summary: "Praktischer Tarnkappen-Guide: AdGuard Home + Tailscale, Navidrome, DNS-over-HTTPS, KI-Grenztests"
+
+  - id: tarnkappe-tails
+    path: docs/Tails_as_Ultimate_Tarnkappe_v8.2.md
+    version: v8.2
+    status: aktiv
+    layer_mapping: [tarnkappe]
+    summary: "Tails OS als amnesische Ultimate-Tarnkappe; Vergleich Whonix/Qubes; Kombination mit AdGuard/Navidrome"
+
+  # --- Android / Mesh (2026-07-09) --------------------------------------
+  - id: android-nonroot-node
+    path: docs/android/Heroic-Extension-Node-NonRoot-v1.0.md
+    version: v8.2
+    status: aktiv
+    layer_mapping: [android, network]
+    summary: "Non-Root Heroic Extension Node (Redmi Note 13 Pro 5G): Tailscale + Phone Link + Tasker/Shizuku + lokaler Mini-Core. AKTUELLER BESCHLUSS (umsetzungsreif)."
+
+  - id: android-three-mesh
+    path: docs/architecture/2026-07-09-three-mesh-heroic-fusion-android.md
+    version: v8.2
+    status: aktiv
+    layer_mapping: [android, network]
+    supersedes_note: "Root+Magisk-Abschnitt ist Alternative/Draft; der Non-Root-Pfad (android-nonroot-node) ist der beschlossene Weg."
+    summary: "Three-Zone-Tailscale-Mesh (frontend/internet/backend); Android-Anbindung; Root-Pfad nur als Alternative dokumentiert"
+
+  # --- Konsolidierungen & Status ----------------------------------------
+  - id: konsolidierung-2026-07-09
+    path: docs/KONSOLIDIERUNG_2026-07-09.md
+    version: v8.2
+    status: aktiv
+    layer_mapping: [knowledge]
+    summary: "Konsolidierungspass: Merge-Konflikte, BOM, ungueltige CI-YAML behoben"
+
+  - id: public-status-v8
+    path: PUBLIC_STATUS.md
+    version: v8
+    status: aktiv
+    layer_mapping: [surface, knowledge]
+    summary: "Oeffentliche v8-Haltung: alle Pushes nur ueber dieses Repo"
+
+  - id: bestversion-manifest
+    path: docs/v8/BESTVERSION_CONSOLIDATION_MANIFEST.md
+    version: v8
+    status: aktiv
+    layer_mapping: [knowledge]
+    summary: "Kanonische Bestversion = v8/main; Legacy-Cherry-Pick-Regeln"
+
+  - id: v8-status-report
+    path: docs/01_vision/V8_STATUS_REPORT.md
+    version: v8
+    status: aktiv
+    layer_mapping: [knowledge]
+    summary: "Verbindlicher ehrlicher Detailstand (Real vs. Aspirational)"
+
+  # --- SelfMod-Vorschlaege v8.1 (proposal-only) --------------------------
+  - id: selfmod-all-options
+    path: self_mod_proposals/2026-07-09_ALL_OPTIONS_EXECUTED_v8.1.md
+    version: v8.1
+    status: aktiv
+    layer_mapping: [knowledge]
+    summary: "SelfMod-Protokoll v8.1 (proposal-only, keine Auto-Ausfuehrung)"
+
+  # --- Superseded / Archiv ------------------------------------------------
+  - id: masterseed-v7-11
+    path: docs/99_archive/Fusion_MasterSeed_v7.11.md
+    version: v7.11
+    status: archiv
+    superseded_by: bestversion-manifest
+    layer_mapping: [knowledge]
+    summary: "v7.11 MasterSeed — durch v8/main ersetzt (MASTERSEED_UPDATE_INSTRUCTION_v8)"
+
+  - id: master-unified-v7-5
+    path: docs/99_archive/FUSION_HERO_OS_v7.5_MASTER_UNIFIED.md
+    version: v7.5
+    status: archiv
+    superseded_by: bestversion-manifest
+    layer_mapping: [knowledge]
+    summary: "v7.5 Master Unified — durch v8/main ersetzt"
+
+  - id: delta-summary-v7-4
+    path: docs/99_archive/FUSION_HERO_OS_v7.4_COMPLETE_DELTA_SUMMARY.md
+    version: v7.4
+    status: archiv
+    superseded_by: bestversion-manifest
+    layer_mapping: [knowledge]
+    summary: "v7.4 Delta Summary — durch v8/main ersetzt"
+
+# --- Explizit aufgeloeste Widersprueche (v8.3) ---------------------------
+resolved_conflicts:
+  - id: bestversion-vs-ascension
+    state: resolved
+    decision: "v8/main ist der operative Kanon (laeuft, CI-gesichert); v9.4 AscensionOS ist Roadmap-/Forschungs-Track in ascension_os/."
+    docs: [BEST_VERSION.md, docs/v8/BESTVERSION_CONSOLIDATION_MANIFEST.md]
+
+  - id: android-root-vs-nonroot
+    state: resolved
+    decision: "Non-Root-Pfad (Heroic-Extension-Node-NonRoot-v1.0) ist der beschlossene Weg; Root+Magisk im Three-Mesh-Doc ist Alternative/Draft."
+    docs: [docs/android/Heroic-Extension-Node-NonRoot-v1.0.md, docs/architecture/2026-07-09-three-mesh-heroic-fusion-android.md]
+
+  - id: root-v7x-duplikate
+    state: resolved
+    decision: "Root-Kopien von v7.4/v7.5/v7.11 sind Redirect-Stubs; kanonische Archiv-Kopien liegen in docs/99_archive/."
+    docs: [FUSION_HERO_OS_v7.4_COMPLETE_DELTA_SUMMARY.md, FUSION_HERO_OS_v7.5_MASTER_UNIFIED.md, Fusion_MasterSeed_v7.11.md]
