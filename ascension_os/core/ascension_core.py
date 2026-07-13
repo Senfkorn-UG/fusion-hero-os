@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-AscensionOS v9.4 - Substantielles AscensionCore (Coevolutionaer integriert)
+AscensionOS v9.5 - Substantielles AscensionCore (Coevolutionaer integriert)
 
 Dieses AscensionCore ist die zentrale Heimat fuer:
 - Alle grounded epistemischen Komponenten (Sisyphos, FailClosed, Psycholysis, MasterSeed)
@@ -8,6 +8,10 @@ Dieses AscensionCore ist die zentrale Heimat fuer:
 - Den UnifiedHeroicLLMCore
 - Die CoEvolutionaryClosure (CEC, v9.3)
 - Den PersistentSisyphosCycle (v9.4)
+- Den Stage9AscensionTracker, PsycholyseProtocolLogger, SisyphosOscillationVisualizer
+  und QUBOAscensionOptimizer (v9.5 - "Next Evolution Steps" aus
+  ASCENSION_EXPANSION_v8.md / 00_AscensionOS_Zusammenfuehrung_v8.md, vormals
+  nur als Text/Referenz ohne Code)
 
 Wiederhergestellt in der v8.3-Konsolidierung: Die Datei war durch
 Delta-Fragmente (5cd32ab, 781269f) ersetzt worden; Basis ist der letzte
@@ -52,20 +56,44 @@ try:
 except Exception:
     PersistentSisyphosCycle = None
 
+try:
+    from .stage9_tracker import Stage9AscensionTracker
+except Exception:
+    Stage9AscensionTracker = None
+
+try:
+    from .psycholyse_protocol_logger import PsycholyseProtocolLogger
+except Exception:
+    PsycholyseProtocolLogger = None
+
+try:
+    from .sisyphos_oscillation_visualizer import SisyphosOscillationVisualizer
+except Exception:
+    SisyphosOscillationVisualizer = None
+
+try:
+    from .qubo_ascension_optimizer import QUBOAscensionOptimizer
+except Exception:
+    QUBOAscensionOptimizer = None
+
 
 class AscensionCore:
     """
-    Das substantielle AscensionCore v9.4.
+    Das substantielle AscensionCore v9.5.
 
     Coevolutionaer aufgebaut:
     - Haelt alle zentralen grounded Komponenten
     - Integriert den GenerationalEvolutionEngine tief
     - Ist ueber die CoEvolutionaryClosure (CEC) mit anderen Tracks verbunden
     - Fuehrt den persistenten, stateful Sisyphos-Zyklus
+    - Schaetzt die Naeherung an Stage9 (heuristisch, siehe stage9_tracker.py)
+    - Loggt Psycholyse-Sessions mit Pflicht-Status-Tags
+    - Visualisiert die Sisyphos-Oszillation (ASCII + SVG, keine neue Dependency)
+    - Loest die Devil-vs-Christus-QUBO-Trajektorie ueber den bestehenden Solver
     """
 
     def __init__(self):
-        self.version = "9.4-coevolutionary"
+        self.version = "9.5-coevolutionary"
 
         # Grounded Core Components
         self.llm: Optional["UnifiedHeroicLLMCore"] = (
@@ -95,6 +123,20 @@ class AscensionCore:
         if PersistentSisyphosCycle:
             self.persistent_sisyphos = PersistentSisyphosCycle()
 
+        # Stage9-Tracker, Psycholyse-Logger, Oszillations-Visualizer (v9.5)
+        # - alle konsumieren persistent_sisyphos statt eigenen Zustand zu duplizieren.
+        self.stage9_tracker: Optional["Stage9AscensionTracker"] = None
+        if Stage9AscensionTracker:
+            self.stage9_tracker = Stage9AscensionTracker(sisyphos=self.persistent_sisyphos)
+
+        self.psycholyse_logger: Optional["PsycholyseProtocolLogger"] = None
+        if PsycholyseProtocolLogger:
+            self.psycholyse_logger = PsycholyseProtocolLogger(sisyphos=self.persistent_sisyphos)
+
+        self.oscillation_visualizer: Optional["SisyphosOscillationVisualizer"] = None
+        if SisyphosOscillationVisualizer:
+            self.oscillation_visualizer = SisyphosOscillationVisualizer(sisyphos=self.persistent_sisyphos)
+
         self.mode = "ASCENSION"
 
     # ------------------------------------------------------------------
@@ -118,6 +160,60 @@ class AscensionCore:
         return []
 
     # ------------------------------------------------------------------
+    # Stage9 + Psycholyse + Oszillation + QUBO (v9.5)
+    # ------------------------------------------------------------------
+
+    def get_stage9_status(self) -> Dict[str, Any]:
+        """Heuristische Naeherung an 'Stage 9 / Kosmozentrisch', siehe stage9_tracker.py."""
+        if not self.stage9_tracker:
+            return {"status": "Stage9AscensionTracker nicht verfuegbar"}
+        return self.stage9_tracker.check_ascension()
+
+    def log_psycholyse_session(self, protocol_type: str, status: str, **kwargs: Any) -> Optional[Dict[str, Any]]:
+        """Loggt eine Psycholyse-Session mit Pflicht-Status-Tag (siehe VALID_STATUS_TAGS)."""
+        if not self.psycholyse_logger:
+            return None
+        from dataclasses import asdict
+        entry = self.psycholyse_logger.log_session(protocol_type, status, **kwargs)
+        self.notify_coevolutionary_change(
+            "ascension_core", "psycholyse_session", {"session_id": entry.session_id, "status": status}
+        )
+        return asdict(entry)
+
+    def get_oscillation_report(self, last_n: int = 40) -> Dict[str, Any]:
+        """Sisyphos-Oszillationsbericht (Sparkline + Kennzahlen), siehe sisyphos_oscillation_visualizer.py."""
+        if not self.oscillation_visualizer:
+            return {"status": "SisyphosOscillationVisualizer nicht verfuegbar"}
+        from dataclasses import asdict
+        return asdict(self.oscillation_visualizer.build_report(last_n=last_n))
+
+    def run_qubo_ascension_optimization(self, n_checkpoints: int = 12, steps: int = 4000) -> Dict[str, Any]:
+        """Loest die Devil-vs-Christus-QUBO-Trajektorie, siehe qubo_ascension_optimizer.py."""
+        if not QUBOAscensionOptimizer:
+            return {"status": "QUBOAscensionOptimizer nicht verfuegbar (qb_qubo/numpy fehlt?)"}
+        from dataclasses import asdict
+        optimizer = QUBOAscensionOptimizer(n_checkpoints=n_checkpoints)
+        result = optimizer.solve(steps=steps)
+        summary = asdict(result)
+        self.notify_coevolutionary_change("ascension_core", "qubo_ascension_optimization", {"energy": result.energy})
+        return summary
+
+    def run_sisyphos_simulation(self, generations: int = 200, n_runs: int = 8) -> Dict[str, Any]:
+        """Nicht-persistente Oszillations-Simulation (bis 10k Generationen), siehe evolution/sisyphos_simulator.py."""
+        try:
+            from ..evolution.sisyphos_simulator import simulate
+        except Exception:
+            return {"status": "sisyphos_simulator nicht verfuegbar"}
+        result = simulate(generations=generations, n_runs=n_runs)
+        return {
+            "generations": result["generations"],
+            "n_runs": result["n_runs"],
+            "sustainable_fraction": result["sustainable_fraction"],
+            "avg_final_satisfaction": result["avg_final_satisfaction"],
+            "avg_reversal_count": result["avg_reversal_count"],
+        }
+
+    # ------------------------------------------------------------------
     # Status + Coevolution
     # ------------------------------------------------------------------
 
@@ -129,6 +225,10 @@ class AscensionCore:
             "sisyphos_available": self.sisyphos is not None,
             "persistent_sisyphos_available": self.persistent_sisyphos is not None,
             "evolution_engine_available": self.evolution_engine is not None,
+            "stage9_tracker_available": self.stage9_tracker is not None,
+            "psycholyse_logger_available": self.psycholyse_logger is not None,
+            "oscillation_visualizer_available": self.oscillation_visualizer is not None,
+            "qubo_ascension_optimizer_available": QUBOAscensionOptimizer is not None,
         }
 
         if self.sisyphos:
@@ -139,6 +239,9 @@ class AscensionCore:
 
         if self.cec:
             status["cec_status"] = self.cec.get_status()
+
+        if self.stage9_tracker:
+            status["stage9"] = self.get_stage9_status()
 
         return status
 
