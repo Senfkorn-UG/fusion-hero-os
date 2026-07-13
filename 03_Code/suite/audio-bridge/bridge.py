@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env python3
+#!/usr/bin/env python3
 """
 PC to Phone Audio Bridge with Automatic Latency Compensation
 - Streams PC system audio over UDP (raw PCM for low latency).

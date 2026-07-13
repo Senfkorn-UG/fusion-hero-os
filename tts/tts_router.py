@@ -12,12 +12,23 @@ Part of the Master Core / Intent Bus architecture.
 """
 
 import asyncio
+import os
+import shutil
 from typing import Optional, Dict, Any, Callable, List
 from dataclasses import dataclass, field
 from enum import Enum
 import logging
 
 logger = logging.getLogger("fusion_hero_os.tts")
+
+
+class TTSBackendUnavailableError(RuntimeError):
+    """Raised when a backend has no real inference path configured.
+
+    Fail-closed by design (matches the repo's Code-Honesty convention, see
+    docs/01_vision/V8_STATUS_REPORT.md): we never return fake audio bytes
+    silently. Callers must handle this explicitly.
+    """
 
 
 class VoiceProfile(str, Enum):
@@ -130,10 +141,53 @@ class TTSRouter:
     # ==================== BACKEND PLACEHOLDERS ====================
 
     async def _piper_local_backend(self, request: TTSRequest) -> bytes:
+        """Real Piper inference via subprocess, fail-closed if not configured.
+
+        Configure with:
+          PIPER_BINARY               path/name of the piper executable (default: "piper")
+          PIPER_MODEL_<PROFILE>      per-voice-profile .onnx model path, e.g.
+                                      PIPER_MODEL_HEROIC_NARRATOR=/models/heroic.onnx
+          PIPER_MODEL_PATH           fallback model path used for any profile
+
+        Without a real binary + model, this raises TTSBackendUnavailableError
+        instead of returning fake audio bytes.
+        """
         logger.info(f"[TTS][Piper] Synthesizing for {request.agent_id} | speed={request.speed}")
-        # TODO: Integrate actual Piper inference here
-        await asyncio.sleep(0.05)  # simulate generation time
-        return b"PIPER_FAKE_AUDIO_DATA"
+
+        piper_bin = shutil.which(os.environ.get("PIPER_BINARY", "piper"))
+        profile_env = f"PIPER_MODEL_{request.voice_profile.value.upper()}"
+        model_path = os.environ.get(profile_env) or os.environ.get("PIPER_MODEL_PATH", "")
+
+        if not piper_bin or not model_path or not os.path.isfile(model_path):
+            logger.warning(
+                "[TTS][Piper] Kein echtes Piper-Binary/Modell konfiguriert "
+                f"(PIPER_BINARY={piper_bin!r}, {profile_env} oder PIPER_MODEL_PATH={model_path!r}). "
+                "Fail-closed statt Fake-Audio."
+            )
+            raise TTSBackendUnavailableError(
+                "piper_local backend requires a real 'piper' binary on PATH (or PIPER_BINARY) "
+                f"and a voice model ({profile_env} or PIPER_MODEL_PATH)."
+            )
+
+        try:
+            proc = await asyncio.create_subprocess_exec(
+                piper_bin,
+                "--model", model_path,
+                "--output-raw",
+                "--length_scale", str(1.0 / max(request.speed, 0.1)),
+                stdin=asyncio.subprocess.PIPE,
+                stdout=asyncio.subprocess.PIPE,
+                stderr=asyncio.subprocess.PIPE,
+            )
+            stdout, stderr = await proc.communicate(input=request.text.encode("utf-8"))
+            if proc.returncode != 0:
+                raise TTSBackendUnavailableError(
+                    f"piper exited with code {proc.returncode}: "
+                    f"{stderr.decode('utf-8', errors='ignore')[:200]}"
+                )
+            return stdout
+        except FileNotFoundError as e:
+            raise TTSBackendUnavailableError(str(e)) from e
 
     async def _coqui_xtts_backend(self, request: TTSRequest) -> bytes:
         logger.info(f"[TTS][Coqui] Synthesizing for {request.agent_id}")

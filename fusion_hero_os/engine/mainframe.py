@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-HEROIC CORE MAINFRAME — INTEGRAL VERSION (v5.25)
-================================================
+HEROIC CORE MAINFRAME — INTEGRAL VERSION (v9.1, Ascension-Integrated)
+=====================================================================
 Zusammenführung von:
   1. High-Performance Solver Engine (SA-Kernel via Numba/NumPy)
   2. ClassicalBackend mit Pre-/Post-Solve-Audit-Hooks (hier definiert)
@@ -12,6 +12,13 @@ Zusammenführung von:
          bewertet via parallel_anneal (Fitness = -energy), elitär & monoton.
   4. AuditAgent-Gateway; "EudaimoniaGuard" = einfache Grenzwertprüfung der
      Matrix/Energie (NaN/Inf + Betragsschwellen), keine inhaltliche Garantie.
+  5. Ascension-Integration (v9.1): Mode-Support (heroic/ascension) +
+     optionale Anbindung des Inside-Out GenerationalEvolutionEngine.
+  6. Rust-Backend-Helper (get_rust_backend) mit sauberem Fallback auf Numba.
+
+Wiederhergestellt in der v8.3-Konsolidierung: Diese Datei war durch
+Delta-Fragmente (793d540, 1942af0) ersetzt worden; Basis ist der letzte
+vollstaendige Stand (9aafc22) plus die dort gemeinten Erweiterungen.
 """
 
 import time
@@ -20,6 +27,13 @@ import numpy as np
 from concurrent.futures import ThreadPoolExecutor
 from numba import jit
 from abc import ABC, abstractmethod
+from typing import Any, Dict
+
+# Ascension Core Import (v9.1, falls vorhanden)
+try:
+    from ascension_os.evolution.generational_engine import GenerationalEvolutionEngine
+except ImportError:
+    GenerationalEvolutionEngine = None
 
 # Globaler Zufallsgenerator für deterministische Heuristiken
 rng = np.random.default_rng(7)
@@ -35,6 +49,49 @@ def _get_pool(workers):
         ex = ThreadPoolExecutor(max_workers=workers, thread_name_prefix="anneal")
         _POOL[workers] = ex
     return ex
+
+
+# =====================================================================
+# RUST BACKEND INTEGRATION (v9.1+)
+# =====================================================================
+
+_RUST_BACKEND = None
+_RUST_CHECKED = False
+
+
+def _load_rust_backend():
+    """Versucht, das Rust-Backend zu laden. Gibt (module, available) zurück.
+
+    Kandidaten in Prioritätsreihenfolge: Paket-Pfad (kanonisch), Legacy
+    top-level Layout, direkter Import (als Skript aus engine/ gestartet).
+    Das Ergebnis wird gecacht, damit wiederholte Aufrufe billig sind.
+    """
+    global _RUST_BACKEND, _RUST_CHECKED
+    if _RUST_CHECKED:
+        return _RUST_BACKEND, _RUST_BACKEND is not None
+
+    _RUST_CHECKED = True
+    candidates = [
+        "fusion_hero_os.engine.rust_backend",
+        "engine.rust_backend",
+        "rust_backend",
+    ]
+    for name in candidates:
+        try:
+            mod = __import__(name, fromlist=["AVAILABLE", "parallel_anneal_rust"])
+            if getattr(mod, "AVAILABLE", False):
+                _RUST_BACKEND = mod
+                print("[RUST] High-performance Rust backend loaded successfully.")
+                return _RUST_BACKEND, True
+        except Exception:
+            continue
+    return None, False
+
+
+def get_rust_backend():
+    """Public helper: Rust-Backend-Modul, falls gebaut und importierbar."""
+    backend, available = _load_rust_backend()
+    return backend if available else None
 
 # =====================================================================
 # STUFE 1: DOMÄNEN-ENTITÄTEN (domain/*.py)
@@ -221,18 +278,8 @@ def parallel_anneal(Q, steps=8000, T0=2.0, n_restarts=None, n_samples=60,
     best_restart, n_restarts, workers, runtime_seconds (+ ggf. backend).
     """
     if backend in ("rust", "auto"):
-        rb = None
-        try:
-            from fusion_hero_os.engine import rust_backend as rb  # Paket-Pfad (kanonisch)
-        except Exception:  # noqa: BLE001
-            try:
-                from engine import rust_backend as rb  # Legacy top-level Layout
-            except Exception:  # noqa: BLE001
-                try:
-                    import rust_backend as rb           # als Skript aus engine/ gestartet
-                except Exception:  # noqa: BLE001
-                    rb = None
-        if rb is not None and getattr(rb, "AVAILABLE", False):
+        rb = get_rust_backend()
+        if rb is not None:
             return rb.parallel_anneal_rust(Q, steps=steps, T0=T0, n_restarts=n_restarts,
                                            n_samples=n_samples, base_seed=base_seed)
         if backend == "rust":
@@ -520,8 +567,10 @@ class ExecutableAuditAgent:
         self.execute_hook = None
 
 class QUBOIntegrationCoreModule:
-    """Zentrales Integrationsmodul zur autonomen Verwaltung des Solvers."""
-    def __init__(self):
+    """Zentrales Integrationsmodul zur autonomen Verwaltung des Solvers
+    (Ascension-Integrated v9.1: Mode-Support + Inside-Out Evolution)."""
+    def __init__(self, mode: str = "heroic"):
+        self.mode = mode.upper()  # HEROIC oder ASCENSION
         self.self_modify = SelfModifyCoreModule()
         self.evolution = GenerationalEvolutionProtocolCoreModule()
         self.meta_analyzer = CriticalMetaAnalysisCoreModule()
@@ -531,6 +580,11 @@ class QUBOIntegrationCoreModule:
         # gesicherter Solve nicht versehentlich eine ganze (μ+λ)-Generation auslöst.
         self._run_index = 0
 
+        # Neuer GenerationalEvolutionEngine (Ascension-Track, optional)
+        self.ascension_evolution = (
+            GenerationalEvolutionEngine() if GenerationalEvolutionEngine else None
+        )
+
         # Injektion der Abhängigkeiten in das Backend
         self.backend = ClassicalBackend(
             audit_agent=self.audit_agent,
@@ -538,6 +592,32 @@ class QUBOIntegrationCoreModule:
         )
 
         self._interlock_core_hooks()
+
+    def get_ascension_state(self) -> Dict[str, Any]:
+        """State-Snapshot mit Ascension-relevanten Eigenschaften.
+
+        Die Werte sind heuristische Selbstauskunft (kein gemessener Zustand);
+        eine reale Sisyphos-Anbindung steht noch aus.
+        """
+        return {
+            "mode": self.mode,
+            "sisyphos_sustainable": True,
+            "fail_closed_active": True,
+            "ascension_mode_active": self.mode == "ASCENSION",
+            "cross_layer_integration": 0.75 if self.mode == "ASCENSION" else 0.6,
+        }
+
+    def run_ascension_generation(self, generations: int = 5) -> Dict[str, Any]:
+        """Führt Generationen mit dem Inside-Out Engine aus (wenn verfügbar)."""
+        if not self.ascension_evolution:
+            return {"status": "GenerationalEvolutionEngine nicht verfügbar"}
+
+        state = self.get_ascension_state()
+        results = self.ascension_evolution.run_generations(state, generations=generations)
+        return {
+            "generations_run": len(results),
+            "summary": self.ascension_evolution.get_evolution_summary(),
+        }
 
     def _interlock_core_hooks(self):
         """Koppelt die Systemüberwachung an das Modifikationsprotokoll."""

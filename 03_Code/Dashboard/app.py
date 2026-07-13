@@ -1321,6 +1321,20 @@ async def api_supabase_settings_pull():
     return await asyncio.to_thread(supa_store.pull_settings_from_cloud, True)
 
 
+# === VR / Highest Layer routes ===
+try:
+    from vr_routes import router as _vr_router
+    app.include_router(_vr_router)
+except Exception as _vr_err:
+    print(f"[API] VR routes note: {_vr_err}")
+
+# === Dependency Atlas (Fraktal-Layer-Architektur) ===
+try:
+    from architecture_routes import router as _arch_router
+    app.include_router(_arch_router)
+except Exception as _arch_err:
+    print(f"[API] Architecture routes note: {_arch_err}")
+
 # === Alle Module + fehlende Endpunkte freigeben ===
 try:
     from api_extensions import router as _extensions_router

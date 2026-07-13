@@ -21,18 +21,31 @@ from __future__ import annotations
 
 from typing import Any, Dict, Optional
 
+# Getrennte try-Bloecke: schlaegt EIN Import fehl (z.B. zirkulaer waehrend
+# des Bootstraps), bleiben die uebrigen Namen trotzdem verfuegbar.
 try:
     from .heroic_core_orchestrator import MasterSeed, QuadCoreBridge
-    from .universal_llm_router import get_unified_llm_core, UnifiedHeroicLLMCore
-    from .psycholysis_trigger import PsycholysisTrigger
-    from .universal_llm_router import SisyphosCycle, FailClosed   # aus v8.7
 except Exception:
     MasterSeed = None
     QuadCoreBridge = None
+
+try:
+    from .universal_llm_router import (
+        get_unified_llm_core,
+        UnifiedHeroicLLMCore,
+        SisyphosCycle,
+        FailClosed,
+    )
+except Exception:
+    get_unified_llm_core = None
     UnifiedHeroicLLMCore = None
-    PsycholysisTrigger = None
     SisyphosCycle = None
     FailClosed = None
+
+try:
+    from .psycholysis_trigger import PsycholysisTrigger
+except Exception:
+    PsycholysisTrigger = None
 
 
 class HeroicCore:
@@ -47,7 +60,10 @@ class HeroicCore:
     def __init__(self, quad_core: Optional[QuadCoreBridge] = None):
         self.quad_core = quad_core
         self.masterseed: Optional[MasterSeed] = getattr(quad_core, "seed", None) if quad_core else None
-        self.llm: Optional[UnifiedHeroicLLMCore] = get_unified_llm_core(heroic_core=quad_core) if quad_core else None
+        self.llm: Optional[UnifiedHeroicLLMCore] = (
+            get_unified_llm_core(heroic_core=quad_core)
+            if (quad_core and get_unified_llm_core) else None
+        )
         self.sisyphos: Optional[SisyphosCycle] = getattr(self.llm, "sisyphos", None) if self.llm else None
         self.psycholysis: Optional[PsycholysisTrigger] = getattr(self.llm, "psycholysis", None) if self.llm else None
         self.fail_closed = FailClosed if FailClosed else None

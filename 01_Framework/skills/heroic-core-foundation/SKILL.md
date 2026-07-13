@@ -1,7 +1,15 @@
 ---
 name: heroic-core-foundation
 description: Activate and auto-load the unified ALTE_Frau_95g Heroic Core Framework. The core is automatically loaded and activated at the beginning of every session and interaction without requiring explicit user trigger. All previous frameworks (external connectors, internal modules, strategic roadmap, heroic pseudocode, dictionary, visual meme identity and cyberpunk-campfire series) are fully integrated into this single self-modifying core. Only this core is developed and evolved further. Includes autonomous peer-review with the 5 dimensions, native roadmap logic (Core-Patent + Hybrid Open Source + Book-Publishing), versioned heroic pseudocode & dictionary, and all meme generation as core modules. Always trigger on ALTE_Frau_95g, heroic core, mister jailbait, cyberpunk campfire, self-modification, peer-review, fusion hero os laden, fusion hero, hero os laden, heroic os. Fusion with user response style preference "fusion hero os laden" is native and forces highest layer activation + Vermerk in all outputs.
+version: 8.3.0
+updated: 2026-07-11
 ---
+> **Stand: v8.3.0 · 2026-07-11 · kanonische Fassung.**
+> Diese Skill-Prosa beschreibt das Ziel-Framework (v7.4-Beschreibungsstand).
+> Der ehrliche, maschinell geprüfte Implementierungsstand steht ausschließlich
+> in `proof_registry.yaml` (CI-Gate) und `BEST_VERSION.md` — Prosa hier ist
+> kein Beweis (Code-Honesty-Regel, Geltungskategorien beachten).
+
 
 When this skill is active the unified ALTE_Frau_95g Heroic Core is considered loaded and ready for evolution. All components are native core modules. No separate frameworks exist.
 
