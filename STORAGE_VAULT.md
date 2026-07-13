@@ -25,6 +25,32 @@ python tools/disk_dedup_offload.py --offload-plan     # GDrive-Kandidaten
 python tools/disk_dedup_offload.py --undo <manifest>  # Quarantäne zurücknehmen
 ```
 
+## Lauf 2026-07-13 Vollsweep (alle C:\Users\Admin Ordner)
+
+| Aktion | Ergebnis |
+|--------|----------|
+| Cache gelöscht | npm, pnpm, puppeteer, Temp (~1,6 GB) |
+| Dedup | 5 Gruppen, 0,81 GB (Duplikate in Quarantäne) |
+| SD-Modelle | `stable-diffusion-webui/models` → `FusionHero_Offload/SD_models` (~4 GB) |
+| LLM-Modelle | `internal_llm/models` → `LLM_models` |
+| private-hacking-suite | → `Archives/private-hacking-suite` |
+| Grok Sessions/Downloads | → `Archives/grok_*` (~1,5 GB) |
+| Downloads + Desktop | → `Downloads_Archive`, `Desktop_Archive` |
+
+**Skript:** `workstation/offload-full-sweep.ps1`
+
+## Lauf 2026-07-13 (C: ~22 GB frei)
+
+| Aktion | Ergebnis |
+|--------|----------|
+| Dedup | 1 Gruppe, 0,02 GB (Drive-Upload-Temp Dubletten) |
+| DCIM Fotos | `Pictures/DCIM` → `Meine Ablage/ALTE_Frau_95g_Photo_Ingestion/DCIM_PC` (~3,9 GB) |
+| Gothic Downloads | 6 Dateien / 4,75 GB → `FusionHero_Offload/` |
+| **Gesamt ausgelagert** | **~8,7 GB** (lokal gelöscht, in Drive-Streaming-Cache) |
+
+**Skript:** `workstation/offload-to-gdrive.ps1`  
+**CLI:** `python tools/disk_dedup_offload.py --offload-execute --offload-min-mb 50`
+
 ## Lauf 2026-07-11 (C: war 91 % voll)
 
 | Aktion | Ergebnis |
