@@ -53,7 +53,20 @@ role_assignments:
     magicdns: host.example.ts.net
     platform: linux
     status: offline
-    note: "Früherer Linux-Knoten — Mainframe-Rolle auf Windows-Desktop übertragen (2026-07-12)"
+    tailscale_status: "offline >2d — nicht mehr im aktiven Mesh"
+    note: "Frueherer Linux-Knoten — Mainframe-Rolle auf Windows-Desktop uebertragen (2026-07-12)"
+    action: none
+
+  wsl:
+    node_id: wsl-ubuntu
+    role: dev-leaf
+    platform: linux
+    hostname: wsl-ubuntu
+    status: login_required
+    login_required: user@example.com
+    setup_script: workstation/tailscale_wsl_setup.sh
+    login_url_file: "~/.fusion/tailscale-wsl-login.url"
+    note: "Entwicklungs-Leaf — kein Mainframe; Tailscale optional fuer Mesh-Checks"
 
 # Speicher — Google Drive als Standard fuer nicht-operative Daten
 storage:
