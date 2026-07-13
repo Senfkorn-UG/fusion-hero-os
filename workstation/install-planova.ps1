@@ -245,18 +245,11 @@ function Install-Artifact([string]$Artifact) {
     } elseif ($Artifact -like "*setup*.exe" -or $Artifact -like "*planova*.exe") {
         if ($Artifact -match "setup") {
             Write-Host "  NSIS Setup: $Artifact"
-            Start-Process $Artifact -ArgumentList "/S" -Wait -NoNewWindow
+            Start-Process -FilePath $Artifact -ArgumentList @("/S", "/D=$InstallDir") -Wait -NoNewWindow
             Start-Sleep -Seconds 2
-            $pf = @(
-                (Join-Path ${env:ProgramFiles} "Planova\planova.exe"),
-                (Join-Path ${env:ProgramFiles(x86)} "Planova\planova.exe"),
-                (Join-Path $env:LOCALAPPDATA "Planova\planova.exe")
-            )
-            foreach ($pfExe in $pf) {
-                if (Test-Path $pfExe) {
-                    Copy-Item $pfExe (Join-Path $InstallDir "planova.exe") -Force
-                    break
-                }
+            $appExe = Join-Path $InstallDir "app.exe"
+            if (Test-Path $appExe) {
+                Copy-Item $appExe (Join-Path $InstallDir "planova.exe") -Force
             }
         } else {
             Copy-Item $Artifact (Join-Path $InstallDir "planova.exe") -Force
