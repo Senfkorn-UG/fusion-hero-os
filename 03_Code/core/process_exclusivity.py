@@ -20,8 +20,12 @@ from pathlib import Path
 from typing import Any, Dict, Iterator, List, Optional
 
 _registry_lock = threading.Lock()
-_thread_locks: Dict[str, threading.Lock] = {}
+_thread_locks: Dict[str, threading.RLock] = {}
 _held_keys: set[str] = set()
+# Reentranz-Tiefe pro Key: derselbe Thread darf denselben Key verschachtelt
+# sperren (z.B. apply_command -> finalize -> push_room_to_server), ohne sich
+# selbst auszusperren. Erst der aeusserste release() gibt Datei-Lock + Key frei.
+_hold_depth: Dict[str, int] = {}
 
 
 def enabled() -> bool:
@@ -104,10 +108,10 @@ def cleanup_stale() -> int:
     return removed
 
 
-def _thread_lock(key: str) -> threading.Lock:
+def _thread_lock(key: str) -> threading.RLock:
     with _registry_lock:
         if key not in _thread_locks:
-            _thread_locks[key] = threading.Lock()
+            _thread_locks[key] = threading.RLock()
         return _thread_locks[key]
 
 
@@ -216,10 +220,19 @@ def try_acquire(
 
     while True:
         if mutex.acquire(blocking=blocking or timeout_sec > 0):
+            # Reentranter Fall: dieser Thread haelt den Key bereits (RLock
+            # liess uns durch und die Tiefe ist > 0) -> nur Tiefe erhoehen,
+            # Datei-Lock gehoert uns schon.
+            with _registry_lock:
+                depth = _hold_depth.get(norm, 0)
+                if depth > 0:
+                    _hold_depth[norm] = depth + 1
+                    return AcquireResult(ok=True, key=norm, reason="reentrant")
             file_result = _try_file_acquire(norm, owner, ttl)
             if file_result.ok:
                 with _registry_lock:
                     _held_keys.add(norm)
+                    _hold_depth[norm] = 1
                 return file_result
             mutex.release()
             result = file_result
@@ -238,16 +251,34 @@ def release(key: str) -> bool:
     if not enabled():
         with _registry_lock:
             _held_keys.discard(norm)
+            _hold_depth.pop(norm, None)
         return True
 
     with _registry_lock:
         if norm not in _held_keys:
             return False
-        _held_keys.discard(norm)
+        depth = _hold_depth.get(norm, 1)
+        if depth > 1:
+            # Verschachtelter (reentranter) release: nur Tiefe + RLock-Zaehler
+            # verringern, Datei-Lock bleibt bestehen.
+            _hold_depth[norm] = depth - 1
+            nested = True
+        else:
+            _held_keys.discard(norm)
+            _hold_depth.pop(norm, None)
+            nested = False
+
+    mutex = _thread_locks.get(norm)
+    if nested:
+        if mutex:
+            try:
+                mutex.release()
+            except RuntimeError:
+                pass
+        return True
 
     _release_file(norm)
-    mutex = _thread_locks.get(norm)
-    if mutex and mutex.locked():
+    if mutex:
         try:
             mutex.release()
         except RuntimeError:
