@@ -108,7 +108,7 @@ function Install-MingwDirect {
     Write-Status "deps" "MinGW (WinLibs ZIP) wird heruntergeladen..."
     $zip = Join-Path $env:TEMP "winlibs-mingw.zip"
     $url = "https://github.com/brechtsanders/winlibs_mingw/releases/download/16.1.0posix-14.0.0-ucrt-r2/winlibs-x86_64-posix-seh-gcc-16.1.0-mingw-w64ucrt-14.0.0-r2.zip"
-  Write-Host "  Download: WinLibs mingw64..." -ForegroundColor DarkGray
+    Write-Host "  Download: WinLibs mingw64..." -ForegroundColor DarkGray
     Invoke-WebRequest -Uri $url -OutFile $zip -UseBasicParsing
     Write-Host "  Extrahieren nach $MingwRoot ..." -ForegroundColor DarkGray
     $stage = Join-Path $env:TEMP "winlibs-stage"
@@ -190,12 +190,23 @@ function Build-Planova {
     Write-Status "build" "pnpm tauri build laeuft..."
     Push-Location $CloneDir
     try {
-        $env:Path = "$(Join-Path $MingwRoot 'bin');$env:USERPROFILE\.cargo\bin;$env:Path"
+        $mingwBin = Join-Path $MingwRoot "bin"
+        $env:Path = "$mingwBin;$env:USERPROFILE\.cargo\bin;$env:Path"
+        $env:CC = "gcc"
+        $env:CXX = "g++"
+        $env:CARGO_BUILD_JOBS = "1"
+        $env:RUST_MIN_STACK = "8388608"
+
+        $npmrc = Join-Path $CloneDir ".npmrc"
+        "allow-builds.msw=true`n" | Set-Content $npmrc -Encoding ASCII -NoNewline
+
         pnpm install --config.allow-builds.msw=true 2>&1 | ForEach-Object { Write-Host $_ }
-        if ($LASTEXITCODE -ne 0) {
-            pnpm install 2>&1 | ForEach-Object { Write-Host $_ }
-        }
         pnpm add -D @tauri-apps/cli@^2 2>&1 | ForEach-Object { Write-Host $_ }
+
+        Push-Location (Join-Path $CloneDir "src-tauri")
+        cargo clean 2>&1 | ForEach-Object { Write-Host $_ }
+        Pop-Location
+
         pnpm tauri build 2>&1 | ForEach-Object { Write-Host $_ }
         if ($LASTEXITCODE -ne 0) { throw "pnpm tauri build fehlgeschlagen (exit $LASTEXITCODE)" }
     } finally {
