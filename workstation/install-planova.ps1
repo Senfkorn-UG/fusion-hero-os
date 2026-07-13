@@ -5,6 +5,8 @@ param(
 )
 $ErrorActionPreference = "Stop"
 . (Join-Path $PSScriptRoot "load-env.ps1")
+# Git schreibt Fortschritt auf stderr — nicht als Fehler werten
+$ErrorActionPreference = "Continue"
 
 $CloneDir   = Join-Path $env:USERPROFILE "src\planova"
 $InstallDir = Join-Path $env:USERPROFILE "Programs\planova"
@@ -66,10 +68,10 @@ function Ensure-Clone {
     }
     if (Test-Path (Join-Path $CloneDir ".git")) {
         Push-Location $CloneDir
-        git pull --ff-only 2>&1 | Write-Host
+        git pull --ff-only 2>&1 | ForEach-Object { Write-Host $_ }
         Pop-Location
     } else {
-        git clone $RepoUrl $CloneDir 2>&1 | Write-Host
+        git clone $RepoUrl $CloneDir 2>&1 | ForEach-Object { Write-Host $_ }
     }
 }
 
@@ -77,8 +79,9 @@ function Build-Planova {
     Write-Step "Planova bauen (pnpm tauri build - kann 10-20 Min. dauern)"
     Push-Location $CloneDir
     try {
-        pnpm install 2>&1 | Write-Host
-        pnpm tauri build 2>&1 | Write-Host
+        pnpm install 2>&1 | ForEach-Object { Write-Host $_ }
+        pnpm add -D @tauri-apps/cli@^2 2>&1 | ForEach-Object { Write-Host $_ }
+        pnpm tauri build 2>&1 | ForEach-Object { Write-Host $_ }
     } finally {
         Pop-Location
     }
