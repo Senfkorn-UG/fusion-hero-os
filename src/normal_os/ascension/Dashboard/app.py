@@ -1341,3 +1341,10 @@ try:
     app.include_router(_extensions_router)
 except Exception as _ext_err:
     print(f"[API] Extensions note: {_ext_err}")
+
+# === AscensionOS v9.5/v9.6 (Stage9, Sisyphos-Oszillation, Psycholyse, QUBO, Harmonisierung, Geisterjagd) ===
+try:
+    from ascension_v9_routes import router as _ascension_v9_router
+    app.include_router(_ascension_v9_router)
+except Exception as _asc_v9_err:
+    print(f"[API] AscensionOS v9 routes note: {_asc_v9_err}")
