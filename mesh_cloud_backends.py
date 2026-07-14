@@ -28,7 +28,7 @@ GOOGLE_SERVER = {
     "gce_project": os.environ.get("FUSION_GCE_PROJECT", "project-bbf0e6db-52e1-462b-8e3"),
     "gce_zone": os.environ.get("FUSION_GCE_ZONE", "europe-west3-a"),
     "gce_external_ip": os.environ.get("FUSION_GCE_EXTERNAL_IP", "34.40.58.207"),
-    "tailscale_ip": os.environ.get("FUSION_GCE_TAILSCALE_IP", ""),
+    "tailscale_ip": os.environ.get("FUSION_GCE_TAILSCALE_IP", "100.103.188.54"),
     "magicdns": os.environ.get(
         "FUSION_GCE_MAGICDNS",
         f"{os.environ.get('FUSION_GCE_MESH_HOSTNAME', 'fusion-mesh-exit')}.tail391adb.ts.net",
