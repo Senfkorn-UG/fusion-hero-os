@@ -1,5 +1,5 @@
 # Senfkorn UG — Businessplan-Anker (maschinenlesbar, an Energie-/Kosten-Daemons gekoppelt)
-businessplan_version: "1.0"
+businessplan_version: "1.1"
 company:
   name: Senfkorn UG
   legal_form: UG (haftungsbeschränkt)
@@ -26,7 +26,19 @@ energy_model:
     1 FEU ≈ 0.01 EUR Infrastrukturlast zum Messzeitpunkt.
 
 subcontractor_api_pricing:
-  margin_pct: 0.35
+  margin_pct: 1.50
+  margin_pct_floor: 0.35
+  competitive_pricing:
+    enabled: true
+    margin_pct: 1.50
+    description: |
+      150% Marge auf Realkosten (Preis = Kosten × 2,5), solange der Tier-Preis
+      unter der Markt-Decke bleibt. Sonst Marge dynamisch bis zur Decke oder Floor 35%.
+    market_ceiling_eur_per_1m_tokens:
+      inference_standard: 3.00
+      inference_gpu: 8.00
+      qubo_enterprise: 60.00
+      mesh_ops: 5.00
   minimum_price_eur_per_1k_tokens: 0.002
   billing_unit: per_1000_tokens
   tiers:
@@ -52,7 +64,7 @@ revenue_model:
     - api_tokens_subcontractors
     - managed_mesh_hosting
     - qubo_solve_packages
-  target_gross_margin_pct: 0.40
+  target_gross_margin_pct: 1.50
 
 financial_targets:
   monthly_infra_ceiling_eur: 150

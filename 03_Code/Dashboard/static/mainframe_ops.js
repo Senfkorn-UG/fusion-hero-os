@@ -60,19 +60,22 @@
         <td class="py-2 pr-3 text-teal-300/90">${t.label || id}</td>
         <td class="py-2 pr-3 text-right text-lime-300">${fmtEur(t.api_price_eur_per_1k_tokens)}</td>
         <td class="py-2 pr-3 text-right text-slate-400">${fmtEur(t.real_cost_eur_per_1k_tokens)}</td>
-        <td class="py-2 text-right text-slate-500">${(t.tokens_per_hour_capacity || 0).toLocaleString('de-DE')}</td>
+        <td class="py-2 pr-3 text-right ${t.competitive ? 'text-emerald-400' : 'text-amber-400'}">${((t.margin_pct || 0) * 100).toFixed(0)}%</td>
+        <td class="py-2 text-right text-slate-500">${t.competitive ? '✓' : 'cap'}</td>
       </tr>`).join('');
+    const mode = pricing?.margin_pct_applied_mode === 'competitive_150' ? '150% kompetitiv' : 'gemischt (Marktdecke)';
     el.innerHTML = `
       <table class="w-full">
         <thead><tr class="text-slate-500 border-b border-slate-700">
           <th class="text-left py-1">Tier</th>
           <th class="text-right py-1">API/1k</th>
           <th class="text-right py-1">Real/1k</th>
-          <th class="text-right py-1">Tok/h</th>
+          <th class="text-right py-1">Marge</th>
+          <th class="text-right py-1">OK</th>
         </tr></thead>
-        <tbody>${rows || '<tr><td colspan="4" class="text-slate-500 py-4">Keine Preisdaten</td></tr>'}</tbody>
+        <tbody>${rows || '<tr><td colspan="5" class="text-slate-500 py-4">Keine Preisdaten</td></tr>'}</tbody>
       </table>
-      <p class="text-slate-600 mt-2">Basis EUR/h: ${fmtEur(pricing?.eur_hour_basis)} · Marge ${((pricing?.margin_pct || 0) * 100).toFixed(0)}%</p>`;
+      <p class="text-slate-600 mt-2">Basis EUR/h: ${fmtEur(pricing?.eur_hour_basis)} · Ziel ${((pricing?.margin_pct || 0) * 100).toFixed(0)}% · ${mode}</p>`;
     const ver = document.getElementById('bp-version');
     if (ver) ver.textContent = bp?.businessplan_version || pricing?.company || '—';
   }

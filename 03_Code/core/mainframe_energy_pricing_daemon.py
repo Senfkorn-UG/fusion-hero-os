@@ -79,6 +79,37 @@ class MainframeEnergyPricingDaemon:
         except Exception:
             return {}
 
+    def _resolve_tier_margin(
+        self,
+        cost_per_1k: float,
+        tier_id: str,
+        sub: Dict[str, Any],
+    ) -> tuple[float, bool, Optional[float]]:
+        """Return (margin_pct, competitive, market_ceiling_1k)."""
+        comp = sub.get("competitive_pricing") or {}
+        target = float(comp.get("margin_pct", sub.get("margin_pct", 1.50)))
+        floor = float(sub.get("margin_pct_floor", 0.35))
+        ceilings_1m = comp.get("market_ceiling_eur_per_1m_tokens") or {}
+        ceiling_1m = ceilings_1m.get(tier_id)
+        ceiling_1k = float(ceiling_1m) / 1000.0 if ceiling_1m is not None else None
+
+        if not comp.get("enabled", True):
+            return float(sub.get("margin_pct", target)), True, ceiling_1k
+
+        price_target = cost_per_1k * (1 + target)
+        if ceiling_1k is None or price_target <= ceiling_1k:
+            return target, True, ceiling_1k
+
+        if cost_per_1k <= 0:
+            return target, True, ceiling_1k
+
+        margin_at_ceiling = (ceiling_1k / cost_per_1k) - 1.0
+        if margin_at_ceiling >= target:
+            return target, True, ceiling_1k
+        if margin_at_ceiling >= floor:
+            return round(margin_at_ceiling, 4), False, ceiling_1k
+        return floor, False, ceiling_1k
+
     def _compute_subcontractor_pricing(
         self,
         eur_hour: float,
@@ -86,16 +117,24 @@ class MainframeEnergyPricingDaemon:
     ) -> Dict[str, Any]:
         model = bp.get("energy_model", {})
         sub = bp.get("subcontractor_api_pricing", {})
-        margin = float(sub.get("margin_pct", 0.35))
+        comp = sub.get("competitive_pricing") or {}
+        target_margin = float(comp.get("margin_pct", sub.get("margin_pct", 1.50)))
         min_p1k = float(sub.get("minimum_price_eur_per_1k_tokens", 0.002))
         feu_per_eur = float(model.get("feu_per_eur_real", 100))
 
         tiers_out: Dict[str, Any] = {}
+        competitive_count = 0
         for tier_id, tier in (sub.get("tiers") or {}).items():
             cap = max(1, int(tier.get("tokens_per_hour_capacity", 100000)))
             cost_per_token = eur_hour / cap
             cost_per_1k = cost_per_token * 1000
-            price_per_1k = max(min_p1k, round(cost_per_1k * (1 + margin), 6))
+            margin, is_competitive, ceiling_1k = self._resolve_tier_margin(cost_per_1k, tier_id, sub)
+            if is_competitive:
+                competitive_count += 1
+            raw_price = cost_per_1k * (1 + margin)
+            if ceiling_1k is not None:
+                raw_price = min(raw_price, ceiling_1k)
+            price_per_1k = max(min_p1k, round(raw_price, 6))
             price_per_1m = round(price_per_1k * 1000, 4)
             feu_per_1k = round((price_per_1k / max(eur_hour, 1e-9)) * feu_per_eur * eur_hour / 1000, 4)
             tiers_out[tier_id] = {
@@ -107,20 +146,27 @@ class MainframeEnergyPricingDaemon:
                 "api_price_eur_per_1m_tokens": price_per_1m,
                 "feu_per_1k_tokens": feu_per_1k,
                 "margin_pct": margin,
+                "margin_pct_target": target_margin,
+                "competitive": is_competitive,
+                "market_ceiling_eur_per_1m_tokens": round(ceiling_1k * 1000, 4) if ceiling_1k else None,
                 "currency": "EUR",
                 "billing_unit": sub.get("billing_unit", "per_1000_tokens"),
             }
 
         default_tier = tiers_out.get("inference_standard") or next(iter(tiers_out.values()), {})
+        all_competitive = competitive_count == len(tiers_out) and len(tiers_out) > 0
         return {
             "company": bp.get("company", {}).get("name", "Senfkorn UG"),
-            "margin_pct": margin,
+            "margin_pct": target_margin,
+            "margin_pct_applied_mode": "competitive_150" if all_competitive else "mixed",
+            "competitive_pricing_enabled": bool(comp.get("enabled", True)),
+            "competitive_tiers": competitive_count,
             "eur_hour_basis": round(eur_hour, 6),
             "default_tier": "inference_standard",
             "headline_price_eur_per_1k_tokens": default_tier.get("api_price_eur_per_1k_tokens"),
             "headline_price_eur_per_1m_tokens": default_tier.get("api_price_eur_per_1m_tokens"),
             "tiers": tiers_out,
-            "formula": "price_1k = max(min, (eur_hour / tokens_per_hour_capacity * 1000) * (1 + margin))",
+            "formula": "price_1k = max(min, cost_1k * (1 + margin)); margin=150% wenn kompetitiv, sonst bis Marktdecke/Floor",
             "anchored_in": str(_BP_PATH),
         }
 
@@ -141,8 +187,13 @@ class MainframeEnergyPricingDaemon:
 
         subcontractor = self._compute_subcontractor_pricing(eur_hour, bp if bp.get("ok") else {
             "energy_model": em,
-            "subcontractor_api_pricing": {"margin_pct": 0.35, "minimum_price_eur_per_1k_tokens": 0.002,
-                "tiers": {"inference_standard": {"label": "Standard", "tokens_per_hour_capacity": 500000}}},
+            "subcontractor_api_pricing": {
+                "margin_pct": 1.50,
+                "margin_pct_floor": 0.35,
+                "competitive_pricing": {"enabled": True, "margin_pct": 1.50},
+                "minimum_price_eur_per_1k_tokens": 0.002,
+                "tiers": {"inference_standard": {"label": "Standard", "tokens_per_hour_capacity": 500000}},
+            },
             "company": {"name": "Senfkorn UG"},
         })
 
