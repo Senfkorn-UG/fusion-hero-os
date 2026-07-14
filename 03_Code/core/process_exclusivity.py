@@ -26,6 +26,7 @@ _held_keys: set[str] = set()
 # sperren (z.B. apply_command -> finalize -> push_room_to_server), ohne sich
 # selbst auszusperren. Erst der aeusserste release() gibt Datei-Lock + Key frei.
 _hold_depth: Dict[str, int] = {}
+_hold_thread: Dict[str, int] = {}
 
 
 def enabled() -> bool:
@@ -216,23 +217,23 @@ def try_acquire(
 
     ttl = default_ttl_sec() if ttl_sec is None else ttl_sec
     deadline = time.time() + max(0.0, timeout_sec)
+
+    with _registry_lock:
+        depth = _hold_depth.get(norm, 0)
+        if depth > 0 and _hold_thread.get(norm) == threading.get_ident():
+            _hold_depth[norm] = depth + 1
+            return AcquireResult(ok=True, key=norm, reason="reentrant")
+
     mutex = _thread_lock(norm)
 
     while True:
         if mutex.acquire(blocking=blocking or timeout_sec > 0):
-            # Reentranter Fall: dieser Thread haelt den Key bereits (RLock
-            # liess uns durch und die Tiefe ist > 0) -> nur Tiefe erhoehen,
-            # Datei-Lock gehoert uns schon.
-            with _registry_lock:
-                depth = _hold_depth.get(norm, 0)
-                if depth > 0:
-                    _hold_depth[norm] = depth + 1
-                    return AcquireResult(ok=True, key=norm, reason="reentrant")
             file_result = _try_file_acquire(norm, owner, ttl)
             if file_result.ok:
                 with _registry_lock:
                     _held_keys.add(norm)
                     _hold_depth[norm] = 1
+                    _hold_thread[norm] = threading.get_ident()
                 return file_result
             mutex.release()
             result = file_result
@@ -252,6 +253,7 @@ def release(key: str) -> bool:
         with _registry_lock:
             _held_keys.discard(norm)
             _hold_depth.pop(norm, None)
+            _hold_thread.pop(norm, None)
         return True
 
     with _registry_lock:
@@ -266,6 +268,7 @@ def release(key: str) -> bool:
         else:
             _held_keys.discard(norm)
             _hold_depth.pop(norm, None)
+            _hold_thread.pop(norm, None)
             nested = False
 
     mutex = _thread_locks.get(norm)
