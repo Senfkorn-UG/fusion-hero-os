@@ -102,27 +102,6 @@
                     "apply_script":  "workstation/apply-storage-policy.ps1",
                     "status_file":  "C:\\Users\\Admin\\.fusion\\storage-policy.status.json"
                 },
-    "interior_design":  {
-                            "app":  "planova",
-                            "label":  "Planova Inneneinrichter",
-                            "install_dir":  "C:\\Users\\Admin\\Programs\\planova",
-                            "executable":  "C:\\Users\\Admin\\Programs\\planova\\planova.exe",
-                            "source_repo":  "https://github.com/XUranus/planova.git",
-                            "install_script":  "C:\\Users\\Admin\\fusion-hero-os\\workstation\\install-planova.ps1",
-                            "features":  {
-                                             "free_local":  [
-                                                                "3d_viewer",
-                                                                "furniture_edit",
-                                                                "style_presets",
-                                                                "glb_export"
-                                                            ],
-                                             "byok_paid":  [
-                                                               "ai_floorplan_parse",
-                                                               "ai_render"
-                                                           ]
-                                         },
-                            "export_hint":  "GLB manuell nach 03_VR_Assets kopieren fuer VR-Viewer"
-                        },
     "local_kernel":  {
                          "module":  "local_infrastructure_kernel",
                          "contract":  "workstation/contracts/local_infrastructure_kernel.v1.json",
@@ -145,5 +124,26 @@
                                         "status_file":  "C:\\Users\\Admin\\.fusion\\merge-bottom-up.status.json",
                                         "log_file":  "C:\\Users\\Admin\\.fusion\\merge-bottom-up.log"
                                     }
-            }
+            },
+    "interior_design":  {
+                            "app":  "planova",
+                            "label":  "Planova Inneneinrichter",
+                            "install_dir":  "C:\\Users\\Admin\\Programs\\planova",
+                            "executable":  "C:\\Users\\Admin\\Programs\\planova\\planova.exe",
+                            "source_repo":  "https://github.com/XUranus/planova.git",
+                            "install_script":  "C:\\Users\\Admin\\fusion-hero-os\\workstation\\install-planova.ps1",
+                            "features":  {
+                                             "free_local":  [
+                                                                "3d_viewer",
+                                                                "furniture_edit",
+                                                                "style_presets",
+                                                                "glb_export"
+                                                            ],
+                                             "byok_paid":  [
+                                                               "ai_floorplan_parse",
+                                                               "ai_render"
+                                                           ]
+                                         },
+                            "export_hint":  "GLB manuell nach 03_VR_Assets kopieren fuer VR-Viewer"
+                        }
 }
