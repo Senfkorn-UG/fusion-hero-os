@@ -31,6 +31,7 @@ import datetime
 import subprocess
 import json
 import sys
+from pathlib import Path
 
 PORT = 8088
 DIRECTORY = "."
@@ -91,6 +92,8 @@ class HeroicDocsHandler(http.server.SimpleHTTPRequestHandler):
             self.send_layers_status()
         elif self.path == "/erkenntnisse/status" or self.path == "/erkenntnisse":
             self.send_erkenntnisse_status()
+        elif self.path in ("/mainframe/ops/status", "/mainframe/cost/status"):
+            self.send_mainframe_ops_status()
         else:
             super().do_GET()
 
@@ -284,6 +287,22 @@ class HeroicDocsHandler(http.server.SimpleHTTPRequestHandler):
             })
         except Exception as e:
             self._send_json({"ok": False, "error": str(e)}, 400)
+
+    def send_mainframe_ops_status(self):
+        """Kostenanalyse + Repo-Spiegelung (JSON für Mesh-Peers)."""
+        try:
+            code_root = Path(__file__).resolve().parent / "03_Code"
+            if str(code_root) not in sys.path:
+                sys.path.insert(0, str(code_root))
+            from core.mainframe_cost_analysis_daemon import get_cost_daemon
+            from core.repo_mirror_correction_daemon import get_mirror_daemon
+            self._send_json({
+                "cost": get_cost_daemon().status(),
+                "repo_mirror": get_mirror_daemon().status(),
+                "mode": "mirror_and_os_daemon_correction",
+            })
+        except Exception as e:
+            self._send_json({"ok": False, "error": str(e)}, 500)
 
 
 def get_lan_ip():
