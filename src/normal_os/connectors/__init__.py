@@ -1,13 +1,19 @@
 from .base import BaseConnector, ConnectorConfig, ConnectorResult
-from .github_connector import GitHubConnector
-from .google_drive_connector import GoogleDriveConnector
-from .notion_connector import NotionConnector
+from .external_connector import ExternalToolConnector
+from .external_tool_client import ExternalToolClient, ExternalToolError
+from .registry import ConnectorRegistry, get_registry
+from .specs import CONNECTOR_SPECS, ConnectorSpec, ToolCapability
 
 __all__ = [
     "BaseConnector",
     "ConnectorConfig",
     "ConnectorResult",
-    "GitHubConnector",
-    "GoogleDriveConnector",
-    "NotionConnector",
+    "ExternalToolConnector",
+    "ExternalToolClient",
+    "ExternalToolError",
+    "ConnectorRegistry",
+    "get_registry",
+    "CONNECTOR_SPECS",
+    "ConnectorSpec",
+    "ToolCapability",
 ]

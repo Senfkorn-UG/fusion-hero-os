@@ -1341,3 +1341,11 @@ try:
     app.include_router(_extensions_router)
 except Exception as _ext_err:
     print(f"[API] Extensions note: {_ext_err}")
+
+# === External Connector layer (Slack, Jira, Files, Gmail/Calendar, GitHub,
+#     Finance, OpticOdds) — routed server-side via external-tool / gh CLI ===
+try:
+    from connectors_routes import router as _connectors_router
+    app.include_router(_connectors_router)
+except Exception as _conn_err:
+    print(f"[API] Connector routes note: {_conn_err}")
