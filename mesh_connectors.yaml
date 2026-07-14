@@ -3,7 +3,11 @@
 # Kein Monolith — jede Verbindung hat eigene Identität, Health-Probe und Routing.
 
 mesh_version: "1.0"
+<<<<<<< HEAD
 tailnet: tail391adb.ts.net
+=======
+tailnet: example.ts.net
+>>>>>>> 404701973eb09fd68448759c001b712e6fb2ef09
 principle: "Jeder Konnektor = ein einzelnes Teil des Mesh (eigene ID, Host, Health, Tag)"
 
 # Physische Mesh-Knoten (Tailscale Devices)
@@ -11,7 +15,11 @@ nodes:
   mainframe:
     role: orchestrator
     hostname: mainframe
+<<<<<<< HEAD
     magicdns: mainframe.tail391adb.ts.net
+=======
+    magicdns: host.example.ts.net
+>>>>>>> 404701973eb09fd68448759c001b712e6fb2ef09
     platform: linux
     tailscale_tag: tag:fusion-node-mainframe
     services:
@@ -23,7 +31,11 @@ nodes:
     # auf einer Stufe mit dem Handy (siehe enduser-Block).
     role: grok-workstation
     hostname: desktop-kpki9e4
+<<<<<<< HEAD
     magicdns: desktop-kpki9e4.tail391adb.ts.net
+=======
+    magicdns: host.example.ts.net
+>>>>>>> 404701973eb09fd68448759c001b712e6fb2ef09
     platform: windows
     tailscale_tag: tag:fusion-node-desktop
     services:
@@ -47,8 +59,13 @@ nodes:
 
   phone:
     role: mobile-client
+<<<<<<< HEAD
     hostname: redmi-note-13-pro-5g
     magicdns: redmi-note-13-pro-5g.tail391adb.ts.net
+=======
+    hostname: phone-node
+    magicdns: host.example.ts.net
+>>>>>>> 404701973eb09fd68448759c001b712e6fb2ef09
     platform: android
     tailscale_tag: tag:fusion-node-phone
     services:
@@ -159,7 +176,11 @@ connectors:
 
 # Routing-Schema (Funnel + MagicDNS)
 routing:
+<<<<<<< HEAD
   base_url: "https://mainframe.tail391adb.ts.net"
+=======
+  base_url: "https://host.example.ts.net"
+>>>>>>> 404701973eb09fd68448759c001b712e6fb2ef09
   unified: "/fusion/status"
   fusion_graph: "/fusion/graph"
   mesh_overview: "/mesh/status"

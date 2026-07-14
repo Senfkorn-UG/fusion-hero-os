@@ -33,7 +33,7 @@ abgeleitet — kein Dokument, Branch oder Manifest führt eine eigene Zählung.
 **Ökosystem:** Vorgänger-Repos (`fusion-hero-os-v1`, `Fusion_Hero_OS_v1.1`,
 `fusion-hero-core`, `alte-frau-95g-heroic-core`, `AscensionOS`, `FuHOS_pub`)
 sind auf GitHub archiviert. Aktive Satelliten-Repos (`normalOS`,
-`fusion-hero-vault`, `mister-jailbait-gui`, `dashboard`,
+`fusion-hero-vault`, `mister-Contributor-gui`, `dashboard`,
 `fusion-hero-os-daily-plans`) versionieren unabhängig nach demselben Schema
 und deklarieren ihre Plattform-Kompatibilität in `fuhos_compat.yaml`
 (z. B. `fuhos_compat: ">=8.3 <9"`).

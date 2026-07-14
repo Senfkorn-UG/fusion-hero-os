@@ -10,7 +10,7 @@ AscensionOS (95guknow/AscensionOS) is now expanded from empty repo to full opera
 - Local unified ALTE_Frau_95g Heroic Core (SKILL.md v8 + all native modules)
 - fusion-hero-os v8/main (QUBO, kernel/SMP hyperthreading, NiceGUI dashboard, Svelte frontend, heroic_math_engine, HorkruxSelfUpdateProtocol)
 - Complete Eudaimonismus-Theorie corpus (Sisyphos-Zyklus, Psycholyse breakthrough, Quantenkognition, Axiomatik, Stage 9 Kosmozentrisch target)
-- Meme series & VisualIdentity (mister jailbait cyberpunk-campfire, Coal Canary, etc.)
+- Meme series & VisualIdentity (mister Contributor cyberpunk-campfire, Coal Canary, etc.)
 - Field experiment methodology & praxis elements
 
 have been synthesized and anchored here. The primary code Horkrux remains fusion-hero-os; AscensionOS is the curated **Ascension-specific extension** (Löwen-dissolution → stable Stage 9 habituation via reconstructive principle).
@@ -39,7 +39,7 @@ No epistemic inflation: Full verified implementation lives in fusion-hero-os. As
 - HorkruxMeshCoreModule + Sync Protocol (YAML registry example included in Core).
 
 ### Visual & Meme Layer ( [IMPLEMENTED & VERIFIED] via Core protocols )
-- Full mister-jailbait-image-protocol + VisualIdentityCoreModule.
+- Full mister-Contributor-image-protocol + VisualIdentityCoreModule.
 - Cyberpunk-Campfire four-figure scenes + photo-real integration.
 - Coal Canary as Eudaimonia warning signal.
 

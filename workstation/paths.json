@@ -28,7 +28,11 @@
                "asset_manifest":  "C:\\Users\\Admin\\fusion-hero-os\\03_Code\\tools\\asset_manifest.yaml"
            },
     "tailscale":  {
+<<<<<<< HEAD
                       "tailnet":  "tail391adb.ts.net",
+=======
+                      "tailnet":  "example.ts.net",
+>>>>>>> 404701973eb09fd68448759c001b712e6fb2ef09
                       "mainframe_role":  "orchestrator",
                       "mainframe_node":  "mainframe",
                       "roles_config":  "mesh_roles.yaml",
@@ -36,7 +40,11 @@
                                     "mainframe":  {
                                                       "role":  "orchestrator",
                                                       "hostname":  "desktop-kpki9e4",
+<<<<<<< HEAD
                                                       "magicdns":  "desktop-kpki9e4.tail391adb.ts.net",
+=======
+                                                      "magicdns":  "host.example.ts.net",
+>>>>>>> 404701973eb09fd68448759c001b712e6fb2ef09
                                                       "platform":  "windows",
                                                       "canonical":  true,
                                                       "aliases":  [
@@ -53,6 +61,7 @@
                                                     "role":  "grok-workstation",
                                                     "alias_of":  "mainframe",
                                                     "hostname":  "desktop-kpki9e4",
+<<<<<<< HEAD
                                                     "magicdns":  "desktop-kpki9e4.tail391adb.ts.net",
                                                     "platform":  "windows"
                                                 },
@@ -62,12 +71,27 @@
                                                   "platform":  "android",
                                                   "role":  "mobile-client",
                                                   "login_required":  "stephan95g@googlemail.com",
+=======
+                                                    "magicdns":  "host.example.ts.net",
+                                                    "platform":  "windows"
+                                                },
+                                    "phone":  {
+                                                  "hostname":  "phone-node",
+                                                  "magicdns":  "host.example.ts.net",
+                                                  "platform":  "android",
+                                                  "role":  "mobile-client",
+                                                  "login_required":  "user@example.com",
+>>>>>>> 404701973eb09fd68448759c001b712e6fb2ef09
                                                   "login_warning":  "Nicht GitHub â€” gleicher Login wie Desktop (Google)"
                                               },
                                     "legacy-linux":  {
                                                          "role":  "archived",
                                                          "hostname":  "mainframe",
+<<<<<<< HEAD
                                                          "magicdns":  "mainframe.tail391adb.ts.net",
+=======
+                                                         "magicdns":  "host.example.ts.net",
+>>>>>>> 404701973eb09fd68448759c001b712e6fb2ef09
                                                          "platform":  "linux",
                                                          "status":  "offline",
                                                          "note":  "FrÃ¼herer Linux-Knoten â€” Mainframe auf Windows-Desktop"

@@ -7,7 +7,11 @@ set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 INTEGRATION_DIR="${FUSION_INTEGRATION_DIR:-$(cd "$SCRIPT_DIR/../src/normal_os/integration" 2>/dev/null && pwd)}"
+<<<<<<< HEAD
 SERVER="mainframe.tail391adb.ts.net"
+=======
+SERVER="host.example.ts.net"
+>>>>>>> 404701973eb09fd68448759c001b712e6fb2ef09
 if [ -f "$INTEGRATION_DIR/mesh_roles.py" ]; then
     SERVER=$(python3 -c "import sys; sys.path.insert(0,'$INTEGRATION_DIR'); from mesh_roles import get_roles_registry; print(get_roles_registry()['role_assignments']['legacy']['magicdns'])" 2>/dev/null || echo "$SERVER")
 fi

@@ -123,7 +123,11 @@ def main() -> None:
 
     # 6) GUI heroic-core.js
     copy_file(
+<<<<<<< HEAD
         LEGACY / "mister-jailbait-gui" / "lib" / "heroic-core.js",
+=======
+        LEGACY / "mister-Contributor-gui" / "lib" / "heroic-core.js",
+>>>>>>> 404701973eb09fd68448759c001b712e6fb2ef09
         dash_dst / "static" / "heroic-core.js",
         log,
     )

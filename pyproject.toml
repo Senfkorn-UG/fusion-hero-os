@@ -1,6 +1,10 @@
 [project]
 name = "ascension-os"
+<<<<<<< HEAD
 version = "8.3.0"
+=======
+version = "9.0.0"
+>>>>>>> 404701973eb09fd68448759c001b712e6fb2ef09
 description = "AscensionOS - Fusion Hero OS Coevolutionary Variant (CEC, Persistent Sisyphos, AscensionCore, Heroic Core, Kernel AI)"
 readme = "README.md"
 requires-python = ">=3.11"
@@ -36,6 +40,11 @@ dependencies = [
     "openai>=1.30.0",
     "mistralai>=0.6.0",
     "huggingface-hub>=0.22.0",
+<<<<<<< HEAD
+=======
+    "pypdf>=4.0.0",
+    "Pillow>=10.0.0",
+>>>>>>> 404701973eb09fd68448759c001b712e6fb2ef09
 ]
 [project.optional-dependencies]
 dev = ["ruff>=0.5.0", "mypy>=1.10.0", "pre-commit>=3.6.0"]
@@ -52,4 +61,10 @@ where = ["src"]
 target-version = "py311"
 line-length = 100
 [tool.mypy]
+<<<<<<< HEAD
 python_version = "3.11"
+=======
+python_version = "3.11"
+[tool.pytest.ini_options]
+pythonpath = ["."]
+>>>>>>> 404701973eb09fd68448759c001b712e6fb2ef09

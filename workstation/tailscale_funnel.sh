@@ -6,7 +6,11 @@ set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 INTEGRATION_DIR="${FUSION_INTEGRATION_DIR:-$(cd "$SCRIPT_DIR/../src/normal_os/integration" 2>/dev/null && pwd)}"
+<<<<<<< HEAD
 MF_DNS="desktop-kpki9e4.tail391adb.ts.net"
+=======
+MF_DNS="host.example.ts.net"
+>>>>>>> 404701973eb09fd68448759c001b712e6fb2ef09
 if [ -f "$INTEGRATION_DIR/mesh_roles.py" ]; then
     MF_DNS=$(python3 -c "import sys; sys.path.insert(0,'$INTEGRATION_DIR'); from mesh_roles import get_mainframe_magicdns; print(get_mainframe_magicdns())" 2>/dev/null || echo "$MF_DNS")
 fi

@@ -74,21 +74,21 @@ nodes:
   mainframe:
     role: orchestrator
     hosts: [hero-docs-server, tailscale-control, fusion-integration-hub]
-    magicdns: mainframe.tail391adb.ts.net
+    magicdns: host.example.ts.net
   desktop:
     role: grok-workstation
     hosts: [grok-cli, mcp-bridges, llm-frameworks]
-    magicdns: desktop-kpki9e4.tail391adb.ts.net
+    magicdns: host.example.ts.net
   phone:
     role: mobile-client
     hosts: [tailscale-app]
-    magicdns: redmi-note-13-pro-5g.tail391adb.ts.net
+    magicdns: host.example.ts.net
     reachable_from: [desktop, mainframe]
     can_reach:
       - desktop:8000
       - desktop:8088
       - desktop:8765
-    login_hint: "Gleicher Login wie Desktop (Google stephan95g@googlemail.com), nicht GitHub"
+    login_hint: "Gleicher Login wie Desktop (Google user@example.com), nicht GitHub"
 
 # Knoten-zu-Knoten Verknüpfungen (Mesh-Topologie)
 node_edges:

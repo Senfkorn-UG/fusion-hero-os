@@ -88,7 +88,11 @@ def _get_vr_status() -> dict:
     root = Path(os.environ.get("FUSION_HERO_ROOT", str(ROOT)))
     vr_root = Path(os.environ.get("FUSION_VR_ASSETS_ROOT", str(root / "03_VR_Assets")))
     expected = [
+<<<<<<< HEAD
         "vr_mister_jailbait_hero_equirectangular.jpg",
+=======
+        "vr_mister_Contributor_hero_equirectangular.jpg",
+>>>>>>> 404701973eb09fd68448759c001b712e6fb2ef09
         "heroic_evolution_fractal.jpg",
     ]
     assets = []
@@ -151,7 +155,11 @@ def _get_workstation() -> dict:
 def _check_phone_visibility(unified: dict, tailscale: dict) -> dict:
     """Warnung wenn Phone in Config aber nicht in Tailscale-Peers."""
     phone_cfg = (unified.get("nodes") or {}).get("phone", {})
+<<<<<<< HEAD
     expected = phone_cfg.get("hostname", "redmi-note-13-pro-5g")
+=======
+    expected = phone_cfg.get("hostname", "phone-node")
+>>>>>>> 404701973eb09fd68448759c001b712e6fb2ef09
     peer_list = tailscale.get("peer_list") or []
     found = any(
         expected.lower() in (p.get("hostname") or "").lower()

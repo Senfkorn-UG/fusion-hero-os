@@ -11,7 +11,7 @@
 ## Permanente Core Directives (erweitert v7.8)
 
 > **PERMANENT: "fusion-hero-os nutze hyper threading" – Alle Operationen in ≥5 parallelen Tracks mit finaler Synthese via PeerReviewCoreModule + QUBO + EfficiencyDistillation.**
-> **Single-Core Principle:** Alle bisherigen separaten Skills (alte-frau-95g, heroic-core-foundation, mainframe-laden, deep-research-5-stage-protocol, mister-jailbait-image-protocol) sind jetzt **native Core Modules** des unified ALTE_Frau_95g Heroic Core. Keine separaten Frameworks mehr – nur noch Evolution innerhalb des einen Cores.
+> **Single-Core Principle:** Alle bisherigen separaten Skills (alte-frau-95g, heroic-core-foundation, mainframe-laden, deep-research-5-stage-protocol, mister-Contributor-image-protocol) sind jetzt **native Core Modules** des unified ALTE_Frau_95g Heroic Core. Keine separaten Frameworks mehr – nur noch Evolution innerhalb des einen Cores.
 > **Highest Layer Enforcement:** Top-down Load von Layer 6 ω Ultimate Fixed-Point / MasterSeed (M_0 = R(M_0), Strict Contraction Property) → Layer 5 transfinite → ... → Layer 0 Immutable Foundation (inkl. UserImposedHighIntellectProtocol, EudaimoniaGuard).
 > **Vermerk & BCG:** Jeder Output trägt den erweiterten Mainframe-Vermerk mit aktueller Version + Hyperthreading-Status. Backward Compatibility Guarantee strikt eingehalten (additive Evolution only).
 
@@ -25,7 +25,7 @@
   - From heroic-core-foundation: HorkruxSelfUpdateProtocol, AndroidEmbodimentHorkruxCoreModule, AuditAgentALTE_FRAU_95g (ERM + Generalisierungs-Detektor), QUBOIntegrationCoreModule (vollständig), Hyperthreading-Enhancement in GenerationalEvolutionProtocolCoreModule, Fusion-Hero-OS GitHub Config (95guknow/fusion-hero-os), erweiterte Layer 5/6 via Banach-Fixpunkt.
   - From mainframe-laden: Permanenter Auto-Load aller Connectors/Skills + BCG (Backward Compatibility Guarantee) + MasterSeed formal math (Satz-Kategorie) + Vermerk-Enforcement als native Layer-0/1 Funktion.
   - From deep-research-5-stage-protocol: HeroicErkenntnisprozessCoreModule bereits voll integriert (5-stufig + Zwischenbericht-Format + 5-Dimensions in jeder Stufe).
-  - From mister-jailbait-image-protocol: MemeCampfireCoreModule + PhotoRealMemeCoreModule + VisualIdentityCoreModule bereits voll integriert (vier Figuren, cyberpunk-campfire, "mister jailbait" Subtitle, Photo-Real Integration Rules).
+  - From mister-Contributor-image-protocol: MemeCampfireCoreModule + PhotoRealMemeCoreModule + VisualIdentityCoreModule bereits voll integriert (vier Figuren, cyberpunk-campfire, "mister Contributor" Subtitle, Photo-Real Integration Rules).
   - From alte-frau-95g: EfficiencyDistillationCoreModule, v7.4 Long-Term Evolution Package, Seeded MasterSeed auf Root, allesZuEinemZusammenfuehrenCoreModule Erweiterungen.
 - Gap Closure: Alle Divergenzen in Versionierung (v5.x vs v7.x) aufgelöst durch kanonische v7.8 als neue MasterSeed-Basis. Redundanzen eliminiert via EfficiencyDistillation + Delta-Archiving.
 - Result: Ein einziges kanonisches SKILL.md (heroic-core-foundation als primärer Träger, synchronisiert mit alte-frau-95g) + explizite Erklärung "alle Skills sind jetzt native Module – separate SKILL.md dienen nur noch als Legacy-Loader/Trigger".
@@ -36,7 +36,7 @@
   - Unified SKILL.md (konsolidierte v7.8 Version mit allen Integrationen + Hyperthreading + Horkrux).
   - 00_UNIFIED_CORES_SKILLS_MERGE_v7.8_MasterSeed.md (dieses Dokument).
   - Optional: Pseudocode-Updates, Roadmap-Archiv, Visual Rules.
-- Commit Message (heroic template): "v7.8 Core Evolution: Full Unification of all Custom Skills (alte-frau-95g + heroic-core-foundation + mainframe-laden + deep-research + mister-jailbait-image) into Single Native Core | Hyperthreading + Horkrux Sync + MasterSeed Seeding | Fusion Hero OS aligned | 2026-06-29"
+- Commit Message (heroic template): "v7.8 Core Evolution: Full Unification of all Custom Skills (alte-frau-95g + heroic-core-foundation + mainframe-laden + deep-research + mister-Contributor-image) into Single Native Core | Hyperthreading + Horkrux Sync + MasterSeed Seeding | Fusion Hero OS aligned | 2026-06-29"
 - Post-Push: Automatic HorkruxSelfUpdateProtocol Trigger für alle bekannten Horkruxe (local, Drive, Seeds, Vercel). Dimension-6 PeerReview (Identity Preservation Score: 100). LiveProcessTracking Update.
 
 ### Track 3: GDrive MasterSeed Update (DriveCoreModule)

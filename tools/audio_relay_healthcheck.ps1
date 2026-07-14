@@ -1,6 +1,10 @@
 <#
 .SYNOPSIS
+<<<<<<< HEAD
     Diagnose fuer den Bluetooth-Audio-Relay-Link desktop-kpki9e4 <-> redmi-note-13-pro-5g
+=======
+    Diagnose fuer den Bluetooth-Audio-Relay-Link desktop-kpki9e4 <-> phone-node
+>>>>>>> 404701973eb09fd68448759c001b712e6fb2ef09
     (siehe ascension_os/config/access_policy.json, service "bluetooth-audio-relay").
 
 .DESCRIPTION
@@ -13,8 +17,13 @@
 #>
 
 $ErrorActionPreference = "Continue"
+<<<<<<< HEAD
 $PhoneTailscaleIp = "100.108.67.116"
 $PhoneHostname = "redmi-note-13-pro-5g"
+=======
+$PhoneTailscaleIp = "100.64.0.11"
+$PhoneHostname = "phone-node"
+>>>>>>> 404701973eb09fd68448759c001b712e6fb2ef09
 $AudioRelayPort = 59100
 
 Write-Host "=== AudioRelay Mesh-Healthcheck ===" -ForegroundColor Cyan

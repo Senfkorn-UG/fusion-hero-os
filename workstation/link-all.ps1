@@ -44,7 +44,11 @@ if ($hub) {
     Write-Host "  Endpunkte:" -ForegroundColor DarkGray
     Write-Host "    Lokal:    http://127.0.0.1:8088/fusion/status"
     Write-Host "    Mesh:     http://127.0.0.1:8088/fusion/graph"
+<<<<<<< HEAD
     Write-Host "    Handy:    http://desktop-kpki9e4.tail391adb.ts.net:8088/fusion/status"
+=======
+    Write-Host "    Handy:    http://host.example.ts.net:8088/fusion/status"
+>>>>>>> 404701973eb09fd68448759c001b712e6fb2ef09
 }
 
 Write-Host ""

@@ -24,7 +24,11 @@ Der Overlay-Text „Das vergiftete Paradies (2020 – ALLES IST PERFEKT – auß
 - **Local Horkrux Path:** `/home/workdir/artifacts/95g_Hacker_PrimarySeed_2026-07-04.jpg`
 - **Usage Rules:** 
   - Primärer Referenz-Seed für alle `edit_image` / `generate_image` Operationen unter Triggern: "hacking mode", "der Held hackt", "95g Hacker", "operative Rekonstruktion".
+<<<<<<< HEAD
   - Paralleles Hyperthreading zur mister-jailbait cyberpunk-campfire Serie erlaubt und erwünscht (keine Kollision).
+=======
+  - Paralleles Hyperthreading zur mister-Contributor cyberpunk-campfire Serie erlaubt und erwünscht (keine Kollision).
+>>>>>>> 404701973eb09fd68448759c001b712e6fb2ef09
   - PhotoReal-Integration in Meme- und Theorie-Visuals freigegeben.
 
 ## Core Evolution Note

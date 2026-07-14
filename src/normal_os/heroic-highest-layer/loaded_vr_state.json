@@ -26,7 +26,11 @@
   "vr": {
     "assets": [
       {
+<<<<<<< HEAD
         "id": "vr_mister_jailbait_hero_equirectangular",
+=======
+        "id": "vr_mister_Contributor_hero_equirectangular",
+>>>>>>> 404701973eb09fd68448759c001b712e6fb2ef09
         "type": "equirectangular",
         "description": "360\u00b0 base for heroic VR immersion and generational scenes"
       },

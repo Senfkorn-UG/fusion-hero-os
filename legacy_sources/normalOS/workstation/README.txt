@@ -33,10 +33,10 @@ DESKTOP-STRUKTUR (nach Restore 2026-07-09)
   Desktop\Apps\ (Shortcuts) | Desktop\normalOS\ (Start/Status)
 
 TAILSCALE MESH
-  Desktop: desktop-kpki9e4.tail391adb.ts.net (100.80.63.0)
-  Phone:   redmi-note-13-pro-5g.tail391adb.ts.net (Android)
-  Mainframe: mainframe.tail391adb.ts.net (offline)
-  Vom Handy: http://desktop-kpki9e4.tail391adb.ts.net:8000 / :8088 / :8765
+  Desktop: host.example.ts.net (100.80.63.0)
+  Phone:   host.example.ts.net (Android)
+  Mainframe: host.example.ts.net (offline)
+  Vom Handy: http://host.example.ts.net:8000 / :8088 / :8765
 
 VERALTETE ORDNER (nicht mehr nutzen)
   fusion-hero-os-llm-push, hero-os, fusion-hero-core

@@ -3,7 +3,11 @@
 # Kein Monolith — jede Verbindung hat eigene Identität, Health-Probe und Routing.
 
 mesh_version: "1.1"
+<<<<<<< HEAD
 tailnet: tail391adb.ts.net
+=======
+tailnet: example.ts.net
+>>>>>>> 404701973eb09fd68448759c001b712e6fb2ef09
 principle: "Jeder Konnektor = ein einzelnes Teil des Mesh (eigene ID, Host, Health, Tag)"
 
 # Physische Mesh-Knoten (Tailscale Devices)
@@ -12,7 +16,11 @@ nodes:
   mainframe:
     role: orchestrator
     hostname: desktop-kpki9e4
+<<<<<<< HEAD
     magicdns: desktop-kpki9e4.tail391adb.ts.net
+=======
+    magicdns: host.example.ts.net
+>>>>>>> 404701973eb09fd68448759c001b712e6fb2ef09
     platform: windows
     canonical: true
     aliases: [desktop]
@@ -30,7 +38,11 @@ nodes:
     role: grok-workstation
     alias_of: mainframe
     hostname: desktop-kpki9e4
+<<<<<<< HEAD
     magicdns: desktop-kpki9e4.tail391adb.ts.net
+=======
+    magicdns: host.example.ts.net
+>>>>>>> 404701973eb09fd68448759c001b712e6fb2ef09
     platform: windows
     tailscale_tag: tag:fusion-node-desktop
     services:
@@ -39,8 +51,13 @@ nodes:
 
   phone:
     role: mobile-client
+<<<<<<< HEAD
     hostname: redmi-note-13-pro-5g
     magicdns: redmi-note-13-pro-5g.tail391adb.ts.net
+=======
+    hostname: phone-node
+    magicdns: host.example.ts.net
+>>>>>>> 404701973eb09fd68448759c001b712e6fb2ef09
     platform: android
     tailscale_tag: tag:fusion-node-phone
     services:
@@ -50,7 +67,11 @@ nodes:
   legacy-linux:
     role: archived
     hostname: mainframe
+<<<<<<< HEAD
     magicdns: mainframe.tail391adb.ts.net
+=======
+    magicdns: host.example.ts.net
+>>>>>>> 404701973eb09fd68448759c001b712e6fb2ef09
     platform: linux
     status: offline
     note: "Früherer Linux-Knoten — Mainframe auf Windows-Desktop (2026-07-12)"
@@ -139,7 +160,11 @@ connectors:
 
 # Routing-Schema (Funnel + MagicDNS)
 routing:
+<<<<<<< HEAD
   base_url: "https://desktop-kpki9e4.tail391adb.ts.net"
+=======
+  base_url: "https://host.example.ts.net"
+>>>>>>> 404701973eb09fd68448759c001b712e6fb2ef09
   mainframe_hostname: desktop-kpki9e4
   roles_config: mesh_roles.yaml
   unified: "/fusion/status"

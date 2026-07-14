@@ -302,9 +302,15 @@ class VRAssetManager:
     def _load_default_assets(self):
         # Reference standard VR assets from the heroic core setup
         self.assets["vr_hero_equirectangular"] = VRAsset(
+<<<<<<< HEAD
             "vr_mister_jailbait_hero_equirectangular",
             "equirectangular",
             str(self.base / "vr_mister_jailbait_hero_equirectangular.jpg"),
+=======
+            "vr_mister_Contributor_hero_equirectangular",
+            "equirectangular",
+            str(self.base / "vr_mister_Contributor_hero_equirectangular.jpg"),
+>>>>>>> 404701973eb09fd68448759c001b712e6fb2ef09
             "360° base for heroic VR immersion and generational scenes"
         )
         self.assets["evolution_texture"] = VRAsset(

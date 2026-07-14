@@ -14,13 +14,21 @@ ROLES_PATH = Path(__file__).parent / "mesh_roles.yaml"
 
 _FALLBACK = {
     "mesh_roles_version": "1.1",
+<<<<<<< HEAD
     "tailnet": "tail391adb.ts.net",
+=======
+    "tailnet": "example.ts.net",
+>>>>>>> 404701973eb09fd68448759c001b712e6fb2ef09
     "role_assignments": {
         "mainframe": {
             "node_id": "mainframe",
             "role": "orchestrator",
             "hostname": "desktop-kpki9e4",
+<<<<<<< HEAD
             "magicdns": "desktop-kpki9e4.tail391adb.ts.net",
+=======
+            "magicdns": "host.example.ts.net",
+>>>>>>> 404701973eb09fd68448759c001b712e6fb2ef09
             "platform": "windows",
             "canonical": True,
             "aliases": ["desktop"],
@@ -30,27 +38,44 @@ _FALLBACK = {
             "role": "grok-workstation",
             "same_as": "mainframe",
             "hostname": "desktop-kpki9e4",
+<<<<<<< HEAD
             "magicdns": "desktop-kpki9e4.tail391adb.ts.net",
+=======
+            "magicdns": "host.example.ts.net",
+>>>>>>> 404701973eb09fd68448759c001b712e6fb2ef09
             "platform": "windows",
         },
         "mobile": {
             "node_id": "phone",
             "role": "mobile-client",
+<<<<<<< HEAD
             "hostname": "redmi-note-13-pro-5g",
             "magicdns": "redmi-note-13-pro-5g.tail391adb.ts.net",
+=======
+            "hostname": "phone-node",
+            "magicdns": "host.example.ts.net",
+>>>>>>> 404701973eb09fd68448759c001b712e6fb2ef09
             "platform": "android",
         },
         "legacy": {
             "node_id": "legacy-linux",
             "role": "archived",
             "hostname": "mainframe",
+<<<<<<< HEAD
             "magicdns": "mainframe.tail391adb.ts.net",
+=======
+            "magicdns": "host.example.ts.net",
+>>>>>>> 404701973eb09fd68448759c001b712e6fb2ef09
             "platform": "linux",
             "status": "offline",
         },
     },
     "routing": {
+<<<<<<< HEAD
         "base_url": "https://desktop-kpki9e4.tail391adb.ts.net",
+=======
+        "base_url": "https://host.example.ts.net",
+>>>>>>> 404701973eb09fd68448759c001b712e6fb2ef09
         "mainframe_hostname": "desktop-kpki9e4",
         "funnel_port": 8088,
     },
@@ -79,13 +104,21 @@ def get_roles_registry() -> dict:
         mf["hostname"] = env_host
         mf["magicdns"] = os.getenv(
             "FUSION_MESH_MAINFRAME_MAGICDNS",
+<<<<<<< HEAD
             f"{env_host}.tail391adb.ts.net",
+=======
+            f"{env_host}.example.ts.net",
+>>>>>>> 404701973eb09fd68448759c001b712e6fb2ef09
         )
         routing = data.setdefault("routing", {})
         routing["mainframe_hostname"] = env_host
         routing["base_url"] = os.getenv(
             "FUSION_MESH_BASE_URL",
+<<<<<<< HEAD
             f"https://{env_host}.tail391adb.ts.net",
+=======
+            f"https://{env_host}.example.ts.net",
+>>>>>>> 404701973eb09fd68448759c001b712e6fb2ef09
         )
     return data
 
@@ -101,7 +134,11 @@ def get_mainframe_hostname() -> str:
 
 def get_mainframe_magicdns() -> str:
     mf = get_mainframe()
+<<<<<<< HEAD
     return mf.get("magicdns") or f"{get_mainframe_hostname()}.tail391adb.ts.net"
+=======
+    return mf.get("magicdns") or f"{get_mainframe_hostname()}.example.ts.net"
+>>>>>>> 404701973eb09fd68448759c001b712e6fb2ef09
 
 
 def get_routing_base_url() -> str:

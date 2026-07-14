@@ -8,7 +8,11 @@ Enable immersive and visual representation of the generational evolution, roadma
 
 ## Components
 
+<<<<<<< HEAD
 - **03_VR_Assets/** : Equirectangular images, 360° hero visuals, mister-jailbait VR scenes, fractal/heroic symbols for VR.
+=======
+- **03_VR_Assets/** : Equirectangular images, 360° hero visuals, mister-Contributor VR scenes, fractal/heroic symbols for VR.
+>>>>>>> 404701973eb09fd68448759c001b712e6fb2ef09
 - **VR Visualization Protocol**: Defines how to map Layer 4 state (generations, fitness tracks, roadmap milestones) into visual/VR space.
 - **Hero Visuals**: Integration with cool-mode prompts and asset loading for consistent heroic identity.
 
@@ -38,7 +42,11 @@ This activates:
 Typical structure:
 ```
 03_VR_Assets/
+<<<<<<< HEAD
 ├── vr_mister_jailbait_hero_equirectangular.jpg
+=======
+├── vr_mister_Contributor_hero_equirectangular.jpg
+>>>>>>> 404701973eb09fd68448759c001b712e6fb2ef09
 ├── heroic_evolution_360/
 └── roadmap_visual_vr/
 ```

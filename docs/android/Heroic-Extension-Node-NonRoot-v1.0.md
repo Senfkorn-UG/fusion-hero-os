@@ -19,7 +19,7 @@ Das Redmi Note 13 Pro 5G soll zum **Heroic Extension Node** des Fusion Hero OS M
 | Mesh Connectivity            | Tailscale                          | Stabile Verbindung zum drei-Zonen-Mesh       | Kritisch |
 | Haupt-Brücke                 | Microsoft Phone Link               | Notifications, Steuerung, Dateien            | Hoch    |
 | Core Runtime                 | Tasker + Shizuku                   | Heroic Core Protokolle + Automatisierungen   | Hoch    |
-| Visuelle Identität           | Niagara Launcher + KLWP            | Mister Jailbait Cyberpunk Campfire Spread    | Hoch    |
+| Visuelle Identität           | Niagara Launcher + KLWP            | Mister Contributor Cyberpunk Campfire Spread    | Hoch    |
 | Lokaler Core                 | Lokale AI App (z.B. MLC LLM / Ollama Mobile) | Heroic Core als System Prompt          | Mittel  |
 | Mainframe-Sync               | Phone Link + Tasker                | Status- und Befehlsaustausch mit Mainframe   | Hoch    |
 
@@ -44,10 +44,10 @@ Das Redmi Note 13 Pro 5G soll zum **Heroic Extension Node** des Fusion Hero OS M
   - Theorie-Notiz-Schnelleingabe
   - Core-Status Widget (sichtbar auf Homescreen)
 
-### Phase 3: Visuelle Identität (Mister Jailbait Spread)
+### Phase 3: Visuelle Identität (Mister Contributor Spread)
 - Launcher: **Niagara Launcher**
 - Visuelle Engine: **KLWP**
-- Der Mister Jailbait Cyberpunk Campfire Spread wird über dynamische KLWP-Elemente umgesetzt (Feuer, Neon, Atmosphäre, Figuren)
+- Der Mister Contributor Cyberpunk Campfire Spread wird über dynamische KLWP-Elemente umgesetzt (Feuer, Neon, Atmosphäre, Figuren)
 - Icon Pack farblich an den Spread anpassen
 
 ### Phase 4: Lokaler Heroic Core
@@ -63,7 +63,7 @@ Das Redmi Note 13 Pro 5G soll zum **Heroic Extension Node** des Fusion Hero OS M
 
 - Kein Root nötig → höhere Stabilität und Updatesicherheit
 - Sehr gute Integration durch Tasker + Phone Link
-- Visuell stark durch KLWP + Mister Jailbait Spread
+- Visuell stark durch KLWP + Mister Contributor Spread
 - Der echte schwere Heroic Core bleibt auf dem Mainframe, das Handy bekommt nur die relevanten Teile
 - Gut erweiterbar
 
@@ -77,7 +77,7 @@ Das Redmi Note 13 Pro 5G soll zum **Heroic Extension Node** des Fusion Hero OS M
 
 1. Tailscale auf dem Redmi stabilisieren (höchste Priorität)
 2. Microsoft Phone Link + Tasker + Shizuku installieren
-3. Erstes KLWP-Projekt im Mister Jailbait Stil aufbauen
+3. Erstes KLWP-Projekt im Mister Contributor Stil aufbauen
 4. Lokale AI-App mit Heroic Core Prompt einrichten
 
 ---

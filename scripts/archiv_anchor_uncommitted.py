@@ -24,7 +24,11 @@ from typing import Any, Dict, List, Optional, Tuple
 
 REPO = Path(__file__).resolve().parents[1]
 ARCHIV_ROOT = REPO / "archiv" / "obfuscated"
+<<<<<<< HEAD
 DEFAULT_PASSPHRASE_SALT = "fusion-hero-os|archiv|desktop-kpki9e4|tail391adb.ts.net"
+=======
+DEFAULT_PASSPHRASE_SALT = "fusion-hero-os|archiv|desktop-kpki9e4|example.ts.net"
+>>>>>>> 404701973eb09fd68448759c001b712e6fb2ef09
 
 IGNORED_SCAN = {
     ".git",
@@ -221,7 +225,11 @@ PASS="${FUSION_ARCHIV_GPG_PASSPHRASE:-}"
 if [ -z "$PASS" ]; then
   PASS="$(python3 - <<'PY'
 import hashlib
+<<<<<<< HEAD
 print(hashlib.sha256(b"fusion-hero-os|archiv|desktop-kpki9e4|tail391adb.ts.net").hexdigest())
+=======
+print(hashlib.sha256(b"fusion-hero-os|archiv|desktop-kpki9e4|example.ts.net").hexdigest())
+>>>>>>> 404701973eb09fd68448759c001b712e6fb2ef09
 PY
 )"
 fi

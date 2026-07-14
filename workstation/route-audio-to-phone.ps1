@@ -64,7 +64,11 @@ if (Test-DefaultIsAudioRelay) {
 
 Write-Host ""
 Write-Host "In der AudioRelay-App pruefen:"
+<<<<<<< HEAD
 Write-Host "  1. Handy (redmi-note-13-pro-5g) verbunden"
+=======
+Write-Host "  1. Handy (phone-node) verbunden"
+>>>>>>> 404701973eb09fd68448759c001b712e6fb2ef09
 Write-Host "  2. Playback / Wiedergabe aktiv"
 Write-Host ""
 Write-Host "WSL/Cursor-Audio: PULSE_SERVER=unix:/mnt/wslg/PulseServer -> Windows-Standardgeraet"

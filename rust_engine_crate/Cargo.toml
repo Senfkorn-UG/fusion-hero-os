@@ -1,6 +1,10 @@
 [package]
 name = "rust_engine"
+<<<<<<< HEAD
 version = "8.3.0"
+=======
+version = "9.0.0"
+>>>>>>> 404701973eb09fd68448759c001b712e6fb2ef09
 edition = "2021"
 description = "Hochperformanter QUBO Simulated-Annealing-Kernel (PyO3) für Fusion Hero OS"
 

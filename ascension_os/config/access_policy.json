@@ -3,16 +3,16 @@
   "updated": "2026-07-10",
   "scope": "Fusion-Hero-OS / AscensionOS — Zugriffsregelung fuer private Gadgets",
   "superuser": {
-    "name": "Stephan Urban",
-    "account": "stephan95g@googlemail.com",
-    "tailnet": "tail391adb.ts.net"
+    "name": "Superuser",
+    "account": "user@example.com",
+    "tailnet": "example.ts.net"
   },
   "devices": [
     {
-      "hostname": "redmi-note-13-pro-5g",
-      "tailscale_ip": "100.108.67.116",
+      "hostname": "phone-node",
+      "tailscale_ip": "100.64.0.11",
       "role": "enduser",
-      "owner": "Stephan Urban",
+      "owner": "Superuser",
       "gadgets": {
         "private": "allow-all",
         "note": "Endgeraet des Superusers: darf ALLE privaten Gadgets des AscensionOS-Tracks nutzen/ausfuehren."
@@ -33,9 +33,9 @@
     },
     {
       "hostname": "desktop-kpki9e4",
-      "tailscale_ip": "100.64.104.58",
+      "tailscale_ip": "100.64.0.12",
       "role": "workstation",
-      "owner": "Stephan Urban",
+      "owner": "Superuser",
       "gadgets": { "private": "allow-all" },
       "services": [
         {
@@ -43,26 +43,26 @@
           "type": "audio-stream-sender",
           "app": "AudioRelay (audiorelay.net)",
           "port": 59100,
-          "peer_device": "redmi-note-13-pro-5g",
-          "note": "Siehe Eintrag bei redmi-note-13-pro-5g fuer Details. Windows-Firewall-Regel fuer Port 59100 noetig; Tailscale-Netzwerkprofil muss auf 'Privat' stehen, sonst blockt Windows den Port."
+          "peer_device": "phone-node",
+          "note": "Siehe Eintrag bei phone-node fuer Details. Windows-Firewall-Regel fuer Port 59100 noetig; Tailscale-Netzwerkprofil muss auf 'Privat' stehen, sonst blockt Windows den Port."
         }
       ]
     },
     {
       "hostname": "claude-agent",
-      "tailscale_ip": "100.125.58.100",
+      "tailscale_ip": "100.64.0.13",
       "role": "agent",
       "gadgets": { "private": "deny", "note": "Agenten nutzen definierte APIs, keine privaten Gadgets" }
     },
     {
       "hostname": "grok-agent",
-      "tailscale_ip": "100.81.15.67",
+      "tailscale_ip": "100.64.0.14",
       "role": "agent",
       "gadgets": { "private": "deny" }
     },
     {
       "hostname": "kepler-agent",
-      "tailscale_ip": "100.64.45.125",
+      "tailscale_ip": "100.64.0.15",
       "role": "agent",
       "gadgets": { "private": "deny" }
     }

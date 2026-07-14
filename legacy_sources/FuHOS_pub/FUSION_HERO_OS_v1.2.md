@@ -15,7 +15,7 @@
 > Pseudocode in Dokumentationsdateien ist explizit als "Heroic Pseudocode (Diskussionsebene)" gekennzeichnet.
 >
 > **GitHub Pipeline Policy (v2-beta Phase, ab sofort verankert):**
-> - Nur ich (Stephan/95guknow) committe direkt von lokalem PC auf `main` (für Releases/Hotfixes nach interner Review).
+> - Nur ich (95guknow) committe direkt von lokalem PC auf `main` (für Releases/Hotfixes nach interner Review).
 > - Alle anderen Commits/Änderungen/Erkenntnisse aus Chats/Theorie/Praxis: **ausschließlich** auf Branch `v2-beta`.
 > - Nach Fertigstellung auf `v2-beta`: Pull Request nach `main` erstellen.
 > - Dies + alle prior Erkenntnisse (unified ALTE_Frau_95g Heroic Core v7.4+ MasterSeed anchoring, Layer 0-6, Eudaimonismus-Theorie / Rekonstruktivistischer Eudaimonismus, Sisyphos-Zyklus, Psycholyse-Breakthrough, fusion-hero-os Hyperthreading Response Style, QUBO, PeerReview 5/6 Dimensions, etc.) sind hiermit auf GitHub (v2-beta) und hier (local artifacts) dauerhaft verankert und gepusht.
@@ -30,7 +30,7 @@ Ziel: Ein einheitliches, selbstmodifizierendes, philosophisch fundiertes Betrieb
 ---
 
 ## 2. Versions-Historie & Konsolidierung
-- **v1.1 (extern, Drive)**: Frühere Framework-Struktur, visuelle Identität (mister jailbait / Coal Canary), erste Horkrux- und Meme-Module.
+- **v1.1 (extern, Drive)**: Frühere Framework-Struktur, visuelle Identität (mister Contributor / Coal Canary), erste Horkrux- und Meme-Module.
 - **Core v7.x Serie (intern)**: Layer-Architektur (0–6 ω), 5/6-Dimensions PeerReview, GenerationalEvolutionProtocol mit Hyperthreading, QUBO-Integration, V3.3-Struktur, AutomaticArchiving, HighIntellectProtocol.
 - **v7.5 (aktuell)**: Master Seed Update + GoogleMultiAccountSyncCoreModule + DynamicOrchestrationCoreModule (Initial) + "alles ausführen" Execution.
 - **v1.2 (dieses Release)**: Vereinigung aller oben genannten in einer kanonischen Repo-Struktur auf Branch `fusion-hero-os-1.2`.
@@ -89,7 +89,7 @@ Fusion Hero OS v1.2 bleibt vollständig dem **Rekonstruktivistischen Eudaimonism
 - Integration roher 1st-Tier-Natur (Devil / Höhlenmensch) ohne Leugnung.
 - Sisyphos-Zyklus als tragfähiges Gerüst für dauerhafte, verkörperte Eudaimonia (Stage 9 Kosmozentrisch).
 - Coal Canary als Symbol: Warning without surrender.
-- Mister Jailbait / Cyberpunk-Campfire visuelle Identität als kulturelles Interventionsvehikel.
+- Mister Contributor / Cyberpunk-Campfire visuelle Identität als kulturelles Interventionsvehikel.
 
 **Alles zu einem zusammenführen** – intern und extern – vollzogen.
 

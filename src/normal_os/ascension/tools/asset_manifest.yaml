@@ -10,8 +10,13 @@ categories:
   vr:
     label: "VR 360° / Textures"
     assets:
+<<<<<<< HEAD
       - id: vr_mister_jailbait_hero_equirectangular
         rel_path: "03_VR_Assets/vr_mister_jailbait_hero_equirectangular.jpg"
+=======
+      - id: vr_mister_Contributor_hero_equirectangular
+        rel_path: "03_VR_Assets/vr_mister_Contributor_hero_equirectangular.jpg"
+>>>>>>> 404701973eb09fd68448759c001b712e6fb2ef09
         type: equirectangular
         min_bytes: 50000
         width: 1024
