@@ -1,22 +1,4 @@
-# All-in-one: namespace + service account + Tier-2 training job
-# Apply: kubectl apply -f fusion-training-stack.yaml
----
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: fusion-training
-  labels:
-    app.kubernetes.io/part-of: fusion-hero-os
-    org: senfkorn-ug
----
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: fusion-training-ksa
-  namespace: fusion-training
-  annotations:
-    iam.gke.io/gcp-service-account: fusion-training-sa@project-bbf0e6db-52e1-462b-8e3.iam.gserviceaccount.com
----
+# Tier 1: 2x NVIDIA L4 — Fusion durability training until QUBO stability
 apiVersion: batch/v1
 kind: Job
 metadata:

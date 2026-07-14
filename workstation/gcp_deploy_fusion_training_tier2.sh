@@ -45,16 +45,17 @@ echo "=== 4) Apply Kubernetes manifests ==="
 kubectl apply -f "${REPO_ROOT}/infra/k8s/fusion-training/namespace.yaml"
 kubectl apply -f "${REPO_ROOT}/infra/k8s/fusion-training/serviceaccount.yaml"
 kubectl delete job fusion-durability-train-tier2 -n fusion-training --ignore-not-found
-kubectl apply -f "${REPO_ROOT}/infra/k8s/fusion-training/fusion-training-tier2-job.yaml"
+kubectl delete job fusion-durability-train-tier1 -n fusion-training --ignore-not-found
+kubectl apply -f "${REPO_ROOT}/infra/k8s/fusion-training/fusion-training-tier1-job.yaml"
 
 echo "=== 5) Status ==="
 kubectl get job,pods -n fusion-training -w &
 WATCH_PID=$!
 sleep 15
 kill $WATCH_PID 2>/dev/null || true
-kubectl describe job fusion-durability-train-tier2 -n fusion-training | tail -20
+kubectl describe job fusion-durability-train-tier1 -n fusion-training | tail -20
 
 echo ""
 echo "Done. Monitor: kubectl logs -n fusion-training -l app=fusion-training -f"
 echo "Bucket: gs://${BUCKET}"
-echo "Estimated Tier-2 cost: ~688 EUR for 72h full run (Autopilot bills per second while pods run)."
+echo "Estimated Tier-1 cost: ~307 EUR for 72h full run (2x L4; Autopilot bills per second while pods run)."
