@@ -47,13 +47,15 @@ nodes:
 
   phone:
     role: mobile-client
-    hostname: phone-node
-    magicdns: mobile-node.example.ts.net
+    hostname: redmi-note-13-pro-5g
+    hostname_aliases: [phone-node, redmi-note-13-pro-5g, redmi]
+    magicdns: redmi-note-13-pro-5g.tail391adb.ts.net
     platform: android
     tailscale_tag: tag:fusion-node-phone
     services:
       - tailscale-app
       - phone-link-bridge
+      - mesh-files-portal
     enduser:
       peer_of: desktop          # gleiche Enduser-Stufe wie der Windows-PC
       security_layer: standard  # Handy: klassisches Enduser-Protokoll ohne Zusatzschicht
