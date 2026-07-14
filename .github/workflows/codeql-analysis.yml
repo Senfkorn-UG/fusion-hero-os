@@ -10,7 +10,7 @@ on:
 
 concurrency:
   group: "codeql-${{ github.ref }}"
-  cancel-in-progress: true # Effizienz-Update integriert
+  cancel-in-progress: true
 
 jobs:
   analyze:
@@ -26,8 +26,18 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        # These four configurations match the analyses recorded on `main`
+        # (see code-scanning history). Keep this matrix in sync with the
+        # languages actually present in the repo so pull-request runs never
+        # report "configurations not found" against main.
         include:
           - language: python
+            build-mode: none
+          - language: javascript-typescript
+            build-mode: none
+          - language: actions
+            build-mode: none
+          - language: rust
             build-mode: none
 
     steps:

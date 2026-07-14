@@ -1,11 +1,20 @@
 #!/usr/bin/env python3
 """
-archiv_anchor_uncommitted.py — Nicht committete Dateien als obfuskierte SHA256+GPG-Anker.
+archiv_anchor_uncommitted.py — Nicht committete Dateien als obfuskierte GPG-Anker.
 
 Erzeugt unter archiv/obfuscated/<stamp>/:
-  manifest.json   — Metadaten + SHA256-Register
+  manifest.json   — Metadaten + Integritaets-Register + KDF-Block
   blobs/*.obf     — GPG-symmetric + Obfuscation
   RECOVER.sh      — Wiederherstellungs-Skript
+
+Kryptographie (archiv_version 2.0):
+  * Der GPG-Passphrase wird ueber eine versionierte, langsame Schluessel-
+    ableitung (``hashlib.scrypt``) aus geheimem Material und einem
+    zufaelligen Per-Archiv-Salt abgeleitet — NICHT ueber ein schnelles
+    SHA256. Der Salt ist nicht-geheim und wird im Manifest hinterlegt.
+  * Integritaets-Digests ueber die (nicht-geheimen) Dateibytes verwenden
+    weiterhin SHA256 und sind bewusst getrennt benannt (``_content_digest``),
+    damit klar ist, dass hier keine Credential-Ableitung stattfindet.
 """
 
 from __future__ import annotations
@@ -20,19 +29,30 @@ import subprocess
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Tuple
 
 REPO = Path(__file__).resolve().parents[1]
 ARCHIV_ROOT = REPO / "archiv" / "obfuscated"
 
-# Neutral default salt for NEW archives. Contains no personal, device, or
-# network identifiers. Archives created before v10 were anchored with a
-# historical salt that is NOT reproduced here; to verify/recover those, supply
-# the private salt out-of-band via FUSION_ARCHIVE_LEGACY_SALT (see below).
+# Neutral default secret material for NEW archives when no explicit passphrase
+# is supplied. Contains no personal, device, or network identifiers. This is a
+# low-entropy default only — set FUSION_ARCHIV_GPG_PASSPHRASE for real secrecy.
 DEFAULT_PASSPHRASE_SALT = "fusion-hero-os|archiv|v10"
 
 GPG_PASSPHRASE_ENV = "FUSION_ARCHIV_GPG_PASSPHRASE"
-LEGACY_SALT_ENV = "FUSION_ARCHIVE_LEGACY_SALT"
+
+# Versioned scrypt KDF parameters (archiv_version 2.0). scrypt is a memory-hard
+# key-derivation function; unlike a bare SHA256 it is resistant to brute-force
+# on weak/low-entropy secret material. Parameters are stored in the manifest so
+# recovery is self-describing. maxmem is raised above scrypt's 32 MiB default so
+# the chosen (n, r, p) stays within the limit.
+KDF_NAME = "scrypt"
+KDF_VERSION = 2
+KDF_N = 2 ** 14  # CPU/memory cost
+KDF_R = 8        # block size
+KDF_P = 1        # parallelism
+KDF_DKLEN = 32   # derived key length (bytes)
+KDF_MAXMEM = 64 * 1024 * 1024  # 64 MiB
 
 IGNORED_SCAN = {
     ".git",
@@ -44,11 +64,19 @@ IGNORED_SCAN = {
 }
 
 
-def _sha256_bytes(data: bytes) -> str:
+def _content_digest(data: bytes) -> str:
+    """SHA256 over NON-SECRET content bytes, for integrity only.
+
+    This is not a credential/passphrase derivation: the input is the archived
+    file's plaintext bytes (or the manifest), never a secret key or salt. It is
+    named distinctly from the KDF so static analysis and readers can tell the
+    two apart.
+    """
     return hashlib.sha256(data).hexdigest()
 
 
-def _sha256_file(path: Path) -> str:
+def _content_digest_file(path: Path) -> str:
+    """Streaming SHA256 integrity digest over a file's NON-SECRET bytes."""
     h = hashlib.sha256()
     with open(path, "rb") as f:
         for chunk in iter(lambda: f.read(1024 * 1024), b""):
@@ -56,32 +84,37 @@ def _sha256_file(path: Path) -> str:
     return h.hexdigest()
 
 
-def _default_passphrase(*, legacy: bool = False) -> str:
-    """Derive the GPG passphrase.
+def _secret_material() -> Tuple[bytes, str]:
+    """Return (secret_bytes, source_label) for KDF input.
 
     Precedence:
-      1. Explicit ``FUSION_ARCHIV_GPG_PASSPHRASE`` (used verbatim).
-      2. When ``legacy`` verification is requested: sha256 of the private salt
-         supplied via ``FUSION_ARCHIVE_LEGACY_SALT``. Fails closed if that
-         variable is absent — the historical salt is intentionally not embedded.
-      3. Otherwise: sha256 of the neutral default salt (for new archives).
-
-    The salt / passphrase value is never logged or persisted; only its sha256
-    digest (already used as the passphrase hint) is recorded.
+      1. Explicit ``FUSION_ARCHIV_GPG_PASSPHRASE`` (recommended for real use).
+      2. The neutral, non-personal default salt (low entropy — dev/default only).
+    The secret is never logged or persisted; only the non-secret KDF salt and
+    parameters are recorded in the manifest.
     """
     explicit = os.getenv(GPG_PASSPHRASE_ENV)
     if explicit:
-        return explicit
-    if legacy:
-        legacy_salt = os.getenv(LEGACY_SALT_ENV)
-        if not legacy_salt:
-            raise SystemExit(
-                f"Legacy archive verification requested but {LEGACY_SALT_ENV} is not set. "
-                "Provide the private legacy salt via that environment variable "
-                "(never committed, never logged)."
-            )
-        return _sha256_bytes(legacy_salt.encode())
-    return _sha256_bytes(DEFAULT_PASSPHRASE_SALT.encode())
+        return explicit.encode("utf-8"), "env:FUSION_ARCHIV_GPG_PASSPHRASE"
+    return DEFAULT_PASSPHRASE_SALT.encode("utf-8"), "default-salt"
+
+
+def _derive_passphrase(secret: bytes, kdf_salt: bytes) -> str:
+    """Derive the GPG passphrase from secret material via scrypt (KDF v2).
+
+    Memory-hard, versioned, and salted with a random per-archive salt. Returns
+    a base64 text passphrase suitable for GPG's ``--passphrase``.
+    """
+    derived = hashlib.scrypt(
+        secret,
+        salt=kdf_salt,
+        n=KDF_N,
+        r=KDF_R,
+        p=KDF_P,
+        dklen=KDF_DKLEN,
+        maxmem=KDF_MAXMEM,
+    )
+    return base64.b64encode(derived).decode("ascii")
 
 
 def _gpg_encrypt(data: bytes, passphrase: str) -> str:
@@ -192,24 +225,29 @@ def _rel(path: Path) -> str:
 def anchor_files(
     files: List[Path],
     out_dir: Path,
-    passphrase: str,
+    secret: bytes,
+    source_label: str,
 ) -> Dict[str, Any]:
     out_dir.mkdir(parents=True, exist_ok=True)
     blobs_dir = out_dir / "blobs"
     blobs_dir.mkdir(exist_ok=True)
 
+    # Random, non-secret per-archive KDF salt (stored in the manifest).
+    kdf_salt = os.urandom(16)
+    passphrase = _derive_passphrase(secret, kdf_salt)
+
     entries: List[Dict[str, Any]] = []
     for path in files:
         rel = _rel(path)
         data = path.read_bytes()
-        digest = _sha256_bytes(data)
+        digest = _content_digest(data)
         armored = _gpg_encrypt(data, passphrase)
         obf = _obfuscate_armored(armored, digest)
         blob_name = _safe_blob_name(rel, digest)
         blob_path = blobs_dir / blob_name
         header = (
             "-----BEGIN FUSION ARCHIV OBF-----\n"
-            f"Version: 1\nSHA256: {digest}\nPath: {rel}\n"
+            f"Version: 2\nSHA256: {digest}\nPath: {rel}\n"
             "Cipher: AES256\nObfuscation: interleaved_sha256_b64rev\n"
             "-----BEGIN OBFUSCATED PAYLOAD-----\n"
         )
@@ -226,16 +264,28 @@ def anchor_files(
         })
 
     manifest = {
-        "archiv_version": "1.0",
+        "archiv_version": "2.0",
         "created_at": datetime.now(timezone.utc).isoformat(),
         "repo": "fusion-hero-os",
-        "algorithm": "sha256+gpg-aes256+obfuscation",
-        "passphrase_hint": "sha256(FUSION_ARCHIV_GPG_PASSPHRASE or default salt)",
-        "passphrase_sha256": _sha256_bytes(passphrase.encode()),
+        "algorithm": "scrypt-kdf+gpg-aes256+obfuscation",
+        # Non-secret KDF descriptor. The passphrase is derived via scrypt from
+        # secret material + this salt; neither the secret nor the derived
+        # passphrase is stored here.
+        "kdf": {
+            "name": KDF_NAME,
+            "version": KDF_VERSION,
+            "n": KDF_N,
+            "r": KDF_R,
+            "p": KDF_P,
+            "dklen": KDF_DKLEN,
+            "salt_b64": base64.b64encode(kdf_salt).decode("ascii"),
+            "secret_source": source_label,
+            "output": "base64",
+        },
         "entry_count": len(entries),
         "entries": entries,
     }
-    manifest["manifest_sha256"] = _sha256_bytes(
+    manifest["manifest_sha256"] = _content_digest(
         json.dumps(entries, sort_keys=True, ensure_ascii=False).encode()
     )
     (out_dir / "manifest.json").write_text(
@@ -244,22 +294,27 @@ def anchor_files(
     )
 
     recover = """#!/usr/bin/env bash
-# RECOVER.sh — Stellt archivierte Dateien aus .obf-Blobs wieder her.
-# Passphrase-Ableitung (kein Geheimnis im Skript):
-#   1. FUSION_ARCHIV_GPG_PASSPHRASE (verbatim), sonst
-#   2. sha256(FUSION_ARCHIVE_LEGACY_SALT) fuer pre-v10 Archive, sonst
-#   3. sha256 des neutralen Default-Salts.
+# RECOVER.sh — Stellt archivierte Dateien aus .obf-Blobs wieder her (archiv_version 2.0).
+# Kein Geheimnis im Skript: der GPG-Passphrase wird per scrypt aus geheimem
+# Material + dem im manifest.json hinterlegten (nicht-geheimen) Salt abgeleitet.
+#   Geheim-Material: FUSION_ARCHIV_GPG_PASSPHRASE, sonst neutraler Default-Salt.
 set -euo pipefail
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PASS="${FUSION_ARCHIV_GPG_PASSPHRASE:-}"
-if [ -z "$PASS" ]; then
-  SALT="${FUSION_ARCHIVE_LEGACY_SALT:-fusion-hero-os|archiv|v10}"
-  PASS="$(SALT="$SALT" python3 - <<'PY'
-import hashlib, os
-print(hashlib.sha256(os.environ["SALT"].encode()).hexdigest())
+PASS="$(python3 - "$DIR" <<'PY'
+import base64, hashlib, json, os, sys
+root = sys.argv[1]
+with open(os.path.join(root, "manifest.json"), encoding="utf-8") as fh:
+    kdf = json.load(fh)["kdf"]
+secret = os.getenv("FUSION_ARCHIV_GPG_PASSPHRASE", "fusion-hero-os|archiv|v10").encode()
+derived = hashlib.scrypt(
+    secret,
+    salt=base64.b64decode(kdf["salt_b64"]),
+    n=kdf["n"], r=kdf["r"], p=kdf["p"], dklen=kdf["dklen"],
+    maxmem=64 * 1024 * 1024,
+)
+print(base64.b64encode(derived).decode("ascii"))
 PY
 )"
-fi
 python3 "$(dirname "$DIR")/recover_obfuscated.py" --root "$DIR" --passphrase "$PASS" "$@"
 """
     (out_dir / "RECOVER.sh").write_text(recover, encoding="utf-8")
@@ -272,15 +327,6 @@ def main() -> int:
     parser = argparse.ArgumentParser(description="Anchor uncommitted files to archiv/obfuscated")
     parser.add_argument("--include-ignored", action="store_true", help="Also archive .fusion, internal_llm, workstation/.env")
     parser.add_argument("--stamp", default=datetime.now(timezone.utc).strftime("%Y-%m-%d_%H%M%S"))
-    parser.add_argument(
-        "--legacy-salt",
-        action="store_true",
-        help=(
-            "Derive the passphrase from the private legacy salt in "
-            f"{LEGACY_SALT_ENV} (for verifying pre-v10 archives). Fails closed "
-            "if the variable is unset."
-        ),
-    )
     args = parser.parse_args()
 
     files = _git_uncommitted(include_ignored=args.include_ignored)
@@ -289,8 +335,8 @@ def main() -> int:
         return 0
 
     out_dir = ARCHIV_ROOT / args.stamp
-    passphrase = _default_passphrase(legacy=args.legacy_salt)
-    manifest = anchor_files(files, out_dir, passphrase)
+    secret, source_label = _secret_material()
+    manifest = anchor_files(files, out_dir, secret, source_label)
 
     latest = ARCHIV_ROOT / "latest"
     if latest.exists() or latest.is_symlink():
