@@ -94,6 +94,10 @@ class HeroicDocsHandler(http.server.SimpleHTTPRequestHandler):
             self.send_erkenntnisse_status()
         elif self.path in ("/mainframe/ops/status", "/mainframe/cost/status"):
             self.send_mainframe_ops_status()
+        elif self.path in ("/mainframe/energy/status", "/mainframe/energy/pricing"):
+            self.send_mainframe_energy_status()
+        elif self.path == "/businessplan":
+            self.send_businessplan_status()
         else:
             super().do_GET()
 
@@ -289,18 +293,51 @@ class HeroicDocsHandler(http.server.SimpleHTTPRequestHandler):
             self._send_json({"ok": False, "error": str(e)}, 400)
 
     def send_mainframe_ops_status(self):
-        """Kostenanalyse + Repo-Spiegelung (JSON für Mesh-Peers)."""
+        """Kostenanalyse + Energie + Repo-Spiegelung (JSON für Mesh-Peers)."""
         try:
             code_root = Path(__file__).resolve().parent / "03_Code"
             if str(code_root) not in sys.path:
                 sys.path.insert(0, str(code_root))
             from core.mainframe_cost_analysis_daemon import get_cost_daemon
+            from core.mainframe_energy_pricing_daemon import get_energy_daemon
             from core.repo_mirror_correction_daemon import get_mirror_daemon
+            energy = get_energy_daemon().status()
             self._send_json({
                 "cost": get_cost_daemon().status(),
+                "energy": energy,
+                "subcontractor_pricing": energy.get("subcontractor_pricing"),
                 "repo_mirror": get_mirror_daemon().status(),
                 "mode": "mirror_and_os_daemon_correction",
             })
+        except Exception as e:
+            self._send_json({"ok": False, "error": str(e)}, 500)
+
+    def send_mainframe_energy_status(self):
+        """Energie/FEU + Subunternehmer-Token-Preise."""
+        try:
+            code_root = Path(__file__).resolve().parent / "03_Code"
+            if str(code_root) not in sys.path:
+                sys.path.insert(0, str(code_root))
+            from core.mainframe_energy_pricing_daemon import get_energy_daemon
+            status = get_energy_daemon().status()
+            if self.path.endswith("/pricing"):
+                self._send_json({
+                    "subcontractor_pricing": status.get("subcontractor_pricing"),
+                    "snapshot": status.get("snapshot"),
+                })
+            else:
+                self._send_json(status)
+        except Exception as e:
+            self._send_json({"ok": False, "error": str(e)}, 500)
+
+    def send_businessplan_status(self):
+        """Businessplan-Anker (YAML-Inhalt maschinenlesbar)."""
+        try:
+            code_root = Path(__file__).resolve().parent / "03_Code"
+            if str(code_root) not in sys.path:
+                sys.path.insert(0, str(code_root))
+            from core.mainframe_energy_pricing_daemon import load_businessplan
+            self._send_json(load_businessplan())
         except Exception as e:
             self._send_json({"ok": False, "error": str(e)}, 500)
 

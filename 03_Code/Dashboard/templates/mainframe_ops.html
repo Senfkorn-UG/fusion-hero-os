@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mainframe Ops — Kosten · Repo · Spiegelung</title>
+  <title>Mainframe Ops — Kosten · Energie · Repo · Spiegelung</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.1/dist/echarts.min.js"></script>
   <link rel="stylesheet" href="/static/style.css">
@@ -25,7 +25,7 @@
       <h1 class="text-2xl md:text-3xl font-bold bg-gradient-to-r from-teal-300 to-amber-300 bg-clip-text text-transparent">
         Mainframe Ops Center
       </h1>
-      <p class="text-sm text-slate-400 mt-1">Dauer-Kostenanalyse · Repo-Struktur · OS-Daemon-Korrektur (ohne Mauseingabe)</p>
+      <p class="text-sm text-slate-400 mt-1">Realkosten · FEU/Energie · Subunternehmer-Token-Preise · Repo · OS-Daemon-Korrektur</p>
     </div>
     <div class="flex items-center gap-4 text-sm">
       <span class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-teal-400 pulse-dot"></span> Live</span>
@@ -34,7 +34,7 @@
     </div>
   </header>
 
-  <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-5">
+  <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-5">
     <div class="ops-card p-4">
       <div class="text-xs text-slate-500 uppercase tracking-wider">Monat (geschätzt)</div>
       <div id="m-month" class="ops-metric text-3xl text-teal-300 mt-1">—</div>
@@ -46,9 +46,19 @@
       <div class="text-xs text-slate-500 mt-1">EUR/h aktuell</div>
     </div>
     <div class="ops-card p-4">
-      <div class="text-xs text-slate-500 uppercase tracking-wider">GKE Pods</div>
-      <div id="m-pods" class="ops-metric text-3xl text-violet-300 mt-1">—</div>
-      <div class="text-xs text-slate-500 mt-1">Running / Pending</div>
+      <div class="text-xs text-slate-500 uppercase tracking-wider">kWh-Äquivalent</div>
+      <div id="m-kwh" class="ops-metric text-3xl text-emerald-300 mt-1">—</div>
+      <div class="text-xs text-slate-500 mt-1">Netz + PUE/h</div>
+    </div>
+    <div class="ops-card p-4">
+      <div class="text-xs text-slate-500 uppercase tracking-wider">FEU/h</div>
+      <div id="m-feu" class="ops-metric text-3xl text-cyan-300 mt-1">—</div>
+      <div class="text-xs text-slate-500 mt-1">Fusion Energy Units</div>
+    </div>
+    <div class="ops-card p-4">
+      <div class="text-xs text-slate-500 uppercase tracking-wider">API / 1k Tokens</div>
+      <div id="m-token-price" class="ops-metric text-3xl text-lime-300 mt-1">—</div>
+      <div class="text-xs text-slate-500 mt-1">Subunternehmer Standard</div>
     </div>
     <div class="ops-card p-4">
       <div class="text-xs text-slate-500 uppercase tracking-wider">Repo Drift</div>
@@ -63,8 +73,20 @@
       <div id="cost-chart" class="chart-box"></div>
     </div>
     <div class="ops-card p-4">
+      <h2 class="text-sm tracking-widest text-emerald-400 mb-2">ENERGIE / FEU (Realkosten)</h2>
+      <div id="energy-chart" class="chart-box"></div>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-5">
+    <div class="ops-card p-4">
       <h2 class="text-sm tracking-widest text-amber-400 mb-2">BREAKDOWN</h2>
       <div id="breakdown-chart" class="chart-box"></div>
+    </div>
+    <div class="ops-card p-4">
+      <h2 class="text-sm tracking-widest text-lime-400 mb-2">SUBUNTERNEHMER API-TOKEN-PREISE</h2>
+      <p class="text-xs text-slate-500 mb-2">Businessplan <span id="bp-version" class="text-slate-400">—</span> · Marge inkl.</p>
+      <div id="pricing-table" class="text-xs font-mono overflow-x-auto"></div>
     </div>
   </div>
 
@@ -82,7 +104,7 @@
   </div>
 
   <footer class="text-center text-[10px] text-slate-600 py-6">
-    Mainframe Ops v1 · ECharts 5 · Daemon-Intervalle via FUSION_COST_ANALYSIS_INTERVAL_SEC / FUSION_REPO_MIRROR_INTERVAL_SEC
+    Mainframe Ops v1.1 · ECharts 5 · FUSION_COST / FUSION_ENERGY / FUSION_REPO_MIRROR
   </footer>
   <script src="/static/mainframe_ops.js"></script>
 </body>

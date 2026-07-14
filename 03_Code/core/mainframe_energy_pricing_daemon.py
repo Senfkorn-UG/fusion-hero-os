@@ -204,14 +204,18 @@ class MainframeEnergyPricingDaemon:
             return {"ok": False, "error": f"unknown tier: {tier}", "available": list(pricing.keys())}
         units_1k = max(1, tokens // 1000)
         price = round(t["api_price_eur_per_1k_tokens"] * units_1k, 4)
+        eur_h = self._last.eur_hour_real if self._last else 0.0
+        feu_equiv = round(price * float((self._last.subcontractor_pricing or {}).get("tiers", {}).get(tier, {}).get("feu_per_1k_tokens", 0) or 0) / max(t["api_price_eur_per_1k_tokens"], 1e-9), 2) if self._last else 0.0
+        if eur_h <= 0:
+            feu_equiv = round(price * 100, 2)  # 1 FEU ≈ 0.01 EUR bei Idle-Basis
         return {
             "ok": True,
             "tier": tier,
             "tokens": tokens,
             "price_eur": price,
             "price_per_1k": t["api_price_eur_per_1k_tokens"],
-            "real_cost_basis_eur_hour": self._last.eur_hour_real if self._last else 0,
-            "feu_equivalent": round((price / max(self._last.eur_hour_real, 1e-9)) * 100, 2) if self._last else 0,
+            "real_cost_basis_eur_hour": eur_h,
+            "feu_equivalent": feu_equiv,
             "company": "Senfkorn UG",
             "valid_at": self._last.ts if self._last else time.time(),
         }

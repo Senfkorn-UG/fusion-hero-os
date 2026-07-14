@@ -1353,6 +1353,13 @@ try:
 except Exception as _ops_err:
     print(f"[API] Mainframe ops routes note: {_ops_err}")
 
+# === Businessplan + Energie/Subunternehmer-Preise ===
+try:
+    from business_plan_routes import router as _bp_router
+    app.include_router(_bp_router)
+except Exception as _bp_err:
+    print(f"[API] Business plan routes note: {_bp_err}")
+
 # === Alle Module + fehlende Endpunkte freigeben ===
 try:
     from api_extensions import router as _extensions_router

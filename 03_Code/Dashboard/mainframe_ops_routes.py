@@ -47,13 +47,18 @@ async def api_repo_tick():
 @router.get("/api/mainframe/ops/summary")
 async def api_ops_summary():
     from core.mainframe_cost_analysis_daemon import get_cost_daemon
+    from core.mainframe_energy_pricing_daemon import get_energy_daemon
     from core.repo_mirror_correction_daemon import get_mirror_daemon
 
     cost = await asyncio.to_thread(get_cost_daemon().status)
     repo = await asyncio.to_thread(get_mirror_daemon().status)
+    energy = await asyncio.to_thread(get_energy_daemon().status)
     return {
         "cost": cost,
+        "energy": energy,
         "repo_mirror": repo,
+        "businessplan_version": energy.get("businessplan", {}).get("businessplan_version"),
+        "subcontractor_pricing": energy.get("subcontractor_pricing"),
         "mode": "mirror_and_os_daemon_correction",
         "ui": "read_only_display",
     }

@@ -1,10 +1,12 @@
-/* Mainframe Ops — live cost + repo mirror dashboard */
+/* Mainframe Ops — live cost + energy + repo mirror dashboard */
 (function () {
   const costChart = echarts.init(document.getElementById('cost-chart'));
+  const energyChart = echarts.init(document.getElementById('energy-chart'));
   const breakdownChart = echarts.init(document.getElementById('breakdown-chart'));
   const repoChart = echarts.init(document.getElementById('repo-chart'));
 
   const fmtEur = (n) => (n == null || isNaN(n) ? '—' : `${Number(n).toFixed(2)} €`);
+  const fmtNum = (n, d = 2) => (n == null || isNaN(n) ? '—' : Number(n).toFixed(d));
 
   function renderCostHistory(history) {
     const times = (history || []).map((h) => new Date(h.ts * 1000).toLocaleTimeString('de-DE'));
@@ -25,6 +27,54 @@
         { name: 'EUR/h', type: 'line', yAxisIndex: 1, smooth: true, data: hour, itemStyle: { color: '#fbbf24' } },
       ],
     });
+  }
+
+  function renderEnergyHistory(history) {
+    const times = (history || []).map((h) => new Date(h.ts * 1000).toLocaleTimeString('de-DE'));
+    const kwh = (history || []).map((h) => h.energy_kwh_equivalent);
+    const feu = (history || []).map((h) => h.feu_per_hour);
+    const eurH = (history || []).map((h) => h.eur_hour_real);
+    energyChart.setOption({
+      backgroundColor: 'transparent',
+      tooltip: { trigger: 'axis' },
+      legend: { data: ['kWh-Äq/h', 'FEU/h', 'EUR/h real'], textStyle: { color: '#94a3b8' } },
+      grid: { left: 48, right: 24, top: 40, bottom: 32 },
+      xAxis: { type: 'category', data: times, axisLabel: { color: '#64748b', fontSize: 10 } },
+      yAxis: [
+        { type: 'value', name: 'kWh', axisLabel: { color: '#64748b' }, splitLine: { lineStyle: { color: '#1e293b' } } },
+        { type: 'value', name: 'FEU/EUR', axisLabel: { color: '#64748b' }, splitLine: { show: false } },
+      ],
+      series: [
+        { name: 'kWh-Äq/h', type: 'line', smooth: true, data: kwh, areaStyle: { opacity: 0.12 }, itemStyle: { color: '#34d399' } },
+        { name: 'FEU/h', type: 'line', yAxisIndex: 1, smooth: true, data: feu, itemStyle: { color: '#22d3ee' } },
+        { name: 'EUR/h real', type: 'line', yAxisIndex: 1, smooth: true, data: eurH, itemStyle: { color: '#fbbf24' } },
+      ],
+    });
+  }
+
+  function renderPricingTable(pricing, bp) {
+    const el = document.getElementById('pricing-table');
+    const tiers = pricing?.tiers || {};
+    const rows = Object.entries(tiers).map(([id, t]) => `
+      <tr class="border-b border-slate-800/80">
+        <td class="py-2 pr-3 text-teal-300/90">${t.label || id}</td>
+        <td class="py-2 pr-3 text-right text-lime-300">${fmtEur(t.api_price_eur_per_1k_tokens)}</td>
+        <td class="py-2 pr-3 text-right text-slate-400">${fmtEur(t.real_cost_eur_per_1k_tokens)}</td>
+        <td class="py-2 text-right text-slate-500">${(t.tokens_per_hour_capacity || 0).toLocaleString('de-DE')}</td>
+      </tr>`).join('');
+    el.innerHTML = `
+      <table class="w-full">
+        <thead><tr class="text-slate-500 border-b border-slate-700">
+          <th class="text-left py-1">Tier</th>
+          <th class="text-right py-1">API/1k</th>
+          <th class="text-right py-1">Real/1k</th>
+          <th class="text-right py-1">Tok/h</th>
+        </tr></thead>
+        <tbody>${rows || '<tr><td colspan="4" class="text-slate-500 py-4">Keine Preisdaten</td></tr>'}</tbody>
+      </table>
+      <p class="text-slate-600 mt-2">Basis EUR/h: ${fmtEur(pricing?.eur_hour_basis)} · Marge ${((pricing?.margin_pct || 0) * 100).toFixed(0)}%</p>`;
+    const ver = document.getElementById('bp-version');
+    if (ver) ver.textContent = bp?.businessplan_version || pricing?.company || '—';
   }
 
   function renderBreakdown(snap) {
@@ -86,23 +136,38 @@
 
   async function refresh() {
     try {
-      const [costRes, repoRes] = await Promise.all([
+      const [costRes, energyRes, repoRes] = await Promise.all([
         fetch('/api/mainframe/cost/status'),
+        fetch('/api/mainframe/energy/status'),
         fetch('/api/mainframe/repo/status'),
       ]);
       const cost = await costRes.json();
+      const energy = await energyRes.json();
       const repo = await repoRes.json();
       const snap = cost.snapshot || {};
+      const esnap = energy.snapshot || {};
+      const pricing = energy.subcontractor_pricing || esnap.subcontractor_pricing || {};
+
       document.getElementById('m-month').textContent = fmtEur(snap.total_eur_month_est);
       document.getElementById('m-hour').textContent = fmtEur(snap.total_eur_hour_burn);
-      const gke = snap.breakdown?.gke || {};
-      document.getElementById('m-pods').textContent = `${gke.pods_running ?? 0} / ${gke.pods_pending ?? 0}`;
+      document.getElementById('m-kwh').textContent = fmtNum(esnap.energy_kwh_equivalent, 3);
+      document.getElementById('m-feu').textContent = fmtNum(esnap.feu_per_hour, 1);
+      document.getElementById('m-token-price').textContent = fmtEur(
+        pricing.headline_price_eur_per_1k_tokens ?? pricing.tiers?.inference_standard?.api_price_eur_per_1k_tokens
+      );
+
       renderCostHistory(cost.history || []);
+      renderEnergyHistory(energy.history || []);
       renderBreakdown(snap);
+      renderPricingTable(pricing, energy.businessplan);
       renderRepoSunburst(repo.sunburst || []);
       renderCorrections(repo);
-      const alerts = (snap.alerts || []).join(' · ');
-      document.getElementById('alerts').textContent = alerts;
+
+      const gke = snap.breakdown?.gke || {};
+      const costAlerts = (snap.alerts || []).join(' · ');
+      const energyAlerts = (esnap.alerts || []).join(' · ');
+      const podInfo = `GKE ${gke.pods_running ?? 0}/${gke.pods_pending ?? 0} pods`;
+      document.getElementById('alerts').textContent = [podInfo, costAlerts, energyAlerts].filter(Boolean).join(' · ');
     } catch (e) {
       console.warn('mainframe_ops refresh', e);
     }
@@ -112,6 +177,7 @@
   setInterval(refresh, 15000);
   window.addEventListener('resize', () => {
     costChart.resize();
+    energyChart.resize();
     breakdownChart.resize();
     repoChart.resize();
   });
