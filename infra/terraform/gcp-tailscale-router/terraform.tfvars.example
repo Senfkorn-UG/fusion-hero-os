@@ -1,0 +1,6 @@
+project_id         = "your-gcp-project-id"
+region             = "europe-west3"
+zone               = "europe-west3-a"
+subnet_cidr        = "10.0.1.0/24"
+advertise_exit_node = true
+# tailscale_auth_key = "tskey-auth-..."  # set via TF_VAR_tailscale_auth_key or -var

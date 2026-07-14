@@ -1,0 +1,30 @@
+#!/bin/bash
+set -euo pipefail
+
+SUBNET_CIDR="${subnet_cidr}"
+AUTH_KEY="${tailscale_auth_key}"
+INSTANCE_NAME="${instance_name}"
+ADVERTISE_EXIT="${advertise_exit_node}"
+
+sysctl -w net.ipv4.ip_forward=1
+sysctl -w net.ipv6.conf.all.forwarding=1
+grep -q '^net.ipv4.ip_forward' /etc/sysctl.conf || echo 'net.ipv4.ip_forward = 1' >> /etc/sysctl.conf
+grep -q '^net.ipv6.conf.all.forwarding' /etc/sysctl.conf || echo 'net.ipv6.conf.all.forwarding = 1' >> /etc/sysctl.conf
+
+if ! command -v tailscale >/dev/null 2>&1; then
+  curl -fsSL https://tailscale.com/install.sh | sh
+fi
+
+systemctl enable --now tailscaled
+
+UP_ARGS=(--hostname="$INSTANCE_NAME" --advertise-routes="$SUBNET_CIDR" --accept-routes)
+if [ "$ADVERTISE_EXIT" = "true" ]; then
+  UP_ARGS+=(--advertise-exit-node)
+fi
+
+if [ -n "$AUTH_KEY" ]; then
+  tailscale up --auth-key="$AUTH_KEY" "$${UP_ARGS[@]}"
+else
+  echo "Tailscale installed. Register manually:"
+  echo "  sudo tailscale up --advertise-routes=$SUBNET_CIDR $${ADVERTISE_EXIT:+--advertise-exit-node}"
+fi
