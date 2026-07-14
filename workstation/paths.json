@@ -35,8 +35,8 @@
                       "nodes":  {
                                     "mainframe":  {
                                                       "role":  "orchestrator",
-                                                      "hostname":  "desktop-kpki9e4",
-                                                      "magicdns":  "host.example.ts.net",
+                                                      "hostname":  "mainframe-host",
+                                                      "magicdns":  "mainframe-host.example.ts.net",
                                                       "platform":  "windows",
                                                       "canonical":  true,
                                                       "aliases":  [
@@ -52,13 +52,13 @@
                                     "desktop":  {
                                                     "role":  "grok-workstation",
                                                     "alias_of":  "mainframe",
-                                                    "hostname":  "desktop-kpki9e4",
-                                                    "magicdns":  "host.example.ts.net",
+                                                    "hostname":  "mainframe-host",
+                                                    "magicdns":  "mainframe-host.example.ts.net",
                                                     "platform":  "windows"
                                                 },
                                     "phone":  {
-                                                  "hostname":  "phone-node",
-                                                  "magicdns":  "host.example.ts.net",
+                                                  "hostname":  "mobile-node",
+                                                  "magicdns":  "mobile-node.example.ts.net",
                                                   "platform":  "android",
                                                   "role":  "mobile-client",
                                                   "login_required":  "user@example.com",
@@ -67,7 +67,7 @@
                                     "legacy-linux":  {
                                                          "role":  "archived",
                                                          "hostname":  "mainframe",
-                                                         "magicdns":  "host.example.ts.net",
+                                                         "magicdns":  "mainframe-host.example.ts.net",
                                                          "platform":  "linux",
                                                          "status":  "offline",
                                                          "note":  "FrÃ¼herer Linux-Knoten â€” Mainframe auf Windows-Desktop"

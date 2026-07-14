@@ -74,15 +74,15 @@ nodes:
   mainframe:
     role: orchestrator
     hosts: [hero-docs-server, tailscale-control, fusion-integration-hub]
-    magicdns: host.example.ts.net
+    magicdns: mainframe-host.example.ts.net
   desktop:
     role: grok-workstation
     hosts: [grok-cli, mcp-bridges, llm-frameworks]
-    magicdns: host.example.ts.net
+    magicdns: mainframe-host.example.ts.net
   phone:
     role: mobile-client
     hosts: [tailscale-app]
-    magicdns: host.example.ts.net
+    magicdns: mobile-node.example.ts.net
     reachable_from: [desktop, mainframe]
     can_reach:
       - desktop:8000

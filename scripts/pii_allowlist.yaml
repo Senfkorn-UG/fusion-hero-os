@@ -1,0 +1,34 @@
+# PII / secret scanner allowlist.
+#
+# Two sections:
+#   allow_literals: exact strings (or "rule:match") that are documentation
+#                   examples or neutral placeholders and are safe to keep.
+#   allow_paths:    glob patterns for files exempt from scanning (e.g. legacy
+#                   archives pending a separate cleanup PR, or fixtures that
+#                   deliberately contain example-shaped strings).
+#
+# Keep this list minimal and justified. Prefer replacing real PII with neutral
+# placeholders over allowlisting it.
+
+allow_literals:
+  # Documentation / neutral placeholder emails.
+  - "user@example.com"
+  - "you@example.com"
+  - "admin@example.com"
+  # Documentation-reserved / neutral hostnames + placeholders used after scrub.
+  - "device.example.ts.net"
+  - "mainframe-host.example.ts.net"
+  - "mobile-node.example.ts.net"
+  - "https://project-ref.supabase.co"
+  - "project-ref.supabase.co"
+
+allow_paths:
+  # Legacy source archives are scheduled for a dedicated cleanup PR (Stage 2).
+  # They are not part of the Stage-1 vertical slice and would otherwise flood
+  # the gate; tracked as a known item in the honesty ledger.
+  - "legacy_sources/**"
+  - "src/normal_os/06_Master_Archive/**"
+  # Persona-identifier package paths: renaming these would break imports and is
+  # deferred to a dedicated refactor PR (Stage 2). See docs/meta_neural/HONESTY_LEDGER.md.
+  - "fusion_hero_os/modules/alte_frau_95g/**"
+  - "src/normal_os/**"

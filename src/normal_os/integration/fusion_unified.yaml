@@ -43,31 +43,31 @@ layers:
 nodes:
   mainframe:
     role: orchestrator
-    hostname: desktop-kpki9e4
+    hostname: mainframe-host
     hosts: [fusion-dashboard, hero-docs-server, normalos-bridge, tailscale-control, fusion-integration-hub, grok-cli, mcp-bridges]
-    magicdns: host.example.ts.net
+    magicdns: mainframe-host.example.ts.net
     platform: windows
     canonical: true
   desktop:
     role: grok-workstation
     alias_of: mainframe
     hosts: [grok-cli, mcp-bridges, llm-frameworks]
-    magicdns: host.example.ts.net
+    magicdns: mainframe-host.example.ts.net
   phone:
     role: mobile-client
     hosts: [tailscale-app]
-    magicdns: host.example.ts.net
+    magicdns: mobile-node.example.ts.net
     reachable_from: [mainframe, desktop]
     can_reach:
-      - desktop-kpki9e4:8000
-      - desktop-kpki9e4:8088
-      - desktop-kpki9e4:8765
+      - mainframe-host:8000
+      - mainframe-host:8088
+      - mainframe-host:8765
     login_hint: "Gleicher Login wie Desktop (Google user@example.com), nicht GitHub"
 
   legacy-linux:
     role: archived
     hostname: mainframe
-    magicdns: host.example.ts.net
+    magicdns: mainframe-host.example.ts.net
     platform: linux
     status: offline
 

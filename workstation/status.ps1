@@ -16,7 +16,7 @@ Write-Host "[Disk] C: frei: $freeGb GB" -ForegroundColor $(if ($freeGb -lt 20) {
 
 # Tailscale + Mesh-Peers
 Write-Host "[Tailscale Mesh]" -ForegroundColor Cyan
-$mainframeHost = "desktop-kpki9e4"
+$mainframeHost = "mainframe-host"
 $rolesScript = Join-Path $FusionRoot "src\normal_os\integration\mesh_roles.py"
 if (Test-Path $rolesScript) {
     try {
@@ -40,7 +40,7 @@ if ($tsJson -and $tsJson.Self.Online) {
             Write-Host "  Peer: $($p.DNSName) ($($p.OS)) $state" -ForegroundColor $color
         }
     }
-    $phoneExpected = "phone-node"
+    $phoneExpected = "mobile-node"
     $phoneFound = $false
     if ($tsJson.Peer) {
         $tsJson.Peer.PSObject.Properties | ForEach-Object {
