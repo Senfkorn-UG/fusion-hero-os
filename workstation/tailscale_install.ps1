@@ -13,8 +13,10 @@ if (-not (Test-Path $tsPath)) {
 
 Write-Host "Tailscale found at $tsPath" -ForegroundColor Green
 
-$authKey = if ($env:TS_AUTHKEY) { $env:TS_AUTHKEY } else {
-    "tskey-auth-kfffkrbmhF11CNTRL-srWw54orSqToi6yGMjfSqTFyk1PE6hsmT"
+if (-not $env:TS_AUTHKEY) {
+    Write-Host "Set TS_AUTHKEY first (reusable key from login.tailscale.com/admin/settings/keys):" -ForegroundColor Yellow
+    Write-Host '  $env:TS_AUTHKEY="tskey-auth-..."' -ForegroundColor Yellow
+    exit 1
 }
 
 Write-Host "Running tailscale up --reset ..." -ForegroundColor Green
@@ -22,7 +24,7 @@ Write-Host "Running tailscale up --reset ..." -ForegroundColor Green
 $upArgs = @(
     "up",
     "--reset",
-    "--auth-key=$authKey",
+    "--auth-key=$env:TS_AUTHKEY",
     "--hostname=desktop-kpki9e4",
     "--accept-routes",
     "--unattended"
@@ -31,8 +33,6 @@ $upArgs = @(
 & $tsPath @upArgs
 if ($LASTEXITCODE -ne 0) {
     Write-Host "tailscale up failed (exit $LASTEXITCODE)." -ForegroundColor Red
-    Write-Host "Create a new reusable key: https://login.tailscale.com/admin/settings/keys" -ForegroundColor Yellow
-    Write-Host 'Then: $env:TS_AUTHKEY="tskey-auth-..."; .\tailscale_install.ps1' -ForegroundColor Yellow
     exit $LASTEXITCODE
 }
 
