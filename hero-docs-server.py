@@ -35,7 +35,7 @@ import base64
 import mimetypes
 from pathlib import Path
 
-PORT = 8088
+PORT = int(os.environ.get("FUSION_HERO_DOCS_PORT", "8088"))
 DIRECTORY = "."
 
 # Mesh registry import (same directory)

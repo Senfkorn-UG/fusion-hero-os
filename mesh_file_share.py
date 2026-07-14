@@ -116,7 +116,7 @@ def get_file_share_config() -> dict:
         "enabled": cfg.get("enabled", True),
         "zones": cfg.get("zones") or DEFAULT_ZONES,
         "phone_hostname_aliases": cfg.get("phone_hostname_aliases") or PHONE_HOST_ALIASES,
-        "serve_port": int(cfg.get("serve_port") or os.environ.get("FUSION_HERO_DOCS_PORT", 8088)),
+        "serve_port": int(os.environ.get("FUSION_HERO_DOCS_PORT") or cfg.get("serve_port") or os.environ.get("FUSION_HERO_DOCS_PORT", 8088)),
         "max_file_bytes": int(cfg.get("max_file_bytes", 25 * 1024 * 1024)),
     }
 
@@ -163,6 +163,11 @@ def ensure_filedrop_dirs() -> dict:
 
 
 def resolve_mainframe_base_url() -> str:
+    port = get_file_share_config()["serve_port"]
+    data = _tailscale_json()
+    self_dns = (data.get("Self") or {}).get("DNSName", "").rstrip(".")
+    if self_dns:
+        return f"http://{self_dns}:{port}"
     try:
         sys_path = ROOT / "src" / "normal_os" / "integration"
         import sys
