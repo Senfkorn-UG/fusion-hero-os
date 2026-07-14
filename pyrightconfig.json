@@ -21,5 +21,6 @@
   "reportPrivateImportUsage": "none",
   "reportOptionalCall": "none",
   "reportOptionalSubscript": "none",
-  "reportInvalidTypeForm": "none"
+  "reportInvalidTypeForm": "none",
+  "reportOptionalOperand": "none"
 }

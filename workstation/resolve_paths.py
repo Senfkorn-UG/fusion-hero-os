@@ -39,10 +39,10 @@ def resolve_paths(workstation: Optional[Path] = None) -> JsonDict:
     base_file = ws / "paths.json"
     if not base_file.exists():
         return {}
-    data = json.loads(base_file.read_text(encoding="utf-8"))
+    data = json.loads(base_file.read_text(encoding="utf-8-sig"))
     local_file = ws / "paths.local.json"
     if local_file.exists():
-        overlay = json.loads(local_file.read_text(encoding="utf-8"))
+        overlay = json.loads(local_file.read_text(encoding="utf-8-sig"))
         data = _deep_merge(data, overlay)
     return data
 
