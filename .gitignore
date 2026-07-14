@@ -75,6 +75,7 @@ workstation/_last_hub_status.json
 
 # Runtime / generated
 .fusion/
+data/sisyphos_history.json
 .wa_selenium_profile/
 Archiv_*.zip
 00_Uebersicht.md

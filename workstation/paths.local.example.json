@@ -12,6 +12,7 @@
         "magicdns": "DEIN-ANDROID-HOST.DEIN-TAILNET.ts.net",
         "login_required": "deine-email@example.com"
       }
-    }
+    },
+    "file_mirror_base": "http://DEIN-WINDOWS-HOST.DEIN-TAILNET.ts.net:8088/mesh/files/phone"
   }
 }

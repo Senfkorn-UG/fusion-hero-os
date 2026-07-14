@@ -496,6 +496,14 @@ def setup_mainframe_mesh(
         out["cloud_sync"] = sync_cloud_backends()
         out["steps"].append("cloud_sync")
 
+    if not dry_run:
+        try:
+            from mesh_file_share import sync_mesh_all
+            out["file_mirror_sync"] = sync_mesh_all(notify_phone=False)
+            out["steps"].append("file_mirror_sync")
+        except Exception as e:
+            out["file_mirror_sync"] = {"ok": False, "error": str(e)}
+
     out["virtual_exit_catalog"] = {
         pid: resolve_virtual_profile(pid)
         for pid in (exit_cfg.get("virtual_profiles") or {})

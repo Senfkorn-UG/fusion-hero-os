@@ -61,6 +61,11 @@ layers:
     health: /layers/status
     node: phone
     decision: non-root
+  file_share:
+    module: mesh_file_share
+    config: src/normal_os/integration/mesh_roles.yaml
+    health: /mesh/files/status
+    phone_portal: /mesh/files/phone
   knowledge:
     module: fusion_hero_os.core.layer_registry
     config:
@@ -81,18 +86,26 @@ nodes:
     magicdns: device.example.ts.net
   phone:
     role: mobile-client
-    hosts: [tailscale-app]
-    magicdns: mobile-node.example.ts.net
+    hostname: redmi-note-13-pro-5g
+    hostname_aliases: [phone-node, redmi-note-13-pro-5g, redmi]
+    hosts: [tailscale-app, mesh-files-portal]
+    magicdns: redmi-note-13-pro-5g.tail391adb.ts.net
     reachable_from: [desktop, mainframe]
     can_reach:
-      - desktop:8000
-      - desktop:8088
-      - desktop:8765
+      - desktop-kpki9e4:8088/mesh/files/phone
+      - desktop-kpki9e4:8088/mesh/files/manifest
+      - desktop-kpki9e4:8088/fusion/status
+      - desktop-kpki9e4:8765
     login_hint: "Gleicher Login wie Desktop (Google user@example.com), nicht GitHub"
+    file_mirror:
+      portal: /mesh/files/phone
+      manifest: /mesh/files/manifest
+      sync: /mesh/files/sync
 
 # Knoten-zu-Knoten Verknüpfungen (Mesh-Topologie)
 node_edges:
   - {from: phone, to: desktop, relation: tailscale_peer, services: [8000, 8088, 8765]}
+  - {from: phone, to: surface, relation: file_mirror, via: /mesh/files/phone}
   - {from: desktop, to: mainframe, relation: tailscale_peer, services: [hero-docs, ssh]}
   - {from: desktop, to: phone, relation: notify, via: tailscale-funnel}
   - {from: desktop, to: normalos_bridge, relation: local, port: 8765}
@@ -166,3 +179,6 @@ endpoints:
   highest_layer_vr: /highest-layer-vr
   layers: /layers/status
   erkenntnisse: /erkenntnisse/status
+  mesh_files: /mesh/files/status
+  mesh_files_phone: /mesh/files/phone
+  mesh_files_manifest: /mesh/files/manifest
