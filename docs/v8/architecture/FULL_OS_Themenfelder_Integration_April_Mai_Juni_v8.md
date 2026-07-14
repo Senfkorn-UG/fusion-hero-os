@@ -120,4 +120,4 @@ Das gesamte System ist jetzt chronologisch und architektonisch lückenlos abgebi
 
 **Vermerk**: Dieses konsolidierte Dokument ersetzt die vorherigen separaten April- und Mai/Juni-Dateien als zentrale Referenz. Alle Integrationen sind Layer 0-verankert und unterliegen dem High-Intellect Protocol.
 
-*Generated & committed via Grok v8/main Fusion Hero OS Protocol | Konsolidierte April + Mai/Juni Integration | User: St3phaN / Stephan95g | 2026-07-05*
+*Generated & committed via Grok v8/main Fusion Hero OS Protocol | Konsolidierte April + Mai/Juni Integration | User: 95guknow / fusionheroos | 2026-07-05*

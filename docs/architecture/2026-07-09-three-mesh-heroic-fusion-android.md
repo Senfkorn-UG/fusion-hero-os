@@ -24,7 +24,7 @@ This document captures the architecture decisions from the 2026-07-09 session re
 
 ### Devices
 - `desktop-kpki9e4` (Windows): Stable, Connected
-- `redmi-note-13-pro-5g` (Android): Unstable – frequent "Logged out" with `fetch control key: context canceled` error
+- `phone-node` (Android): Unstable – frequent "Logged out" with `fetch control key: context canceled` error
 
 ### Problem Analysis
 The Android client has recurring issues fetching the control key from Tailscale's control plane. This is a common Android + battery optimization + Doze mode problem.
@@ -51,7 +51,7 @@ Instead of three separate tailnets, we use **one primary tailnet** with strict s
 
 ### Goals
 - Transform the Redmi Note 13 Pro 5G into a **mobile Heroic Extension Node** of the Fusion Hero OS Mainframe
-- Deep visual identity (Heroic / Cyberpunk Campfire / Mister Jailbait aesthetic) at SystemUI level
+- Deep visual identity (Heroic / Cyberpunk Campfire / Mister Contributor aesthetic) at SystemUI level
 - Functional integration of `pc-handy-bridge` v8.1 and `phonelink-control` v8.2
 - System-level heroic core services (quick tiles, background processes, theory tools)
 
@@ -66,7 +66,7 @@ Instead of three separate tailnets, we use **one primary tailnet** with strict s
 - [ ] Deploy Heroic Fusion Android Magisk modules
 - [ ] Implement pc-handy-bridge Android side
 - [ ] Create Tailscale ACL policy for the three zones
-- [ ] Visual identity assets (mister-jailbait-protocol)
+- [ ] Visual identity assets (mister-Contributor-protocol)
 
 ## References
 - Conversation 2026-07-09 (Tailscale issues, three-mesh vision, Android rollout)

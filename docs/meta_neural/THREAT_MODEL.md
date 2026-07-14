@@ -57,6 +57,31 @@ local-only and in-memory; no network persistence is enabled by default.
   appended as lawful evidence of deletion; no subject content is retained.
 - **Privacy by default:** local-only, fail-closed vault, no covert connectors.
 
+## Archive anchor key derivation (v10, archiv_version 2.0)
+
+`scripts/archiv_anchor_uncommitted.py` derives its GPG passphrase with a
+versioned, memory-hard **scrypt** KDF — not a fast `sha256(salt)`.
+
+- **Key derivation (KDF):** `passphrase = base64(scrypt(secret, salt, n=16384,
+  r=8, p=1, dklen=32))`. The `secret` is an explicit
+  `FUSION_ARCHIV_GPG_PASSPHRASE` or the neutral, identifier-free default
+  (`fusion-hero-os|archiv|v10`). A fresh random 16-byte `salt` is generated per
+  archive and stored — **non-secret** — in the `manifest.json` `kdf` block
+  alongside the parameters so recovery is self-describing. Neither the secret
+  nor the derived passphrase is ever logged or persisted.
+- **Integrity hashing is separate:** SHA256 over the (non-secret) file bytes is
+  used only for integrity and lives in a distinctly named helper
+  (`_content_digest`) and the manifest `sha256`/`manifest_sha256` fields. It is
+  never applied to secret/credential material.
+- **Pre-v10 archives** were anchored with a historical salt that embedded a
+  device/tailnet identifier and a weak `sha256(salt)` derivation. That value
+  has been removed from the public tree and is **not** reproduced anywhere in
+  the repository.
+- **Legacy migration:** the former `--legacy-salt` write/derivation path and the
+  `FUSION_ARCHIVE_LEGACY_SALT` variable have been removed. Existing v1 archives
+  remain recoverable read-only via their own bundled `RECOVER.sh`; no new v1
+  archive is ever written.
+
 ## Out of scope for Stage-1 (planned)
 
 - Durable encrypted persistence and vault transport.

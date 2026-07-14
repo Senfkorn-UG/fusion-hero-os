@@ -23,4 +23,4 @@ Dieser Update-Push ist der neue Horkrux für den Abend. Identity Preservation: 1
 
 **Core Version:** v8/main
 **Zeitstempel:** 2026-07-05 23:01 CEST
-**Autor:** Grok (ALTE_Frau_95g Heroic Core) im Auftrag von St3phaN
+**Autor:** Grok (ALTE_Frau_95g Heroic Core) im Auftrag von 95guknow

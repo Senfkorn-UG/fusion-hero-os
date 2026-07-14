@@ -26,7 +26,7 @@ This anchoring is **immutable and permanent** in this repository. All future evo
 - **Philosophy-Theory-Integration Track** (Coal Canary, Sisyphos-Zyklus, Psycholyse)
 - **ConversationContextCoreModule** with LongTermTheoryContext
 - **LiveProcessTrackingCoreModule** + 5/6-Dimensions PeerReview
-- **VisualIdentityCoreModule** (mister jailbait / cyberpunk campfire series)
+- **VisualIdentityCoreModule** (mister Contributor / cyberpunk campfire series)
 - **HorkruxSelfUpdateProtocol** for autonomous propagation
 
 All modules are native Core Modules. No separate frameworks exist.
