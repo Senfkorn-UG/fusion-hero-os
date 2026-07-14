@@ -3,7 +3,7 @@
 PROJEKT-WISSENSBASIS (knowledge.py)
 ===================================
 Strukturiertes, importierbares Projektwissen für "Fusion Hero OS" /
-"ALTE_FRAU_95g Core". Dieses Modul kodiert die etablierten Architektur-,
+"BuilderProfile Core". Dieses Modul kodiert die etablierten Architektur-,
 Entscheidungs- und Umgebungs-Fakten als *Daten* (keine Prosa), damit andere
 Werkzeuge sie programmatisch abfragen können.
 
@@ -285,7 +285,7 @@ ENVIRONMENT: Dict[str, object] = {
 
 KNOWLEDGE: Dict[str, object] = {
     "project": {
-        "name": "Fusion Hero OS / ALTE_FRAU_95g Core",
+        "name": "Fusion Hero OS / BuilderProfile Core",
         "knowledge_version": __version__,
     },
     "architecture": {

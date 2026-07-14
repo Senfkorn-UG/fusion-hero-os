@@ -76,6 +76,32 @@ BLOCKING_RULES = {
     DENYLIST_RULE,
 }
 
+# Path-scoped promotion (v10 Stage-B): the ``persona_identifier`` rule is a
+# tree-wide *warning* by default, because full-tree remediation (docs, legacy
+# mirrors, binary asset vaulting) is a larger Stage-C effort. But the active
+# integration package ``fusion_hero_os/`` has been fully de-personalised, so any
+# persona token reappearing there is a regression and must BLOCK. Prefixes are
+# matched against the repo-relative, forward-slash-normalised path.
+PERSONA_BLOCKING_PATH_PREFIXES = ("fusion_hero_os/",)
+
+
+def _under_persona_blocking_prefix(rel_path: str) -> bool:
+    norm = rel_path.replace(os.sep, "/")
+    return any(norm.startswith(prefix) for prefix in PERSONA_BLOCKING_PATH_PREFIXES)
+
+
+def is_blocking(finding: "Finding") -> bool:
+    """Classify a finding as blocking (fails the gate) or a warning.
+
+    A finding blocks when its rule is globally blocking, or when it is a persona
+    identifier located under an active, de-personalised package prefix.
+    """
+    if finding.rule in BLOCKING_RULES:
+        return True
+    if finding.rule == "persona_identifier" and _under_persona_blocking_prefix(finding.path):
+        return True
+    return False
+
 # Files/dirs never scanned (binaries, vendored, VCS, generated).
 SKIP_DIR_PARTS = {
     ".git", "node_modules", "__pycache__", "target", "dist", "build",
@@ -350,8 +376,8 @@ def main(argv: List[str] | None = None) -> int:
         return 2
     targets = [Path(p).resolve() for p in args.paths] if args.paths else _tracked_files()
     findings = scan(targets, allowlist, denylist)
-    blocking = [f for f in findings if f.rule in BLOCKING_RULES]
-    warnings = [f for f in findings if f.rule not in BLOCKING_RULES]
+    blocking = [f for f in findings if is_blocking(f)]
+    warnings = [f for f in findings if not is_blocking(f)]
 
     if args.json:
         print(json.dumps({

@@ -4,7 +4,7 @@ Dieser Ordner enthält Skill-Module des Fusion-Hero-OS.
 
 ## Struktur (Ist-Zustand)
 
-- `alte_frau_95g/` – Heroic Core Foundation
+- `builder_profile/` – Heroic Core Foundation
 - `mainframe_laden/` – Permanent Auto-Load
 - `skill_creator/` – Dynamische Skill-Evolution
 
