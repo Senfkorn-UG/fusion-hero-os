@@ -37,19 +37,23 @@ spec:
               mountPath: /workspace
       containers:
         - name: fusion-trainer
-          image: python:3.11-slim
+          image: google/cloud-sdk:alpine
           command:
-            - /bin/bash
+            - /bin/sh
             - -c
             - |
               set -euo pipefail
-              pip install -q numpy numba
+              apk add --no-cache python3 py3-pip >/dev/null
+              pip3 install -q numpy numba
               export PYTHONPATH="/workspace/training:${PYTHONPATH:-}"
+              export FUSION_DATA_ROOT=/workspace/data
+              mkdir -p /workspace/data/checkpoints /workspace/data/metrics
               cd /workspace/training
               python3 fusion_stability_train.py
+              gsutil -m cp -r /workspace/data/* "gs://${GCS_BUCKET}/checkpoints/" || true
           env:
-            - name: FUSION_DATA_ROOT
-              value: /quantum-data
+            - name: GCS_BUCKET
+              value: fusion-ai-data-project-bbf0e6db-52e1-462b-8e3
             - name: FUSION_QUBO_N
               value: "128"
             - name: FUSION_ANNEAL_STEPS
@@ -64,16 +68,8 @@ spec:
               memory: 16Gi
               ephemeral-storage: 20Gi
           volumeMounts:
-            - name: gcs-fuse
-              mountPath: /quantum-data
             - name: workspace
               mountPath: /workspace
       volumes:
         - name: workspace
           emptyDir: {}
-        - name: gcs-fuse
-          csi:
-            driver: gcsfuse.csi.storage.gke.io
-            volumeAttributes:
-              bucketName: fusion-ai-data-project-bbf0e6db-52e1-462b-8e3
-              mountOptions: "implicit-dirs"
