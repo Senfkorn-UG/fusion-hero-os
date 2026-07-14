@@ -11,7 +11,7 @@ nodes:
   mainframe:
     role: orchestrator
     hostname: mainframe
-    magicdns: mainframe.tail391adb.ts.net
+    magicdns: mainframe-host.example.ts.net
     platform: linux
     tailscale_tag: tag:fusion-node-mainframe
     services:
@@ -23,7 +23,7 @@ nodes:
     # auf einer Stufe mit dem Handy (siehe enduser-Block).
     role: grok-workstation
     hostname: desktop-kpki9e4
-    magicdns: desktop-kpki9e4.tail391adb.ts.net
+    magicdns: device.example.ts.net
     platform: windows
     tailscale_tag: tag:fusion-node-desktop
     services:
@@ -48,7 +48,7 @@ nodes:
   phone:
     role: mobile-client
     hostname: redmi-note-13-pro-5g
-    magicdns: redmi-note-13-pro-5g.tail391adb.ts.net
+    magicdns: mobile-node.example.ts.net
     platform: android
     tailscale_tag: tag:fusion-node-phone
     services:
@@ -159,7 +159,7 @@ connectors:
 
 # Routing-Schema (Funnel + MagicDNS)
 routing:
-  base_url: "https://mainframe.tail391adb.ts.net"
+  base_url: "https://mainframe-host.example.ts.net"
   unified: "/fusion/status"
   fusion_graph: "/fusion/graph"
   mesh_overview: "/mesh/status"

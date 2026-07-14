@@ -12,7 +12,7 @@ role_assignments:
     node_id: mainframe
     role: orchestrator
     hostname: desktop-kpki9e4
-    magicdns: desktop-kpki9e4.tail391adb.ts.net
+    magicdns: device.example.ts.net
     platform: windows
     tailscale_tag: tag:fusion-node-mainframe
     canonical: true
@@ -32,7 +32,7 @@ role_assignments:
     role: grok-workstation
     same_as: mainframe
     hostname: desktop-kpki9e4
-    magicdns: desktop-kpki9e4.tail391adb.ts.net
+    magicdns: device.example.ts.net
     platform: windows
     tailscale_tag: tag:fusion-node-desktop
 
@@ -40,17 +40,17 @@ role_assignments:
     node_id: phone
     role: mobile-client
     hostname: redmi-note-13-pro-5g
-    magicdns: redmi-note-13-pro-5g.tail391adb.ts.net
+    magicdns: mobile-node.example.ts.net
     platform: android
     tailscale_tag: tag:fusion-node-phone
-    login_required: stephan95g@googlemail.com
+    login_required: user@example.com
     login_warning: "Nicht GitHub — gleicher Login wie Desktop (Google)"
 
   legacy:
     node_id: legacy-linux
     role: archived
     hostname: mainframe
-    magicdns: mainframe.tail391adb.ts.net
+    magicdns: mainframe-host.example.ts.net
     platform: linux
     status: offline
     tailscale_status: "offline >2d — nicht mehr im aktiven Mesh"
@@ -63,7 +63,7 @@ role_assignments:
     platform: linux
     hostname: wsl-ubuntu
     status: login_required
-    login_required: stephan95g@googlemail.com
+    login_required: user@example.com
     setup_script: workstation/tailscale_wsl_setup.sh
     login_url_file: "~/.fusion/tailscale-wsl-login.url"
     note: "Entwicklungs-Leaf — kein Mainframe; Tailscale optional fuer Mesh-Checks"
@@ -87,6 +87,6 @@ git:
 
 # Routing (Funnel + MagicDNS) — zeigt auf Windows-Mainframe
 routing:
-  base_url: https://desktop-kpki9e4.tail391adb.ts.net
+  base_url: https://device.example.ts.net
   mainframe_hostname: desktop-kpki9e4
   funnel_port: 8088

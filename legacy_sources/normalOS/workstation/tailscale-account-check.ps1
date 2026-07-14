@@ -26,11 +26,11 @@ if ($peerCount -eq 0) {
     Write-Host "KEINE PEERS sichtbar!" -ForegroundColor Red
     Write-Host ""
     Write-Host "Haeufige Ursache: Handy mit ANDEREM Login (z.B. GitHub)" -ForegroundColor Yellow
-    Write-Host "als PC (Google: stephan95g@googlemail.com) -> verschiedene Tailnets!"
+    Write-Host "als PC (Google: user@example.com) -> verschiedene Tailnets!"
     Write-Host ""
     Write-Host "Fix auf dem Handy (Redmi):" -ForegroundColor Green
     Write-Host "  1. Tailscale App -> Einstellungen -> Abmelden"
-    Write-Host "  2. Neu anmelden mit GOOGLE (stephan95g@googlemail.com)"
+    Write-Host "  2. Neu anmelden mit GOOGLE (user@example.com)"
     Write-Host "     NICHT GitHub, wenn der PC Google nutzt"
     Write-Host "  3. App offen lassen, dann: Status-normalOS.bat"
     Write-Host ""

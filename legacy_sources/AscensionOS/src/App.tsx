@@ -2601,7 +2601,7 @@ app.post('/api/gemini/thinking', async (req, res) => {
       {/* 🔮 Dock / Taskbar Footer */}
       <footer className="border-t border-[#1b2230] bg-[#06080d] px-4 py-3 flex flex-col sm:flex-row items-center justify-between text-[11px] font-mono text-gray-500 gap-2">
         <div>
-          Operator Sync: <strong className="text-gray-300">stephan95g@gmail.com</strong>
+          Operator Sync: <strong className="text-gray-300">user@example.com</strong>
         </div>
         <div className="flex items-center gap-4">
           <span>Google Gemini Pro Thinking Level: <strong className="text-cyan-400">HIGH</strong></span>

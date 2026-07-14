@@ -2,7 +2,7 @@
 // Aktivieren: Inhalt nach https://login.tailscale.com/admin/acls kopieren und speichern.
 // NICHT automatisch aktiv. Aktuell gilt die Default-Policy (alles darf zu allem).
 //
-// Hinweis: Alle Geraete laufen unter demselben Login (stephan95g@googlemail.com),
+// Hinweis: Alle Geraete laufen unter demselben Login (user@example.com),
 // daher unterscheidet diese Policy nach Host/IP, nicht nach Benutzeridentitaet.
 {
   "hosts": {

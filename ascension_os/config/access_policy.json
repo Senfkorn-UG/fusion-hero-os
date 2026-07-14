@@ -4,7 +4,7 @@
   "scope": "Fusion-Hero-OS / AscensionOS — Zugriffsregelung fuer private Gadgets",
   "superuser": {
     "name": "Stephan Urban",
-    "account": "stephan95g@googlemail.com",
+    "account": "user@example.com",
     "tailnet": "tail391adb.ts.net"
   },
   "devices": [

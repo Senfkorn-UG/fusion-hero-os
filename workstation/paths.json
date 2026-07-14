@@ -36,7 +36,7 @@
                                     "mainframe":  {
                                                       "role":  "orchestrator",
                                                       "hostname":  "desktop-kpki9e4",
-                                                      "magicdns":  "desktop-kpki9e4.tail391adb.ts.net",
+                                                      "magicdns":  "device.example.ts.net",
                                                       "platform":  "windows",
                                                       "canonical":  true,
                                                       "aliases":  [
@@ -53,21 +53,21 @@
                                                     "role":  "grok-workstation",
                                                     "alias_of":  "mainframe",
                                                     "hostname":  "desktop-kpki9e4",
-                                                    "magicdns":  "desktop-kpki9e4.tail391adb.ts.net",
+                                                    "magicdns":  "device.example.ts.net",
                                                     "platform":  "windows"
                                                 },
                                     "phone":  {
                                                   "hostname":  "redmi-note-13-pro-5g",
-                                                  "magicdns":  "redmi-note-13-pro-5g.tail391adb.ts.net",
+                                                  "magicdns":  "mobile-node.example.ts.net",
                                                   "platform":  "android",
                                                   "role":  "mobile-client",
-                                                  "login_required":  "stephan95g@googlemail.com",
+                                                  "login_required":  "user@example.com",
                                                   "login_warning":  "Nicht GitHub â€” gleicher Login wie Desktop (Google)"
                                               },
                                     "legacy-linux":  {
                                                          "role":  "archived",
                                                          "hostname":  "mainframe",
-                                                         "magicdns":  "mainframe.tail391adb.ts.net",
+                                                         "magicdns":  "mainframe-host.example.ts.net",
                                                          "platform":  "linux",
                                                          "status":  "offline",
                                                          "note":  "FrÃ¼herer Linux-Knoten â€” Mainframe auf Windows-Desktop"
