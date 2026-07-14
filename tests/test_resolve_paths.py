@@ -2,9 +2,13 @@
 from __future__ import annotations
 
 import json
+import sys
 from pathlib import Path
 
-from workstation.resolve_paths import _deep_merge, resolve_paths
+REPO_ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(REPO_ROOT / "workstation"))
+
+from resolve_paths import _deep_merge, resolve_paths  # noqa: E402
 
 
 def test_deep_merge_overlays_nested_keys(tmp_path: Path):
