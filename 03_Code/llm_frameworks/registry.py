@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import Dict, List, Optional
 
 from .base import FrameworkResult, LLMFramework
-from . import grok, claude, gpt, gemini, openrouter, ollama
+from . import grok, claude, gpt, gemini, openrouter, ollama, nvidia_nim
 
 TRINITY_LLMS = ("grok", "claude", "gpt")
 
@@ -25,6 +25,7 @@ _register(gpt.framework)
 _register(gemini.framework)
 _register(openrouter.framework)
 _register(ollama.framework)
+_register(nvidia_nim.framework)
 
 
 def normalize_provider(name: str) -> str:
