@@ -2,6 +2,8 @@
 // Korrigiert 2026-07-14: Keine Wildcards in src/dst (Tailscale ACL Parser unterstützt keine tag:foo-* in Regeln)
 // Aktivieren: Inhalt nach https://login.tailscale.com/admin/acls kopieren und speichern.
 // Alle Fusion-Tags aus mesh_connectors.yaml explizit aufgelistet.
+// User: user@example.com
+// Wichtig: Nach Änderung ACL speichern, dann tailscale up mit --advertise-tags ausführen.
 
 {
   "tagOwners": {
@@ -22,9 +24,9 @@
   },
 
   "hosts": {
-    // Endgeraet des Superusers Stephan Urban
+    // Endgeraet des Superusers Stephan Urban (Phone)
     "handy-stephan": "100.64.0.1",
-    // Workstation (dieser PC)
+    // Workstation (dieser PC - desktop-kpki9e4)
     "pc": "100.64.0.2"
   },
 

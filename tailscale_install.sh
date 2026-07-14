@@ -1,32 +1,37 @@
 #!/bin/bash
-# Tailscale Installation + Setup für Fusion Hero OS Heimserver
-# Layer 0 kompatibel – 09.07.2026
+# Tailscale Installation + Mesh Setup for Fusion Hero OS (Linux/WSL)
+# Usage: export TS_AUTHKEY=tskey-auth-... && sudo ./tailscale_install.sh
 
-set -e
+set -euo pipefail
 
-echo "🚀 [Fusion Hero OS] Tailscale Installation wird gestartet..."
+echo "[Fusion Hero OS] Tailscale Installation & Mesh Config starting..."
 
-# 1. Tailscale offizielles Install-Skript ausführen
+if [[ -z "${TS_AUTHKEY:-}" ]]; then
+    echo "Set TS_AUTHKEY first (reusable key from login.tailscale.com/admin/settings/keys)"
+    exit 1
+fi
+
+echo "-> Downloading and installing Tailscale..."
 curl -fsSL https://tailscale.com/install.sh | sh
 
-echo "✅ Tailscale Binary installiert."
+echo "Tailscale binary installed."
 
-# 2. tailscaled Service aktivieren
-sudo systemctl enable --now tailscaled
-
-echo "✅ tailscaled Service aktiviert."
-
-# 3. Authentifizierung starten (öffnet Browser oder gibt Login-Link aus)
-echo ""
-echo "🔐 Jetzt Tailscale authentifizieren..."
-echo "   Bitte im Browser anmelden (GitHub / Google / Microsoft empfohlen)."
-echo ""
-
-sudo tailscale up --ssh
+if command -v systemctl &> /dev/null; then
+    echo "-> Enabling tailscaled service..."
+    systemctl enable --now tailscaled || true
+fi
 
 echo ""
-echo "✅ Tailscale erfolgreich eingerichtet!"
+echo "-> Running tailscale up..."
+tailscale up \
+    --reset \
+    --auth-key="${TS_AUTHKEY}" \
+    --hostname=desktop-kpki9e4 \
+    --accept-routes \
+    --ssh
+
 echo ""
-echo "Nächster Schritt: ./tailscale_start.sh ausführen (falls noch nicht geschehen)"
+tailscale status || true
 echo ""
-echo "Status prüfen mit: tailscale status"
+echo "Install complete. Optional tags after ACL tagOwners:"
+echo "  tailscale up --advertise-tags=tag:fusion-node-desktop --advertise-exit-node"
