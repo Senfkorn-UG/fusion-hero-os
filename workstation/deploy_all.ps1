@@ -1,4 +1,4 @@
-# deploy_all.ps1 — Vollständiges Deployment: lokal + GKE + GCE + Mesh
+# deploy_all.ps1 - Vollstaendiges Deployment: lokal + GKE + GCE + Mesh
 param(
     [switch]$SkipGit,
     [switch]$SkipGke,
@@ -22,29 +22,26 @@ $env:USE_GKE_GCLOUD_AUTH_PLUGIN = "True"
 $env:FUSION_BUSINESSPLAN_PATH = Join-Path $RepoRoot "docs\business\senfkorn_businessplan.yaml"
 $env:FUSION_MAINFRAME_DAEMONS = "1"
 
-function Write-Step($n, $msg) { Write-Host "`n[$n] $msg" -ForegroundColor Cyan }
+function Write-Step($n, $msg) { Write-Host ""; Write-Host "[$n] $msg" -ForegroundColor Cyan }
 function Write-Ok($msg) { Write-Host "  OK: $msg" -ForegroundColor Green }
 function Write-Warn($msg) { Write-Host "  WARN: $msg" -ForegroundColor Yellow }
-function Write-Fail($msg) { Write-Host "  FAIL: $msg" -ForegroundColor Red }
 
-Write-Host "=== Fusion Hero OS — Deploy All ===" -ForegroundColor Magenta
+Write-Host "=== Fusion Hero OS Deploy All ===" -ForegroundColor Magenta
 Write-Host "Repo: $RepoRoot"
 
-# --- 1) Git push (optional) ---
 Write-Step "1/7" "Git sync"
 if (-not $SkipGit) {
     Push-Location $RepoRoot
     $status = git status --porcelain 2>$null
     if ($status) {
         git add -A 2>$null
-        git commit -m "deploy: energy pricing 150% margin + mainframe ops wiring" 2>$null
+        git commit -m "deploy: energy pricing and mainframe ops wiring" 2>$null
     }
     git push origin main 2>$null
     if ($LASTEXITCODE -eq 0) { Write-Ok "origin/main pushed" } else { Write-Warn "git push skipped or failed" }
     Pop-Location
 } else { Write-Warn "skipped (-SkipGit)" }
 
-# --- 2) GCS training code ---
 Write-Step "2/7" "GCS training artifacts"
 $uploadDir = Join-Path $env:TEMP "fusion-training-upload"
 New-Item -ItemType Directory -Force -Path $uploadDir | Out-Null
@@ -53,7 +50,6 @@ Copy-Item (Join-Path $RepoRoot "qb_qubo.py") $uploadDir -Force -ErrorAction Sile
 gcloud storage cp "$uploadDir\*" "gs://$Bucket/training/" --project=$Project 2>$null
 if ($LASTEXITCODE -eq 0) { Write-Ok "gs://$Bucket/training/" } else { Write-Warn "GCS upload failed" }
 
-# --- 3) GKE ---
 Write-Step "3/7" "GKE fusion-training"
 if (-not $SkipGke) {
     gcloud container clusters get-credentials $Cluster --region=$Region --project=$Project 2>$null
@@ -66,7 +62,6 @@ if (-not $SkipGke) {
     Write-Ok "kubectl apply done"
 } else { Write-Warn "skipped (-SkipGke)" }
 
-# --- 4) Local Dashboard ---
 Write-Step "4/7" "Local Dashboard :8000"
 Get-CimInstance Win32_Process -Filter "Name='python.exe'" -ErrorAction SilentlyContinue |
     Where-Object { $_.CommandLine -match 'uvicorn app:app' } |
@@ -83,15 +78,13 @@ while ((Get-Date) -lt $deadline) {
 }
 if ($dashOk) { Write-Ok "Dashboard health" } else { Write-Warn "Dashboard timeout" }
 
-# Energy API smoke test
 try {
     $e = Invoke-RestMethod "http://127.0.0.1:8000/api/mainframe/energy/status" -TimeoutSec 8
     $m = $e.subcontractor_pricing.margin_pct_applied_mode
     Write-Ok "Energy API ($m)"
 } catch { Write-Warn "Energy API: $_" }
 
-# --- 5) Mainframe OS daemons ---
-Write-Step "5/7" "Mainframe daemons (cost + energy + mirror)"
+Write-Step "5/7" "Mainframe daemons"
 & (Join-Path $RepoRoot "workstation\start_mainframe_daemons.ps1") 2>$null
 Start-Sleep -Seconds 3
 try {
@@ -99,7 +92,6 @@ try {
     Write-Ok "energy tick"
 } catch { Write-Warn "energy tick: $_" }
 
-# --- 6) hero-docs ---
 Write-Step "6/7" "hero-docs :8088"
 Get-CimInstance Win32_Process -Filter "Name='python.exe'" -ErrorAction SilentlyContinue |
     Where-Object { $_.CommandLine -match 'hero-docs-server' } |
@@ -110,11 +102,11 @@ Start-Process $Python -ArgumentList $heroDocs -WorkingDirectory $RepoRoot -Windo
 Start-Sleep -Seconds 2
 try {
     $hd = Invoke-RestMethod "http://127.0.0.1:8088/mainframe/ops/status" -TimeoutSec 8
-    Write-Ok "hero-docs mainframe ops (energy=$($null -ne $hd.energy))"
+    $hasEnergy = $null -ne $hd.energy
+    Write-Ok "hero-docs mainframe ops energy=$hasEnergy"
 } catch { Write-Warn "hero-docs: $_" }
 
-# --- 7) GCE fusion-mesh-exit ---
-Write-Step "7/7" "GCE $Vm sync + restart"
+Write-Step "7/7" "GCE sync + restart"
 if (-not $SkipGce) {
     $remoteInstall = "/home/Admin/fusion-hero-core"
     $files = @(
@@ -129,8 +121,7 @@ if (-not $SkipGce) {
         "03_Code/Dashboard/mainframe_background.py",
         "03_Code/Dashboard/mainframe_ops_routes.py",
         "03_Code/Dashboard/static/mainframe_ops.js",
-        "03_Code/Dashboard/templates/mainframe_ops.html",
-        "workstation/start_mainframe_daemons.ps1"
+        "03_Code/Dashboard/templates/mainframe_ops.html"
     )
     foreach ($rel in $files) {
         $local = Join-Path $RepoRoot $rel
@@ -141,13 +132,12 @@ if (-not $SkipGce) {
         gcloud compute ssh $Vm --zone=$Zone --project=$Project --command=$mkCmd 2>$null | Out-Null
         gcloud compute scp $local "${Vm}:${remote}" --zone=$Zone --project=$Project 2>$null
     }
-    $bootstrap = 'cd /home/Admin/fusion-hero-core; pip3 install -q pyyaml; sudo systemctl restart fusion-hero-docs; curl -fsS http://127.0.0.1:8088/mainframe/energy/status | head -c 120'
-    gcloud compute ssh $Vm --zone=$Zone --project=$Project --command=$bootstrap 2>&1 | ForEach-Object { Write-Host ('  ' + $_) }
+    $bootstrap = "cd /home/Admin/fusion-hero-core; pip3 install -q pyyaml; sudo systemctl restart fusion-hero-docs"
+    gcloud compute ssh $Vm --zone=$Zone --project=$Project --command=$bootstrap 2>&1 | ForEach-Object { Write-Host "  $_" }
     Write-Ok "GCE sync + hero-docs restart"
 } else { Write-Warn "skipped (-SkipGce)" }
 
-# Fractal replicate
-Write-Step "+" "Fractal manifest replicate"
+Write-Step "8/8" "Fractal manifest replicate"
 Push-Location $RepoRoot
 & $Python fractal_mainframe_mesh.py save --replicate 2>&1 | Select-Object -Last 5 | ForEach-Object { Write-Host "  $_" }
 Pop-Location
@@ -157,4 +147,4 @@ Write-Host "=== Deploy All abgeschlossen ===" -ForegroundColor Green
 Write-Host "  Dashboard:  http://127.0.0.1:8000/mainframe/ops"
 Write-Host "  Energy API: http://127.0.0.1:8000/api/mainframe/energy/pricing/subcontractor"
 Write-Host "  hero-docs:  http://127.0.0.1:8088/mainframe/energy/status"
-if (-not $NoGui) { Start-Process "http://127.0.0.1:8000/mainframe/ops" }
+if (-not $NoGui) { Start-Process 'http://127.0.0.1:8000/mainframe/ops' }
