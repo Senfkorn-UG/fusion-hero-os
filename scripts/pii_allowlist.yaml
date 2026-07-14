@@ -3,9 +3,10 @@
 # Two sections:
 #   allow_literals: exact strings (or "rule:match") that are documentation
 #                   examples or neutral placeholders and are safe to keep.
-#   allow_paths:    glob patterns for files exempt from scanning (e.g. legacy
-#                   archives pending a separate cleanup PR, or fixtures that
-#                   deliberately contain example-shaped strings).
+#   allow_paths:    exact file paths (NOT broad tree globs) whose contents are
+#                   deliberately example-shaped (e.g. the scanner's own test
+#                   fixtures). Blanket tree allowlists are forbidden: real PII
+#                   must be scrubbed, not hidden.
 #
 # Keep this list minimal and justified. Prefer replacing real PII with neutral
 # placeholders over allowlisting it.
@@ -23,12 +24,8 @@ allow_literals:
   - "project-ref.supabase.co"
 
 allow_paths:
-  # Legacy source archives are scheduled for a dedicated cleanup PR (Stage 2).
-  # They are not part of the Stage-1 vertical slice and would otherwise flood
-  # the gate; tracked as a known item in the honesty ledger.
-  - "legacy_sources/**"
-  - "src/normal_os/06_Master_Archive/**"
-  # Persona-identifier package paths: renaming these would break imports and is
-  # deferred to a dedicated refactor PR (Stage 2). See docs/meta_neural/HONESTY_LEDGER.md.
-  - "fusion_hero_os/modules/alte_frau_95g/**"
-  - "src/normal_os/**"
+  # The PII scanner's own unit-test file contains PLANTED SYNTHETIC secrets
+  # (deliberately example-shaped email/host/IP/token strings) used to prove the
+  # detector fires. These are test fixtures, not real PII; the file is exempted
+  # by exact path so the fixtures cannot be mistaken for a real leak.
+  - "tests/test_pii_scanner.py"

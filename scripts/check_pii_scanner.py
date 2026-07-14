@@ -140,6 +140,20 @@ class Allowlist:
         return False
 
 
+def _strip_comment(line: str) -> str:
+    """Drop a trailing ``#`` comment, ignoring ``#`` inside single/double quotes."""
+    quote = None
+    for i, ch in enumerate(line):
+        if quote is not None:
+            if ch == quote:
+                quote = None
+        elif ch in ("'", '"'):
+            quote = ch
+        elif ch == "#":
+            return line[:i]
+    return line
+
+
 def _parse_simple_yaml(text: str) -> Dict[str, List[str]]:
     """Minimal YAML reader for the allowlist (top-level keys -> list of strings).
 
@@ -152,7 +166,7 @@ def _parse_simple_yaml(text: str) -> Dict[str, List[str]]:
     result: Dict[str, List[str]] = {}
     current = None
     for raw in text.splitlines():
-        line = raw.split("#", 1)[0].rstrip()
+        line = _strip_comment(raw).rstrip()
         if not line.strip():
             continue
         if not line.startswith((" ", "\t", "-")) and line.endswith(":"):

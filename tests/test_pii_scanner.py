@@ -56,3 +56,23 @@ def test_non_public_ip_classifier():
     assert pii._is_non_public_ip("100.100.100.100")  # CGNAT
     assert pii._is_non_public_ip("127.0.0.1")
     assert not pii._is_non_public_ip("9.9.9.9")  # public
+
+
+def test_yaml_parser_preserves_hash_inside_quotes():
+    """A quoted literal containing '#' must not be truncated as a comment."""
+    text = (
+        "allow_literals:\n"
+        '  - "value#withhash"   # trailing comment stripped\n'
+        "  - plain_value\n"
+        "allow_paths:\n"
+        "  - 'a#b/c.py'\n"
+    )
+    data = pii._parse_simple_yaml(text)
+    assert data["allow_literals"] == ["value#withhash", "plain_value"]
+    assert data["allow_paths"] == ["a#b/c.py"]
+
+
+def test_strip_comment_helper():
+    assert pii._strip_comment("foo # bar") == "foo "
+    assert pii._strip_comment('"a#b" # c') == '"a#b" '
+    assert pii._strip_comment("no comment here") == "no comment here"
