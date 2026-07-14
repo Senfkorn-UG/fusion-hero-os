@@ -132,7 +132,7 @@ if (-not $SkipGce) {
         gcloud compute ssh $Vm --zone=$Zone --project=$Project --command=$mkCmd 2>$null | Out-Null
         gcloud compute scp $local "${Vm}:${remote}" --zone=$Zone --project=$Project 2>$null
     }
-    $bootstrap = "pip3 install -q numpy pyyaml; sudo mkdir -p /etc/systemd/system/fusion-hero-docs.service.d; printf '[Service]`nEnvironment=PYTHONPATH=/home/Admin/fusion-hero-core/03_Code:/home/Admin/fusion-hero-core`nEnvironment=FUSION_BUSINESSPLAN_PATH=/home/Admin/fusion-hero-core/docs/business/senfkorn_businessplan.yaml`n' | sudo tee /etc/systemd/system/fusion-hero-docs.service.d/override.conf >/dev/null; sudo systemctl daemon-reload; sudo systemctl restart fusion-hero-docs"
+    $bootstrap = "pip3 install -q numpy pyyaml; sudo mkdir -p /etc/systemd/system/fusion-hero-docs.service.d; printf '[Service]`nEnvironment=PYTHONPATH=/home/Admin/fusion-hero-core/03_Code:/home/Admin/fusion-hero-core`nEnvironment=FUSION_BUSINESSPLAN_PATH=/home/Admin/fusion-hero-core/docs/business/senfkorn_businessplan.yaml`n' | sudo tee /etc/systemd/system/fusion-hero-docs.service.d/override.conf >/dev/null; sudo systemctl daemon-reload; sudo fuser -k 8088/tcp 2>/dev/null; sudo systemctl reset-failed fusion-hero-docs; sudo systemctl restart fusion-hero-docs"
     gcloud compute ssh $Vm --zone=$Zone --project=$Project --command=$bootstrap 2>&1 | ForEach-Object { Write-Host "  $_" }
     Write-Ok "GCE sync + hero-docs restart"
 } else { Write-Warn "skipped (-SkipGce)" }
