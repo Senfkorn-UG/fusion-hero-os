@@ -28,14 +28,12 @@ from typing import Any, Dict, Optional
 
 try:
     from ..consent_gate import AscensionConsentGate
-    from fusion_hero_os.meta.consent import ConsentError, Purpose
+    from fusion_hero_os.meta.consent import ConsentError
 except Exception:  # pragma: no cover - meta slice / gate unavailable
     AscensionConsentGate = None
 
     class ConsentError(RuntimeError):
         pass
-
-    Purpose = None
 
 try:
     from fusion_hero_os.core.universal_llm_router import (

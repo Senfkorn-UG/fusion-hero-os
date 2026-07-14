@@ -18,7 +18,7 @@ personal-data operations (fail closed).
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING
 
 try:
     from fusion_hero_os.meta.consent import (
