@@ -63,13 +63,13 @@ spec:
               value: "4000"
           resources:
             requests:
-              cpu: "32"
-              memory: 128Gi
+              cpu: "22"
+              memory: 85Gi
               ephemeral-storage: 50Gi
               nvidia.com/gpu: "2"
             limits:
-              cpu: "32"
-              memory: 128Gi
+              cpu: "22"
+              memory: 85Gi
               ephemeral-storage: 50Gi
               nvidia.com/gpu: "2"
           volumeMounts:
@@ -91,4 +91,3 @@ spec:
               mountOptions: "implicit-dirs"
       nodeSelector:
         cloud.google.com/gke-accelerator: nvidia-tesla-a100
-        cloud.google.com/gke-spot: "false"
