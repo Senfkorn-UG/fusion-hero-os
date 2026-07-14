@@ -66,7 +66,11 @@ Write-Step "4/7" "Local Dashboard :8000"
 Get-CimInstance Win32_Process -Filter "Name='python.exe'" -ErrorAction SilentlyContinue |
     Where-Object { $_.CommandLine -match 'uvicorn app:app' } |
     ForEach-Object { Stop-Process -Id $_.ProcessId -Force -ErrorAction SilentlyContinue }
-Start-Process -FilePath (Join-Path $RepoRoot "run_backend.bat") -WorkingDirectory $RepoRoot -WindowStyle Minimized
+$lockFile = Join-Path $env:USERPROFILE ".fusion-hero-os\process_locks\dashboard_8000.lock"
+if (Test-Path $lockFile) { Remove-Item $lockFile -Force -ErrorAction SilentlyContinue }
+$dashDir = Join-Path $RepoRoot "03_Code\Dashboard"
+$env:FUSION_AUTO_LOAD = "0"
+Start-Process -FilePath $Python -ArgumentList "-m","uvicorn","app:app","--host","127.0.0.1","--port","8000" -WorkingDirectory $dashDir -WindowStyle Hidden
 $deadline = (Get-Date).AddSeconds(90)
 $dashOk = $false
 while ((Get-Date) -lt $deadline) {
