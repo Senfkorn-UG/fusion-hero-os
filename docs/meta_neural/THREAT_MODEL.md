@@ -35,7 +35,7 @@ local-only and in-memory; no network persistence is enabled by default.
 | Threat | Mitigation |
 |---|---|
 | Covert profiling / surveillance | No connector auto-runs; ingest requires explicit purpose-scoped consent. No keylogging/screen/mic capture in this slice. |
-| Private data leaking into public artifacts | Vault boundary + opaque IDs + synthetic fixtures + CI PII/secret scanner. |
+| Private data leaking into public artifacts | Vault boundary + opaque IDs + synthetic fixtures + CI PII/secret scanner. A private, git-ignored denylist (`scripts/pii_denylist.local.yaml` or `$FUSION_PII_DENYLIST`) additionally blocks bare device identifiers, legal names and company names without embedding any real value in the committed scanner; denylist hits are blocking, never allowlist-exempt, and fail closed. |
 | Silent consent expiry bypass | `ConsentGrant.is_active` checks retention window; expired/revoked grants fail closed. Detected expiry also purges derived state (see below). |
 | Cross-subject audit disclosure | `audit_trail` is subject-scoped by default; global reads require a distinct, off-by-default admin token that is never exposed via HTTP. |
 | Stale data after revocation/expiry | `revoke_consent` and `_purge_if_expired` deterministically drop the graph, snapshot, working memory and Hebbian caches and emit a non-PII `subject.purge` tombstone. |

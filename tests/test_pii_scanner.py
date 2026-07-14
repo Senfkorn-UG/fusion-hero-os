@@ -76,3 +76,69 @@ def test_strip_comment_helper():
     assert pii._strip_comment("foo # bar") == "foo "
     assert pii._strip_comment('"a#b" # c') == '"a#b" '
     assert pii._strip_comment("no comment here") == "no comment here"
+
+
+def _write_denylist(tmp_path):
+    dl = tmp_path / "dl.yaml"
+    dl.write_text(
+        "denylist_literals:\n"
+        "  - synthetic-device-9000\n"
+        '  - "Jane Q. Testperson"\n'
+        "denylist_patterns:\n"
+        '  - "acme (corp|inc)"\n',
+        encoding="utf-8",
+    )
+    return dl
+
+
+def test_denylist_catches_device_and_name_and_company(tmp_path):
+    """Synthetic bare device id, legal name and company are caught as blocking."""
+    dl = pii.load_denylist(_write_denylist(tmp_path))
+    f = tmp_path / "cfg.txt"
+    f.write_text(
+        "device = synthetic-device-9000\n"
+        "owner: Jane Q. Testperson\n"
+        "vendor: ACME Inc\n"  # case-insensitive pattern match
+        "unrelated: nothing to see\n",
+        encoding="utf-8",
+    )
+    findings = pii.scan([f], pii.Allowlist(), dl)
+    matches = {x.match.lower() for x in findings if x.rule == pii.DENYLIST_RULE}
+    assert "synthetic-device-9000" in matches
+    assert "jane q. testperson" in matches
+    assert "acme inc" in matches
+    assert pii.DENYLIST_RULE in pii.BLOCKING_RULES
+
+
+def test_denylist_hits_bypass_allowlist(tmp_path):
+    """A denylist hit is never exempted, even if the allowlist would allow it."""
+    dl = pii.load_denylist(_write_denylist(tmp_path))
+    f = tmp_path / "cfg.txt"
+    f.write_text("device = synthetic-device-9000\n", encoding="utf-8")
+    allow = pii.Allowlist(literals={"synthetic-device-9000"})
+    findings = pii.scan([f], allow, dl)
+    assert any(x.match == "synthetic-device-9000" for x in findings)
+
+
+def test_denylist_source_contains_no_real_pii():
+    """The committed scanner must not embed real denylist values."""
+    src = pii.SCANNER_PATH.read_text(encoding="utf-8") if hasattr(pii, "SCANNER_PATH") \
+        else SCANNER_PATH.read_text(encoding="utf-8")
+    for token in ("der Maintainer", "phone-node", "fusionheroos"):
+        assert token.lower() not in src.lower()
+
+
+def test_denylist_absent_is_noop(tmp_path, monkeypatch):
+    """No configured denylist -> empty, built-in rules still run."""
+    monkeypatch.delenv(pii.DENYLIST_ENV, raising=False)
+    assert pii.load_denylist(None).patterns == []
+
+
+def test_denylist_missing_env_path_fails_closed(tmp_path, monkeypatch):
+    """An explicitly configured but missing path raises (fail-closed)."""
+    monkeypatch.setenv(pii.DENYLIST_ENV, str(tmp_path / "does-not-exist.yaml"))
+    try:
+        pii.load_denylist(None)
+    except pii.DenylistError:
+        return
+    raise AssertionError("expected DenylistError for missing configured path")

@@ -1347,7 +1347,7 @@ Jeder β-Rückfall: kleinerer Radius als voriger Zyklus = memetische Heilung.
 # Geisteskrankheiten in der 4D-Matrix — v6 Dissertation & Heroische Philosophie
 ### Schicht S/F/Ü · Concept Space · Fundament A.1–A.12
 
-> Ergänzt v5 (Visualisierung, Trajektorien). Quellen: Dissertation *„Von der Bescheidenheit zur Autorität"* (Urban, 23.06.2026), *Der heroische Mensch* (Masterstruktur), Concept Space of Philosophy.
+> Ergänzt v5 (Visualisierung, Trajektorien). Quellen: Dissertation *„Von der Bescheidenheit zur Autorität"* (Fusion Hero OS Team, 23.06.2026), *Der heroische Mensch* (Masterstruktur), Concept Space of Philosophy.
 > **Geltungsdisziplin:** Dissertation-Kern — epistemische Hygiene vor Autoritätsgeste. Jede Brücke ist **Modell** oder **Bedingt**, sofern nicht als Satz/Fragment markiert.
 > **Stand:** 1. Juli 2026
 

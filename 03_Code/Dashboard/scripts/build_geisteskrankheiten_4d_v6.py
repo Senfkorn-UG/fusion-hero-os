@@ -48,7 +48,7 @@ def _merge() -> str:
         "# Geisteskrankheiten in der 4D-Matrix — v6 Dissertation & Heroische Philosophie\n"
         "### Schicht S/F/Ü · Concept Space · Fundament A.1–A.12\n\n"
         "> Ergänzt v5 (Visualisierung, Trajektorien). Quellen: Dissertation "
-        "Von der Bescheidenheit zur Autorität (Urban, 23.06.2026), "
+        "Von der Bescheidenheit zur Autorität (Fusion Hero OS Team, 23.06.2026), "
         "Der heroische Mensch (Masterstruktur), Concept Space of Philosophy.\n"
         "> **Geltungsdisziplin:** Dissertation-Kern — epistemische Hygiene vor Autoritätsgeste. "
         "Jede Brücke ist **Modell** oder **Bedingt**, sofern nicht als Satz/Fragment markiert.\n"
@@ -147,7 +147,7 @@ def main() -> None:
         "source": "v5 + dissertation + heroische_philosophie",
         "updated_ts": time.time(),
         "sources": [
-            "Von der Bescheidenheit zur Autoritaet (Dissertation Urban 2026-06-23)",
+            "Von der Bescheidenheit zur Autoritaet (Dissertation Fusion Hero OS Team 2026-06-23)",
             "Der heroische Mensch Masterstruktur",
             "Concept_Space_of_Philosophy_v1.md",
         ],

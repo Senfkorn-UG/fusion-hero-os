@@ -86,3 +86,6 @@ src/normal_os/internal_llm/output/
 legacy_sources/**/token.txt
 legacy_sources/**/header.txt
 legacy_sources/**/body.json
+
+# Private PII denylist for the scanner gate — must never be committed
+scripts/pii_denylist.local.yaml
