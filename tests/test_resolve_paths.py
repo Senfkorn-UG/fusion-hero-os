@@ -8,10 +8,10 @@ from workstation.resolve_paths import _deep_merge, resolve_paths
 
 
 def test_deep_merge_overlays_nested_keys(tmp_path: Path):
-    base = {"tailscale": {"nodes": {"mainframe": {"magicdns": "a.example.ts.net"}}}}
+    base = {"tailscale": {"nodes": {"mainframe": {"magicdns": "device.example.ts.net"}}}}
     overlay = {"tailscale": {"nodes": {"mainframe": {"hostname": "real-host"}}}}
     merged = _deep_merge(base, overlay)
-    assert merged["tailscale"]["nodes"]["mainframe"]["magicdns"] == "a.example.ts.net"
+    assert merged["tailscale"]["nodes"]["mainframe"]["magicdns"] == "device.example.ts.net"
     assert merged["tailscale"]["nodes"]["mainframe"]["hostname"] == "real-host"
 
 

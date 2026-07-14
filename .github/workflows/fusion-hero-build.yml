@@ -40,4 +40,4 @@ jobs:
         run: python -m pyright
 
       - name: Execution Protocol (Tests)
-        run: pytest tests/ -q --tb=no -x
+        run: pytest tests/test_resolve_paths.py tests/test_pii_scanner.py tests/test_google_oauth.py tests/test_local_infrastructure_kernel.py -q

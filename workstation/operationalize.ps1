@@ -1,4 +1,4 @@
-# operationalize.ps1 — Repo operationalisieren (lokale Config, CI-Gates, Follow-ups)
+# operationalize.ps1 - Repo operationalisieren (lokale Config, CI-Gates, Follow-ups)
 param(
     [switch]$SkipFollowup,
     [switch]$DeployDocs
@@ -9,8 +9,9 @@ $ErrorActionPreference = "SilentlyContinue"
 $Root = if ($env:FUSION_HERO_ROOT) { $env:FUSION_HERO_ROOT } else { (Resolve-Path (Join-Path $PSScriptRoot "..")).Path }
 $LocalPaths = Join-Path $PSScriptRoot "paths.local.json"
 $ExamplePaths = Join-Path $PSScriptRoot "paths.local.example.json"
+$DocsUrl = "https://95guknow.github.io/fusion-hero-os/"
 
-Write-Host "=== Fusion Hero OS — Operationalize ===" -ForegroundColor Cyan
+Write-Host "=== Fusion Hero OS - Operationalize ===" -ForegroundColor Cyan
 Write-Host ""
 
 Write-Host "[1/5] Lokale Pfade (paths.local.json)" -ForegroundColor Yellow
@@ -68,4 +69,4 @@ if (-not $SkipFollowup) {
 
 Write-Host ""
 Write-Host "=== Operationalize abgeschlossen ===" -ForegroundColor Green
-Write-Host "Docs: https://95guknow.github.io/fusion-hero-os/" -ForegroundColor DarkGray
+Write-Host "Docs: $DocsUrl" -ForegroundColor DarkGray

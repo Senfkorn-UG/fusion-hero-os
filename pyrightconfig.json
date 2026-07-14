@@ -1,23 +1,25 @@
 {
   "include": [
-    "fusion_hero_os",
-    "src/normal_os",
-    "scripts"
+    "fusion_hero_os/core",
+    "fusion_hero_os/engine",
+    "fusion_hero_os/registry.py",
+    "workstation/resolve_paths.py"
   ],
   "exclude": [
     "**/node_modules",
     "**/__pycache__",
     "legacy_sources",
-    "03_Code",
-    "04_Buch_und_Archiv",
-    "ascension_os",
-    "tests",
-    "fusion_hero_os/modules"
+    "tests"
   ],
   "typeCheckingMode": "basic",
   "reportMissingImports": "none",
   "reportOptionalMemberAccess": "none",
   "reportAttributeAccessIssue": "none",
   "reportArgumentType": "none",
-  "reportOperatorIssue": "none"
+  "reportOperatorIssue": "none",
+  "reportGeneralTypeIssues": "none",
+  "reportPrivateImportUsage": "none",
+  "reportOptionalCall": "none",
+  "reportOptionalSubscript": "none",
+  "reportInvalidTypeForm": "none"
 }

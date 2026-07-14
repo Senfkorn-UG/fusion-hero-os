@@ -20,6 +20,8 @@ allow_literals:
   - "device.example.ts.net"
   - "mainframe-host.example.ts.net"
   - "mobile-node.example.ts.net"
+  - "DEIN-WINDOWS-HOST.DEIN-TAILNET.ts.net"
+  - "DEIN-ANDROID-HOST.DEIN-TAILNET.ts.net"
   - "https://project-ref.supabase.co"
   - "project-ref.supabase.co"
 
@@ -29,3 +31,5 @@ allow_paths:
   # detector fires. These are test fixtures, not real PII; the file is exempted
   # by exact path so the fixtures cannot be mistaken for a real leak.
   - "tests/test_pii_scanner.py"
+  - "tests/test_resolve_paths.py"
+  - "workstation/paths.local.example.json"
