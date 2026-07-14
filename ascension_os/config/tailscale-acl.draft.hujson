@@ -3,6 +3,7 @@
 // Aktivieren: Inhalt nach https://login.tailscale.com/admin/acls kopieren und speichern.
 // Alle Fusion-Tags aus mesh_connectors.yaml explizit aufgelistet.
 // User: stephan95g@googlemail.com
+// Wichtig: Nach Änderung ACL speichern, dann tailscale up mit --advertise-tags ausführen.
 
 {
   "tagOwners": {
