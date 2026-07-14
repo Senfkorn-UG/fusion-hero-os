@@ -19,8 +19,8 @@ _FALLBACK = {
         "mainframe": {
             "node_id": "mainframe",
             "role": "orchestrator",
-            "hostname": "desktop-kpki9e4",
-            "magicdns": "host.example.ts.net",
+            "hostname": "mainframe-host",
+            "magicdns": "mainframe-host.example.ts.net",
             "platform": "windows",
             "canonical": True,
             "aliases": ["desktop"],
@@ -29,29 +29,29 @@ _FALLBACK = {
             "node_id": "desktop",
             "role": "grok-workstation",
             "same_as": "mainframe",
-            "hostname": "desktop-kpki9e4",
-            "magicdns": "host.example.ts.net",
+            "hostname": "mainframe-host",
+            "magicdns": "mainframe-host.example.ts.net",
             "platform": "windows",
         },
         "mobile": {
             "node_id": "phone",
             "role": "mobile-client",
-            "hostname": "phone-node",
-            "magicdns": "host.example.ts.net",
+            "hostname": "mobile-node",
+            "magicdns": "mobile-node.example.ts.net",
             "platform": "android",
         },
         "legacy": {
             "node_id": "legacy-linux",
             "role": "archived",
             "hostname": "mainframe",
-            "magicdns": "host.example.ts.net",
+            "magicdns": "mainframe-host.example.ts.net",
             "platform": "linux",
             "status": "offline",
         },
     },
     "routing": {
-        "base_url": "https://host.example.ts.net",
-        "mainframe_hostname": "desktop-kpki9e4",
+        "base_url": "https://mainframe-host.example.ts.net",
+        "mainframe_hostname": "mainframe-host",
         "funnel_port": 8088,
     },
 }
@@ -96,7 +96,7 @@ def get_mainframe() -> dict:
 
 
 def get_mainframe_hostname() -> str:
-    return get_mainframe().get("hostname", "desktop-kpki9e4")
+    return get_mainframe().get("hostname", "mainframe-host")
 
 
 def get_mainframe_magicdns() -> str:

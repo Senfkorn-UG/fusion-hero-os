@@ -11,7 +11,7 @@ nodes:
   mainframe:
     role: orchestrator
     hostname: mainframe
-    magicdns: host.example.ts.net
+    magicdns: mainframe-host.example.ts.net
     platform: linux
     tailscale_tag: tag:fusion-node-mainframe
     services:
@@ -22,8 +22,8 @@ nodes:
     # Doppelrolle: weiterhin Grok-Workstation UND vollwertige Enduser-Stelle
     # auf einer Stufe mit dem Handy (siehe enduser-Block).
     role: grok-workstation
-    hostname: desktop-kpki9e4
-    magicdns: host.example.ts.net
+    hostname: mainframe-host
+    magicdns: mainframe-host.example.ts.net
     platform: windows
     tailscale_tag: tag:fusion-node-desktop
     services:
@@ -47,8 +47,8 @@ nodes:
 
   phone:
     role: mobile-client
-    hostname: phone-node
-    magicdns: host.example.ts.net
+    hostname: mobile-node
+    magicdns: mobile-node.example.ts.net
     platform: android
     tailscale_tag: tag:fusion-node-phone
     services:
@@ -159,7 +159,7 @@ connectors:
 
 # Routing-Schema (Funnel + MagicDNS)
 routing:
-  base_url: "https://host.example.ts.net"
+  base_url: "https://mainframe-host.example.ts.net"
   unified: "/fusion/status"
   fusion_graph: "/fusion/graph"
   mesh_overview: "/mesh/status"

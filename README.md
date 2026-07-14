@@ -20,10 +20,10 @@ Registry: `mesh_connectors.yaml`
 
 | Knoten | Rolle | MagicDNS |
 |--------|-------|----------|
-| `mainframe` | Orchestrator (**Windows-Desktop**, kanonisch) | `host.example.ts.net` |
-| `desktop` | Alias → mainframe (gleicher PC) | `host.example.ts.net` |
-| `phone` | Mobile Client (Android) | `host.example.ts.net` |
-| `legacy-linux` | Archiviert (früherer Linux-Knoten) | `host.example.ts.net` |
+| `mainframe` | Orchestrator (**Windows-Desktop**, kanonisch) | `mainframe-host.example.ts.net` |
+| `desktop` | Alias → mainframe (gleicher PC) | `mainframe-host.example.ts.net` |
+| `phone` | Mobile Client (Android) | `mobile-node.example.ts.net` |
+| `legacy-linux` | Archiviert (früherer Linux-Knoten) | `mainframe-host.example.ts.net` |
 
 Kanonische Rollen: `src/normal_os/integration/mesh_roles.yaml`
 
@@ -84,12 +84,12 @@ sudo ./tailscale_control.sh mesh-connector github
 
 ## Erreichbare URLs (nach Funnel + MagicDNS)
 
-- **Hero Docs Server**: `https://host.example.ts.net`
-- **MasterSeed Status**: `https://host.example.ts.net/status`
-- **Tailscale Status**: `https://host.example.ts.net/tailscale/status`
-- **Mesh Overview**: `https://host.example.ts.net/mesh/status`
-- **Einzelner Konnektor**: `https://host.example.ts.net/mesh/github/status`
-- **Fusion Dashboard (lokal/Mainframe)**: `http://127.0.0.1:8000` / `http://host.example.ts.net:8000`
+- **Hero Docs Server**: `https://mainframe-host.example.ts.net`
+- **MasterSeed Status**: `https://mainframe-host.example.ts.net/status`
+- **Tailscale Status**: `https://mainframe-host.example.ts.net/tailscale/status`
+- **Mesh Overview**: `https://mainframe-host.example.ts.net/mesh/status`
+- **Einzelner Konnektor**: `https://mainframe-host.example.ts.net/mesh/github/status`
+- **Fusion Dashboard (lokal/Mainframe)**: `http://127.0.0.1:8000` / `http://mainframe-host.example.ts.net:8000`
 
 ## Dateien
 

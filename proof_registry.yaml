@@ -307,3 +307,114 @@ claims:
       - tests/test_multimodal_protocol.py::test_provider_status_never_contains_key_values
       - tests/test_multimodal_protocol.py::test_routing_reacts_to_key_presence
       - tests/test_multimodal_protocol.py::test_inventory_is_cached_via_quantum_dictionary
+
+  # ---- Meta-Neural Vertical Slice (Stage 1, 2026-07-14) --------------------
+  # "meta-neural" / "fraktal" ist eine Graph-Architektur-Metapher, KEIN
+  # Bewusstseins- oder Kognitionsanspruch. Der QUBO-Bridge ist klassische
+  # simulierte Abkuehlung, KEIN Quantencomputing.
+  - id: META-GRAPH-DETERMINISM
+    statement: "Der typisierte, versionierte Property-Graph serialisiert deterministisch (kanonisches JSON, sortierte Schluessel) und ist inhaltsadressiert: strukturell gleiche Graphen erzeugen denselben content_hash unabhaengig von Knotenreihenfolge und Provenance-Zeitstempel; Schema-Verletzungen werden bei Mutation und im Snapshot abgelehnt."
+    status: BEWIESEN
+    proofs:
+      - tests/test_meta_neural.py::test_deterministic_serialization_ignores_timestamp_and_order
+      - tests/test_meta_neural.py::test_snapshot_is_immutable_and_content_addressed
+      - tests/test_meta_neural.py::test_graph_rejects_unknown_types_and_dimensions
+      - tests/test_meta_neural.py::test_edge_requires_existing_endpoints
+
+  - id: META-CONSENT-FAILCLOSED
+    statement: "Jede privilegierte Operation ist einwilligungsgebunden und schlaegt fehl (fail closed) ohne aktiven, unwiderrufenen, nicht abgelaufenen ConsentGrant fuer den genannten Zweck (Zweckbindung); jede Entscheidung (granted/denied) wird in ein append-only, hash-verkettetes Audit-Log geschrieben, dessen Manipulation erkennbar ist."
+    status: BEWIESEN
+    proofs:
+      - tests/test_meta_neural.py::test_consent_denial_is_fail_closed_and_audited
+      - tests/test_meta_neural.py::test_consent_grant_authorize_revoke_expiry
+      - tests/test_meta_neural.py::test_purpose_limitation
+      - tests/test_meta_neural.py::test_audit_chain_tamper_detection
+      - tests/test_meta_neural.py::test_pipeline_denies_without_consent
+
+  - id: META-VAULT-BOUNDARY
+    statement: "Die VaultResolver-Grenze trennt oeffentlich (Interfaces, opake Subjekt-IDs, Schemata, synthetische Fixtures) von privat (95guknow/fusion-hero-vault). Der oeffentliche NullVaultResolver liefert nie personenbezogene Daten und schlaegt fehl (fail closed); opake Subjekt-IDs enthalten keinen natuerlichen Schluessel."
+    status: BEWIESEN
+    proofs:
+      - tests/test_meta_neural.py::test_null_vault_fails_closed
+      - tests/test_meta_neural.py::test_inmemory_vault_requires_authorization
+      - tests/test_meta_neural.py::test_subject_ref_is_opaque_and_stable
+
+  - id: META-WORKING-MEMORY
+    statement: "WorkingMemorySpace ist mathematisch definiert: Aktivierungen werden auf die Kapazitaet geklemmt (||a||_inf <= c) und zerfallen geometrisch (a <- gamma*a pro Schritt); der Report ist deterministisch sortiert und explizit reportierbar. 'J-space' ist nur Analogie."
+    status: BEWIESEN
+    proofs:
+      - tests/test_meta_neural.py::test_working_memory_capacity_clamp
+      - tests/test_meta_neural.py::test_working_memory_geometric_decay
+      - tests/test_meta_neural.py::test_working_memory_reportability_sorted
+
+  - id: META-HEBBIAN
+    statement: "Die Hebbsche Assoziationsspeicherung ist eine wohldefinierte, deterministische Lernregel auf duennbesetzten, geklemmten Kantengewichten mit Lernrate, Zerfall/Vergessen, Loeschen einzelner Paare und ganzer Slots (Right-to-Erasure-Hook) — KEIN Beweis biologischer Kognition."
+    status: BEWIESEN
+    proofs:
+      - tests/test_meta_neural.py::test_hebbian_update_forget_delete_reproducible
+      - tests/test_meta_neural.py::test_hebbian_clamp_and_delete_slot
+
+  - id: META-COUPLING-BANACH
+    statement: "Die Kopplungsanalyse liefert eine dimensionskorrekte finite-Differenzen-Jacobimatrix (stimmt mit der analytischen Jacobimatrix eines linearen Feldes ueberein) und einen HINREICHENDEN Banach-Kontraktionstest via induzierter Operatornorm (||J||<1 => lokale Kontraktion, eindeutiger Fixpunkt). KEIN Anspruch auf allgemeine nichtlineare Konvergenz."
+    status: BEWIESEN
+    proofs:
+      - tests/test_meta_neural.py::test_jacobian_dimensions_and_fd_agreement
+      - tests/test_meta_neural.py::test_banach_contraction_detection
+      - tests/test_meta_neural.py::test_fixed_point_iteration_converges_for_contraction
+
+  - id: META-QUBO-BRIDGE
+    statement: "Der QUBO-Bridge bildet einen Graph-Snapshot deterministisch auf eine QUBO-Matrix ab und loest sie klassisch (simulierte Abkuehlung, seed-reproduzierbar); das Ergebnis ist auditierbar (Objective, Constraints, Backend, Seed, Provenance = Snapshot-Hash) und stimmt auf kleinen Instanzen mit Brute-Force ueberein. KEIN Quantencomputing."
+    status: BEWIESEN
+    proofs:
+      - tests/test_meta_neural.py::test_qubo_bridge_determinism_and_provenance
+      - tests/test_meta_neural.py::test_qubo_bridge_matches_brute_force_small
+
+  - id: META-API-SLICE
+    statement: "Der vertikale Schnitt (consent -> ingest -> activate -> associate -> analyze -> optimize -> audit) laeuft lokal end-to-end durch; die API weist unsichere Pfade (fehlende/nicht passende Einwilligung) mit HTTP 403 ab."
+    status: BEWIESEN
+    proofs:
+      - tests/test_meta_neural.py::test_pipeline_happy_path
+      - tests/test_meta_neural.py::test_pipeline_denies_on_grant_id_mismatch
+      - tests/test_meta_neural_api.py::test_api_happy_path
+      - tests/test_meta_neural_api.py::test_api_denies_ingest_without_consent
+      - tests/test_meta_neural_api.py::test_api_denies_optimize_without_consent
+
+  - id: META-PII-GATE
+    statement: "Der PII/Secret-Scanner erkennt private E-Mails, MagicDNS/Tailscale-Hosts, oeffentliche IPs, Supabase-URLs und Cloud-Tokens; private (RFC1918) und CGNAT (RFC6598) IPs sowie allowlistete Doku-Beispiele blockieren das Gate nicht. Persona-Bezeichner werden als nicht-blockierende Warnung gefuehrt (Stage-2-Refactor). Der YAML-Allowlist-Parser behandelt '#' innerhalb von Anfuehrungszeichen als Literal (kein Kommentar-Abschnitt)."
+    status: BEWIESEN
+    proofs:
+      - tests/test_pii_scanner.py::test_detects_planted_secrets
+      - tests/test_pii_scanner.py::test_allowlist_literals_and_paths
+      - tests/test_pii_scanner.py::test_private_and_cgnat_ips_are_not_flagged
+      - tests/test_pii_scanner.py::test_non_public_ip_classifier
+      - tests/test_pii_scanner.py::test_yaml_parser_preserves_hash_inside_quotes
+      - tests/test_pii_scanner.py::test_strip_comment_helper
+
+  # ---- Meta-Neural Review-Fix Hardening (2026-07-14) -----------------------
+  - id: META-AUDIT-SUBJECT-SCOPED
+    statement: "Audit-Lesezugriff ist standardmaessig subjektgebunden: ein Subjekt mit AUDIT_READ sieht nur die eigenen Audit-Eintraege. Ein subjektuebergreifender (globaler) Read ist eine eigenstaendige administrative Faehigkeit, die include_all=True UND ein out-of-band gesetztes admin_token erfordert; ohne Token ist sie deaktiviert und wird nie ueber die HTTP-API exponiert."
+    status: BEWIESEN
+    proofs:
+      - tests/test_meta_neural.py::test_audit_trail_is_subject_scoped
+      - tests/test_meta_neural.py::test_audit_cross_subject_requires_admin_capability
+
+  - id: META-RIGHT-TO-ERASURE
+    statement: "Widerruf (revoke_consent) und erkanntes Ablaufen (_purge_if_expired/sweep_expired) loeschen den abgeleiteten Subjekt-Zustand deterministisch (Graph, Snapshot, Working Memory, Hebbsche Assoziationen inkl. Sekundaerindizes) und hinterlassen ein minimales, personenbezugsfreies subject.purge-Tombstone als Loeschbeleg. Danach sind die Daten nicht mehr zugaenglich."
+    status: BEWIESEN
+    proofs:
+      - tests/test_meta_neural.py::test_revocation_purges_subject_state
+      - tests/test_meta_neural.py::test_expiry_purges_subject_state
+
+  - id: META-SERVICE-THREADSAFE
+    statement: "Der prozessweite MetaNeuralService-Singleton schuetzt seine subjektbezogenen Zustands-Maps mit einem RLock; nebenlaeufige Ingests unterschiedlicher Subjekte lassen die Maps konsistent. Ein grant_id-Mismatch erzeugt genau EIN denied-Audit-Ereignis (kein irrefuehrendes granted->denied-Paar)."
+    status: BEWIESEN
+    proofs:
+      - tests/test_meta_neural.py::test_service_concurrent_ingest_thread_safe
+      - tests/test_meta_neural.py::test_grant_id_mismatch_single_audit_decision
+
+  - id: META-QUBO-SYMMETRY
+    statement: "solve_qubo symmetrisiert eine asymmetrische Q-Matrix zu (Q+Q^T)/2 (fuer binaere x wertinvariant), sodass die O(n)-Delta-Energie-Aktualisierung korrekt ist; die weighted-Adjazenz zaehlt Self-Loops nur einmal auf der Diagonalen."
+    status: BEWIESEN
+    proofs:
+      - tests/test_meta_neural.py::test_solve_qubo_symmetrizes_asymmetric_matrix
+      - tests/test_meta_neural.py::test_adjacency_self_loop_not_double_counted

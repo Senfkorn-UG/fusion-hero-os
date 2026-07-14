@@ -37,7 +37,7 @@ def _load_registry_fallback():
         "tailnet": "example.ts.net",
         "nodes": {
             "mainframe": {"role": "orchestrator", "hostname": "mainframe"},
-            "desktop": {"role": "grok-workstation", "hostname": "desktop-kpki9e4"},
+            "desktop": {"role": "grok-workstation", "hostname": "mainframe-host"},
         },
         "connectors": {
             name: {

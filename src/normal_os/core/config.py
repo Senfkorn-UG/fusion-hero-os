@@ -224,7 +224,7 @@ class MeshConnectorConfig(BaseModel):
 class TailscaleMeshConfig(BaseModel):
     """Tailscale Mesh Registry & Control"""
     enabled: bool = True
-    mainframe_hostname: str = "desktop-kpki9e4"
+    mainframe_hostname: str = "mainframe-host"
     mainframe_role: str = "orchestrator"
     mainframe_node_id: str = "mainframe"
     tailnet: str = "example.ts.net"

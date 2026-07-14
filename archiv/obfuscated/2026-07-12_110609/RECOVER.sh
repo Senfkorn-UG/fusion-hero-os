@@ -6,7 +6,7 @@ PASS="${FUSION_ARCHIV_GPG_PASSPHRASE:-}"
 if [ -z "$PASS" ]; then
   PASS="$(python3 - <<'PY'
 import hashlib
-print(hashlib.sha256(b"fusion-hero-os|archiv|desktop-kpki9e4|example.ts.net").hexdigest())
+print(hashlib.sha256(b"fusion-hero-os|archiv|mainframe-host|example.ts.net").hexdigest())
 PY
 )"
 fi

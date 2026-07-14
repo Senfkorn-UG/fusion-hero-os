@@ -6,7 +6,7 @@
 // daher unterscheidet diese Policy nach Host/IP, nicht nach Benutzeridentitaet.
 {
   "hosts": {
-    // Endgeraet des Superusers Superuser
+    // Endgeraet des Superusers (Handy)
     "phone-node":  "100.64.0.11",
     // Workstation
     "pc":             "100.64.0.12",

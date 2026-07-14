@@ -151,7 +151,7 @@ def _get_workstation() -> dict:
 def _check_phone_visibility(unified: dict, tailscale: dict) -> dict:
     """Warnung wenn Phone in Config aber nicht in Tailscale-Peers."""
     phone_cfg = (unified.get("nodes") or {}).get("phone", {})
-    expected = phone_cfg.get("hostname", "phone-node")
+    expected = phone_cfg.get("hostname", "mobile-node")
     peer_list = tailscale.get("peer_list") or []
     found = any(
         expected.lower() in (p.get("hostname") or "").lower()

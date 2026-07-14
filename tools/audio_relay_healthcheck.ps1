@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-    Diagnose fuer den Bluetooth-Audio-Relay-Link desktop-kpki9e4 <-> phone-node
+    Diagnose fuer den Bluetooth-Audio-Relay-Link mainframe-host <-> mobile-node
     (siehe ascension_os/config/access_policy.json, service "bluetooth-audio-relay").
 
 .DESCRIPTION
@@ -14,7 +14,7 @@
 
 $ErrorActionPreference = "Continue"
 $PhoneTailscaleIp = "100.64.0.11"
-$PhoneHostname = "phone-node"
+$PhoneHostname = "mobile-node"
 $AudioRelayPort = 59100
 
 Write-Host "=== AudioRelay Mesh-Healthcheck ===" -ForegroundColor Cyan

@@ -11,8 +11,8 @@ principle: "Jeder Konnektor = ein einzelnes Teil des Mesh (eigene ID, Host, Heal
 nodes:
   mainframe:
     role: orchestrator
-    hostname: desktop-kpki9e4
-    magicdns: host.example.ts.net
+    hostname: mainframe-host
+    magicdns: mainframe-host.example.ts.net
     platform: windows
     canonical: true
     aliases: [desktop]
@@ -29,8 +29,8 @@ nodes:
   desktop:
     role: grok-workstation
     alias_of: mainframe
-    hostname: desktop-kpki9e4
-    magicdns: host.example.ts.net
+    hostname: mainframe-host
+    magicdns: mainframe-host.example.ts.net
     platform: windows
     tailscale_tag: tag:fusion-node-desktop
     services:
@@ -39,8 +39,8 @@ nodes:
 
   phone:
     role: mobile-client
-    hostname: phone-node
-    magicdns: host.example.ts.net
+    hostname: mobile-node
+    magicdns: mobile-node.example.ts.net
     platform: android
     tailscale_tag: tag:fusion-node-phone
     services:
@@ -50,7 +50,7 @@ nodes:
   legacy-linux:
     role: archived
     hostname: mainframe
-    magicdns: host.example.ts.net
+    magicdns: mainframe-host.example.ts.net
     platform: linux
     status: offline
     note: "Früherer Linux-Knoten — Mainframe auf Windows-Desktop (2026-07-12)"
@@ -139,8 +139,8 @@ connectors:
 
 # Routing-Schema (Funnel + MagicDNS)
 routing:
-  base_url: "https://host.example.ts.net"
-  mainframe_hostname: desktop-kpki9e4
+  base_url: "https://mainframe-host.example.ts.net"
+  mainframe_hostname: mainframe-host
   roles_config: mesh_roles.yaml
   unified: "/fusion/status"
   fusion_graph: "/fusion/graph"

@@ -1,0 +1,25 @@
+name: PII / Secret Scan
+
+# Blocks commits that introduce personal data or secrets (private emails,
+# MagicDNS/Tailscale hostnames, public IPs, Supabase project URLs, cloud
+# tokens/keys). Documentation examples and neutral placeholders are exempt via
+# scripts/pii_allowlist.yaml. Persona identifiers are reported non-blocking
+# (tracked for a follow-up refactor PR).
+
+on:
+  push:
+    branches: [ main, develop, ascension, 'feature/**' ]
+  pull_request:
+    branches: [ main, develop, ascension ]
+
+jobs:
+  pii-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Run PII/secret scanner
+        run: python scripts/check_pii_scanner.py

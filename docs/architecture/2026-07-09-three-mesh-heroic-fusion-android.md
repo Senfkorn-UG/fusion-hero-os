@@ -23,8 +23,8 @@ This document captures the architecture decisions from the 2026-07-09 session re
 ## 1. Current Tailscale State
 
 ### Devices
-- `desktop-kpki9e4` (Windows): Stable, Connected
-- `phone-node` (Android): Unstable – frequent "Logged out" with `fetch control key: context canceled` error
+- `mainframe-host` (Windows): Stable, Connected
+- `mobile-node` (Android): Unstable – frequent "Logged out" with `fetch control key: context canceled` error
 
 ### Problem Analysis
 The Android client has recurring issues fetching the control key from Tailscale's control plane. This is a common Android + battery optimization + Doze mode problem.

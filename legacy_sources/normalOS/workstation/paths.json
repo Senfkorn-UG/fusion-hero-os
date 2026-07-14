@@ -31,21 +31,21 @@
     "tailnet": "example.ts.net",
     "nodes": {
       "desktop": {
-        "hostname": "desktop-kpki9e4",
-        "magicdns": "host.example.ts.net",
-        "ip": "100.80.63.0",
+        "hostname": "device",
+        "magicdns": "device.example.ts.net",
+        "ip": "100.64.0.0",
         "platform": "windows"
       },
       "phone": {
-        "hostname": "phone-node",
-        "magicdns": "host.example.ts.net",
+        "hostname": "mobile-node",
+        "magicdns": "mobile-node.example.ts.net",
         "platform": "android",
         "login_required": "user@example.com",
         "login_warning": "Nicht GitHub — gleicher Login wie Desktop (Google)"
       },
       "mainframe": {
         "hostname": "mainframe",
-        "magicdns": "host.example.ts.net",
+        "magicdns": "mainframe-host.example.ts.net",
         "platform": "linux",
         "status": "offline"
       }
