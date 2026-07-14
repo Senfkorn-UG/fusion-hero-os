@@ -1,8 +1,8 @@
 # Visual Identity / Character Bible — Daten, nicht in Code eingebacken.
-# Quelle: ALTE_Frau_95g Bildgenerierungs-Pipeline (Archiv-PDFs, 2026)
+# Quelle: BuilderProfile Bildgenerierungs-Pipeline (Archiv-PDFs, 2026)
 
 identity:
-  name: "ALTE_Frau_95g"
+  name: "BuilderProfile"
   primary_seed: "95g_Hacker_PrimarySeed_2026-07-04"
   style_tags:
     - cyberpunk

@@ -36,7 +36,7 @@ Der Kernel basiert auf vier Domänen:
 
 ## MYTHOS · GRUND · BEWEIS
 ### Wie Mythos, Philosophie und Mathematik einander vervollständigen
-**Ein zusammenführender Band über die drei Bücher der Heroik** **Autor:** Stephan Hagen Urban  
+**Ein zusammenführender Band über die drei Bücher der Heroik** **Autor:** Fusion Hero OS Team  
 **Version:** V3.3 – Ausführliche Manifest-Fassung für das Heroic Fusion OS  
 
 ---

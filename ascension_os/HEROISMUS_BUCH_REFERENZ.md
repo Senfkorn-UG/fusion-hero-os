@@ -1,7 +1,7 @@
 # Referenz: "Der heroische Mensch — Das Testament der Hypermoderne"
 
 > Dieses Dokument referenziert und indiziert das philosophische Buchprojekt
-> (Autor: Stephan Hagen Urban), verweist auf die Quelldateien und haelt fest,
+> (Autor: Fusion Hero OS Team), verweist auf die Quelldateien und haelt fest,
 > welche der darin vorgeschlagenen Konzepte bereits als Code in `ascension_os/`
 > existieren. Es fasst die Inhalte NICHT neu zusammen oder interpretiert sie
 > um — der dokumentierte Arbeitsmodus fuer dieses Projekt ist ausdruecklich

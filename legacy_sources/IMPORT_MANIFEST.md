@@ -25,7 +25,7 @@ Snapshot entspricht.
 | `fusion-hero-os-v1/` | [95guknow/fusion-hero-os-v1](https://github.com/95guknow/fusion-hero-os-v1) | main | `610334f` | privat |
 | `heroic-fusion-os-manifest/` | [95guknow/heroic-fusion-os-manifest](https://github.com/95guknow/heroic-fusion-os-manifest) | fourteen | `cd4191f` | öffentlich |
 | `kilo/` | [95guknow/kilo](https://github.com/95guknow/kilo) | main | `5d82ed8` | öffentlich |
-| `mister-jailbait-gui/` | [95guknow/mister-jailbait-gui](https://github.com/95guknow/mister-jailbait-gui) | main | `b57f7fd` | privat |
+| `mister-builder-gui/` | [95guknow/mister-builder-gui](https://github.com/95guknow/mister-builder-gui) | main | `b57f7fd` | privat |
 | `normalOS/` | [95guknow/normalOS](https://github.com/95guknow/normalOS) | main | `76c3582` | öffentlich |
 
 ## Nicht aus einem Standalone-Repo importiert

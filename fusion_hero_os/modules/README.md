@@ -4,7 +4,7 @@ Dieser Ordner enthält Skill-Module des Fusion-Hero-OS.
 
 ## Struktur (Ist-Zustand)
 
-- `alte_frau_95g/` – Heroic Core Foundation
+- `builder_profile/` – Heroic Core Foundation
 - `mainframe_laden/` – Permanent Auto-Load
 - `skill_creator/` – Dynamische Skill-Evolution
 
@@ -13,5 +13,5 @@ Implementierung. Die zentrale Registry (`fusion_hero_os/registry.py`) führt
 sie deshalb explizit als `stub` statt sie fälschlich als "geladen" zu melden.
 
 Zwei früher hier dokumentierte Module (`deep_research_5_stage/`,
-`mister_jailbait_image/`) existieren nicht im Code und wurden aus dieser
+`mister_builder_image/`) existieren nicht im Code und wurden aus dieser
 Liste entfernt, statt weiter einen nicht vorhandenen Stand zu behaupten.

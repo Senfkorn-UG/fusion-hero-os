@@ -1,4 +1,4 @@
-// ENTWURF — Tailnet-Policy fuer tailnet.example.ts.net
+// ENTWURF — Tailnet-Policy fuer example.ts.net
 // Korrigiert 2026-07-14: Keine Wildcards in src/dst (Tailscale ACL Parser unterstützt keine tag:foo-* in Regeln)
 // Aktivieren: Inhalt nach https://login.tailscale.com/admin/acls kopieren und speichern.
 // Alle Fusion-Tags aus mesh_connectors.yaml explizit aufgelistet.
@@ -24,8 +24,10 @@
   },
 
   "hosts": {
-    "handy-stephan": "100.64.0.1",
-    "pc": "100.64.0.2"
+    // Endgeraet des Superusers Fusion Hero OS Team
+    "phone-node": "100.64.0.11",
+    // Workstation (dieser PC)
+    "pc": "100.64.0.12"
   },
 
   "acls": [
@@ -46,7 +48,7 @@
         "tag:fusion-connector-vercel",
         "tag:fusion-connector-hyperframes",
         "tag:fusion-connector-tasks",
-        "handy-stephan",
+        "phone-node",
         "pc"
       ],
       "dst": ["*:*"]

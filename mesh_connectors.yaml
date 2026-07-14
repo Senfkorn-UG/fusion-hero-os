@@ -3,7 +3,7 @@
 # Kein Monolith — jede Verbindung hat eigene Identität, Health-Probe und Routing.
 
 mesh_version: "1.0"
-tailnet: tail391adb.ts.net
+tailnet: example.ts.net
 principle: "Jeder Konnektor = ein einzelnes Teil des Mesh (eigene ID, Host, Health, Tag)"
 
 # Physische Mesh-Knoten (Tailscale Devices)
@@ -47,7 +47,7 @@ nodes:
 
   phone:
     role: mobile-client
-    hostname: redmi-note-13-pro-5g
+    hostname: phone-node
     magicdns: mobile-node.example.ts.net
     platform: android
     tailscale_tag: tag:fusion-node-phone

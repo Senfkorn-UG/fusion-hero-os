@@ -34,7 +34,7 @@
 
 5. **Meme & Visual Identity Agent**
    - Generates Coal Canary, Pepe Lumberjack, Rick Sanchez disruptor memes
-   - Maintains visual consistency for mister-jailbait cyberpunk campfire series
+   - Maintains visual consistency for mister-Contributor cyberpunk campfire series
 
 6. **Sub-Agent Swarm (orchestrated)**
    - Dynamic resource allocation

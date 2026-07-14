@@ -3,7 +3,7 @@
 
 mesh_roles_version: "1.1"
 updated: "2026-07-12"
-tailnet: tail391adb.ts.net
+tailnet: example.ts.net
 principle: "Windows-Desktop = Mainframe — zentraler Orchestrator im Tailscale-Mesh"
 
 # Rolle → physischer Knoten (kanonisch)
@@ -39,7 +39,7 @@ role_assignments:
   mobile:
     node_id: phone
     role: mobile-client
-    hostname: redmi-note-13-pro-5g
+    hostname: phone-node
     magicdns: mobile-node.example.ts.net
     platform: android
     tailscale_tag: tag:fusion-node-phone
