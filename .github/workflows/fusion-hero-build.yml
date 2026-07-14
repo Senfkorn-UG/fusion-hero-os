@@ -8,7 +8,7 @@ on:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true # Bricht alte, noch laufende Jobs bei neuen Commits ab
+  cancel-in-progress: true
 
 jobs:
   build:
@@ -22,22 +22,22 @@ jobs:
       - name: Checkout Repository (MasterSeed)
         uses: actions/checkout@v4
         with:
-          fetch-depth: 1 # EfficiencyDistillation: Flacher, extrem schneller Checkout
+          fetch-depth: 1
 
-      - name: Setup Python Hyperthreading ${{ matrix.python-version }}
+      - name: Setup Python ${{ matrix.python-version }}
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-          cache: 'pip' # Autonomes Caching-Protokoll
+          cache: 'pip'
 
       - name: Install Dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt
-          pip install pyright pytest
+          pip install -e ".[dev]"
+          pip install pyright
 
       - name: Static Analysis (Pyright)
-        run: python -m pyright .
+        run: python -m pyright
 
       - name: Execution Protocol (Tests)
-        run: pytest
+        run: pytest tests/ -q --tb=no -x

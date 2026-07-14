@@ -1,3 +1,7 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
 [project]
 name = "ascension-os"
 version = "8.3.0"
@@ -47,7 +51,9 @@ ascension-bridge = "normal_os.bridge.grok_pc_bridge:main"
 ascension-dashboard = "normal_os.dashboard.app:run"
 ascension-hub = "normal_os.integration.fusion_integration_hub:main"
 [tool.setuptools.packages.find]
-where = ["src"]
+where = ["src", "."]
+include = ["normal_os*", "fusion_hero_os*"]
+exclude = ["tests*", "legacy_sources*"]
 [tool.ruff]
 target-version = "py311"
 line-length = 100

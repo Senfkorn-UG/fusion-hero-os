@@ -68,6 +68,7 @@ pms_audit.jsonl
 
 # Workstation runtime (secrets + logs)
 workstation/.env
+workstation/paths.local.json
 workstation/*-log.txt
 workstation/disk-audit.txt
 workstation/_last_hub_status.json

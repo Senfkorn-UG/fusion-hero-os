@@ -153,8 +153,14 @@ def _get_workstation() -> dict:
     if not ws:
         return {"configured": False}
     try:
-        with open(ws, encoding="utf-8") as f:
-            return {"configured": True, "paths": json.load(f)}
+        import sys
+
+        ws_dir = ws.parent
+        if str(ws_dir) not in sys.path:
+            sys.path.insert(0, str(ws_dir))
+        from resolve_paths import resolve_paths  # type: ignore[import-not-found]
+
+        return {"configured": True, "paths": resolve_paths(ws_dir), "source": str(ws)}
     except Exception as e:
         return {"configured": False, "error": str(e)}
 

@@ -1,0 +1,23 @@
+{
+  "include": [
+    "fusion_hero_os",
+    "src/normal_os",
+    "scripts"
+  ],
+  "exclude": [
+    "**/node_modules",
+    "**/__pycache__",
+    "legacy_sources",
+    "03_Code",
+    "04_Buch_und_Archiv",
+    "ascension_os",
+    "tests",
+    "fusion_hero_os/modules"
+  ],
+  "typeCheckingMode": "basic",
+  "reportMissingImports": "none",
+  "reportOptionalMemberAccess": "none",
+  "reportAttributeAccessIssue": "none",
+  "reportArgumentType": "none",
+  "reportOperatorIssue": "none"
+}
