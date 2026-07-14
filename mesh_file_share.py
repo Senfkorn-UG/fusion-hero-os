@@ -40,6 +40,15 @@ DEFAULT_ZONES = [
     {"id": "journal", "label": "Journal", "path": "journal", "max_depth": 2, "max_files": 100},
     {"id": "journal_tagebuch", "label": "Tagebuch", "path": "journal/tagebuch", "max_depth": 1,
      "max_files": 90, "extensions": [".md"]},
+    {"id": "mathematik", "label": "Aktualisierte Mathematik", "path": "02_Mathematik",
+     "max_depth": 2, "max_files": 40, "extensions": [".json", ".py", ".txt", ".md"]},
+    {"id": "mathematik_core", "label": "Math Engine + QPT", "path": ".", "max_depth": 0,
+     "max_files": 12, "names": [
+         "fusion_hero_os/core/heroic_math_engine.py",
+         "fusion_hero_os/core/quantum_cognition.py",
+         "src/normal_os/integration/proof_registry.yaml",
+         "docs/v8/GROK_DEEP_RESEARCH_EXPORT_Empirical_Mathematical_Anchors_v8.md",
+     ]},
     {"id": "archiv", "label": "Archiv", "path": "archiv", "max_depth": 4, "max_files": 80,
      "extensions": [".md", ".json", ".sh", ".py"], "exclude_extensions": [".obf"]},
     {"id": "workstation", "label": "Workstation Config", "path": "workstation", "max_depth": 1,
@@ -103,6 +112,7 @@ def get_filedrop_config() -> dict:
             "mirror": "mesh/mirror",
             "filedrops": "mesh/filedrops",
             "archives": "mesh/archives",
+            "mathematik": "mesh/mathematik",
         },
         "journal_ingest_on_sync": cfg.get("journal_ingest_on_sync", True),
         "android_subdir": cfg.get("android_subdir", "android"),
@@ -582,6 +592,13 @@ def mirror_to_gdrive(manifest: Optional[dict] = None) -> dict:
     if latest.exists():
         _copy_tree_limited(latest, archive_dir / "obfuscated_latest", extensions=[".md", ".json", ".sh"])
 
+    math_mirror: Dict[str, Any] = {"ok": False, "skipped": True}
+    try:
+        from mesh_mathematics_sync import mirror_mathematics_to_gdrive
+        math_mirror = mirror_mathematics_to_gdrive(gdrive_root=gdrive_root)
+    except Exception as exc:
+        math_mirror = {"ok": False, "error": str(exc)}
+
     return {
         "ok": True,
         "gdrive_root": str(gdrive_root),
@@ -589,8 +606,10 @@ def mirror_to_gdrive(manifest: Optional[dict] = None) -> dict:
             "mirror": str(mirror_dir),
             "archives": str(archive_dir),
             "filedrops": str(filedrops_dir),
+            "mathematik": str(gdrive_root / sub.get("mathematik", "mesh/mathematik")),
         },
         "copied_counts": copied,
+        "mathematics_mirror": math_mirror,
         "tree_hash": man.get("tree_hash"),
     }
 
@@ -625,6 +644,13 @@ def sync_mesh_all(*, notify_phone: bool = True) -> dict:
 
     out["gdrive_mirror"] = mirror_to_gdrive(manifest)
     steps.append("gdrive_mirror")
+
+    try:
+        from mesh_mathematics_sync import sync_mathematics_google
+        out["mathematics_google"] = sync_mathematics_google(include_gdrive=True)
+        steps.append("mathematics_google")
+    except Exception as exc:
+        out["mathematics_google"] = {"ok": False, "error": str(exc)}
 
     out["phone_peer"] = resolve_phone_peer()
     out["ok"] = True

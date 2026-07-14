@@ -119,6 +119,22 @@ file_share:
       max_depth: 1
       max_files: 90
       extensions: [".md"]
+    - id: mathematik
+      label: Aktualisierte Mathematik
+      path: 02_Mathematik
+      max_depth: 2
+      max_files: 40
+      extensions: [".json", ".py", ".txt", ".md"]
+    - id: mathematik_core
+      label: Math Engine + QPT
+      path: "."
+      max_depth: 0
+      max_files: 12
+      names:
+        - fusion_hero_os/core/heroic_math_engine.py
+        - fusion_hero_os/core/quantum_cognition.py
+        - src/normal_os/integration/proof_registry.yaml
+        - docs/v8/GROK_DEEP_RESEARCH_EXPORT_Empirical_Mathematical_Anchors_v8.md
     - id: archiv
       label: Archiv
       path: archiv
@@ -167,6 +183,7 @@ filedrop_sync:
     mirror: mesh/mirror
     filedrops: mesh/filedrops
     archives: mesh/archives
+    mathematik: mesh/mathematik
   journal_ingest_on_sync: true
   android_subdir: android
 
@@ -200,7 +217,17 @@ cloud_backends:
     env_file: 03_Code/Dashboard/.env
   google_drive:
     cold_path: FusionHero_Offload/mesh/fractal
+    mathematik_path: FusionHero_Offload/mesh/mathematik
   google_server:
-    hostname: cs-724978827604-default
-    tailscale_ip: 100.127.145.106
+    hostname: fusion-mesh-exit
+    gce_instance: fusion-mesh-exit
+    tailscale_ip: 100.103.188.54
+    magicdns: fusion-mesh-exit.tail391adb.ts.net
     pending_queue: ~/.fusion/mesh/fractal/pending_google_server.json
+
+# Aktualisierte Mathematik — Google-Durchlauf (GDrive + Mesh-Portal)
+mathematics_sync:
+  enabled: true
+  module: mesh_mathematics_sync.py
+  gdrive_subpath: mesh/mathematik
+  manifest_file: mathematics_manifest.json

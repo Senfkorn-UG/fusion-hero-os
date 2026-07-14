@@ -149,12 +149,20 @@ def sync_to_google_drive(manifest: Optional[dict] = None) -> Dict[str, Any]:
                 "hint": "Install Google Drive for desktop or use Google Drive MCP",
             }
 
+        math_sync: Dict[str, Any] = {"ok": False, "skipped": True}
+        try:
+            from mesh_mathematics_sync import mirror_mathematics_to_gdrive
+            math_sync = mirror_mathematics_to_gdrive()
+        except Exception as exc:
+            math_sync = {"ok": False, "error": str(exc)}
+
         return {
             "ok": True,
             "backend": "google_drive",
             "paths": copied_to,
             "tree_hash": tree_hash,
             "file_mirror": _sync_file_mirror_to_gdrive(man),
+            "mathematics_mirror": math_sync,
         }
     except Exception as exc:
         return {"ok": False, "backend": "google_drive", "error": str(exc)}
