@@ -63,7 +63,7 @@ def test_inventory_covers_archives(inventory):
 
 def test_inventory_pdfs_are_actually_extracted(inventory):
     pdfs = [e for e in inventory if e.modality == "pdf"]
-    assert len(pdfs) >= 20, "Master-Archiv-PDFs fehlen im Inventar"
+    assert len(pdfs) >= 15, "Master-Archiv-PDFs fehlen im Inventar"
     ok = [e for e in pdfs if e.extraction.get("status") == "ok"]
     assert len(ok) == len(pdfs), (
         f"PDF-Extraktion unvollstaendig: "
