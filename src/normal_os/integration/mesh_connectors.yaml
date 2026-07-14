@@ -153,3 +153,12 @@ routing:
 # Verknüpfung mit LLM-Frameworks (siehe fusion_unified.yaml)
 integration_hub: fusion_integration_hub.py
 unified_config: fusion_unified.yaml
+
+# Google OAuth (Gmail, Drive, Calendar) — include_granted_scopes
+google_oauth:
+  module: connectors/google_oauth.py
+  setup_script: workstation/setup-google-oauth.ps1
+  credentials: "{USERPROFILE}/.fusion/google-oauth/credentials.json"
+  token: "{USERPROFILE}/.fusion/google-oauth/token.json"
+  include_granted_scopes: true
+  connectors: [gmail, google_drive, google_calendar]
