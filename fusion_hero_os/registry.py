@@ -95,7 +95,7 @@ DEFAULT_MODULES: List[ModuleSpec] = [
     ModuleSpec(
         "methodology.knowledge", "fusion_hero_os.methodology.knowledge", "Wissensbasis-Zugriff"),
     ModuleSpec(
-        "modules.alte_frau_95g", "fusion_hero_os.modules.alte_frau_95g", "Heroic Core Foundation", stub=True),
+        "modules.builder_profile", "fusion_hero_os.modules.builder_profile", "Heroic Core Foundation", stub=True),
     ModuleSpec(
         "modules.mainframe_laden", "fusion_hero_os.modules.mainframe_laden", "Permanent Auto-Load", stub=True),
     ModuleSpec(

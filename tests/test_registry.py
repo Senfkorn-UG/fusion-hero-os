@@ -27,7 +27,7 @@ def test_required_modules_load_successfully():
 
 def test_stub_modules_are_marked_as_stub_not_loaded():
     registry = get_registry()
-    for name in ("modules.alte_frau_95g", "modules.mainframe_laden", "modules.skill_creator"):
+    for name in ("modules.builder_profile", "modules.mainframe_laden", "modules.skill_creator"):
         spec = registry.load(name)
         assert spec.status is ModuleStatus.STUB
 

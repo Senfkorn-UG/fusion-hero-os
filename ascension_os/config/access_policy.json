@@ -23,16 +23,16 @@
           "type": "audio-stream-receiver",
           "app": "AudioRelay (audiorelay.net, Android-Client com.azefsw.audioconnect)",
           "port": 59100,
-          "direction": "receives PC-Systemsound von desktop-kpki9e4, gibt ihn ueber die am Handy gekoppelten Bluetooth-Kopfhoerer aus",
-          "peer_device": "desktop-kpki9e4",
+          "direction": "receives PC-Systemsound von workstation-node, gibt ihn ueber die am Handy gekoppelten Bluetooth-Kopfhoerer aus",
+          "peer_device": "workstation-node",
           "connect_mode": "manual (Tailscale-IP/MagicDNS statt LAN-Broadcast, da kein gemeinsames physisches Subnetz)",
           "added": "2026-07-11",
-          "note": "Grund: desktop-kpki9e4 hat keine eigene Bluetooth-Hardware; Audio wird ueber das Tailnet zum Handy geroutet."
+          "note": "Grund: workstation-node hat keine eigene Bluetooth-Hardware; Audio wird ueber das Tailnet zum Handy geroutet."
         }
       ]
     },
     {
-      "hostname": "desktop-kpki9e4",
+      "hostname": "workstation-node",
       "tailscale_ip": "100.64.0.12",
       "role": "workstation",
       "owner": "Fusion Hero OS Team",

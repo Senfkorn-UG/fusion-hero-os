@@ -2,7 +2,7 @@
 """
 AGENTS — Multi-Agent Orchestration Framework (v1.0)
 ===================================================
-Reine-Python Multi-Agenten-Orchestrierung fuer das "Fusion Hero OS / ALTE_FRAU_95g Core".
+Reine-Python Multi-Agenten-Orchestrierung fuer das "Fusion Hero OS / BuilderProfile Core".
 
 Ziel dieser Datei:
   Eine *lauffaehige*, vollstaendig pure-Python (Standardbibliothek) Orchestrierung von
