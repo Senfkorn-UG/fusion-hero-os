@@ -48,6 +48,14 @@ GOOGLE_DRIVE_COLD_ROOTS = [
 ]
 
 
+def _sync_file_mirror_to_gdrive(manifest: dict) -> dict:
+    try:
+        from mesh_file_share import mirror_to_gdrive
+        return mirror_to_gdrive(manifest)
+    except Exception as exc:
+        return {"ok": False, "error": str(exc)}
+
+
 def _utc_epoch() -> float:
     return time.time()
 
@@ -146,6 +154,7 @@ def sync_to_google_drive(manifest: Optional[dict] = None) -> Dict[str, Any]:
             "backend": "google_drive",
             "paths": copied_to,
             "tree_hash": tree_hash,
+            "file_mirror": _sync_file_mirror_to_gdrive(man),
         }
     except Exception as exc:
         return {"ok": False, "backend": "google_drive", "error": str(exc)}

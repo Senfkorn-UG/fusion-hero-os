@@ -169,21 +169,37 @@ def _check_phone_visibility(unified: dict, tailscale: dict) -> dict:
     """Warnung wenn Phone in Config aber nicht in Tailscale-Peers."""
     phone_cfg = (unified.get("nodes") or {}).get("phone", {})
     expected = phone_cfg.get("hostname", "phone-node")
+    aliases = [expected.lower()]
+    aliases.extend(a.lower() for a in phone_cfg.get("hostname_aliases", []))
+    aliases.extend(["redmi", "android"])
     peer_list = tailscale.get("peer_list") or []
-    found = any(
-        expected.lower() in (p.get("hostname") or "").lower()
-        or expected.lower() in (p.get("magicdns") or "").lower()
-        for p in peer_list
-    )
+    found_peer = None
+    for p in peer_list:
+        hn = (p.get("hostname") or "").lower()
+        dns = (p.get("magicdns") or "").lower()
+        os_name = (p.get("os") or "").lower()
+        if os_name == "android" or any(a in hn or a in dns for a in aliases):
+            found_peer = p
+            break
+    found = found_peer is not None
     hint = phone_cfg.get("login_hint") or (
         "Handy und PC muessen im gleichen Tailnet sein (gleicher Login: Google, nicht GitHub)"
     )
+    file_mirror = {}
+    try:
+        from mesh_file_share import get_mirror_status
+        file_mirror = get_mirror_status()
+    except Exception as e:
+        file_mirror = {"error": str(e)}
     return {
         "expected_hostname": expected,
+        "resolved_hostname": (found_peer or {}).get("hostname"),
         "visible": found,
+        "online": (found_peer or {}).get("online", False),
         "peer_count": tailscale.get("peers", 0),
         "account_login": tailscale.get("login"),
         "fix_hint": None if found else hint,
+        "file_mirror": file_mirror,
     }
 
 

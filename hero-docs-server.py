@@ -31,7 +31,12 @@ import datetime
 import subprocess
 import json
 import sys
+<<<<<<< HEAD
 from pathlib import Path
+=======
+import base64
+import mimetypes
+>>>>>>> ec4a4a233c4b879d9acf5de302e583af211c2572
 
 PORT = 8088
 DIRECTORY = "."
@@ -60,6 +65,29 @@ except ImportError:
     FRACTAL_ROOT = None
     REPLICAS_DIR = None
 
+try:
+    from mesh_file_share import (
+        get_mirror_status,
+        load_file_manifest,
+        render_phone_portal_html,
+        resolve_safe_path,
+        resolve_gdrive_path,
+        receive_filedrop,
+        sync_phone_mirror,
+        sync_mesh_all,
+        _check_drop_token,
+    )
+except ImportError:
+    get_mirror_status = None
+    load_file_manifest = None
+    render_phone_portal_html = None
+    resolve_safe_path = None
+    resolve_gdrive_path = None
+    receive_filedrop = None
+    sync_phone_mirror = None
+    sync_mesh_all = None
+    _check_drop_token = None
+
 
 class HeroicDocsHandler(http.server.SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
@@ -74,6 +102,16 @@ class HeroicDocsHandler(http.server.SimpleHTTPRequestHandler):
             self.send_mesh_status()
         elif self.path == "/mesh/fractal/status":
             self.send_fractal_status()
+        elif self.path == "/mesh/files/status":
+            self.send_files_status()
+        elif self.path == "/mesh/files/manifest":
+            self.send_files_manifest()
+        elif self.path == "/mesh/files/phone":
+            self.send_files_phone_portal()
+        elif self.path.startswith("/mesh/files/get/"):
+            self.send_files_get()
+        elif self.path.startswith("/mesh/files/gdrive/"):
+            self.send_files_gdrive()
         elif self.path == "/mesh/exit-nodes":
             self.send_exit_nodes_status()
         elif self.path.startswith("/mesh/") and self.path.endswith("/status"):
@@ -104,6 +142,12 @@ class HeroicDocsHandler(http.server.SimpleHTTPRequestHandler):
     def do_POST(self):
         if self.path == "/mesh/fractal/replica":
             self.receive_fractal_replica()
+        elif self.path == "/mesh/files/sync":
+            self.sync_files_mirror()
+        elif self.path == "/mesh/sync/run":
+            self.run_mesh_sync()
+        elif self.path == "/mesh/files/drop":
+            self.receive_files_drop()
         else:
             self.send_error(404, "Not Found")
 
@@ -261,6 +305,121 @@ class HeroicDocsHandler(http.server.SimpleHTTPRequestHandler):
             return
         self._send_json(get_fractal_status())
 
+    def send_files_status(self):
+        if get_mirror_status is None:
+            self._send_json({"error": "mesh_file_share.py not available"}, 503)
+            return
+        self._send_json(get_mirror_status())
+
+    def send_files_manifest(self):
+        if load_file_manifest is None:
+            self._send_json({"error": "mesh_file_share.py not available"}, 503)
+            return
+        self._send_json(load_file_manifest())
+
+    def send_files_phone_portal(self):
+        if render_phone_portal_html is None or load_file_manifest is None:
+            self.send_error(503, "mesh_file_share not available")
+            return
+        manifest = load_file_manifest()
+        html = render_phone_portal_html(manifest)
+        self.send_response(200)
+        self.send_header("Content-type", "text/html; charset=utf-8")
+        self.end_headers()
+        self.wfile.write(html.encode("utf-8"))
+
+    def send_files_get(self):
+        if resolve_safe_path is None:
+            self.send_error(503, "mesh_file_share not available")
+            return
+        parts = self.path.split("/")
+        # /mesh/files/get/{zone}/{relpath...}
+        if len(parts) < 6:
+            self.send_error(400, "bad path")
+            return
+        zone_id = parts[4]
+        relpath = "/".join(parts[5:])
+        from urllib.parse import unquote
+        relpath = unquote(relpath)
+        target, err = resolve_safe_path(zone_id, relpath)
+        if err or target is None:
+            self.send_error(404, err or "not found")
+            return
+        try:
+            data = target.read_bytes()
+            mime = "application/octet-stream"
+            import mimetypes
+            guessed = mimetypes.guess_type(target.name)[0]
+            if guessed:
+                mime = guessed
+            self.send_response(200)
+            self.send_header("Content-type", mime)
+            self.send_header("Content-Length", str(len(data)))
+            self.send_header("Cache-Control", "public, max-age=300")
+            self.end_headers()
+            self.wfile.write(data)
+        except Exception as e:
+            self.send_error(500, str(e))
+
+    def sync_files_mirror(self):
+        if sync_phone_mirror is None:
+            self._send_json({"error": "mesh_file_share.py not available"}, 503)
+            return
+        self._send_json(sync_phone_mirror())
+
+    def run_mesh_sync(self):
+        if sync_mesh_all is None:
+            self._send_json({"error": "mesh_file_share.py not available"}, 503)
+            return
+        self._send_json(sync_mesh_all())
+
+    def receive_files_drop(self):
+        if receive_filedrop is None:
+            self._send_json({"error": "mesh_file_share.py not available"}, 503)
+            return
+        token = self.headers.get("X-Mesh-Drop-Token") or self.headers.get("X-Journal-Token")
+        ctype = self.headers.get("Content-Type", "")
+        try:
+            length = int(self.headers.get("Content-Length", 0))
+            raw = self.rfile.read(length) if length else b""
+            if "application/json" in ctype:
+                payload = json.loads(raw.decode("utf-8") or "{}")
+                fname = payload.get("filename", "drop.bin")
+                if payload.get("content_b64"):
+                    data = base64.b64decode(payload["content_b64"])
+                else:
+                    data = payload.get("content", "").encode("utf-8")
+                source = payload.get("source", "android")
+            else:
+                fname = self.headers.get("X-Filename", "drop.bin")
+                data = raw
+                source = self.headers.get("X-Source", "android")
+            self._send_json(receive_filedrop(fname, data, source=source, token=token))
+        except Exception as e:
+            self._send_json({"ok": False, "error": str(e)}, 400)
+
+    def send_files_gdrive(self):
+        if resolve_gdrive_path is None:
+            self.send_error(503, "mesh_file_share not available")
+            return
+        rel = self.path.split("/mesh/files/gdrive/", 1)[-1]
+        from urllib.parse import unquote
+        rel = unquote(rel)
+        target, err = resolve_gdrive_path(rel)
+        if err or target is None:
+            self.send_error(404, err or "not found")
+            return
+        try:
+            data = target.read_bytes()
+            mime = mimetypes.guess_type(target.name)[0] or "application/octet-stream"
+            self.send_response(200)
+            self.send_header("Content-type", mime)
+            self.send_header("Content-Length", str(len(data)))
+            self.end_headers()
+            self.wfile.write(data)
+        except Exception as e:
+            self.send_error(500, str(e))
+
     def send_exit_nodes_status(self):
         if get_fractal_status is None:
             self._send_json({"error": "fractal_mainframe_mesh.py not available"}, 503)
@@ -372,6 +531,7 @@ if __name__ == "__main__":
         print(f"           Fusion Unified:     http://{lan_ip}:{PORT}/fusion/status")
         print(f"           Fusion Graph:       http://{lan_ip}:{PORT}/fusion/graph")
         print(f"           Mesh Overview:      http://{lan_ip}:{PORT}/mesh/status")
+        print(f"           Mesh Files (Phone): http://{lan_ip}:{PORT}/mesh/files/phone")
         print(f"           LLM Overview:       http://{lan_ip}:{PORT}/llm/status")
         print("\n[INFO]     Alles verknüpft via fusion_integration_hub.py + fusion_unified.yaml")
         print("[INFO]     Drücke STRG+C zum Beenden.")

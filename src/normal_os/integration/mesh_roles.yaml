@@ -39,12 +39,14 @@ role_assignments:
   mobile:
     node_id: phone
     role: mobile-client
-    hostname: phone-node
-    magicdns: mobile-node.example.ts.net
+    hostname: redmi-note-13-pro-5g
+    hostname_aliases: [phone-node, redmi-note-13-pro-5g, redmi]
+    magicdns: redmi-note-13-pro-5g.tail391adb.ts.net
     platform: android
     tailscale_tag: tag:fusion-node-phone
     login_required: user@example.com
     login_warning: "Nicht GitHub — gleicher Login wie Desktop (Google)"
+    file_mirror_client: true
 
   legacy:
     node_id: legacy-linux
@@ -93,6 +95,80 @@ routing:
   base_url: https://desktop-kpki9e4.tail391adb.ts.net
   mainframe_hostname: desktop-kpki9e4
   funnel_port: 8088
+
+# Mesh file sharing — phone pulls via Tailscale MagicDNS (hero-docs :8088)
+file_share:
+  enabled: true
+  serve_port: 8088
+  max_file_bytes: 26214400
+  phone_hostname_aliases: [phone-node, redmi-note-13-pro-5g, redmi]
+  zones:
+    - id: docs
+      label: Dokumentation
+      path: docs
+      max_depth: 3
+      max_files: 200
+    - id: journal
+      label: Journal
+      path: journal
+      max_depth: 2
+      max_files: 100
+    - id: journal_tagebuch
+      label: Tagebuch
+      path: journal/tagebuch
+      max_depth: 1
+      max_files: 90
+      extensions: [".md"]
+    - id: archiv
+      label: Archiv
+      path: archiv
+      max_depth: 4
+      max_files: 80
+      extensions: [".md", ".json", ".sh", ".py"]
+      exclude_extensions: [".obf"]
+    - id: workstation
+      label: Workstation
+      path: workstation
+      max_depth: 1
+      extensions: [".json", ".yaml", ".yml", ".example", ".md", ".sh", ".ps1"]
+      max_files: 80
+    - id: filedrops_out
+      label: Filedrops
+      kind: absolute
+      path: "~/.fusion/mesh/filedrops/outbound"
+      max_depth: 3
+      max_files: 150
+    - id: mesh_config
+      label: Mesh Config
+      path: "."
+      max_depth: 0
+      names:
+        - mesh_connectors.yaml
+        - fusion_unified.yaml
+        - mesh_virtual_exit_nodes.yaml
+        - src/normal_os/integration/mesh_roles.yaml
+  phone_urls:
+    portal: /mesh/files/phone
+    manifest: /mesh/files/manifest
+    status: /mesh/files/status
+    drop: /mesh/files/drop
+  sync_script: workstation/mesh_phone_mirror.sh
+
+# Filedrops: Android <-> Mainframe <-> Google Drive
+filedrop_sync:
+  enabled: true
+  local_roots:
+    inbound: "~/.fusion/mesh/filedrops/inbound"
+    outbound: "~/.fusion/mesh/filedrops/outbound"
+  repo_drops:
+    - journal/inbox
+    - workstation/inbox_export
+  gdrive_subpaths:
+    mirror: mesh/mirror
+    filedrops: mesh/filedrops
+    archives: mesh/archives
+  journal_ingest_on_sync: true
+  android_subdir: android
 
 # Fractal mainframe persistence on the mesh
 fractal_persistence:

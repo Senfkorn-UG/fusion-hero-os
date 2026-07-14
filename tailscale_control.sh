@@ -28,6 +28,7 @@ show_help() {
     echo "  exit-apply       - Virtuelles Exit-Profil anwenden (z.B. cloud-eu)"
     echo "  mainframe-mesh   - Vollständiges Mainframe-Mesh-Setup (save + optional exit)"
     echo "  cloud-sync       - Fractal → Supabase + Google Drive + Google GCE"
+    echo "  files-sync       - Mesh-Dateimanifest für Handy aktualisieren"
     echo "  all              - Alles nacheinander ausführen (install → start → funnel)"
     echo "  help             - Diese Hilfe anzeigen"
     echo ""
@@ -103,6 +104,10 @@ case "$1" in
     cloud-sync)
         echo "→ Cloud sync (Supabase + Google Drive + Google server)..."
         python3 "$SCRIPT_DIR/mesh_cloud_backends.py" sync
+        ;;
+    files-sync)
+        echo "→ Mesh file mirror sync (phone portal)..."
+        python3 "$SCRIPT_DIR/mesh_file_share.py" sync
         ;;
     all)
         echo "🚀 Vollständige Tailscale Mesh Initialisierung..."
