@@ -23,6 +23,10 @@ show_help() {
     echo "  llm              - Alle LLM-Frameworks anzeigen"
     echo "  funnel           - Funnel für Hero Docs Server aktivieren"
     echo "  notify           - Phone Notification Monitor starten"
+    echo "  fractal-save     - Mainframe fractal auf Mesh speichern"
+    echo "  fractal-status   - Fractal-Manifest + Exit-Node-Status"
+    echo "  exit-apply       - Virtuelles Exit-Profil anwenden (z.B. cloud-eu)"
+    echo "  mainframe-mesh   - Vollständiges Mainframe-Mesh-Setup (save + optional exit)"
     echo "  all              - Alles nacheinander ausführen (install → start → funnel)"
     echo "  help             - Diese Hilfe anzeigen"
     echo ""
@@ -76,6 +80,24 @@ case "$1" in
     notify)
         echo "→ Starte Phone Notification Monitor..."
         python3 "$SCRIPT_DIR/tailscale_phone_notify.py"
+        ;;
+    fractal-save)
+        echo "→ Speichere Mainframe fractal auf Mesh..."
+        python3 "$SCRIPT_DIR/fractal_mainframe_mesh.py" save "$@"
+        ;;
+    fractal-status)
+        echo "→ Fractal + Virtual Exit Status:"
+        python3 "$SCRIPT_DIR/fractal_mainframe_mesh.py" status
+        ;;
+    exit-apply)
+        PROFILE="${2:-direct}"
+        echo "→ Wende virtuelles Exit-Profil an: $PROFILE"
+        python3 "$SCRIPT_DIR/fractal_mainframe_mesh.py" apply-exit "$PROFILE" "${@:3}"
+        ;;
+    mainframe-mesh)
+        EXIT_PROFILE="${2:-direct}"
+        echo "→ Mainframe Mesh Setup (fractal save, exit=$EXIT_PROFILE)..."
+        python3 "$SCRIPT_DIR/fractal_mainframe_mesh.py" setup --exit "$EXIT_PROFILE" "${@:3}"
         ;;
     all)
         echo "🚀 Vollständige Tailscale Mesh Initialisierung..."

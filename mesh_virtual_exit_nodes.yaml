@@ -1,0 +1,93 @@
+# Fusion Hero OS — Virtual Exit Node Profiles
+# Logical egress routes on the Tailscale mesh (not physical devices).
+# Each profile maps to a preferred physical exit peer with fallbacks.
+
+mesh_exit_version: "1.0"
+tailnet: tail391adb.ts.net
+principle: "Virtual exit = routing policy; physical peer = Tailscale exit node candidate"
+
+# Default profile for this node when no segment override matches
+default_profile: direct
+
+# Physical exit candidates (discovered from tailscale status + manual overrides)
+physical_candidates:
+  cs-724978827604-default:
+    hostname: cs-724978827604-default
+    tailscale_ip: 100.127.145.106
+    platform: linux
+    offers_exit: true
+    region: eu-central
+    note: "Cloud VPS — primary EU egress when online"
+
+  desktop-kpki9e4-wsl:
+    hostname: desktop-kpki9e4-wsl
+    tailscale_ip: 100.125.58.100
+    platform: linux
+    offers_exit: false
+    region: local-wsl
+    note: "WSL dev leaf — enable with tailscale up --advertise-exit-node"
+
+  desktop-kpki9e4:
+    hostname: desktop-kpki9e4
+    tailscale_ip: 100.64.104.58
+    platform: windows
+    offers_exit: false
+    region: local-desktop
+    note: "Windows mainframe — optional egress after ACL tagOwners"
+
+# Virtual profiles (select with: fractal_mainframe_mesh.py apply-exit <id>)
+virtual_profiles:
+  direct:
+    label: "No exit node (mesh-only)"
+    primary: null
+    fallbacks: []
+    clear_exit: true
+
+  cloud-eu:
+    label: "EU cloud egress"
+    primary: cs-724978827604-default
+    fallbacks: [desktop-kpki9e4-wsl]
+    require_online: true
+
+  wsl-dev:
+    label: "WSL development egress"
+    primary: desktop-kpki9e4-wsl
+    fallbacks: [cs-724978827604-default]
+    require_online: true
+
+  mainframe-local:
+    label: "Desktop mainframe egress"
+    primary: desktop-kpki9e4
+    fallbacks: [desktop-kpki9e4-wsl, cs-724978827604-default]
+    require_online: true
+
+  phone-safe:
+    label: "Mobile-safe — never use exit"
+    primary: null
+    fallbacks: []
+    clear_exit: true
+    blocked_on_platforms: [android]
+
+# Per mesh segment: which virtual exit profile to prefer
+segment_routing:
+  mainframe:
+    default_profile: direct
+    elevated_profile: cloud-eu
+  desktop:
+    default_profile: direct
+    connector_admin_profile: cloud-eu
+  wsl-ubuntu:
+    default_profile: wsl-dev
+    elevated_profile: cloud-eu
+  phone:
+    default_profile: phone-safe
+  github:
+    default_profile: cloud-eu
+  gmail:
+    default_profile: cloud-eu
+  google_drive:
+    default_profile: cloud-eu
+  vercel:
+    default_profile: cloud-eu
+  researcher:
+    default_profile: cloud-eu
