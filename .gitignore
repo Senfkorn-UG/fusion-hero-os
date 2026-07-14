@@ -1,0 +1,88 @@
+# Node / frontend
+node_modules
+.output
+.vercel
+.netlify
+.wrangler
+/.svelte-kit
+/build
+vite.config.js.timestamp-*
+vite.config.ts.timestamp-*
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+.venv/
+venv/
+ENV/
+env/
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Numba / Rust
+*.nbc
+*.nbi
+**/target/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Environment
+.env
+.env.local
+.env.*
+!.env.example
+!.env.test
+
+# OS
+.DS_Store
+Thumbs.db
+*.lnk
+
+# Logs
+*.log
+pms_audit.jsonl
+
+# Workstation runtime (secrets + logs)
+workstation/.env
+workstation/*-log.txt
+workstation/disk-audit.txt
+workstation/_last_hub_status.json
+
+# Runtime / generated
+.fusion/
+.wa_selenium_profile/
+Archiv_*.zip
+00_Uebersicht.md
+asd.md
+*.gguf
+03_Code/internal_llm/models/
+03_Code/internal_llm/output/
+03_Code/internal_llm/data.jsonl
+src/normal_os/internal_llm/output/
+legacy_sources/**/token.txt
+legacy_sources/**/header.txt
+legacy_sources/**/body.json

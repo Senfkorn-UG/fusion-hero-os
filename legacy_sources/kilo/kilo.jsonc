@@ -1,0 +1,69 @@
+{
+  "$schema": "https://app.kilo.ai/config.json",
+  "remote_control": false,
+  "experimental": {
+    "batch_tool": true,
+    "codebase_search": true,
+    "mcp_timeout": 10000,
+    "openTelemetry": true,
+    "continue_loop_on_deny": true,
+    // Nicht im aktuellen Schema (app.kilo.ai/config.json) — bewusst behalten,
+    // falls die App den Key weiterhin liest. Bei Gelegenheit prüfen/entfernen.
+    "speech_to_text_model": "google/chirp-3"
+  },
+  "permission": {
+    "bash": "allow",
+    "glob": "allow",
+    "grep": "allow",
+    "edit": "allow",
+    "external_directory": {
+      "C:\\Users\\Admin\\*": "allow",
+      "*": "ask"
+    },
+    "read": "allow",
+    "websearch": "allow",
+    "webfetch": "allow",
+    "doom_loop": "allow",
+    "todowrite": "allow",
+    "lsp": "allow",
+    "skill": "allow",
+    "task": "allow",
+    "list": "allow"
+  },
+  "auto_collapse_reasoning": false,
+  "code_edit_display": "expanded",
+  // Nicht im aktuellen Schema (app.kilo.ai/config.json) — bewusst behalten,
+  // falls die App den Block weiterhin liest. Bei Gelegenheit prüfen/entfernen.
+  "indexing": {
+    "enabled": true,
+    "provider": "openai-compatible",
+    "vectorStore": "qdrant"
+  },
+  // Kontext-Limit-Schutz: "threshold_percent" existiert im Schema nicht (war wirkungslos).
+  // Gültige Keys: auto, prune, tail_turns, preserve_recent_tokens, reserved.
+  "compaction": {
+    // Automatische Kompaktierung, bevor das Kontextfenster überläuft
+    "auto": true,
+    // Alte Tool-Ausgaben aus dem Kontext entfernen — größter Hebel gegen Limit-Probleme
+    "prune": true,
+    // Token-Puffer, damit die Kompaktierung selbst nicht am Limit scheitert
+    "reserved": 20000
+  },
+  "username": "A.L.T.E.-F.R.A.U._95g.HERO",
+  "hide_prompt_training_models": false,
+  "terminal_command_display": "collapsed",
+  "agent": {
+    "code": {
+    },
+    "architect": {
+    },
+    "ask": {
+    },
+    "code-simplifier": {
+    }
+  },
+  "snapshot": true,
+  "commit_message": {
+    "prompt": "lade alte-frau.95g"
+  }
+}

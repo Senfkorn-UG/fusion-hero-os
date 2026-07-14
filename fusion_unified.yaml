@@ -1,0 +1,168 @@
+# Fusion Hero OS v8 — Unified Integration Graph
+# Alles mit allem verknüpft: Mesh ↔ LLM ↔ Tailscale ↔ Orchestration
+
+version: "1.0"
+principle: "Jedes Segment ist eigenständig UND über den Integration Hub mit allem anderen verbunden"
+
+layers:
+  network:
+    module: tailscale_mesh_registry
+    config: mesh_connectors.yaml
+    health: /tailscale/status
+  connectors:
+    module: tailscale_mesh_registry
+    config: mesh_connectors.yaml
+    health: /mesh/status
+  intelligence:
+    module: fusion_integration_hub
+    config: llm_frameworks.yaml
+    health: /llm/status
+  orchestration:
+    module: model_connectors
+    config: 03_Code/llm_frameworks/
+    health: /fusion/orchestrate
+  surface:
+    module: hero-docs-server
+    port: 8088
+    health: /fusion/status
+  workstation:
+    module: normal_os.workstation
+    config: workstation/paths.json
+    health: workstation/status.ps1
+    remote: true  # lebt auf dem Windows-Desktop-Knoten, nicht im Repo
+  normalos:
+    module: normal_os.bridge.grok_pc_bridge
+    port: 8765
+    health: /status
+  vr:
+    module: heroic-highest-layer
+    config: 03_VR_Assets/
+    health: /api/vr/status
+    viewer: /vr/viewer
+  kernel:
+    module: kernel/bridge
+    config: kernel/
+    health: ipc-bridge (TCP 19753 / AF_UNIX)
+    launcher: start_fusion_hero.py
+  ascension:
+    module: ascension_os
+    config: ascension_os/
+    health: /layers/status
+    track: roadmap-v9x
+  tarnkappe:
+    module: docs-only
+    config:
+      - docs/Tarnkappe_Cloak_Practical_Guide_v8.2.md
+      - docs/Tails_as_Ultimate_Tarnkappe_v8.2.md
+    health: /layers/status
+  android:
+    module: heroic-extension-node
+    config: docs/android/Heroic-Extension-Node-NonRoot-v1.0.md
+    health: /layers/status
+    node: phone
+    decision: non-root
+  knowledge:
+    module: fusion_hero_os.core.layer_registry
+    config:
+      - proof_registry.yaml
+      - hero-guide_geltungsstand.json
+      - docs/v8/erkenntnisse_index.yaml
+    health: /erkenntnisse/status
+
+# Physische Knoten
+nodes:
+  mainframe:
+    role: orchestrator
+    hosts: [hero-docs-server, tailscale-control, fusion-integration-hub]
+    magicdns: mainframe.tail391adb.ts.net
+  desktop:
+    role: grok-workstation
+    hosts: [grok-cli, mcp-bridges, llm-frameworks]
+    magicdns: desktop-kpki9e4.tail391adb.ts.net
+  phone:
+    role: mobile-client
+    hosts: [tailscale-app]
+    magicdns: redmi-note-13-pro-5g.tail391adb.ts.net
+    reachable_from: [desktop, mainframe]
+    can_reach:
+      - desktop:8000
+      - desktop:8088
+      - desktop:8765
+    login_hint: "Gleicher Login wie Desktop (Google stephan95g@googlemail.com), nicht GitHub"
+
+# Knoten-zu-Knoten Verknüpfungen (Mesh-Topologie)
+node_edges:
+  - {from: phone, to: desktop, relation: tailscale_peer, services: [8000, 8088, 8765]}
+  - {from: desktop, to: mainframe, relation: tailscale_peer, services: [hero-docs, ssh]}
+  - {from: desktop, to: phone, relation: notify, via: tailscale-funnel}
+  - {from: desktop, to: normalos_bridge, relation: local, port: 8765}
+  - {from: desktop, to: fusion_dashboard, relation: local, port: 8000}
+
+# Layer-zu-Layer Verknüpfungen (alles mit allem, v8.3)
+layer_edges:
+  - {from: kernel, to: intelligence, relation: ipc_bridge, via: kernel/bridge}
+  - {from: ascension, to: orchestration, relation: quad_core_bridge, via: fusion_hero_os.core.heroic_core_orchestrator}
+  - {from: ascension, to: intelligence, relation: ascension_llm_path}
+  - {from: tarnkappe, to: network, relation: privacy_hardening, via: AdGuard/DoH/Tails}
+  - {from: android, to: network, relation: tailscale_peer, node: phone}
+  - {from: android, to: surface, relation: client, services: [8000, 8088]}
+  - {from: knowledge, to: kernel, relation: validates}
+  - {from: knowledge, to: ascension, relation: validates}
+  - {from: knowledge, to: intelligence, relation: validates}
+  - {from: knowledge, to: connectors, relation: validates}
+  - {from: knowledge, to: vr, relation: validates}
+  - {from: knowledge, to: tarnkappe, relation: indexes}
+  - {from: knowledge, to: android, relation: indexes}
+
+# Workstation-Pfade (normalOS)
+workstation:
+  root: C:\Users\Admin\normalOS\workstation
+  paths_config: workstation/paths.json
+  desktop_structure:
+    - normalOS
+    - Apps
+    - Dokumente
+    - Bilder
+    - Videos
+    - Forschung
+    - Fusion-Hero
+    - Projekte
+    - Spiele
+    - System-Tools
+    - Sonstiges
+
+# Verknüpfungen: MCP-Konnektor → bevorzugtes LLM-Framework
+connector_llm_links:
+  github: grok
+  gmail: claude
+  google_drive: gpt
+  google_calendar: gpt
+  canva: gemini
+  gamma: gpt
+  notion: claude
+  vercel: grok
+  hyperframes: gemini
+  tasks: claude
+
+# TRINITY-Orchestrierung (Rollen → LLM)
+trinity_roles:
+  thinker: claude
+  worker: gpt
+  verifier: grok
+
+# API-Endpunkte (hero-docs-server)
+endpoints:
+  unified: /fusion/status
+  graph: /fusion/graph
+  mesh: /mesh/status
+  mesh_segment: /mesh/{id}/status
+  llm: /llm/status
+  llm_segment: /llm/{id}/status
+  tailscale: /tailscale/status
+  orchestrate: /fusion/orchestrate
+  masterseed: /status
+  vr_status: /api/vr/status
+  vr_viewer: /vr/viewer
+  highest_layer_vr: /highest-layer-vr
+  layers: /layers/status
+  erkenntnisse: /erkenntnisse/status

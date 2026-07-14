@@ -1,0 +1,43 @@
+name: Fusion Hero OS CI/CD Master Matrix
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true # Bricht alte, noch laufende Jobs bei neuen Commits ab
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.11', '3.12']
+
+    steps:
+      - name: Checkout Repository (MasterSeed)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1 # EfficiencyDistillation: Flacher, extrem schneller Checkout
+
+      - name: Setup Python Hyperthreading ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: 'pip' # Autonomes Caching-Protokoll
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+          pip install pyright pytest
+
+      - name: Static Analysis (Pyright, soft check, non-blocking)
+        run: python -m pyright . || true
+
+      - name: Execution Protocol (Tests)
+        run: pytest tests/
