@@ -1,0 +1,31 @@
+# PII / secret scanner allowlist.
+#
+# Two sections:
+#   allow_literals: exact strings (or "rule:match") that are documentation
+#                   examples or neutral placeholders and are safe to keep.
+#   allow_paths:    exact file paths (NOT broad tree globs) whose contents are
+#                   deliberately example-shaped (e.g. the scanner's own test
+#                   fixtures). Blanket tree allowlists are forbidden: real PII
+#                   must be scrubbed, not hidden.
+#
+# Keep this list minimal and justified. Prefer replacing real PII with neutral
+# placeholders over allowlisting it.
+
+allow_literals:
+  # Documentation / neutral placeholder emails.
+  - "user@example.com"
+  - "you@example.com"
+  - "admin@example.com"
+  # Documentation-reserved / neutral hostnames + placeholders used after scrub.
+  - "device.example.ts.net"
+  - "mainframe-host.example.ts.net"
+  - "mobile-node.example.ts.net"
+  - "https://project-ref.supabase.co"
+  - "project-ref.supabase.co"
+
+allow_paths:
+  # The PII scanner's own unit-test file contains PLANTED SYNTHETIC secrets
+  # (deliberately example-shaped email/host/IP/token strings) used to prove the
+  # detector fires. These are test fixtures, not real PII; the file is exempted
+  # by exact path so the fixtures cannot be mistaken for a real leak.
+  - "tests/test_pii_scanner.py"
