@@ -28,6 +28,9 @@ def _use_temp_lock_dir(tmp_path: Path, monkeypatch):
     monkeypatch.setattr(pe, "_held_keys", set(), raising=False)
     monkeypatch.setattr(pe, "_hold_depth", {}, raising=False)
     pe.lock_dir()
+
+
+def test_try_acquire_and_release_reentrant(tmp_path, monkeypatch):
     """Derselbe Thread darf denselben Key verschachtelt sperren (reentrant);
     erst der aeusserste release() gibt den Key wirklich frei."""
     _use_temp_lock_dir(tmp_path, monkeypatch)
