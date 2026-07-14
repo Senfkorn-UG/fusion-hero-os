@@ -401,7 +401,7 @@ def render_kompendium_pdf(
     title: str = "Geisteskrankheiten in der 4D-Matrix",
     subtitle: str = "MER · KLINIK · RAUM · PHILOSOPHIE",
     tagline: str = "Einordnung nach Ursachdimension mit imaginärem Raum — im Duktus des Kompendiums der Heroik",
-    author: str = "Stephan Hagen Urban",
+    author: str = "Fusion Hero OS Team",
     version: str = DOC_VERSION,
     include_toc: bool = True,
 ) -> None:

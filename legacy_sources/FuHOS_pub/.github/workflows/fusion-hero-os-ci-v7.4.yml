@@ -159,7 +159,7 @@ jobs:
 
       - name: Meme-Campfire-Photoreal Artifact Prep
         run: |
-          echo "🔥 Preparing mister-jailbait / cyberpunk-campfire visual identity..."
+          echo "🔥 Preparing mister-Contributor / cyberpunk-campfire visual identity..."
           echo "✅ VisualIdentityCoreModule + PhotoRealMemeCoreModule: STANDBY"
 
   # FINAL: Merge Gate (only if all hyper-threads green)

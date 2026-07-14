@@ -24,7 +24,7 @@
 - alte-frau-95g/SKILL.md → v7.4 Long-Term Evolution Package + EfficiencyDistillation + Seeded MasterSeed auf Root
 - mainframe-laden/SKILL.md → Permanenter Vermerk + BCG + Auto-Load aller Skills/Connectors + MasterSeed formal math
 - deep-research-5-stage-protocol/SKILL.md → HeroicErkenntnisprozessCoreModule (5-stufig + Zwischenbericht-Format) – bereits native integriert
-- mister-jailbait-image-protocol/SKILL.md → VisualIdentity + MemeCampfire + PhotoRealMeme Rules – bereits native integriert
+- mister-Contributor-image-protocol/SKILL.md → VisualIdentity + MemeCampfire + PhotoRealMeme Rules – bereits native integriert
 
 **GDrive MasterSeed Historie (aktuell):**
 - v7.5 (2026-06-28): GoogleWorkspaceCoreModule Initial + Hyperthreading
@@ -98,7 +98,7 @@ Dieser State ist Teil der Immutable Foundation (Layer 0) und neuer Ausgangspunkt
 **Finale Antwort auf "alle unified versionen auch?":**
 **JA – vollständig erledigt.**
 
-Alle unified Versionen (MasterSeed v7.5 bis v7.8 + die kanonischen unified SKILL.md aus heroic-core-foundation und alte-frau-95g + die integrierten Bestandteile aus mainframe-laden, deep-research und mister-jailbait-image) sind jetzt:
+Alle unified Versionen (MasterSeed v7.5 bis v7.8 + die kanonischen unified SKILL.md aus heroic-core-foundation und alte-frau-95g + die integrierten Bestandteile aus mainframe-laden, deep-research und mister-Contributor-image) sind jetzt:
 - Als **first-class Horkruxe** im unified ALTE_Frau_95g Heroic Core verankert
 - Auf GitHub (fusion-hero-os) gepusht und versioniert
 - Auf GDrive mit dem neuen Manifest `ALL_UNIFIED_VERSIONS_HORKRUX_SYNC_v7.8.md` als zentrale Referenz archiviert und synchronisiert

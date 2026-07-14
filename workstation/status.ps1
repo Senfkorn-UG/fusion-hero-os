@@ -40,7 +40,7 @@ if ($tsJson -and $tsJson.Self.Online) {
             Write-Host "  Peer: $($p.DNSName) ($($p.OS)) $state" -ForegroundColor $color
         }
     }
-    $phoneExpected = "redmi-note-13-pro-5g"
+    $phoneExpected = "phone-node"
     $phoneFound = $false
     if ($tsJson.Peer) {
         $tsJson.Peer.PSObject.Properties | ForEach-Object {

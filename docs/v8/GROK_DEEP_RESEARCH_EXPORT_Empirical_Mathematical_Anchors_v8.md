@@ -58,4 +58,4 @@ These additions are **top-down compatible** with the permanent anchor of unified
 3. Draft detailed Psycholyse protocol v2 incorporating somatic practices from integration literature.
 4. Cross-reference in Heroismus book Theory + Praxis sections.
 
-*Exported & committed via Grok v8/main Fusion Hero OS Protocol | Complement to St3phaN's ERKENNTNISSE_LETZTE_TAGE commit | 2026-07-05*
+*Exported & committed via Grok v8/main Fusion Hero OS Protocol | Complement to 95guknow's ERKENNTNISSE_LETZTE_TAGE commit | 2026-07-05*

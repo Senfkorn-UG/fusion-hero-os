@@ -31,13 +31,13 @@ find /home/workdir -type f \( -name "*.log" -o -name "*.txt" -o -name "*.md" -o 
 ```
 **Output**:
 ```
-/home/workdir/.grok/skills/mister-jailbait-image-protocol/SKILL.md
+/home/workdir/.grok/skills/mister-Contributor-image-protocol/SKILL.md
 /home/workdir/.grok/skills/heroic-core-foundation/SKILL.md
 /home/workdir/.grok/skills/deep-research-5-stage-protocol/SKILL.md
 /home/workdir/.grok/user_info/memory.md
 /home/workdir/.grok/skills/mainframe-laden/SKILL.md
 /home/workdir/.grok/skills/alte-frau-95g/SKILL.md
-/home/workdir/.grok/skills/mister-jailbait-image-protocol/references/prompt-templates.md
+/home/workdir/.grok/skills/mister-Contributor-image-protocol/references/prompt-templates.md
 ```
 
 ---

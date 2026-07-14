@@ -27,6 +27,17 @@ from __future__ import annotations
 from typing import Any, Dict, Optional
 
 try:
+    from ..consent_gate import AscensionConsentGate
+    from fusion_hero_os.meta.consent import ConsentError, Purpose
+except Exception:  # pragma: no cover - meta slice / gate unavailable
+    AscensionConsentGate = None
+
+    class ConsentError(RuntimeError):
+        pass
+
+    Purpose = None
+
+try:
     from fusion_hero_os.core.universal_llm_router import (
         get_unified_llm_core,
         UnifiedHeroicLLMCore,
@@ -114,8 +125,12 @@ class AscensionCore:
       beteiligt (v9.7, siehe exposure_practice_module.py)
     """
 
-    def __init__(self):
+    def __init__(self, consent_gate: "AscensionConsentGate" = None):
         self.version = "9.7-coevolutionary"
+
+        # Consent gate (v10): personal-data operations fail closed unless an
+        # AscensionConsentGate bound to a live meta ConsentStore is supplied.
+        self._consent_gate = consent_gate
 
         # Grounded Core Components
         self.llm: Optional["UnifiedHeroicLLMCore"] = (
@@ -178,6 +193,24 @@ class AscensionCore:
         self.mode = "ASCENSION"
 
     # ------------------------------------------------------------------
+    # Consent (v10) — fail closed
+    # ------------------------------------------------------------------
+
+    def _require_consent(self, purpose: Any, *, action: str) -> None:
+        """Gate a personal-data operation; raise ConsentError if not granted.
+
+        Fails closed: without a configured :class:`AscensionConsentGate` no
+        personal-data operation is authorised.
+        """
+        if self._consent_gate is None:
+            raise ConsentError(
+                f"personal-data operation {action!r} denied: no consent gate "
+                f"configured (fail closed). Construct AscensionCore(consent_gate=...) "
+                f"with a live meta ConsentStore grant."
+            )
+        self._consent_gate.require(purpose, action=action)
+
+    # ------------------------------------------------------------------
     # Sisyphos
     # ------------------------------------------------------------------
 
@@ -188,6 +221,7 @@ class AscensionCore:
 
     def step_sisyphos(self, load: float, notes: str = ""):
         """Persistenter Sisyphos-Schritt (v9.4) mit Historie."""
+        self._require_consent("persistence", action="ascension.step_sisyphos")
         if self.persistent_sisyphos:
             return self.persistent_sisyphos.step(load, notes)
         return None
@@ -209,6 +243,7 @@ class AscensionCore:
 
     def log_psycholyse_session(self, protocol_type: str, status: str, **kwargs: Any) -> Optional[Dict[str, Any]]:
         """Loggt eine Psycholyse-Session mit Pflicht-Status-Tag (siehe VALID_STATUS_TAGS)."""
+        self._require_consent("persistence", action="ascension.log_psycholyse_session")
         if not self.psycholyse_logger:
             return None
         from dataclasses import asdict
@@ -283,12 +318,14 @@ class AscensionCore:
 
     def start_exposure_session(self, scenario: str = "dating_app_opener",
                                 difficulty: str = "mittel") -> Dict[str, Any]:
+        self._require_consent("association", action="ascension.start_exposure_session")
         if not self.exposure_practice:
             return {"status": "ExposurePracticeModule nicht verfuegbar"}
         from dataclasses import asdict
         return asdict(self.exposure_practice.start_session(scenario=scenario, difficulty=difficulty))
 
     def exposure_respond(self, session_id: int, user_message: str) -> Dict[str, Any]:
+        self._require_consent("association", action="ascension.exposure_respond")
         if not self.exposure_practice:
             return {"status": "ExposurePracticeModule nicht verfuegbar"}
         session = next((s for s in self.exposure_practice.sessions if s.session_id == session_id), None)
@@ -299,6 +336,7 @@ class AscensionCore:
 
     def end_exposure_session(self, session_id: int, shutdown_occurred: bool,
                               self_rated_anxiety: Optional[float] = None, notes: str = "") -> Dict[str, Any]:
+        self._require_consent("association", action="ascension.end_exposure_session")
         if not self.exposure_practice:
             return {"status": "ExposurePracticeModule nicht verfuegbar"}
         session = next((s for s in self.exposure_practice.sessions if s.session_id == session_id), None)
@@ -382,6 +420,7 @@ class AscensionCore:
 
     def ask(self, prompt: str, context: str = "ascension") -> Any:
         """Ascension-spezifische LLM-Anfrage (falls LLM verfuegbar)."""
+        self._require_consent("association", action="ascension.ask")
         if self.llm:
             return self.llm.ask(prompt, context=context)
         return None

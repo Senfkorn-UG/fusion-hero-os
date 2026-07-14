@@ -28,7 +28,7 @@
     "asset_manifest": "C:\\Users\\Admin\\fusion-hero-os\\03_Code\\tools\\asset_manifest.yaml"
   },
   "tailscale": {
-    "tailnet": "tail391adb.ts.net",
+    "tailnet": "example.ts.net",
     "nodes": {
       "desktop": {
         "hostname": "desktop-kpki9e4",
@@ -37,7 +37,7 @@
         "platform": "windows"
       },
       "phone": {
-        "hostname": "redmi-note-13-pro-5g",
+        "hostname": "phone-node",
         "magicdns": "mobile-node.example.ts.net",
         "platform": "android",
         "login_required": "user@example.com",

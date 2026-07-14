@@ -46,7 +46,7 @@ markiert ohne nachprüfbaren Beleg (Datei, Repo, Commit).
 
 ### A8. HeroicImageOrchestrator / Bildgenerierungs-Pipeline mit Rate-Limit-Orchestrator
 - **Quelle:** PDFs `ALTE_Frau_95g_Bildgenerierungs_Pipeline_Rate_Limit_Loesung_v1.0.pdf`, `ALTE_Frau_95g_Real_Foto_Integration_Pipeline_v1.0.pdf`
-- **Status:** TEILWEISE — Scaffold `fusion_hero_os/modules/image_orchestrator/` (Dry-Run, YAML Identity, Rate-Limiter, 2026-07-05). Echte Bild-API + mister-jailbait-gui-Anbindung offen.
+- **Status:** TEILWEISE — Scaffold `fusion_hero_os/modules/image_orchestrator/` (Dry-Run, YAML Identity, Rate-Limiter, 2026-07-05). Echte Bild-API + mister-Contributor-gui-Anbindung offen.
 
 ---
 
