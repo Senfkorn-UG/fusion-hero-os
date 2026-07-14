@@ -10,7 +10,17 @@ from typing import Any, Dict, List, Optional
 
 from ghosthunt_hook import ghosthunt_hook
 
-_SUITE = Path(__file__).resolve().parent.parent / "suite"
+
+def _suite_root() -> Path:
+    here = Path(__file__).resolve()
+    for base in (here.parent.parent, *here.parents):
+        for candidate in (base / "suite", base / "03_Code" / "suite"):
+            if (candidate / "layers").is_dir():
+                return candidate
+    return here.parent.parent / "suite"
+
+
+_SUITE = _suite_root()
 _LAYERS = _SUITE / "layers"
 _LOG_PATH = _SUITE / "coevo_evolution_log.json"
 

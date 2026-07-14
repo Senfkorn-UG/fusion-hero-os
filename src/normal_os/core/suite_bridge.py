@@ -8,8 +8,18 @@ import urllib.request
 from pathlib import Path
 from typing import Any, Dict, List
 
-_SUITE = Path(__file__).resolve().parent.parent / "suite"
-_CODE = Path(__file__).resolve().parent.parent
+
+def _suite_root() -> Path:
+    here = Path(__file__).resolve()
+    for base in (here.parent.parent, *here.parents):
+        for candidate in (base / "suite", base / "03_Code" / "suite"):
+            if (candidate / "qubo").is_dir():
+                return candidate
+    return here.parent.parent / "suite"
+
+
+_SUITE = _suite_root()
+_CODE = _SUITE.parent if _SUITE.name == "suite" else Path(__file__).resolve().parent.parent
 
 
 def _count_py(folder: Path) -> int:
