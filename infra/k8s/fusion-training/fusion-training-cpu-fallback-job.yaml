@@ -1,0 +1,75 @@
+# CPU fallback — QUBO stability training (no GPU; runs while L4 capacity unavailable)
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: fusion-durability-train-cpu
+  namespace: fusion-training
+  labels:
+    app: fusion-training
+    tier: cpu-fallback
+spec:
+  backoffLimit: 2
+  ttlSecondsAfterFinished: 86400
+  activeDeadlineSeconds: 259200
+  template:
+    metadata:
+      labels:
+        app: fusion-training
+        tier: cpu-fallback
+    spec:
+      serviceAccountName: fusion-training-ksa
+      restartPolicy: OnFailure
+      initContainers:
+        - name: fetch-training-code
+          image: google/cloud-sdk:alpine
+          command:
+            - /bin/sh
+            - -c
+            - |
+              set -euo pipefail
+              mkdir -p /workspace/training
+              gsutil -m cp -r "gs://${GCS_BUCKET}/training/*" /workspace/training/ || true
+          env:
+            - name: GCS_BUCKET
+              value: fusion-ai-data-project-bbf0e6db-52e1-462b-8e3
+          volumeMounts:
+            - name: workspace
+              mountPath: /workspace
+      containers:
+        - name: fusion-trainer
+          image: google/cloud-sdk:alpine
+          command:
+            - /bin/sh
+            - -c
+            - |
+              set -euo pipefail
+              apk add --no-cache python3 py3-pip >/dev/null
+              pip3 install -q numpy numba
+              export PYTHONPATH="/workspace/training:${PYTHONPATH:-}"
+              export FUSION_DATA_ROOT=/workspace/data
+              mkdir -p /workspace/data/checkpoints /workspace/data/metrics
+              cd /workspace/training
+              python3 fusion_stability_train.py
+              gsutil -m cp -r /workspace/data/* "gs://${GCS_BUCKET}/checkpoints/" || true
+          env:
+            - name: GCS_BUCKET
+              value: fusion-ai-data-project-bbf0e6db-52e1-462b-8e3
+            - name: FUSION_QUBO_N
+              value: "128"
+            - name: FUSION_ANNEAL_STEPS
+              value: "3000"
+          resources:
+            requests:
+              cpu: "4"
+              memory: 8Gi
+              ephemeral-storage: 10Gi
+            limits:
+              cpu: "8"
+              memory: 16Gi
+              ephemeral-storage: 20Gi
+          volumeMounts:
+            - name: workspace
+              mountPath: /workspace
+      volumes:
+        - name: workspace
+          emptyDir: {}

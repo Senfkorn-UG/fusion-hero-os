@@ -72,6 +72,18 @@ frameworks:
     trinity: false
     role_default: "thinker"
 
+  nvidia:
+    module: "03_Code/llm_frameworks/nvidia_nim.py"
+    display_name: "NVIDIA NIM"
+    api_key_env: ["NVIDIA_API_KEY", "NGC_API_KEY", "NVAPI_KEY"]
+    model_env: "FUSION_NVIDIA_MODEL"
+    default_model: "meta/llama-3.1-8b-instruct"
+    base_url: "https://integrate.api.nvidia.com/v1"
+    mesh_id: "mesh-llm-nvidia"
+    trinity: false
+    role_default: "worker"
+    docs: "https://build.nvidia.com/settings/api-keys"
+
 trinity_order: ["grok", "claude", "gpt"]
 health_endpoint: "/llm/status"
 per_provider: "/llm/{provider}/status"

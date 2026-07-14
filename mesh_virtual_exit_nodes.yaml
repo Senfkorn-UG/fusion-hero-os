@@ -13,6 +13,8 @@ default_profile: direct
 physical_candidates:
   fusion-mesh-exit:
     hostname: fusion-mesh-exit
+    tailscale_ip: 100.103.188.54
+    magicdns: fusion-mesh-exit.tail391adb.ts.net
     gce_instance: fusion-mesh-exit
     gce_project: project-bbf0e6db-52e1-462b-8e3
     gce_zone: europe-west3-a

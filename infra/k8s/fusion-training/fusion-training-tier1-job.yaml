@@ -1,0 +1,91 @@
+# Tier 1: 2x NVIDIA L4 — Fusion durability training until QUBO stability
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: fusion-durability-train-tier1
+  namespace: fusion-training
+  labels:
+    app: fusion-training
+    tier: tier1-l4
+spec:
+  backoffLimit: 2
+  ttlSecondsAfterFinished: 86400
+  activeDeadlineSeconds: 259200
+  template:
+    metadata:
+      labels:
+        app: fusion-training
+        tier: tier1-l4
+    spec:
+      serviceAccountName: fusion-training-ksa
+      restartPolicy: OnFailure
+      terminationGracePeriodSeconds: 120
+      initContainers:
+        - name: fetch-training-code
+          image: google/cloud-sdk:alpine
+          command:
+            - /bin/sh
+            - -c
+            - |
+              set -euo pipefail
+              mkdir -p /workspace/training
+              gsutil -m cp -r "gs://${GCS_BUCKET}/training/*" /workspace/training/ || true
+              ls -la /workspace/training
+          env:
+            - name: GCS_BUCKET
+              value: fusion-ai-data-project-bbf0e6db-52e1-462b-8e3
+          volumeMounts:
+            - name: workspace
+              mountPath: /workspace
+      containers:
+        - name: fusion-trainer
+          image: nvcr.io/nvidia/pytorch:24.06-py3
+          imagePullPolicy: IfNotPresent
+          command:
+            - /bin/bash
+            - -c
+            - |
+              set -euo pipefail
+              pip install -q numpy numba
+              export PYTHONPATH="/workspace/training:${PYTHONPATH:-}"
+              cd /workspace/training
+              python3 fusion_stability_train.py
+          env:
+            - name: FUSION_DATA_ROOT
+              value: /quantum-data
+            - name: FUSION_STABILITY_WINDOW
+              value: "50"
+            - name: FUSION_STABILITY_EPS
+              value: "1e-4"
+            - name: FUSION_QUBO_N
+              value: "256"
+            - name: FUSION_ANNEAL_STEPS
+              value: "4000"
+          resources:
+            requests:
+              cpu: "16"
+              memory: 64Gi
+              ephemeral-storage: 50Gi
+              nvidia.com/gpu: "2"
+            limits:
+              cpu: "16"
+              memory: 64Gi
+              ephemeral-storage: 50Gi
+              nvidia.com/gpu: "2"
+          volumeMounts:
+            - name: gcs-fuse
+              mountPath: /quantum-data
+            - name: workspace
+              mountPath: /workspace
+      volumes:
+        - name: workspace
+          emptyDir: {}
+        - name: gcs-fuse
+          csi:
+            driver: gcsfuse.csi.storage.gke.io
+            volumeAttributes:
+              bucketName: fusion-ai-data-project-bbf0e6db-52e1-462b-8e3
+              mountOptions: "implicit-dirs"
+      nodeSelector:
+        cloud.google.com/gke-accelerator: nvidia-l4
+        cloud.google.com/gke-accelerator-count: "2"

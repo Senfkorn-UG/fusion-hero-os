@@ -491,6 +491,17 @@ async def startup_event():
     except Exception as _settings_err:
         print(f"[Startup] Settings note: {_settings_err}")
     await _start_supabase_background()
+    try:
+        from mainframe_background import start_mainframe_daemons
+        info = start_mainframe_daemons()
+        if info.get("started"):
+            print(
+                f"[MainframeOps] Daemons aktiv: Kosten alle {info['cost_interval_sec']}s, "
+                f"Repo-Spiegel alle {info['mirror_interval_sec']}s "
+                f"(auto_correct={info.get('mirror_auto_correct')})"
+            )
+    except Exception as exc:
+        print(f"[MainframeOps] Daemon note: {exc}")
     if launcher_fast_boot:
         os.environ["FUSION_AUTO_LOAD"] = "0"
     fast_boot = os.getenv("FUSION_AUTO_LOAD", "1") == "0"
@@ -1334,6 +1345,20 @@ try:
     app.include_router(_arch_router)
 except Exception as _arch_err:
     print(f"[API] Architecture routes note: {_arch_err}")
+
+# === Mainframe Ops (Kostenanalyse + Repo-Spiegelung) ===
+try:
+    from mainframe_ops_routes import router as _ops_router
+    app.include_router(_ops_router)
+except Exception as _ops_err:
+    print(f"[API] Mainframe ops routes note: {_ops_err}")
+
+# === Businessplan + Energie/Subunternehmer-Preise ===
+try:
+    from business_plan_routes import router as _bp_router
+    app.include_router(_bp_router)
+except Exception as _bp_err:
+    print(f"[API] Business plan routes note: {_bp_err}")
 
 # === Alle Module + fehlende Endpunkte freigeben ===
 try:

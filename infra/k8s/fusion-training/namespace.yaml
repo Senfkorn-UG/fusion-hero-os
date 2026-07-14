@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: fusion-training
+  labels:
+    app.kubernetes.io/part-of: fusion-hero-os
+    org: senfkorn-ug

@@ -1,0 +1,76 @@
+# Senfkorn UG — Businessplan-Anker (maschinenlesbar, an Energie-/Kosten-Daemons gekoppelt)
+businessplan_version: "1.1"
+company:
+  name: Senfkorn UG
+  legal_form: UG (haftungsbeschränkt)
+  product: Fusion Hero OS — QUBO/QAOA Mesh + Mainframe API
+  region: europe-west3
+  currency: EUR
+
+value_proposition: |
+  KI-Optimierung und Mesh-Infrastruktur mit transparenten Realkosten.
+  Subunternehmer zahlen API-Token-Preise, die direkt aus gemessener Energie- und Cloud-Last abgeleitet werden.
+
+cost_anchors:
+  source_daemon: mainframe_cost_analysis_daemon
+  energy_daemon: mainframe_energy_pricing_daemon
+  refresh_sec: 60
+  real_cost_basis: measured  # nicht Schätzung aus Marketing-Slides
+
+energy_model:
+  grid_eur_per_kwh: 0.35
+  pue_cloud_factor: 1.25
+  feu_per_eur_real: 100
+  description: |
+    Fusion Energy Units (FEU) spiegeln Realkosten: EUR/h Cloud-Burn → kWh-Äquivalent (Netz + PUE) → FEU.
+    1 FEU ≈ 0.01 EUR Infrastrukturlast zum Messzeitpunkt.
+
+subcontractor_api_pricing:
+  margin_pct: 1.50
+  margin_pct_floor: 0.35
+  competitive_pricing:
+    enabled: true
+    margin_pct: 1.50
+    description: |
+      150% Marge auf Realkosten (Preis = Kosten × 2,5), solange der Tier-Preis
+      unter der Markt-Decke bleibt. Sonst Marge dynamisch bis zur Decke oder Floor 35%.
+    market_ceiling_eur_per_1m_tokens:
+      inference_standard: 3.00
+      inference_gpu: 8.00
+      qubo_enterprise: 60.00
+      mesh_ops: 5.00
+  minimum_price_eur_per_1k_tokens: 0.002
+  billing_unit: per_1000_tokens
+  tiers:
+    inference_standard:
+      label: Standard-Inferenz (CPU/L4)
+      tokens_per_hour_capacity: 500000
+      use_case: Chat, leichte QUBO, Mesh-Status
+    inference_gpu:
+      label: GPU-Inferenz (L4)
+      tokens_per_hour_capacity: 200000
+      use_case: QUBO mittel, Embedding
+    qubo_enterprise:
+      label: QUBO/QAOA Enterprise (A100)
+      tokens_per_hour_capacity: 10000
+      use_case: Komplexe Optimierung, Training
+    mesh_ops:
+      label: Mesh + Fractal Sync
+      tokens_per_hour_capacity: 100000
+      use_case: Replica, Exit-Node, Status
+
+revenue_model:
+  streams:
+    - api_tokens_subcontractors
+    - managed_mesh_hosting
+    - qubo_solve_packages
+  target_gross_margin_pct: 1.50
+
+financial_targets:
+  monthly_infra_ceiling_eur: 150
+  break_even_tokens_per_month_1k: 50000
+  training_budget_one_shot_eur: 700
+
+compliance:
+  pricing_transparency: Realkosten-gebunden, alle 60s neu berechnet
+  audit_trail: ~/.fusion-hero-os/mainframe_energy_pricing/history.jsonl
