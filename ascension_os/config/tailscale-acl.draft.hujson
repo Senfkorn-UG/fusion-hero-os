@@ -24,14 +24,11 @@
   },
 
   "hosts": {
-    // Endgeraet des Superusers Stephan Urban (Phone)
     "handy-stephan": "100.64.0.1",
-    // Workstation (dieser PC - desktop-kpki9e4)
     "pc": "100.64.0.2"
   },
 
   "acls": [
-    // Alle Heroic Mesh Geräte (Nodes + Agent + Connectors) haben vollen Zugriff untereinander und auf pc
     {
       "action": "accept",
       "src": [
