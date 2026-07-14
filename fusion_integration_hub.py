@@ -198,7 +198,13 @@ def _get_fractal_mesh_status() -> dict:
     """Fractal mainframe persistence + virtual exit node catalog."""
     try:
         from fractal_mainframe_mesh import get_fractal_status
-        return get_fractal_status()
+        status = get_fractal_status()
+        try:
+            from mesh_cloud_backends import cloud_backends_status
+            status["cloud_backends"] = cloud_backends_status()
+        except Exception as exc:
+            status["cloud_backends"] = {"error": str(exc)}
+        return status
     except Exception as e:
         return {"ok": False, "error": str(e), "layer": "fractal_mesh"}
 

@@ -112,4 +112,19 @@ fractal_persistence:
 virtual_exit_nodes:
   config: mesh_virtual_exit_nodes.yaml
   default_profile: direct
-  mainframe_elevated: cloud-eu
+  mainframe_elevated: google-server
+
+# Cloud persistence (Supabase + Google Drive + Google GCE server)
+cloud_backends:
+  module: mesh_cloud_backends.py
+  setup_script: workstation/mainframe_mesh_cloud_setup.ps1
+  supabase:
+    project_ref: swmmoxhdzarmoupyssqe
+    schema_v5: 03_Code/Dashboard/supabase/schema_migration_v5_fractal_mesh.sql
+    env_file: 03_Code/Dashboard/.env
+  google_drive:
+    cold_path: FusionHero_Offload/mesh/fractal
+  google_server:
+    hostname: cs-724978827604-default
+    tailscale_ip: 100.127.145.106
+    pending_queue: ~/.fusion/mesh/fractal/pending_google_server.json

@@ -455,12 +455,22 @@ def _replicate_manifest_to_peers(manifest: dict) -> List[dict]:
     return results
 
 
+def sync_cloud_backends(manifest: Optional[dict] = None) -> dict:
+    """Push fractal manifest to Supabase + Google Drive + Google GCE server."""
+    try:
+        from mesh_cloud_backends import sync_all_cloud_backends
+        return sync_all_cloud_backends(manifest)
+    except Exception as e:
+        return {"ok": False, "error": str(e)}
+
+
 def setup_mainframe_mesh(
     *,
     save: bool = True,
     exit_profile: Optional[str] = None,
     apply_exit: bool = False,
     dry_run: bool = False,
+    cloud_sync: bool = True,
 ) -> dict:
     """Full setup: fractal save + optional virtual exit apply."""
     exit_cfg = load_exit_config()
@@ -481,6 +491,10 @@ def setup_mainframe_mesh(
         applied = apply_virtual_exit(profile, dry_run=dry_run)
         out["exit_apply"] = applied
         out["steps"].append("apply_exit")
+
+    if cloud_sync and not dry_run:
+        out["cloud_sync"] = sync_cloud_backends()
+        out["steps"].append("cloud_sync")
 
     out["virtual_exit_catalog"] = {
         pid: resolve_virtual_profile(pid)
@@ -517,7 +531,7 @@ def main(argv: Optional[List[str]] = None) -> int:
     argv = argv or sys.argv[1:]
     if not argv or argv[0] in ("-h", "--help", "help"):
         print(__doc__)
-        print("Commands: status | save [--replicate] | build | apply-exit <profile> [--dry-run] | setup [--exit <profile>] [--apply-exit] [--dry-run]")
+        print("Commands: status | save [--replicate] | build | apply-exit <profile> [--dry-run] | cloud-sync | setup [--exit <profile>] [--apply-exit] [--dry-run]")
         return 0
 
     cmd = argv[0]
@@ -545,6 +559,11 @@ def main(argv: Optional[List[str]] = None) -> int:
         print(json.dumps(out, indent=2, ensure_ascii=False))
         return 0 if out.get("ok") else 1
 
+    if cmd == "cloud-sync":
+        out = sync_cloud_backends()
+        print(json.dumps(out, indent=2, ensure_ascii=False))
+        return 0 if out.get("ok") else 1
+
     if cmd == "setup":
         exit_profile = None
         if "--exit" in argv:
@@ -556,6 +575,7 @@ def main(argv: Optional[List[str]] = None) -> int:
             exit_profile=exit_profile,
             apply_exit="--apply-exit" in argv,
             dry_run="--dry-run" in argv,
+            cloud_sync="--no-cloud" not in argv,
         )
         print(json.dumps(out, indent=2, ensure_ascii=False))
         return 0 if out.get("ok") else 1

@@ -14,10 +14,14 @@ physical_candidates:
   cs-724978827604-default:
     hostname: cs-724978827604-default
     tailscale_ip: 100.127.145.106
-    platform: linux
+    magicdns: cs-724978827604-default.tail391adb.ts.net
+    platform: google_compute_engine
     offers_exit: true
     region: eu-central
-    note: "Cloud VPS — primary EU egress when online"
+    cloud_provider: google
+    fractal_replica_url: http://cs-724978827604-default.tail391adb.ts.net:8088/mesh/fractal/replica
+    supabase_role: cloud_anchor
+    note: "Google GCE server — primary EU egress + fractal replica host when online"
 
   desktop-kpki9e4-wsl:
     hostname: desktop-kpki9e4-wsl
@@ -68,6 +72,12 @@ virtual_profiles:
     clear_exit: true
     blocked_on_platforms: [android]
 
+  google-server:
+    label: "Google GCE server egress (cs-724978827604)"
+    primary: cs-724978827604-default
+    fallbacks: []
+    require_online: true
+
 # Per mesh segment: which virtual exit profile to prefer
 segment_routing:
   mainframe:
@@ -91,3 +101,20 @@ segment_routing:
     default_profile: cloud-eu
   researcher:
     default_profile: cloud-eu
+
+# Cloud persistence backends for fractal mainframe state
+cloud_backends:
+  supabase:
+    project_ref: swmmoxhdzarmoupyssqe
+    url: https://swmmoxhdzarmoupyssqe.supabase.co
+    schema_migration: 03_Code/Dashboard/supabase/schema_migration_v5_fractal_mesh.sql
+    tables:
+      - fusion_mesh_fractal_manifests
+      - fusion_mesh_exit_state
+  google_drive:
+    cold_root: FusionHero_Offload/mesh/fractal
+    policy: google_drive_cold_default
+  google_server:
+    hostname: cs-724978827604-default
+    tailscale_ip: 100.127.145.106
+    role: fractal_replica_host

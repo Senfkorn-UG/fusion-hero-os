@@ -27,6 +27,7 @@ show_help() {
     echo "  fractal-status   - Fractal-Manifest + Exit-Node-Status"
     echo "  exit-apply       - Virtuelles Exit-Profil anwenden (z.B. cloud-eu)"
     echo "  mainframe-mesh   - Vollständiges Mainframe-Mesh-Setup (save + optional exit)"
+    echo "  cloud-sync       - Fractal → Supabase + Google Drive + Google GCE"
     echo "  all              - Alles nacheinander ausführen (install → start → funnel)"
     echo "  help             - Diese Hilfe anzeigen"
     echo ""
@@ -98,6 +99,10 @@ case "$1" in
         EXIT_PROFILE="${2:-direct}"
         echo "→ Mainframe Mesh Setup (fractal save, exit=$EXIT_PROFILE)..."
         python3 "$SCRIPT_DIR/fractal_mainframe_mesh.py" setup --exit "$EXIT_PROFILE" "${@:3}"
+        ;;
+    cloud-sync)
+        echo "→ Cloud sync (Supabase + Google Drive + Google server)..."
+        python3 "$SCRIPT_DIR/mesh_cloud_backends.py" sync
         ;;
     all)
         echo "🚀 Vollständige Tailscale Mesh Initialisierung..."

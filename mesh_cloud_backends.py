@@ -109,8 +109,9 @@ def sync_to_google_drive(manifest: Optional[dict] = None) -> Dict[str, Any]:
         copied_to: List[str] = []
 
         for root in GOOGLE_DRIVE_COLD_ROOTS:
-            parent = root.parent
-            if not parent.exists():
+            # cold_base = .../FusionHero_Offload (mesh/fractal may not exist yet)
+            cold_base = root.parent.parent
+            if not cold_base.exists():
                 continue
             root.mkdir(parents=True, exist_ok=True)
             manifest_path = root / "manifest.json"
