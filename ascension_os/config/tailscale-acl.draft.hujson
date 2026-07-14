@@ -2,25 +2,25 @@
 // Korrigiert 2026-07-14: Keine Wildcards in src/dst (Tailscale ACL Parser unterstützt keine tag:foo-* in Regeln)
 // Aktivieren: Inhalt nach https://login.tailscale.com/admin/acls kopieren und speichern.
 // Alle Fusion-Tags aus mesh_connectors.yaml explizit aufgelistet.
-// User: stephan95g@googlemail.com
+// User: 95guknow@googlemail.com
 // Wichtig: Nach Änderung ACL speichern, dann tailscale up mit --advertise-tags ausführen.
 
 {
   "tagOwners": {
-    "tag:fusion-node-desktop": ["stephan95g@googlemail.com"],
-    "tag:fusion-node-mainframe": ["stephan95g@googlemail.com"],
-    "tag:fusion-node-phone": ["stephan95g@googlemail.com"],
-    "tag:fusion-agent-researcher": ["stephan95g@googlemail.com"],
-    "tag:fusion-connector-github": ["stephan95g@googlemail.com"],
-    "tag:fusion-connector-gmail": ["stephan95g@googlemail.com"],
-    "tag:fusion-connector-google-drive": ["stephan95g@googlemail.com"],
-    "tag:fusion-connector-google-calendar": ["stephan95g@googlemail.com"],
-    "tag:fusion-connector-canva": ["stephan95g@googlemail.com"],
-    "tag:fusion-connector-gamma": ["stephan95g@googlemail.com"],
-    "tag:fusion-connector-notion": ["stephan95g@googlemail.com"],
-    "tag:fusion-connector-vercel": ["stephan95g@googlemail.com"],
-    "tag:fusion-connector-hyperframes": ["stephan95g@googlemail.com"],
-    "tag:fusion-connector-tasks": ["stephan95g@googlemail.com"]
+    "tag:fusion-node-desktop": ["95guknow@googlemail.com"],
+    "tag:fusion-node-mainframe": ["95guknow@googlemail.com"],
+    "tag:fusion-node-phone": ["95guknow@googlemail.com"],
+    "tag:fusion-agent-researcher": ["95guknow@googlemail.com"],
+    "tag:fusion-connector-github": ["95guknow@googlemail.com"],
+    "tag:fusion-connector-gmail": ["95guknow@googlemail.com"],
+    "tag:fusion-connector-google-drive": ["95guknow@googlemail.com"],
+    "tag:fusion-connector-google-calendar": ["95guknow@googlemail.com"],
+    "tag:fusion-connector-canva": ["95guknow@googlemail.com"],
+    "tag:fusion-connector-gamma": ["95guknow@googlemail.com"],
+    "tag:fusion-connector-notion": ["95guknow@googlemail.com"],
+    "tag:fusion-connector-vercel": ["95guknow@googlemail.com"],
+    "tag:fusion-connector-hyperframes": ["95guknow@googlemail.com"],
+    "tag:fusion-connector-tasks": ["95guknow@googlemail.com"]
   },
 
   "hosts": {
