@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mainframe Ops — Kosten · Repo · Spiegelung</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.1/dist/echarts.min.js"></script>
+  <link rel="stylesheet" href="/static/style.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap');
+    body { font-family: 'Space Grotesk', system-ui, sans-serif; background: radial-gradient(ellipse at 20% 0%, #0f172a 0%, #050508 55%, #000 100%); }
+    .ops-card { background: rgba(15,23,42,0.72); border: 1px solid rgba(0,212,170,0.18); backdrop-filter: blur(12px); border-radius: 14px; }
+    .ops-metric { font-family: 'JetBrains Mono', monospace; }
+    .pulse-dot { animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+    .chart-box { height: 320px; min-height: 240px; }
+    #repo-chart { height: 420px; }
+  </style>
+</head>
+<body class="text-slate-200 min-h-screen p-4 md:p-6">
+  <header class="ops-card p-5 mb-5 flex flex-wrap items-center justify-between gap-4">
+    <div>
+      <p class="text-xs tracking-[0.35em] text-teal-400/80 uppercase">Senfkorn UG · Fusion Hero OS</p>
+      <h1 class="text-2xl md:text-3xl font-bold bg-gradient-to-r from-teal-300 to-amber-300 bg-clip-text text-transparent">
+        Mainframe Ops Center
+      </h1>
+      <p class="text-sm text-slate-400 mt-1">Dauer-Kostenanalyse · Repo-Struktur · OS-Daemon-Korrektur (ohne Mauseingabe)</p>
+    </div>
+    <div class="flex items-center gap-4 text-sm">
+      <span class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-teal-400 pulse-dot"></span> Live</span>
+      <a href="/" class="text-teal-400 hover:text-teal-300">← Dashboard</a>
+      <a href="/architecture" class="text-slate-400 hover:text-white">Atlas</a>
+    </div>
+  </header>
+
+  <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-5">
+    <div class="ops-card p-4">
+      <div class="text-xs text-slate-500 uppercase tracking-wider">Monat (geschätzt)</div>
+      <div id="m-month" class="ops-metric text-3xl text-teal-300 mt-1">—</div>
+      <div class="text-xs text-slate-500 mt-1">EUR inkl. GCE + GKE-Burn</div>
+    </div>
+    <div class="ops-card p-4">
+      <div class="text-xs text-slate-500 uppercase tracking-wider">Stunden-Burn</div>
+      <div id="m-hour" class="ops-metric text-3xl text-amber-300 mt-1">—</div>
+      <div class="text-xs text-slate-500 mt-1">EUR/h aktuell</div>
+    </div>
+    <div class="ops-card p-4">
+      <div class="text-xs text-slate-500 uppercase tracking-wider">GKE Pods</div>
+      <div id="m-pods" class="ops-metric text-3xl text-violet-300 mt-1">—</div>
+      <div class="text-xs text-slate-500 mt-1">Running / Pending</div>
+    </div>
+    <div class="ops-card p-4">
+      <div class="text-xs text-slate-500 uppercase tracking-wider">Repo Drift</div>
+      <div id="m-drift" class="ops-metric text-3xl mt-1">—</div>
+      <div class="text-xs text-slate-500 mt-1">Tree-Hash vs Golden</div>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-5">
+    <div class="ops-card p-4">
+      <h2 class="text-sm tracking-widest text-teal-400 mb-2">KOSTENVERLAUF (EWMA + GCP)</h2>
+      <div id="cost-chart" class="chart-box"></div>
+    </div>
+    <div class="ops-card p-4">
+      <h2 class="text-sm tracking-widest text-amber-400 mb-2">BREAKDOWN</h2>
+      <div id="breakdown-chart" class="chart-box"></div>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+    <div class="ops-card p-4 lg:col-span-2">
+      <h2 class="text-sm tracking-widest text-violet-400 mb-2">REPOSITORY-STRUKTUR (Sunburst)</h2>
+      <div id="repo-chart"></div>
+    </div>
+    <div class="ops-card p-4">
+      <h2 class="text-sm tracking-widest text-rose-400 mb-2">OS-DAEMON KORREKTUREN</h2>
+      <p class="text-xs text-slate-500 mb-3">Automatisch auf OS-Ebene — kein UI-Klick nötig</p>
+      <ul id="correction-feed" class="text-xs font-mono space-y-2 max-h-[380px] overflow-y-auto"></ul>
+      <div id="alerts" class="mt-4 text-xs text-amber-300/90"></div>
+    </div>
+  </div>
+
+  <footer class="text-center text-[10px] text-slate-600 py-6">
+    Mainframe Ops v1 · ECharts 5 · Daemon-Intervalle via FUSION_COST_ANALYSIS_INTERVAL_SEC / FUSION_REPO_MIRROR_INTERVAL_SEC
+  </footer>
+  <script src="/static/mainframe_ops.js"></script>
+</body>
+</html>
