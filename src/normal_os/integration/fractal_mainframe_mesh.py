@@ -20,11 +20,12 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
-ROOT = Path(__file__).resolve().parent
-EXIT_CONFIG_PATH = ROOT / "mesh_virtual_exit_nodes.yaml"
-ROLES_PATH = ROOT / "src" / "normal_os" / "integration" / "mesh_roles.yaml"
-if not ROLES_PATH.exists():
-    ROLES_PATH = ROOT / "mesh_roles.yaml"
+_INTEGRATION_DIR = Path(__file__).resolve().parent
+ROOT = Path(os.environ.get("FUSION_HERO_ROOT", _INTEGRATION_DIR.parent.parent.parent))
+EXIT_CONFIG_PATH = _INTEGRATION_DIR / "mesh_virtual_exit_nodes.yaml"
+if not EXIT_CONFIG_PATH.exists():
+    EXIT_CONFIG_PATH = ROOT / "mesh_virtual_exit_nodes.yaml"
+ROLES_PATH = _INTEGRATION_DIR / "mesh_roles.yaml"
 CONNECTORS_PATH = ROOT / "mesh_connectors.yaml"
 UNIFIED_PATH = ROOT / "fusion_unified.yaml"
 

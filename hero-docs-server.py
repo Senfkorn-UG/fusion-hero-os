@@ -51,6 +51,14 @@ except ImportError:
     get_llm_segment = None
     get_llm_status_all = None
 
+try:
+    from fractal_mainframe_mesh import get_fractal_status, load_fractal_manifest, FRACTAL_ROOT, REPLICAS_DIR
+except ImportError:
+    get_fractal_status = None
+    load_fractal_manifest = None
+    FRACTAL_ROOT = None
+    REPLICAS_DIR = None
+
 
 class HeroicDocsHandler(http.server.SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
@@ -63,6 +71,10 @@ class HeroicDocsHandler(http.server.SimpleHTTPRequestHandler):
             self.send_tailscale_status()
         elif self.path == "/mesh/status" or self.path == "/mesh":
             self.send_mesh_status()
+        elif self.path == "/mesh/fractal/status":
+            self.send_fractal_status()
+        elif self.path == "/mesh/exit-nodes":
+            self.send_exit_nodes_status()
         elif self.path.startswith("/mesh/") and self.path.endswith("/status"):
             connector_id = self.path.split("/")[2]
             self.send_connector_status(connector_id)
@@ -81,6 +93,12 @@ class HeroicDocsHandler(http.server.SimpleHTTPRequestHandler):
             self.send_erkenntnisse_status()
         else:
             super().do_GET()
+
+    def do_POST(self):
+        if self.path == "/mesh/fractal/replica":
+            self.receive_fractal_replica()
+        else:
+            self.send_error(404, "Not Found")
 
     def _send_json(self, data: dict, status_code: int = 200):
         self.send_response(status_code)
@@ -229,6 +247,43 @@ class HeroicDocsHandler(http.server.SimpleHTTPRequestHandler):
             self._send_json(summary, 200 if summary.get("ok") else 503)
         except Exception as e:
             self._send_json({"error": str(e)}, 503)
+
+    def send_fractal_status(self):
+        if get_fractal_status is None:
+            self._send_json({"error": "fractal_mainframe_mesh.py not available"}, 503)
+            return
+        self._send_json(get_fractal_status())
+
+    def send_exit_nodes_status(self):
+        if get_fractal_status is None:
+            self._send_json({"error": "fractal_mainframe_mesh.py not available"}, 503)
+            return
+        status = get_fractal_status()
+        self._send_json(status.get("virtual_exit", status))
+
+    def receive_fractal_replica(self):
+        """Accept fractal manifest replica from a mesh peer."""
+        if REPLICAS_DIR is None:
+            self._send_json({"error": "fractal_mainframe_mesh.py not available"}, 503)
+            return
+        try:
+            length = int(self.headers.get("Content-Length", 0))
+            raw = self.rfile.read(length).decode("utf-8") if length else "{}"
+            payload = json.loads(raw)
+            manifest = payload.get("manifest") or payload
+            REPLICAS_DIR.mkdir(parents=True, exist_ok=True)
+            tree_hash = manifest.get("tree_hash", "unknown")
+            peer = self.headers.get("X-Mesh-Peer", "unknown")
+            out_path = REPLICAS_DIR / f"{peer}_{tree_hash[:12]}.json"
+            out_path.write_text(json.dumps(manifest, indent=2, ensure_ascii=False), encoding="utf-8")
+            self._send_json({
+                "ok": True,
+                "stored": str(out_path),
+                "tree_hash": tree_hash,
+                "peer": peer,
+            })
+        except Exception as e:
+            self._send_json({"ok": False, "error": str(e)}, 400)
 
 
 def get_lan_ip():

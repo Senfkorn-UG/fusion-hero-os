@@ -61,12 +61,15 @@ role_assignments:
     node_id: wsl-ubuntu
     role: dev-leaf
     platform: linux
-    hostname: wsl-ubuntu
-    status: login_required
-    login_required: user@example.com
+    hostname: desktop-kpki9e4-wsl
+    magicdns: desktop-kpki9e4-wsl.tail391adb.ts.net
+    tailscale_ip: 100.125.58.100
+    status: online
+    tailscale_tag: tag:fusion-node-wsl
     setup_script: workstation/tailscale_wsl_setup.sh
-    login_url_file: "~/.fusion/tailscale-wsl-login.url"
-    note: "Entwicklungs-Leaf — kein Mainframe; Tailscale optional fuer Mesh-Checks"
+    mesh_setup_script: workstation/mainframe_mesh_setup.sh
+    virtual_exit_default: wsl-dev
+    note: "WSL dev leaf — fractal replica target; optional EU egress via cloud-eu profile"
 
 # Speicher — Google Drive als Standard fuer nicht-operative Daten
 storage:
@@ -87,6 +90,26 @@ git:
 
 # Routing (Funnel + MagicDNS) — zeigt auf Windows-Mainframe
 routing:
-  base_url: https://device.example.ts.net
+  base_url: https://desktop-kpki9e4.tail391adb.ts.net
   mainframe_hostname: desktop-kpki9e4
   funnel_port: 8088
+
+# Fractal mainframe persistence on the mesh
+fractal_persistence:
+  enabled: true
+  module: fractal_mainframe_mesh.py
+  storage_root: "~/.fusion/mesh/fractal"
+  setup_windows: workstation/mainframe_mesh_setup.ps1
+  setup_wsl: workstation/mainframe_mesh_setup.sh
+  levels:
+    L0: anchor          # MasterSeed + config fingerprints
+    L1: node            # per physical node slice
+    L2: segment         # per connector/agent slice
+    L3: exit_profile    # virtual exit routing slice
+  replicate_via: hero-docs-server:8088/mesh/fractal/replica
+
+# Virtual exit node routing (logical profiles → physical Tailscale exits)
+virtual_exit_nodes:
+  config: mesh_virtual_exit_nodes.yaml
+  default_profile: direct
+  mainframe_elevated: cloud-eu

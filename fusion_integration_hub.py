@@ -194,6 +194,15 @@ def _get_erkenntnisse_status() -> dict:
         return {"ok": False, "error": str(e)}
 
 
+def _get_fractal_mesh_status() -> dict:
+    """Fractal mainframe persistence + virtual exit node catalog."""
+    try:
+        from fractal_mainframe_mesh import get_fractal_status
+        return get_fractal_status()
+    except Exception as e:
+        return {"ok": False, "error": str(e), "layer": "fractal_mesh"}
+
+
 def _build_graph(unified: dict, mesh: dict, llm: dict) -> dict:
     """Build linked graph: nodes → connectors → LLMs."""
     links = unified.get("connector_llm_links", {})
@@ -282,6 +291,7 @@ def get_unified_status() -> dict:
     graph = _build_graph(unified, mesh, llm)
     layer_registry = _get_layer_registry_status()
     erkenntnisse = _get_erkenntnisse_status()
+    fractal_mesh = _get_fractal_mesh_status()
 
     mesh_ok = mesh.get("connectors_registered", 0) > 0 or not mesh.get("error")
     llm_ok = llm.get("any_live", False)
@@ -301,6 +311,7 @@ def get_unified_status() -> dict:
             "vr": vr_status.get("status", "unknown"),
             "layers": f"{layer_registry.get('layers_ok', 0)}/{layer_registry.get('layer_count', 0)}",
             "erkenntnisse": "indexed" if erkenntnisse.get("ok") else "pending",
+            "fractal_mesh": "saved" if fractal_mesh.get("fractal_manifest", {}).get("ok") else "pending",
             "overall": "healthy" if (mesh_ok or llm_ok) else "degraded",
         },
         "vr": vr_status,
@@ -320,6 +331,7 @@ def get_unified_status() -> dict:
         "endpoints": unified.get("endpoints", {}),
         "workstation": workstation,
         "phone_mesh": phone_check,
+        "fractal_mesh": fractal_mesh,
         "graph": graph,
     }
 
