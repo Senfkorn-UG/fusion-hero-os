@@ -137,6 +137,17 @@ def _workstation_paths_file() -> Optional[Path]:
     return None
 
 
+def _get_google_oauth_status() -> dict:
+    try:
+        normal_os = ROOT.parent
+        if str(normal_os) not in sys.path:
+            sys.path.insert(0, str(normal_os))
+        from connectors.google_oauth import all_connectors_status
+        return all_connectors_status()
+    except Exception as e:
+        return {"error": str(e), "ready_count": 0}
+
+
 def _get_workstation() -> dict:
     ws = _workstation_paths_file()
     if not ws:
@@ -247,6 +258,7 @@ def get_unified_status() -> dict:
     phone_check = _check_phone_visibility(unified, tailscale)
     vr_status = _get_vr_status()
     graph = _build_graph(unified, mesh, llm)
+    google_oauth = _get_google_oauth_status()
 
     mainframe_role = {}
     try:
@@ -278,6 +290,7 @@ def get_unified_status() -> dict:
             "connectors_registered": mesh.get("connectors_registered"),
             "tailnet": mesh.get("tailnet"),
         },
+        "google_oauth": google_oauth,
         "llm_summary": {
             "count": llm.get("count"),
             "available": llm.get("available"),
