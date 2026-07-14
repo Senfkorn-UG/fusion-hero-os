@@ -208,7 +208,16 @@ def solve_qubo(
     ``backend`` in {"auto", "rust", "qb_qubo", "numpy", "brute"}. "auto" prefers
     rust, then qb_qubo, then numpy.
     """
-    Q = problem.Q
+    # The delta-energy update in ``_anneal_numpy`` (and the Ising mapping used
+    # by the compiled backends) assumes a symmetric Q. For binary x the value
+    # x^T Q x is invariant under Q -> (Q + Q^T)/2, so we symmetrise here rather
+    # than rejecting asymmetric inputs. build_qubo already emits symmetric Q;
+    # this makes externally-supplied problems safe too.
+    Q = np.asarray(problem.Q, dtype=np.float64)
+    if Q.ndim != 2 or Q.shape[0] != Q.shape[1]:
+        raise QUBOBridgeError("Q must be a square 2D matrix")
+    if not np.allclose(Q, Q.T, atol=1e-12):
+        Q = 0.5 * (Q + Q.T)
     chosen = backend
     trace: List[float] = []
 

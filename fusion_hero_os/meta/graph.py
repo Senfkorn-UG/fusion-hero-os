@@ -350,5 +350,8 @@ class GraphSnapshot:
         for e in self._edges:
             i, j = index[e.source], index[e.target]
             adj[i][j] += e.weight
-            adj[j][i] += e.weight
+            if i != j:
+                # Self-loops touch a single diagonal cell; adding twice would
+                # double-count the weight.
+                adj[j][i] += e.weight
         return ids, adj

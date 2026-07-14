@@ -376,3 +376,163 @@ def test_pipeline_denies_on_grant_id_mismatch():
     nodes, edges = _fixture_nodes_edges()
     with pytest.raises(ConsentError):
         svc.ingest(subj, "wrong-grant-id", nodes, edges)
+
+
+# -- review-fix regressions --------------------------------------------------
+
+def _seed_subject(svc: MetaNeuralService, subj: str):
+    """Grant every data purpose and ingest the demo fixture for ``subj``."""
+    grants = {p: svc.grant_consent(subj, p).grant_id
+              for p in (Purpose.INGEST, Purpose.WORKING_MEMORY, Purpose.ASSOCIATION,
+                        Purpose.OPTIMIZATION, Purpose.AUDIT_READ)}
+    nodes, edges = _fixture_nodes_edges()
+    svc.ingest(subj, grants[Purpose.INGEST], nodes, edges)
+    return grants
+
+
+def test_audit_trail_is_subject_scoped():
+    """H1: a subject with AUDIT_READ sees only its own audit records."""
+    svc = MetaNeuralService()
+    ga = _seed_subject(svc, "subj_a")
+    gb = _seed_subject(svc, "subj_b")
+
+    valid_a, events_a = svc.audit_trail("subj_a", ga[Purpose.AUDIT_READ])
+    valid_b, events_b = svc.audit_trail("subj_b", gb[Purpose.AUDIT_READ])
+    assert valid_a and valid_b
+    assert events_a and events_b
+    assert all(e.subject_id == "subj_a" for e in events_a)
+    assert all(e.subject_id == "subj_b" for e in events_b)
+    # No cross-subject leakage.
+    assert not any(e.subject_id == "subj_b" for e in events_a)
+
+
+def test_audit_cross_subject_requires_admin_capability():
+    """H1: global read is denied unless the explicit admin token matches."""
+    svc = MetaNeuralService()  # admin capability disabled by default
+    ga = _seed_subject(svc, "subj_a")
+    _seed_subject(svc, "subj_b")
+    with pytest.raises(ConsentError):
+        svc.audit_trail("subj_a", ga[Purpose.AUDIT_READ], include_all=True)
+
+    admin_svc = MetaNeuralService(admin_token="s3cret")
+    ga2 = _seed_subject(admin_svc, "subj_a")
+    _seed_subject(admin_svc, "subj_b")
+    # Wrong token still denied.
+    with pytest.raises(ConsentError):
+        admin_svc.audit_trail("subj_a", ga2[Purpose.AUDIT_READ],
+                              include_all=True, admin_token="wrong")
+    valid, events = admin_svc.audit_trail(
+        "subj_a", ga2[Purpose.AUDIT_READ], include_all=True, admin_token="s3cret"
+    )
+    subs = {e.subject_id for e in events}
+    assert valid and {"subj_a", "subj_b"}.issubset(subs)
+
+
+def test_revocation_purges_subject_state():
+    """M2: explicit revocation removes derived state and leaves a tombstone."""
+    svc = MetaNeuralService()
+    grants = _seed_subject(svc, "subj_r")
+    assert "subj_r" in svc._graphs and "subj_r" in svc._wm
+
+    removed = svc.revoke_consent("subj_r", grants[Purpose.INGEST])
+    assert removed["graph"] == 1 and removed["working_memory"] == 1
+    assert "subj_r" not in svc._graphs
+    assert "subj_r" not in svc._wm
+    assert "subj_r" not in svc._hebbian
+    assert "subj_r" not in svc._snapshots
+    # Data is now inaccessible: snapshot lookup raises.
+    with pytest.raises(KeyError):
+        svc.snapshot_for("subj_r")
+    # Non-PII deletion tombstone recorded.
+    tombstones = [e for e in svc.consent.audit.events()
+                  if e.action == "subject.purge" and e.subject_id == "subj_r"]
+    assert tombstones and tombstones[-1].detail["reason"] == "revocation"
+
+
+def test_expiry_purges_subject_state():
+    """M2: detected expiry (not just revocation) purges derived state."""
+    svc = MetaNeuralService()
+    subj = "subj_e"
+    # Short retention grants; ingest while active.
+    ingest_grant = svc.consent.grant(subj, Purpose.INGEST,
+                                      retention=timedelta(seconds=1))
+    wm_grant = svc.consent.grant(subj, Purpose.WORKING_MEMORY,
+                                 retention=timedelta(seconds=1))
+    nodes, edges = _fixture_nodes_edges()
+    svc.ingest(subj, ingest_grant.grant_id, nodes, edges)
+    assert subj in svc._graphs
+
+    # Simulate all grants having expired.
+    future = datetime.now(UTC) + timedelta(days=1)
+    removed = svc._purge_if_expired(subj, at=future)
+    assert removed.get("graph") == 1
+    assert subj not in svc._graphs
+    tombstones = [e for e in svc.consent.audit.events()
+                  if e.action == "subject.purge" and e.subject_id == subj]
+    assert tombstones and tombstones[-1].detail["reason"] == "expiry"
+
+
+def test_grant_id_mismatch_single_audit_decision():
+    """LOW: a grant_id mismatch is one ``denied`` event, never granted->denied."""
+    svc = MetaNeuralService()
+    subj = "subj_m"
+    svc.grant_consent(subj, Purpose.INGEST)
+    nodes, edges = _fixture_nodes_edges()
+    with pytest.raises(ConsentError):
+        svc.ingest(subj, "wrong-grant-id", nodes, edges)
+    decisions = [e.decision for e in svc.consent.audit.events()
+                 if e.action == "graph.ingest"]
+    assert decisions == ["denied"]
+
+
+def test_adjacency_self_loop_not_double_counted():
+    """LOW: a self-loop weight lands once on the diagonal."""
+    schema = _schema()
+    g = PropertyGraph(schema)
+    g.add_node("a", "concept", provenance=_prov())
+    g.add_edge("self", "relates_to", "a", "a", weight=0.7, provenance=_prov())
+    ids, adj = g.snapshot().adjacency()
+    i = ids.index("a")
+    assert adj[i][i] == pytest.approx(0.7)
+
+
+def test_solve_qubo_symmetrizes_asymmetric_matrix():
+    """LOW: asymmetric Q is symmetrised; energy matches for binary vectors."""
+    node_ids = ["a", "b"]
+    Q_asym = np.array([[-1.0, 2.0], [0.0, -1.0]], dtype=np.float64)
+    from fusion_hero_os.meta.qubo_bridge import QUBOProblem, energy
+    problem = QUBOProblem(node_ids=node_ids, Q=Q_asym, constraints={},
+                          source_snapshot="deadbeef")
+    result = solve_qubo(problem, backend="brute", seed=1, steps=10)
+    Q_sym = 0.5 * (Q_asym + Q_asym.T)
+    x = np.array(result.solution_vector, dtype=np.float64)
+    assert result.objective == pytest.approx(float(x @ Q_sym @ x))
+    # x^T Q x is invariant under symmetrisation for binary x.
+    assert float(x @ Q_asym @ x) == pytest.approx(float(x @ Q_sym @ x))
+
+
+def test_service_concurrent_ingest_thread_safe():
+    """M1: concurrent per-subject ingests keep the state maps consistent."""
+    import threading
+
+    svc = MetaNeuralService()
+    subjects = [f"subj_{i}" for i in range(16)]
+    grants = {s: svc.grant_consent(s, Purpose.INGEST).grant_id for s in subjects}
+    nodes, edges = _fixture_nodes_edges()
+    errors: list = []
+
+    def _worker(s: str):
+        try:
+            svc.ingest(s, grants[s], nodes, edges)
+        except Exception as exc:  # pragma: no cover - failure path
+            errors.append(exc)
+
+    threads = [threading.Thread(target=_worker, args=(s,)) for s in subjects]
+    for t in threads:
+        t.start()
+    for t in threads:
+        t.join()
+
+    assert not errors
+    assert set(svc._graphs) == set(subjects)
+    assert len(svc._snapshots) == len(subjects)

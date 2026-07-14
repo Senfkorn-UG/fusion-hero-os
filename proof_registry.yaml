@@ -380,10 +380,41 @@ claims:
       - tests/test_meta_neural_api.py::test_api_denies_optimize_without_consent
 
   - id: META-PII-GATE
-    statement: "Der PII/Secret-Scanner erkennt private E-Mails, MagicDNS/Tailscale-Hosts, oeffentliche IPs, Supabase-URLs und Cloud-Tokens; private (RFC1918) und CGNAT (RFC6598) IPs sowie allowlistete Doku-Beispiele blockieren das Gate nicht. Persona-Bezeichner werden als nicht-blockierende Warnung gefuehrt (Stage-2-Refactor)."
+    statement: "Der PII/Secret-Scanner erkennt private E-Mails, MagicDNS/Tailscale-Hosts, oeffentliche IPs, Supabase-URLs und Cloud-Tokens; private (RFC1918) und CGNAT (RFC6598) IPs sowie allowlistete Doku-Beispiele blockieren das Gate nicht. Persona-Bezeichner werden als nicht-blockierende Warnung gefuehrt (Stage-2-Refactor). Der YAML-Allowlist-Parser behandelt '#' innerhalb von Anfuehrungszeichen als Literal (kein Kommentar-Abschnitt)."
     status: BEWIESEN
     proofs:
       - tests/test_pii_scanner.py::test_detects_planted_secrets
       - tests/test_pii_scanner.py::test_allowlist_literals_and_paths
       - tests/test_pii_scanner.py::test_private_and_cgnat_ips_are_not_flagged
       - tests/test_pii_scanner.py::test_non_public_ip_classifier
+      - tests/test_pii_scanner.py::test_yaml_parser_preserves_hash_inside_quotes
+      - tests/test_pii_scanner.py::test_strip_comment_helper
+
+  # ---- Meta-Neural Review-Fix Hardening (2026-07-14) -----------------------
+  - id: META-AUDIT-SUBJECT-SCOPED
+    statement: "Audit-Lesezugriff ist standardmaessig subjektgebunden: ein Subjekt mit AUDIT_READ sieht nur die eigenen Audit-Eintraege. Ein subjektuebergreifender (globaler) Read ist eine eigenstaendige administrative Faehigkeit, die include_all=True UND ein out-of-band gesetztes admin_token erfordert; ohne Token ist sie deaktiviert und wird nie ueber die HTTP-API exponiert."
+    status: BEWIESEN
+    proofs:
+      - tests/test_meta_neural.py::test_audit_trail_is_subject_scoped
+      - tests/test_meta_neural.py::test_audit_cross_subject_requires_admin_capability
+
+  - id: META-RIGHT-TO-ERASURE
+    statement: "Widerruf (revoke_consent) und erkanntes Ablaufen (_purge_if_expired/sweep_expired) loeschen den abgeleiteten Subjekt-Zustand deterministisch (Graph, Snapshot, Working Memory, Hebbsche Assoziationen inkl. Sekundaerindizes) und hinterlassen ein minimales, personenbezugsfreies subject.purge-Tombstone als Loeschbeleg. Danach sind die Daten nicht mehr zugaenglich."
+    status: BEWIESEN
+    proofs:
+      - tests/test_meta_neural.py::test_revocation_purges_subject_state
+      - tests/test_meta_neural.py::test_expiry_purges_subject_state
+
+  - id: META-SERVICE-THREADSAFE
+    statement: "Der prozessweite MetaNeuralService-Singleton schuetzt seine subjektbezogenen Zustands-Maps mit einem RLock; nebenlaeufige Ingests unterschiedlicher Subjekte lassen die Maps konsistent. Ein grant_id-Mismatch erzeugt genau EIN denied-Audit-Ereignis (kein irrefuehrendes granted->denied-Paar)."
+    status: BEWIESEN
+    proofs:
+      - tests/test_meta_neural.py::test_service_concurrent_ingest_thread_safe
+      - tests/test_meta_neural.py::test_grant_id_mismatch_single_audit_decision
+
+  - id: META-QUBO-SYMMETRY
+    statement: "solve_qubo symmetrisiert eine asymmetrische Q-Matrix zu (Q+Q^T)/2 (fuer binaere x wertinvariant), sodass die O(n)-Delta-Energie-Aktualisierung korrekt ist; die weighted-Adjazenz zaehlt Self-Loops nur einmal auf der Diagonalen."
+    status: BEWIESEN
+    proofs:
+      - tests/test_meta_neural.py::test_solve_qubo_symmetrizes_asymmetric_matrix
+      - tests/test_meta_neural.py::test_adjacency_self_loop_not_double_counted

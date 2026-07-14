@@ -205,6 +205,15 @@ class AuditLog:
         with self._lock:
             return list(self._events)
 
+    def events_for(self, subject_id: str) -> List[AuditEvent]:
+        """Return only the events belonging to ``subject_id`` (subject-scoped).
+
+        Used to enforce that a subject with AUDIT_READ can only see its own
+        records; cross-subject reads require a separate admin capability.
+        """
+        with self._lock:
+            return [e for e in self._events if e.subject_id == subject_id]
+
     def __len__(self) -> int:  # pragma: no cover - trivial
         return len(self._events)
 
@@ -299,25 +308,36 @@ class ConsentStore:
         *,
         action: str,
         at: Optional[datetime] = None,
+        expected_grant_id: Optional[str] = None,
     ) -> ConsentGrant:
         """Return the live grant or raise :class:`ConsentError` (fail closed).
 
-        The decision — granted or denied — is always appended to the audit log.
+        Exactly one decision — granted or denied — is appended to the audit log
+        per call. If ``expected_grant_id`` is supplied it must match the active
+        grant; a mismatch is a single ``denied`` event (never a misleading
+        granted→denied pair).
         """
         purpose = Purpose(purpose)
         at = at or _utcnow()
         grant = self.find_active(subject_id, purpose, at=at)
-        if grant is None:
+        if grant is None or (
+            expected_grant_id is not None and grant.grant_id != expected_grant_id
+        ):
+            reason = (
+                "no active consent grant for purpose"
+                if grant is None
+                else "grant_id does not match the active grant"
+            )
             self.audit.append(
                 action,
                 decision="denied",
                 subject_id=subject_id,
                 purpose=purpose.value,
-                detail={"reason": "no active consent grant for purpose"},
+                detail={"reason": reason},
                 at=at,
             )
             raise ConsentError(
-                f"denied: no active consent for subject={subject_id!r} purpose={purpose.value!r}"
+                f"denied ({reason}) for subject={subject_id!r} purpose={purpose.value!r}"
             )
         self.audit.append(
             action,
