@@ -23,12 +23,23 @@ DASHBOARD = ROOT / "03_Code" / "Dashboard"
 PENDING_GOOGLE = Path.home() / ".fusion" / "mesh" / "fractal" / "pending_google_server.json"
 
 GOOGLE_SERVER = {
-    "hostname": "cs-724978827604-default",
-    "tailscale_ip": "100.127.145.106",
-    "magicdns": "cs-724978827604-default.tail391adb.ts.net",
+    "hostname": os.environ.get("FUSION_GCE_MESH_HOSTNAME", "fusion-mesh-exit"),
+    "gce_instance": os.environ.get("FUSION_GCE_INSTANCE", "fusion-mesh-exit"),
+    "gce_project": os.environ.get("FUSION_GCE_PROJECT", "project-bbf0e6db-52e1-462b-8e3"),
+    "gce_zone": os.environ.get("FUSION_GCE_ZONE", "europe-west3-a"),
+    "gce_external_ip": os.environ.get("FUSION_GCE_EXTERNAL_IP", "34.40.58.207"),
+    "tailscale_ip": os.environ.get("FUSION_GCE_TAILSCALE_IP", ""),
+    "magicdns": os.environ.get(
+        "FUSION_GCE_MAGICDNS",
+        f"{os.environ.get('FUSION_GCE_MESH_HOSTNAME', 'fusion-mesh-exit')}.tail391adb.ts.net",
+    ),
     "platform": "google_compute_engine",
-    "replica_url": "http://cs-724978827604-default.tail391adb.ts.net:8088/mesh/fractal/replica",
+    "replica_url": os.environ.get(
+        "FUSION_GCE_REPLICA_URL",
+        f"http://{os.environ.get('FUSION_GCE_MESH_HOSTNAME', 'fusion-mesh-exit')}.tail391adb.ts.net:8088/mesh/fractal/replica",
+    ),
     "remote_fractal_dir": "~/.fusion/mesh/fractal",
+    "legacy_hostname": "cs-724978827604-default",
 }
 
 GOOGLE_DRIVE_COLD_ROOTS = [

@@ -11,6 +11,20 @@ default_profile: direct
 
 # Physical exit candidates (discovered from tailscale status + manual overrides)
 physical_candidates:
+  fusion-mesh-exit:
+    hostname: fusion-mesh-exit
+    gce_instance: fusion-mesh-exit
+    gce_project: project-bbf0e6db-52e1-462b-8e3
+    gce_zone: europe-west3-a
+    gce_external_ip: 34.40.58.207
+    platform: google_compute_engine
+    offers_exit: true
+    region: europe-west3
+    cloud_provider: google
+    fractal_replica_url: http://fusion-mesh-exit.tail391adb.ts.net:8088/mesh/fractal/replica
+    supabase_role: cloud_anchor
+    note: "Active GCE VM in My First Project — mesh exit + fractal replica"
+
   cs-724978827604-default:
     hostname: cs-724978827604-default
     tailscale_ip: 100.127.145.106
@@ -18,10 +32,8 @@ physical_candidates:
     platform: google_compute_engine
     offers_exit: true
     region: eu-central
-    cloud_provider: google
-    fractal_replica_url: http://cs-724978827604-default.tail391adb.ts.net:8088/mesh/fractal/replica
-    supabase_role: cloud_anchor
-    note: "Google GCE server — primary EU egress + fractal replica host when online"
+    status: legacy_offline
+    note: "Old deleted GCP project — replaced by fusion-mesh-exit"
 
   desktop-kpki9e4-wsl:
     hostname: desktop-kpki9e4-wsl
@@ -49,8 +61,8 @@ virtual_profiles:
 
   cloud-eu:
     label: "EU cloud egress"
-    primary: cs-724978827604-default
-    fallbacks: [desktop-kpki9e4-wsl]
+    primary: fusion-mesh-exit
+    fallbacks: [cs-724978827604-default, desktop-kpki9e4-wsl]
     require_online: true
 
   wsl-dev:
@@ -73,9 +85,9 @@ virtual_profiles:
     blocked_on_platforms: [android]
 
   google-server:
-    label: "Google GCE server egress (cs-724978827604)"
-    primary: cs-724978827604-default
-    fallbacks: []
+    label: "Google GCE server egress (fusion-mesh-exit)"
+    primary: fusion-mesh-exit
+    fallbacks: [cs-724978827604-default]
     require_online: true
 
 # Per mesh segment: which virtual exit profile to prefer
@@ -115,6 +127,9 @@ cloud_backends:
     cold_root: FusionHero_Offload/mesh/fractal
     policy: google_drive_cold_default
   google_server:
-    hostname: cs-724978827604-default
-    tailscale_ip: 100.127.145.106
+    hostname: fusion-mesh-exit
+    gce_project: project-bbf0e6db-52e1-462b-8e3
+    gce_zone: europe-west3-a
+    gce_external_ip: 34.40.58.207
     role: fractal_replica_host
+    legacy: cs-724978827604-default
