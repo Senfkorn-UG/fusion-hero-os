@@ -78,4 +78,4 @@ Alle Mai/Juni-Themen verstärken die April-Synthese: Disruptoren (narzisstisch, 
 
 **Vermerk**: Alle Mai/Juni-Themenfelder sind jetzt systemweit in das Fusion Hero OS v8 integriert. Dieses Dokument ist die verbindliche Erweiterung des April-Dokuments und dient als Referenz für alle weiteren Entwicklungen. Quellenqualität und High-Intellect Protocol bleiben nicht verhandelbar.
 
-*Generated & committed via Grok v8/main Fusion Hero OS Protocol | Alle Mai/Juni-Themenfelder systemweit | User: St3phaN / Stephan95g | 2026-07-05*
+*Generated & committed via Grok v8/main Fusion Hero OS Protocol | Alle Mai/Juni-Themenfelder systemweit | User: 95guknow / der Maintainer95g | 2026-07-05*

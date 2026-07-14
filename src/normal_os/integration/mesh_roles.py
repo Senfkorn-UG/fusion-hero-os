@@ -14,13 +14,13 @@ ROLES_PATH = Path(__file__).parent / "mesh_roles.yaml"
 
 _FALLBACK = {
     "mesh_roles_version": "1.1",
-    "tailnet": "tail391adb.ts.net",
+    "tailnet": "example.ts.net",
     "role_assignments": {
         "mainframe": {
             "node_id": "mainframe",
             "role": "orchestrator",
             "hostname": "desktop-kpki9e4",
-            "magicdns": "desktop-kpki9e4.tail391adb.ts.net",
+            "magicdns": "host.example.ts.net",
             "platform": "windows",
             "canonical": True,
             "aliases": ["desktop"],
@@ -30,27 +30,27 @@ _FALLBACK = {
             "role": "grok-workstation",
             "same_as": "mainframe",
             "hostname": "desktop-kpki9e4",
-            "magicdns": "desktop-kpki9e4.tail391adb.ts.net",
+            "magicdns": "host.example.ts.net",
             "platform": "windows",
         },
         "mobile": {
             "node_id": "phone",
             "role": "mobile-client",
-            "hostname": "redmi-note-13-pro-5g",
-            "magicdns": "redmi-note-13-pro-5g.tail391adb.ts.net",
+            "hostname": "phone-node",
+            "magicdns": "host.example.ts.net",
             "platform": "android",
         },
         "legacy": {
             "node_id": "legacy-linux",
             "role": "archived",
             "hostname": "mainframe",
-            "magicdns": "mainframe.tail391adb.ts.net",
+            "magicdns": "host.example.ts.net",
             "platform": "linux",
             "status": "offline",
         },
     },
     "routing": {
-        "base_url": "https://desktop-kpki9e4.tail391adb.ts.net",
+        "base_url": "https://host.example.ts.net",
         "mainframe_hostname": "desktop-kpki9e4",
         "funnel_port": 8088,
     },
@@ -79,13 +79,13 @@ def get_roles_registry() -> dict:
         mf["hostname"] = env_host
         mf["magicdns"] = os.getenv(
             "FUSION_MESH_MAINFRAME_MAGICDNS",
-            f"{env_host}.tail391adb.ts.net",
+            f"{env_host}.example.ts.net",
         )
         routing = data.setdefault("routing", {})
         routing["mainframe_hostname"] = env_host
         routing["base_url"] = os.getenv(
             "FUSION_MESH_BASE_URL",
-            f"https://{env_host}.tail391adb.ts.net",
+            f"https://{env_host}.example.ts.net",
         )
     return data
 
@@ -101,7 +101,7 @@ def get_mainframe_hostname() -> str:
 
 def get_mainframe_magicdns() -> str:
     mf = get_mainframe()
-    return mf.get("magicdns") or f"{get_mainframe_hostname()}.tail391adb.ts.net"
+    return mf.get("magicdns") or f"{get_mainframe_hostname()}.example.ts.net"
 
 
 def get_routing_base_url() -> str:

@@ -40,7 +40,7 @@ if echo "$STATUS" | grep -qi "logged out"; then
     echo ""
     echo "Interaktiv in WSL-Terminal (sudo + Browser):"
     echo "  sudo tailscale up --accept-routes"
-    echo "Account: stephan95g@googlemail.com (gleich wie Windows)"
+    echo "Account: user@example.com (gleich wie Windows)"
     sudo tailscale up --accept-routes 2>&1 || true
   fi
 else

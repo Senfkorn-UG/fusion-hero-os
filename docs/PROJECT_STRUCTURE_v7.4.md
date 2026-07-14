@@ -33,7 +33,7 @@ fusion-hero-os/
 │   ├── alte_frau_95g/                          # Heroic Core Foundation
 │   ├── mainframe_laden/                        # Permanent Auto-Load
 │   ├── deep_research_5_stage/                  # 5-stufiger Prozess
-│   ├── mister_jailbait_image/                  # Cyberpunk-Campfire Visuals
+│   ├── mister_Contributor_image/                  # Cyberpunk-Campfire Visuals
 │   └── skill_creator/                          # Dynamic Skill Evolution
 ├── book/
 │   └── heroismus_v33/                          # ← NEW Book Structure v33
@@ -47,7 +47,7 @@ fusion-hero-os/
 │   ├── generational_evolution.md               # v7.4+ Long-Term
 │   └── core_patent_hybrid.md
 ├── memes/
-│   └── cyberpunk_campfire/                     # mister-jailbait series
+│   └── cyberpunk_campfire/                     # mister-Contributor series
 │       └── masterseed_visual.png               # Generated MasterSeed icon
 ├── artifacts/                                  # Sandbox outputs (this dir)
 ├── docs/

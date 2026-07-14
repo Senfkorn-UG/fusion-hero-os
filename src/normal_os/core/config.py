@@ -215,7 +215,7 @@ class IntegrationHubConfig(BaseModel):
 class MeshConnectorConfig(BaseModel):
     """Tailscale Mesh Connector Registry"""
     enabled: bool = True
-    tailnet: str = "tail391adb.ts.net"
+    tailnet: str = "example.ts.net"
     nodes: Dict[str, Dict[str, Any]] = Field(default_factory=dict)
     connectors: Dict[str, Dict[str, Any]] = Field(default_factory=dict)
     routing: Dict[str, str] = Field(default_factory=dict)
@@ -227,7 +227,7 @@ class TailscaleMeshConfig(BaseModel):
     mainframe_hostname: str = "desktop-kpki9e4"
     mainframe_role: str = "orchestrator"
     mainframe_node_id: str = "mainframe"
-    tailnet: str = "tail391adb.ts.net"
+    tailnet: str = "example.ts.net"
     roles_config: str = "./integration/mesh_roles.yaml"
     control_script: str = "./tailscale_control.sh"
     funnel_script: str = "./tailscale_funnel.sh"
@@ -243,7 +243,7 @@ class VRConfig(BaseModel):
     generate_script: str = "./vr/generate_missing_assets.py"
     asset_manifest: str = "./vr/asset_manifest.yaml"
     expected_assets: List[str] = Field(default_factory=lambda: [
-        "vr_mister_jailbait_hero_equirectangular.jpg",
+        "vr_mister_Contributor_hero_equirectangular.jpg",
         "heroic_evolution_fractal.jpg",
     ])
     viewer_path: str = "/vr/viewer"

@@ -23,7 +23,7 @@ Bitte exportiere die folgenden drei Module vollständig (Code + ggf. Config/Date
 
 ### 3. HeroicImageOrchestrator / Bild-Pipeline mit Rate-Limit-Orchestrator
 - **Referenz:** PDFs `ALTE_Frau_95g_Bildgenerierungs_Pipeline_Rate_Limit_Loesung_v1.0.pdf` + `ALTE_Frau_95g_Real_Foto_Integration_Pipeline_v1.0.pdf` (06_Master_Archive/05_Books_and_Overviews/)
-- **Möglicher bestehender Ort:** Repo `95guknow/mister-jailbait-gui` (bitte prüfen/angeben, ob die Pipeline dort bereits teilweise lebt)
+- **Möglicher bestehender Ort:** Repo `95guknow/mister-Contributor-gui` (bitte prüfen/angeben, ob die Pipeline dort bereits teilweise lebt)
 - **Zielpfad:** `03_Code/image_pipeline/` oder `fusion_hero_os/modules/image_orchestrator/`
 - **Anforderung:** Character-Bible/Visual-Identity-Regeln als Daten (JSON/YAML), nicht in Code eingebacken; Rate-Limit-Logik separat testbar.
 

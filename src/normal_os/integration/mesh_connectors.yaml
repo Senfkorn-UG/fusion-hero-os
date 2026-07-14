@@ -3,7 +3,7 @@
 # Kein Monolith — jede Verbindung hat eigene Identität, Health-Probe und Routing.
 
 mesh_version: "1.1"
-tailnet: tail391adb.ts.net
+tailnet: example.ts.net
 principle: "Jeder Konnektor = ein einzelnes Teil des Mesh (eigene ID, Host, Health, Tag)"
 
 # Physische Mesh-Knoten (Tailscale Devices)
@@ -12,7 +12,7 @@ nodes:
   mainframe:
     role: orchestrator
     hostname: desktop-kpki9e4
-    magicdns: desktop-kpki9e4.tail391adb.ts.net
+    magicdns: host.example.ts.net
     platform: windows
     canonical: true
     aliases: [desktop]
@@ -30,7 +30,7 @@ nodes:
     role: grok-workstation
     alias_of: mainframe
     hostname: desktop-kpki9e4
-    magicdns: desktop-kpki9e4.tail391adb.ts.net
+    magicdns: host.example.ts.net
     platform: windows
     tailscale_tag: tag:fusion-node-desktop
     services:
@@ -39,8 +39,8 @@ nodes:
 
   phone:
     role: mobile-client
-    hostname: redmi-note-13-pro-5g
-    magicdns: redmi-note-13-pro-5g.tail391adb.ts.net
+    hostname: phone-node
+    magicdns: host.example.ts.net
     platform: android
     tailscale_tag: tag:fusion-node-phone
     services:
@@ -50,7 +50,7 @@ nodes:
   legacy-linux:
     role: archived
     hostname: mainframe
-    magicdns: mainframe.tail391adb.ts.net
+    magicdns: host.example.ts.net
     platform: linux
     status: offline
     note: "Früherer Linux-Knoten — Mainframe auf Windows-Desktop (2026-07-12)"
@@ -139,7 +139,7 @@ connectors:
 
 # Routing-Schema (Funnel + MagicDNS)
 routing:
-  base_url: "https://desktop-kpki9e4.tail391adb.ts.net"
+  base_url: "https://host.example.ts.net"
   mainframe_hostname: desktop-kpki9e4
   roles_config: mesh_roles.yaml
   unified: "/fusion/status"

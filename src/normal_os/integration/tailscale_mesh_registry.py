@@ -32,7 +32,7 @@ def _load_registry_fallback():
         from mesh_roles import mesh_nodes_for_registry, get_roles_registry
         reg = get_roles_registry()
         nodes = mesh_nodes_for_registry()
-        tailnet = reg.get("tailnet", "tail391adb.ts.net")
+        tailnet = reg.get("tailnet", "example.ts.net")
     except Exception:
         nodes = {
             "mainframe": {
@@ -42,7 +42,7 @@ def _load_registry_fallback():
             },
             "desktop": {"role": "grok-workstation", "hostname": "desktop-kpki9e4"},
         }
-        tailnet = "tail391adb.ts.net"
+        tailnet = "example.ts.net"
 
     connectors = [
         "github", "gmail", "google_drive", "google_calendar",

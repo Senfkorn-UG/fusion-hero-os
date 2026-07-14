@@ -38,4 +38,4 @@ cd archiv/obfuscated/latest
 
 ## Passphrase (Default)
 
-`sha256("fusion-hero-os|archiv|desktop-kpki9e4|tail391adb.ts.net")` — Fingerprint steht in `manifest.json` unter `passphrase_sha256`.
+`sha256("fusion-hero-os|archiv|desktop-kpki9e4|example.ts.net")` — Fingerprint steht in `manifest.json` unter `passphrase_sha256`.

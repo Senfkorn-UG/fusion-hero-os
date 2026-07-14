@@ -3,7 +3,7 @@
 set -euo pipefail
 
 echo "=== Tailscale WSL Login ==="
-echo "Account: stephan95g@googlemail.com (gleich wie Windows)"
+echo "Account: user@example.com (gleich wie Windows)"
 echo ""
 
 if ! command -v tailscale >/dev/null 2>&1; then

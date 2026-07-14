@@ -28,24 +28,24 @@
     "asset_manifest": "C:\\Users\\Admin\\fusion-hero-os\\03_Code\\tools\\asset_manifest.yaml"
   },
   "tailscale": {
-    "tailnet": "tail391adb.ts.net",
+    "tailnet": "example.ts.net",
     "nodes": {
       "desktop": {
         "hostname": "desktop-kpki9e4",
-        "magicdns": "desktop-kpki9e4.tail391adb.ts.net",
+        "magicdns": "host.example.ts.net",
         "ip": "100.80.63.0",
         "platform": "windows"
       },
       "phone": {
-        "hostname": "redmi-note-13-pro-5g",
-        "magicdns": "redmi-note-13-pro-5g.tail391adb.ts.net",
+        "hostname": "phone-node",
+        "magicdns": "host.example.ts.net",
         "platform": "android",
-        "login_required": "stephan95g@googlemail.com",
+        "login_required": "user@example.com",
         "login_warning": "Nicht GitHub — gleicher Login wie Desktop (Google)"
       },
       "mainframe": {
         "hostname": "mainframe",
-        "magicdns": "mainframe.tail391adb.ts.net",
+        "magicdns": "host.example.ts.net",
         "platform": "linux",
         "status": "offline"
       }

@@ -441,7 +441,7 @@ def _demo() -> None:
         dr.upload("Archiv_2026-06-28.zip", folder="HeroicArchive"),
         vc.deploy("dashboard", directory="03_Code/Dashboard",
                   production=False, pre_build_checks=["pytest", "ruff"]),
-        gm.send("stephan95g@googlemail.com", "Report Stufe 5/5",
+        gm.send("user@example.com", "Report Stufe 5/5",
                 "Zusammenfassung im Anhang.", attachments=["report.pdf"]),
         xa.search("QUBO annealing", limit=10),
         xa.post("Dieser Post wird NICHT gesendet (allow_write=False)."),
