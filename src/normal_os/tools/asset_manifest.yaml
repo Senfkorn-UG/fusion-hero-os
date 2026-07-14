@@ -10,8 +10,8 @@ categories:
   vr:
     label: "VR 360° / Textures"
     assets:
-      - id: vr_mister_Contributor_hero_equirectangular
-        rel_path: "03_VR_Assets/vr_mister_Contributor_hero_equirectangular.jpg"
+      - id: vr_builder_hero_equirectangular
+        rel_path: "03_VR_Assets/vr_builder_hero_equirectangular.jpg"
         type: equirectangular
         min_bytes: 50000
         width: 1024

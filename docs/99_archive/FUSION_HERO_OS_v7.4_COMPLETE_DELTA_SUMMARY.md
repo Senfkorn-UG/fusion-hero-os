@@ -41,7 +41,7 @@
   - `book/heroismus_v33/` (mit Axiomatik 1.24, Quantenkognition, Interdisziplinarität, Sisyphos-Zyklus)
   - `roadmap/` (connectors.md, generational_evolution.md, core_patent_hybrid.md)
   - `memes/cyberpunk_campfire/` (mister-Contributor VisualIdentity + MasterSeed Visual)
-  - `modules/` (alte_frau_95g, mainframe_laden, deep_research_5_stage, mister_Contributor_image, skill_creator)
+  - `modules/` (alte_frau_95g, mainframe_laden, deep_research_5_stage, mister_builder_image, skill_creator)
 - Exakte Markierung aller **nur neuen** Elemente
 - MasterSeed-Mathematik als verbindliches Layer-0-Pattern
 - Sofort ausführbare lokale Git-Befehle zum Abgleich

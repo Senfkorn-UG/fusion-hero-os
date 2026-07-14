@@ -26,7 +26,7 @@
   "vr": {
     "assets": [
       {
-        "id": "vr_mister_Contributor_hero_equirectangular",
+        "id": "vr_builder_hero_equirectangular",
         "type": "equirectangular",
         "description": "360\u00b0 base for heroic VR immersion and generational scenes"
       },

@@ -88,7 +88,7 @@ def _get_vr_status() -> dict:
     root = Path(os.environ.get("FUSION_HERO_ROOT", str(ROOT)))
     vr_root = Path(os.environ.get("FUSION_VR_ASSETS_ROOT", str(root / "03_VR_Assets")))
     expected = [
-        "vr_mister_Contributor_hero_equirectangular.jpg",
+        "vr_builder_hero_equirectangular.jpg",
         "heroic_evolution_fractal.jpg",
     ]
     assets = []

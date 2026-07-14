@@ -57,6 +57,21 @@ local-only and in-memory; no network persistence is enabled by default.
   appended as lawful evidence of deletion; no subject content is retained.
 - **Privacy by default:** local-only, fail-closed vault, no covert connectors.
 
+## Archive anchor salt (v10 migration)
+
+`scripts/archiv_anchor_uncommitted.py` derives its GPG passphrase from a salt.
+
+- **New archives** use a neutral, identifier-free default salt
+  (`fusion-hero-os|archiv|v10`) or an explicit `FUSION_ARCHIV_GPG_PASSPHRASE`.
+- **Pre-v10 archives** were anchored with a historical salt that embedded a
+  device/tailnet identifier. That value has been removed from the public tree
+  and is **not** reproduced anywhere in the repository.
+- **Legacy verification/recovery** is opt-in via `--legacy-salt`, which reads
+  the private salt from `FUSION_ARCHIVE_LEGACY_SALT`. If that variable is unset
+  the tool **fails closed** rather than guessing. The salt value is never
+  logged or persisted — only its sha256 digest (the passphrase hint) is
+  recorded in `manifest.json`.
+
 ## Out of scope for Stage-1 (planned)
 
 - Durable encrypted persistence and vault transport.

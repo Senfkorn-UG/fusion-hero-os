@@ -243,7 +243,7 @@ class VRConfig(BaseModel):
     generate_script: str = "./vr/generate_missing_assets.py"
     asset_manifest: str = "./vr/asset_manifest.yaml"
     expected_assets: List[str] = Field(default_factory=lambda: [
-        "vr_mister_Contributor_hero_equirectangular.jpg",
+        "vr_builder_hero_equirectangular.jpg",
         "heroic_evolution_fractal.jpg",
     ])
     viewer_path: str = "/vr/viewer"

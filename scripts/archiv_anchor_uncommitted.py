@@ -24,7 +24,15 @@ from typing import Any, Dict, List, Optional, Tuple
 
 REPO = Path(__file__).resolve().parents[1]
 ARCHIV_ROOT = REPO / "archiv" / "obfuscated"
-DEFAULT_PASSPHRASE_SALT = "fusion-hero-os|archiv|desktop-kpki9e4|example.ts.net"
+
+# Neutral default salt for NEW archives. Contains no personal, device, or
+# network identifiers. Archives created before v10 were anchored with a
+# historical salt that is NOT reproduced here; to verify/recover those, supply
+# the private salt out-of-band via FUSION_ARCHIVE_LEGACY_SALT (see below).
+DEFAULT_PASSPHRASE_SALT = "fusion-hero-os|archiv|v10"
+
+GPG_PASSPHRASE_ENV = "FUSION_ARCHIV_GPG_PASSPHRASE"
+LEGACY_SALT_ENV = "FUSION_ARCHIVE_LEGACY_SALT"
 
 IGNORED_SCAN = {
     ".git",
@@ -48,10 +56,32 @@ def _sha256_file(path: Path) -> str:
     return h.hexdigest()
 
 
-def _default_passphrase() -> str:
-    return os.getenv("FUSION_ARCHIV_GPG_PASSPHRASE") or _sha256_bytes(
-        DEFAULT_PASSPHRASE_SALT.encode()
-    )
+def _default_passphrase(*, legacy: bool = False) -> str:
+    """Derive the GPG passphrase.
+
+    Precedence:
+      1. Explicit ``FUSION_ARCHIV_GPG_PASSPHRASE`` (used verbatim).
+      2. When ``legacy`` verification is requested: sha256 of the private salt
+         supplied via ``FUSION_ARCHIVE_LEGACY_SALT``. Fails closed if that
+         variable is absent — the historical salt is intentionally not embedded.
+      3. Otherwise: sha256 of the neutral default salt (for new archives).
+
+    The salt / passphrase value is never logged or persisted; only its sha256
+    digest (already used as the passphrase hint) is recorded.
+    """
+    explicit = os.getenv(GPG_PASSPHRASE_ENV)
+    if explicit:
+        return explicit
+    if legacy:
+        legacy_salt = os.getenv(LEGACY_SALT_ENV)
+        if not legacy_salt:
+            raise SystemExit(
+                f"Legacy archive verification requested but {LEGACY_SALT_ENV} is not set. "
+                "Provide the private legacy salt via that environment variable "
+                "(never committed, never logged)."
+            )
+        return _sha256_bytes(legacy_salt.encode())
+    return _sha256_bytes(DEFAULT_PASSPHRASE_SALT.encode())
 
 
 def _gpg_encrypt(data: bytes, passphrase: str) -> str:
@@ -215,13 +245,18 @@ def anchor_files(
 
     recover = """#!/usr/bin/env bash
 # RECOVER.sh — Stellt archivierte Dateien aus .obf-Blobs wieder her.
+# Passphrase-Ableitung (kein Geheimnis im Skript):
+#   1. FUSION_ARCHIV_GPG_PASSPHRASE (verbatim), sonst
+#   2. sha256(FUSION_ARCHIVE_LEGACY_SALT) fuer pre-v10 Archive, sonst
+#   3. sha256 des neutralen Default-Salts.
 set -euo pipefail
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PASS="${FUSION_ARCHIV_GPG_PASSPHRASE:-}"
 if [ -z "$PASS" ]; then
-  PASS="$(python3 - <<'PY'
-import hashlib
-print(hashlib.sha256(b"fusion-hero-os|archiv|desktop-kpki9e4|example.ts.net").hexdigest())
+  SALT="${FUSION_ARCHIVE_LEGACY_SALT:-fusion-hero-os|archiv|v10}"
+  PASS="$(SALT="$SALT" python3 - <<'PY'
+import hashlib, os
+print(hashlib.sha256(os.environ["SALT"].encode()).hexdigest())
 PY
 )"
 fi
@@ -237,6 +272,15 @@ def main() -> int:
     parser = argparse.ArgumentParser(description="Anchor uncommitted files to archiv/obfuscated")
     parser.add_argument("--include-ignored", action="store_true", help="Also archive .fusion, internal_llm, workstation/.env")
     parser.add_argument("--stamp", default=datetime.now(timezone.utc).strftime("%Y-%m-%d_%H%M%S"))
+    parser.add_argument(
+        "--legacy-salt",
+        action="store_true",
+        help=(
+            "Derive the passphrase from the private legacy salt in "
+            f"{LEGACY_SALT_ENV} (for verifying pre-v10 archives). Fails closed "
+            "if the variable is unset."
+        ),
+    )
     args = parser.parse_args()
 
     files = _git_uncommitted(include_ignored=args.include_ignored)
@@ -245,7 +289,7 @@ def main() -> int:
         return 0
 
     out_dir = ARCHIV_ROOT / args.stamp
-    passphrase = _default_passphrase()
+    passphrase = _default_passphrase(legacy=args.legacy_salt)
     manifest = anchor_files(files, out_dir, passphrase)
 
     latest = ARCHIV_ROOT / "latest"
