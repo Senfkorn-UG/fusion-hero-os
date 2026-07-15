@@ -2,8 +2,11 @@
 
 **Version:** v7.5 (Fusion-Hero-OS, konsolidierte Fassung)
 **Datum:** 2026-07-01 (konsolidiert am 2026-07-02)
-**Status:** Konzeptkatalog — **unvalidierte Prosa**
+**Status:** Konzeptkatalog — **unvalidierte Prosa** · Geltung **MODELL** (P3 Meta-OS)
 **Referenziertes Quellmodell:** tz-dev/PMS-RUST `PMS.yaml` (dependency_table) — **nicht im Repo vorhanden**
+
+> **P3-Beschluss:** PMS-Operator-Ketten sind **kein Satz**. Runtime: `PMSEvidenceSpine` ist
+> **fail-closed** ohne Kernel-Binary/`PMS.yaml`. Nicht als „validierte Execution Layer“ verkaufen.
 
 > **Ehrlichkeits-Hinweis (Code-Honesty-Pass 2026-07-02):**
 > Frühere Fassungen dieses Katalogs behaupteten, die Ketten seien "validiert"

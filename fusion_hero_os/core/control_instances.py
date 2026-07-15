@@ -190,6 +190,26 @@ def status() -> Dict[str, Any]:
         "ollama": _slots("ollama"),
         "internal": _slots("internal"),
     }
+    # Key membrane (names only — never values)
+    key_names = [
+        "GOOGLE_API_KEY",
+        "GEMINI_API_KEY",
+        "XAI_API_KEY",
+        "GROK_API_KEY",
+        "ANTHROPIC_API_KEY",
+        "OPENAI_API_KEY",
+        "OPENROUTER_API_KEY",
+        "GROQ_API_KEY",
+        "HUGGINGFACE_API_KEY",
+        "NVIDIA_API_KEY",
+        "GITHUB_TOKEN",
+        "CLOUDFLARE_API_TOKEN",
+    ]
+    key_membrane = {
+        k: bool((os.environ.get(k) or "").strip()) for k in key_names
+    }
+    keys_set = sum(1 for v in key_membrane.values() if v)
+    configured_n = sum(1 for i in live if i.get("configured"))
     return {
         "ok": True,
         "version": cfg.get("version"),
@@ -199,7 +219,15 @@ def status() -> Dict[str, Any]:
         "instance_count": len(live),
         "gemini_control_slots": multi_slots["gemini"],
         "multi_slots": multi_slots,
-        "configured_count": sum(1 for i in live if i.get("configured")),
+        "configured_count": configured_n,
+        "key_membrane": key_membrane,
+        "keys_set_count": keys_set,
+        "cloud_live": keys_set > 0 and configured_n > 4,
+        "p0_blocker": (
+            None
+            if keys_set > 0
+            else "Cloud LLM keys empty — multi-model control is skeleton only (ollama+internal)"
+        ),
         "dotenv_loaded": dotenv,
         "principle": cfg.get("principle"),
         "policy": "pseudo_inhouse_only",
