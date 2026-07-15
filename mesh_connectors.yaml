@@ -168,7 +168,10 @@ routing:
   grok_status: /api/grok/status
   ai_inhouse_status: /api/ai/inhouse/status
   ai_inhouse_chat: /api/ai/inhouse/chat
+  creative_inhouse_status: /api/creative/inhouse/status
+  creative_inhouse_create: /api/creative/inhouse/create
   openai_compatible: /v1/chat/completions
+  openai_images: /v1/images/generations
   mainframe_hub: /mainframe
   dauer_vr: /mainframe/vr
   ide: /mainframe/ide

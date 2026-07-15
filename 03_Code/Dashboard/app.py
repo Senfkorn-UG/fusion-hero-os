@@ -1367,12 +1367,19 @@ try:
 except Exception as _gix_err:
     print(f"[API] Grok interconnect routes note: {_gix_err}")
 
-# === Pseudo-Inhouse AI (free SOTA services behind local facade) ===
+# === Pseudo-Inhouse AI (LLM membranes behind local facade; no freemium SKU) ===
 try:
     from pseudo_inhouse_routes import router as _pih_router
     app.include_router(_pih_router)
 except Exception as _pih_err:
     print(f"[API] Pseudo-inhouse AI routes note: {_pih_err}")
+
+# === Pseudo-Inhouse Creative (image/video/PDF/graphics — local-first, freemium=false) ===
+try:
+    from pseudo_inhouse_creative_routes import router as _pic_router
+    app.include_router(_pic_router)
+except Exception as _pic_err:
+    print(f"[API] Pseudo-inhouse creative routes note: {_pic_err}")
 
 # === Businessplan + Energie/Subunternehmer-Preise ===
 try:

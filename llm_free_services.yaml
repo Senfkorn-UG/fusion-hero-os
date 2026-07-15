@@ -1,13 +1,16 @@
-# Pseudo-Inhouse Free-Use AI Services — Fusion Hero OS v10
-# Placement: L1 Mainframe facade (/api/ai/inhouse, /v1/chat/completions)
-# SaaS is never source-of-truth; free tiers are membranes only.
-# Honesty: free tiers change; keys may be required; rate limits apply.
+# Pseudo-Inhouse AI Services — Fusion Hero OS v10
+# Policy: freemium=false — no freemium SKUs; only pseudo-inhouse facade.
+# Placement: L1 Mainframe (/api/ai/inhouse, /v1/chat/completions)
+# SaaS is never source-of-truth; external providers are membranes only.
+# Honesty: keys/rate limits may apply; membranes change over time.
 
 version: "1.0"
 platform_version: "10.0.0"
+policy: pseudo_inhouse_only
+freemium: false
 principle: >
-  State-of-the-art free-use services are linked behind a local AI server
-  facade so callers see one in-house surface; backends remain external membranes.
+  All LLM access is via the local AI server facade (pseudo-inhouse).
+  Optional external providers are membranes, not freemium products.
 placement: L1
 facade:
   openai_compatible: /v1/chat/completions

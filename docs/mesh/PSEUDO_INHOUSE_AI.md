@@ -1,13 +1,16 @@
-# Pseudo-Inhouse AI — Free SOTA Services behind Local Facade
+# Pseudo-Inhouse AI — Local Facade (no freemium)
 
 **Platform:** Fusion Hero OS v10.0.0  
-**Placement:** L1 Mainframe (facade) · external free tiers = membranes only  
+**Policy:** `pseudo_inhouse_only` · **`freemium: false`**  
+**Placement:** L1 Mainframe (facade) · external providers = membranes only  
 **Config:** `llm_free_services.yaml`  
-**Code:** `fusion_hero_os/core/pseudo_inhouse_ai.py` · `03_Code/Dashboard/pseudo_inhouse_routes.py`
+**Code:** `fusion_hero_os/core/pseudo_inhouse_ai.py` · `03_Code/Dashboard/pseudo_inhouse_routes.py`  
+**Creative sibling:** [PSEUDO_INHOUSE_CREATIVE.md](PSEUDO_INHOUSE_CREATIVE.md)
 
 ## Principle
 
-State-of-the-art **free-use** services are linked so that **all clients talk only to the local AI server** (`:8000`). Backends (Groq, OpenRouter free, Gemini free tier, Ollama, HF, Cloudflare, NVIDIA NIM, GitHub Models) are **membranes**, not source-of-truth.
+**All clients talk only to the local AI server** (`:8000`). There is **no freemium product surface**.  
+Optional backends (Groq, OpenRouter, Gemini, Ollama, HF, Cloudflare, NVIDIA, GitHub Models) are **membranes**, not SKUs and not source-of-truth.
 
 ```
 Client / MCP / IDE

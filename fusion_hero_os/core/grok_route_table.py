@@ -242,8 +242,17 @@ ROUTE_TABLE: Dict[str, RouteTarget] = {
         "/api/ai/inhouse/chat",
         "api",
         "pseudo-inhouse-ai",
-        ["inhouse-ai", "free-ai", "openai-proxy", "v1-chat"],
-        "Pseudo-inhouse free SOTA AI facade",
+        ["inhouse-ai", "openai-proxy", "v1-chat"],
+        "Pseudo-inhouse AI facade (freemium=false)",
+    ),
+    "creative_inhouse": RouteTarget(
+        "creative_inhouse",
+        "/api/creative/inhouse/status",
+        "/api/creative/inhouse/create",
+        "api",
+        "pseudo-inhouse-creative",
+        ["creative", "image-gen", "video-gen", "pdf-gen", "graphics"],
+        "Pseudo-inhouse creative facade (image/video/PDF/graphics)",
     ),
 }
 

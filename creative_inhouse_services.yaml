@@ -1,0 +1,90 @@
+# Pseudo-Inhouse Creative Stack — Fusion Hero OS v10
+# Policy: NO freemium product surface. All creative I/O goes through local facade.
+# External APIs (if any) are membranes only — never product tier, never SoT.
+
+version: "1.0"
+platform_version: "10.0.0"
+policy: pseudo_inhouse_only
+freemium: false
+principle: >
+  Creative generation (image, video, PDF, graphics, charts, SVG) is exposed
+  only as pseudo-inhouse surfaces on the Mainframe AI/Creative server.
+  No freemium SKUs. Callers never select vendor tiers — only modalities.
+
+placement: L1
+output_dir: ~/.fusion/creative/inhouse
+facade:
+  status: /api/creative/inhouse/status
+  catalog: /api/creative/inhouse/catalog
+  create: /api/creative/inhouse/create
+  image: /api/creative/inhouse/image
+  video: /api/creative/inhouse/video
+  pdf: /api/creative/inhouse/pdf
+  graphics: /api/creative/inhouse/graphics
+  openai_images: /v1/images/generations
+
+# Local-first engines (true inhouse compute)
+engines:
+  pillow_canvas:
+    kind: local
+    modalities: [image, graphics, poster, gif]
+    module: fusion_hero_os.core.pseudo_inhouse_creative
+    always: true
+  pillow_pdf:
+    kind: local
+    modalities: [pdf]
+    always: true
+  svg_writer:
+    kind: local
+    modalities: [svg, graphics]
+    always: true
+  gif_animator:
+    kind: local
+    modalities: [video, gif, anim]
+    always: true
+  ffmpeg_slideshow:
+    kind: local_optional
+    modalities: [video, mp4]
+    binary: ffmpeg
+    always: false
+  image_orchestrator:
+    kind: local_module
+    modalities: [image]
+    path: fusion_hero_os.modules.image_orchestrator
+    mode: dry_run_or_injected
+
+# Optional membranes (never freemium — still behind inhouse facade only)
+membranes:
+  pollinations:
+    enabled_env: FUSION_CREATIVE_POLLINATIONS
+    kind: membrane
+    note: optional URL-based image; disabled unless env=1
+  huggingface_image:
+    enabled_env: FUSION_CREATIVE_HF_IMAGE
+    kind: membrane
+    api_key_env: [HF_TOKEN]
+  # Canva/Gamma MCP remain MCP membranes — not freemium products
+
+modalities:
+  image:
+    default_engine: pillow_canvas
+    sizes: ["512x512", "768x512", "1024x1024", "1920x1080"]
+  graphics:
+    default_engine: pillow_canvas
+    styles: [poster, card, diagram, banner]
+  svg:
+    default_engine: svg_writer
+  pdf:
+    default_engine: pillow_pdf
+    pages: 1-20
+  video:
+    default_engine: gif_animator
+    fallback: ffmpeg_slideshow
+    note: GIF always; MP4 when ffmpeg present
+
+anti_patterns:
+  - freemium_skus
+  - vendor_tier_selection_in_ui
+  - saas_as_source_of_truth
+  - storing_secrets_in_git
+  - unpaid_external_as_primary_product

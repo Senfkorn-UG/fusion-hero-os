@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 """
-Pseudo-Inhouse AI Hub — free SOTA services behind a local facade.
+Pseudo-Inhouse AI Hub — local facade only (no freemium product surface).
 
-Callers use one in-house surface; backends are free-tier membranes
-(Ollama, OpenRouter free, Groq, Gemini, HF, Cloudflare, NVIDIA, GitHub Models).
-SaaS is never source-of-truth for MasterSeed / placement.
+Callers use one in-house surface; optional external backends are *membranes*
+(Ollama, OpenRouter, Groq, Gemini, HF, Cloudflare, NVIDIA, GitHub Models).
+Policy: freemium=false. SaaS is never source-of-truth for MasterSeed / placement.
 
-Geltung: Spezifikation (routing code) · free-tier availability = Bedingt/extern.
+Geltung: Spezifikation (routing code) · membrane availability = Bedingt/extern.
 """
 from __future__ import annotations
 
@@ -46,7 +46,8 @@ DEFAULT_CHAIN = (
 
 SYSTEM_PREFIX = (
     "Du antwortest über den Fusion Hero OS v10 Pseudo-Inhouse AI Hub. "
-    "Externe Free-Tier-Dienste sind Membranen; Inhouse-Wahrheit liegt im Mainframe."
+    "Keine Freemium-Produktoberfläche. Externe Dienste sind nur Membranen; "
+    "Inhouse-Wahrheit liegt im Mainframe."
 )
 
 
@@ -187,8 +188,11 @@ def status() -> Dict[str, Any]:
             "chat": "/api/ai/inhouse/chat",
         },
         "framework_error": fw.get("error"),
+        "freemium": False,
+        "policy": "pseudo_inhouse_only",
         "honesty": (
-            "Free tiers are membranes with rate limits; not unlimited; "
+            "Pseudo-inhouse only — no freemium SKUs. "
+            "External backends are membranes with rate limits; "
             "not source-of-truth for MasterSeed."
         ),
     }
