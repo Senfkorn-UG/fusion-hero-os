@@ -42,9 +42,15 @@ Ausführliche Herleitungen (V3.3: Synthese · 6 Bögen · Geltungsmarken):
 |--------|--------|
 | [anhaenge/00_INDEX_ANHAENGE.md](anhaenge/00_INDEX_ANHAENGE.md) | Index |
 | A01–A09 | Fundament → Core → Engine → Methodik → Meta → Dashboard → Mesh → Modules → Genealogie |
-| [anhaenge/A10_Funktionskatalog_AST.md](anhaenge/A10_Funktionskatalog_AST.md) | AST-Vollkatalog (181 Klassen · 181 Top-Level-Funktionen · 78 Dateien) |
+| [anhaenge/A10_Funktionskatalog_AST.md](anhaenge/A10_Funktionskatalog_AST.md) | AST-Vollkatalog (**239** Klassen · **722** Top-Level-Funktionen · **135** Dateien: `fusion_hero_os` + Dashboard) |
 
-Regenerate Katalog: `python scripts/generate_anhang_katalog.py`
+```powershell
+# Katalog neu + in DOCX/PDF einbetten
+python scripts/generate_anhang_katalog.py
+python scripts/embed_dissertation_anhaenge.py --regen-catalog --pdf
+```
+
+DOCX/PDF enthalten Band **„Anhang: Module und Funktionen — Herleitung aus dem Nichts“** (A01–A10).
 
 ## Kopien
 

@@ -31,3 +31,5 @@
 - Local Desktop + Drive Streaming copies remain for offline use
 - **Ontology docs on GitHub:** root `README.md`, `BEST_VERSION.md`, `docs/DISSERTATION_AS_OS.md`, mesh/kompendium cross-links
 - **Anhänge (Herleitung aus dem Nichts):** `docs/dissertation/anhaenge/` (A01–A10 + Index)
+- **DOCX/PDF:** Anhänge eingebettet via `scripts/embed_dissertation_anhaenge.py` (~7.4k Wörter Zusatz; Katalog inkl. Dashboard)
+- Manifest: `~/.fusion/mesh/coordination/dissertation_anhaenge_embed.json`
