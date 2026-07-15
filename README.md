@@ -1,5 +1,5 @@
 
-<img width="100%" src="https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=6,11,20,24,25&height=180&section=header&text=Fusion%20Hero%20OS%20v10&fontSize=50&fontColor=fff&fontAlignY=35&desc=Hybrid%20Architecture%20%7C%20Governance%20%26%20Operational%20Continuity&descAlignY=58&descSize=18" />
+<img width="100%" src="https://capsule-render.vercel.app/api&type=waving&color=gradient&customColorList=6,11,20,24,25&height=180&section=header&text=Fusion%20Hero%20OS%20v10&fontSize=50&fontColor=fff&fontAlignY=35&desc=Hybrid%20Architecture%20%7C%20Governance%20%26%20Operational%20Continuity&descAlignY=58&descSize=18" />
 
 <div align="center">
 
@@ -14,8 +14,7 @@
 
 ## Release Overview
 
-```ts
-const release_v10 = {
+ ts [const release_v10 = {
   version: "v10.0.0",
   concept: "Hybrid README / Hybrid Architecture",
   system_state: "Operational + Governed",
