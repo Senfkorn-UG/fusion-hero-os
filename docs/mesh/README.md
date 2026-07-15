@@ -16,6 +16,8 @@
 
 **DNS + Tor:** Clearnet (Quad9) + MagicDNS + Tor DNSPort/SOCKS — [`DNS_TOR_STACK.md`](DNS_TOR_STACK.md) · Proxy `127.0.0.1:5454` · Tor DNS `8853` · SOCKS `9050`.
 
+**Poly-Mesh Offload / Dritter / Hightech:** Placement L0–L4 + cost_limits + GKE/GCE — [`POLY_MESH_OFFLOAD_STATUS.md`](POLY_MESH_OFFLOAD_STATUS.md) · Catalog `mesh_service_coordination.yaml` v1.1.
+
 ## Principle
 
 Each connector is its own mesh segment (ID, host role, health path, Tailscale tag).

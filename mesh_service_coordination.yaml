@@ -4,10 +4,60 @@
 #
 # Principle: One owner per capability. Cluster compute coordinates; it does not own secrets.
 
-version: "1.0"
+version: "1.1"
 platform_version: "10.0.0"
 updated: "2026-07-15"
 catalog_id: fusion-service-coordination
+
+# ---------------------------------------------------------------------------
+# Cost limits (operator-adjusted in GCP / billing — not secrets)
+# Poly-mesh offload may schedule into L2/L3 only within these soft caps.
+# ---------------------------------------------------------------------------
+cost_limits:
+  source: operator_gcp_console
+  adjusted_at: "2026-07-15"
+  policy: fail_soft_prefer_local
+  notes: >
+    Operator confirmed cost limits raised. Exact EUR amounts live in GCP Billing
+    budgets — not committed here. Coordinator must prefer L0/L1 when L3 would
+    exceed budget alerts; never auto-scale past fail-closed budget freeze.
+  soft_caps:
+    L0_edge: free-local
+    L1_mainframe: local-power
+    L2_mesh_anchor: small-vm   # e2-micro class rented anchors
+    L3_cluster: billable-gke  # senfkorn-gke / Autopilot / hightech hire
+    L4_external_saas: api-quotas
+  rented_hightech:
+    enabled: true
+    gke_cluster: senfkorn-gke-cluster
+    gke_region: europe-west3
+    gke_status_hint: RUNNING
+    gce_mesh_exit: fusion-mesh-exit
+    gce_subnet_router: tailscale-subnet-router
+    prefer_preemptible_for_batch: true
+    never_on_cloud_shell: true
+
+# ---------------------------------------------------------------------------
+# Poly-mesh peers (Tailscale humans + nodes)
+# Third human joins via invite; until then only operator stephan95g.
+# ---------------------------------------------------------------------------
+poly_mesh_peers:
+  operator:
+    login: stephan95g@googlemail.com
+    role: owner_operator
+    nodes: [desktop-kpki9e4, fusion-mesh-exit, redmi-note-13-pro-5g]
+  peer_second:
+    status: invite_pending_or_expired
+    role: mesh_collaborator
+    note: Fresh Tailscale invite required; expired uinv links not reusable
+  peer_third:
+    status: invite_pending
+    role: mesh_collaborator
+    note: Create separate invite under Admin → Users; integrate after accept
+  integration_rules:
+    - Third party gets tag:fusion-peer (ACL) — not owner, not Comädchen
+    - Offload jobs tagged peer_ok may run on shared L2/L3; secrets stay L1
+    - Comädchen remains operator-exclusive Nummer 2 (no peer input)
 
 # ---------------------------------------------------------------------------
 # Placement tiers (where work runs)
@@ -256,7 +306,15 @@ routing_rules:
   - id: heavy-compute-cluster
     match: { capability: [train, large-qubo, anneal-batch, inventory-scan, dependency-atlas] }
     place: L3_cluster
-    reason: Billable GKE Autopilot capacity; free mainframe for interactive work
+    reason: Billable GKE / hightech hire; free mainframe for interactive work
+    requires: { cost_limits: ok, gke_status: RUNNING }
+  - id: poly-mesh-offload
+    match: { capability: [offload, poly-mesh-morph, peer-batch] }
+    place: [L2_mesh_anchor, L3_cluster]
+    reason: >
+      Poly-mesh Auslagerung: always-on exit + rented hightech cluster when
+      cost_limits allow; peers may attach after Tailscale invite accept
+    requires: { cost_limits: ok, mesh_exit: online }
   - id: saas-via-bridge
     match: { capability: [scm, mail, calendar, design, deploy] }
     place: L1_mainframe
