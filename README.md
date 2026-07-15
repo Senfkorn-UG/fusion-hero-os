@@ -4,15 +4,12 @@
 [![Platform](https://img.shields.io/badge/Platform-10.0.0-blue?style=for-the-badge)](VERSION)
 [![Governance](https://img.shields.io/badge/Governance-Stage_A%2FB-1E88E5?style=for-the-badge)](#stage-ab-governance)
 
-## ts 
-´´
 **Hybrid AI / mainframe platform** | operative kanon **v10.0.0**  
-Core: **ALTE_Frau_95g Heroic Core** | additive over the v8.3 stack (BCG) ``
+Core: **ALTE_Frau_95g Heroic Core** | additive over the v8.3 stack (BCG)
 
-## ´´
 > This public repository must not contain personal profile data, private
 > locations, or live Tailscale inventory (IPs, node IDs, private MagicDNS).
-> Runtime topology lives only on the operator machine / private config.``
+> Runtime topology lives only on the operator machine / private config.
 
 ---
 
@@ -69,25 +66,27 @@ $env:FUSION_HYPERTHREADING = "1"
 python -m uvicorn app:app --host 127.0.0.1 --port 8000
 ```
 
+### Docker (Senfkorn production / GCE europe-west3)
+
+```bash
+docker compose up --build -d
+# or: bash workstation/gce_docker_deploy_senfkorn.sh
+```
+
 | Endpoint | Purpose |
 |----------|---------|
 | http://127.0.0.1:8000 | Standard GUI |
 | `/api/health?light=true` | Fast health probe |
 | `/api/health` | Full status |
 | `/docs` | OpenAPI |
-| `/ws` | Live events |
-| `/architecture` | Dependency atlas |
 
 Full guide: [DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUIDE.md)
 
-### Version gates
+### Version / health gates
 
 ```powershell
 python scripts/bump_version.py --check
-python -m pytest tests/test_version_consistency.py `
-  tests/test_archive_salt.py tests/test_ascension_consent.py `
-  tests/test_asset_persona_paths.py tests/test_persona_scanner.py `
-  tests/test_pii_scanner.py -q
+python scripts/repo_health_check.py
 ```
 
 ---
@@ -95,22 +94,14 @@ python -m pytest tests/test_version_consistency.py `
 ## Tailscale Mesh
 
 **Principle:** each connector is its own mesh segment (ID, host, health, tag).  
-**Mainframe role:** Windows orchestrator (canonical in `mesh_roles.yaml`).
-
-Public configs use **placeholders only**. Do not commit live inventory.
+Public configs use **placeholders only** (`*.example.ts.net`). Do not commit live inventory.
 
 | File | Role |
 |------|------|
-| `mesh_connectors.yaml` | Segment registry (placeholder hostnames) |
+| `mesh_connectors.yaml` | Segment registry (placeholders) |
 | `src/normal_os/integration/mesh_roles.yaml` | Role assignments |
 | `mesh_virtual_exit_nodes.yaml` | Exit profiles (placeholders) |
 | [docs/mesh/README.md](docs/mesh/README.md) | Ops notes |
-
-```powershell
-# Operator machine only - never commit the resulting inventory JSON
-tailscale up --hostname=<your-mainframe-hostname> --unattended
-tailscale status
-```
 
 ---
 
@@ -132,8 +123,9 @@ Public surface policy: no personal identity, no private location, no live mesh i
 | Runtime | Python 3.11+ / FastAPI / Uvicorn / Numba |
 | Performance | Rust crates (`pms_rust_kernel_crate`, `rust_engine_crate`) |
 | Mesh | Tailscale / per-connector registry |
-| AI | Local model hooks / Integration Hub (external connectors dry-run by default) |
-| CI | pytest Stage-A/B / proof-registry / version gate |
+| AI | Local model hooks / Integration Hub |
+| Deploy | Docker Compose / GCE europe-west3 |
+| CI | pytest + proof-registry + PII gate + version gate |
 
 ---
 
@@ -145,7 +137,7 @@ Public surface policy: no personal identity, no private location, no live mesh i
 | [DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUIDE.md) | Boot / ports / troubleshooting |
 | [BRANCH_STRATEGY.md](BRANCH_STRATEGY.md) | SemVer / tags |
 | [docs/mesh/README.md](docs/mesh/README.md) | Mesh ops (placeholders) |
-| [docs/v8/](docs/v8/) | v8 consolidation notes |
+| [docs/business/senfkorn_businessplan.yaml](docs/business/senfkorn_businessplan.yaml) | Senfkorn energy/pricing anchors |
 | [ascension_os/](ascension_os/) | Ascension track (loadable) |
 
 ---
@@ -154,10 +146,10 @@ Public surface policy: no personal identity, no private location, no live mesh i
 
 - **fusion_hero_os/** - core package `10.0.0` (Active)
 - **03_Code/Dashboard/** - mainframe GUI + API (Active)
-- **Mesh tooling** - registries + scripts (config placeholders public; live data local)
-- **CI gates** - Stage-A/B pytest (Enforced)
+- **Mesh tooling** - public placeholders; live data local only
+- **Energy pricing daemon** - `scripts/run_energy_pricing_daemon.py` / Docker service
+- **CI gates** - Stage-A/B pytest + `scripts/repo_health_check.py` (Enforced)
 
 ---
-``
 
 **Release:** [v10.0.0](https://github.com/95guknow/fusion-hero-os/releases/tag/v10.0.0)
