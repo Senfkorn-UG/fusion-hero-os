@@ -172,14 +172,34 @@ def status() -> Dict[str, Any]:
             )
     except Exception as e:  # noqa: BLE001
         live = [{"error": str(e)[:120]}]
-    gemini_n = sum(1 for i in live if str(i.get("provider")) == "gemini")
+    def _slots(pid: str) -> int:
+        return sum(1 for i in live if str(i.get("provider")) == pid)
+
+    multi_slots = {
+        "gemini": _slots("gemini"),
+        "grok": _slots("grok"),
+        "claude": _slots("claude"),
+        "gpt": _slots("gpt"),
+        "groq": _slots("groq"),
+        "openrouter": _slots("openrouter"),
+        "openrouter_free": _slots("openrouter_free"),
+        "huggingface": _slots("huggingface"),
+        "nvidia": _slots("nvidia"),
+        "github_models": _slots("github_models"),
+        "cloudflare_ai": _slots("cloudflare_ai"),
+        "ollama": _slots("ollama"),
+        "internal": _slots("internal"),
+    }
     return {
         "ok": True,
+        "version": cfg.get("version"),
         "accuracy_force": acc,
         "temperature": float(acc.get("temperature", 0.0)),
         "instances": live,
         "instance_count": len(live),
-        "gemini_control_slots": gemini_n,
+        "gemini_control_slots": multi_slots["gemini"],
+        "multi_slots": multi_slots,
+        "configured_count": sum(1 for i in live if i.get("configured")),
         "dotenv_loaded": dotenv,
         "principle": cfg.get("principle"),
         "policy": "pseudo_inhouse_only",
