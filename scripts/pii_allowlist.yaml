@@ -20,10 +20,26 @@ allow_literals:
   - "device.example.ts.net"
   - "mainframe-host.example.ts.net"
   - "mobile-node.example.ts.net"
+  - "mainframe.example.ts.net"
+  - "phone.example.ts.net"
+  - "mesh-exit.example.ts.net"
+  - "mainframe-wsl.example.ts.net"
+  - "legacy-exit.example.ts.net"
+  - "legacy-mainframe.example.ts.net"
+  - "Hostname.example.ts.net"
   - "DEIN-WINDOWS-HOST.DEIN-TAILNET.ts.net"
   - "DEIN-ANDROID-HOST.DEIN-TAILNET.ts.net"
   - "https://project-ref.supabase.co"
   - "project-ref.supabase.co"
+  - "YOUR_SUPABASE_PROJECT_REF"
+  - "YOUR_GCE_PROJECT"
+
+# Suffix / regex patterns for neutral public placeholders (not real topology).
+allow_match_suffixes:
+  - ".example.ts.net"
+
+allow_match_prefixes:
+  - "YOUR_"
 
 allow_paths:
   # The PII scanner's own unit-test file contains PLANTED SYNTHETIC secrets
