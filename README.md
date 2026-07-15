@@ -4,6 +4,7 @@
 [![Platform](https://img.shields.io/badge/Platform-10.0.0-blue?style=for-the-badge)](VERSION)
 [![Governance](https://img.shields.io/badge/Governance-Stage_A%2FB-1E88E5?style=for-the-badge)](#stage-ab-governance)
 
+´´
 **Hybrid AI / mainframe platform** | operative kanon **v10.0.0**  
 Core: **ALTE_Frau_95g Heroic Core** | additive over the v8.3 stack (BCG)
 
@@ -156,5 +157,6 @@ Public surface policy: no personal identity, no private location, no live mesh i
 - **CI gates** - Stage-A/B pytest (Enforced)
 
 ---
+``
 
 **Release:** [v10.0.0](https://github.com/95guknow/fusion-hero-os/releases/tag/v10.0.0)
