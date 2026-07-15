@@ -103,6 +103,41 @@ def _load_cfg() -> Dict[str, Any]:
         return {}
 
 
+def _load_dotenv(cfg: Optional[Dict[str, Any]] = None) -> List[str]:
+    """Load operator API keys into env without logging values."""
+    cfg = cfg or _load_cfg()
+    sl = cfg.get("secret_load") or {}
+    if not sl.get("enabled", True):
+        return []
+    loaded: List[str] = []
+    paths = list(sl.get("dotenv_paths") or [".env", ".env.local"])
+    for rel in paths:
+        if str(rel).startswith("~"):
+            path = Path(os.path.expanduser(rel))
+        else:
+            path = ROOT / rel
+        if not path.is_file():
+            continue
+        try:
+            for line in path.read_text(encoding="utf-8", errors="replace").splitlines():
+                line = line.strip()
+                if not line or line.startswith("#") or "=" not in line:
+                    continue
+                if line.startswith("export "):
+                    line = line[7:].strip()
+                key, _, val = line.partition("=")
+                key = key.strip()
+                val = val.strip().strip('"').strip("'")
+                if not key:
+                    continue
+                if not (os.environ.get(key) or "").strip():
+                    os.environ[key] = val
+            loaded.append(path.name)
+        except Exception:
+            continue
+    return loaded
+
+
 def list_instances() -> List[Dict[str, Any]]:
     cfg = _load_cfg()
     return list(cfg.get("instances") or [])
@@ -110,6 +145,7 @@ def list_instances() -> List[Dict[str, Any]]:
 
 def status() -> Dict[str, Any]:
     cfg = _load_cfg()
+    dotenv = _load_dotenv(cfg)
     acc = cfg.get("accuracy_force") or {}
     live = []
     try:
@@ -122,14 +158,29 @@ def status() -> Dict[str, Any]:
                 continue
             fw = get_framework(str(pid))
             conf = bool(fw and fw.configured()) if fw else False
-            live.append({**inst, "configured": conf, "live": conf or bool(inst.get("always"))})
+            # ollama: configured without key; live probe separate
+            if pid == "ollama":
+                conf = True
+            model = inst.get("model_override") or (fw.model if fw else "")
+            live.append(
+                {
+                    **inst,
+                    "configured": conf,
+                    "live": conf or bool(inst.get("always")),
+                    "resolved_model": model,
+                }
+            )
     except Exception as e:  # noqa: BLE001
         live = [{"error": str(e)[:120]}]
+    gemini_n = sum(1 for i in live if str(i.get("provider")) == "gemini")
     return {
         "ok": True,
         "accuracy_force": acc,
         "temperature": float(acc.get("temperature", 0.0)),
         "instances": live,
+        "instance_count": len(live),
+        "gemini_control_slots": gemini_n,
+        "dotenv_loaded": dotenv,
         "principle": cfg.get("principle"),
         "policy": "pseudo_inhouse_only",
         "freemium": False,
@@ -160,6 +211,7 @@ def _invoke_accuracy(
     temperature: float = 0.0,
     max_tokens: int = 2048,
     timeout: int = 120,
+    model_override: Optional[str] = None,
 ) -> Tuple[bool, str, str, float, Optional[str], str]:
     """Returns ok, text, model, latency_ms, error, source."""
     t0 = time.time()
@@ -186,8 +238,10 @@ def _invoke_accuracy(
     if fw is None:
         return False, "", "", (time.time() - t0) * 1000, f"unknown provider {provider}", "missing"
 
+    model = (model_override or "").strip() or fw.model
+
     if not fw.configured() and provider != "ollama":
-        return False, "", fw.model if fw else "", (time.time() - t0) * 1000, "not configured", "skip"
+        return False, "", model, (time.time() - t0) * 1000, "not configured", "skip"
 
     system = ACCURACY_SYSTEM + "\n" + ROLE_SYSTEM.get("verifier", "")
     messages = [
@@ -195,8 +249,8 @@ def _invoke_accuracy(
         {
             "role": "user",
             "content": (
-                f"CONTROL TASK (max accuracy, temperature={temperature}):\n{prompt}\n\n"
-                "Respond with the JSON schema only."
+                f"CONTROL TASK (max accuracy, temperature={temperature}, model={model}):\n"
+                f"{prompt}\n\nRespond with the JSON schema only."
             ),
         },
     ]
@@ -206,24 +260,24 @@ def _invoke_accuracy(
             text, raw = openai_chat(
                 fw.base_url(),
                 fw.get_api_key() or "",
-                fw.model,
+                model,
                 messages,
                 timeout,
                 provider=provider,
                 temperature=temperature,
                 max_tokens=max_tokens,
             )
-            return True, text, fw.model, (time.time() - t0) * 1000, None, "api_temp0"
+            return True, text, model, (time.time() - t0) * 1000, None, "api_temp0"
         if fw.api_kind == "anthropic" and fw.get_api_key():
             text, raw = anthropic_chat(
                 fw.base_url(),
                 fw.get_api_key() or "",
-                fw.model,
+                model,
                 messages,
                 system,
                 timeout,
             )
-            return True, text, fw.model, (time.time() - t0) * 1000, None, "api_anthropic"
+            return True, text, model, (time.time() - t0) * 1000, None, "api_anthropic"
         if provider == "ollama" or fw.api_kind == "local":
             # force ollama temperature 0 via options in framework — custom call
             try:
@@ -231,7 +285,7 @@ def _invoke_accuracy(
 
                 host = os.getenv("OLLAMA_HOST", "http://127.0.0.1:11434").rstrip("/")
                 payload = {
-                    "model": fw.model,
+                    "model": model,
                     "messages": messages,
                     "stream": False,
                     "options": {"temperature": 0.0, "top_p": 1.0},
@@ -239,16 +293,16 @@ def _invoke_accuracy(
                 r = requests.post(f"{host}/api/chat", json=payload, timeout=timeout)
                 r.raise_for_status()
                 text = r.json().get("message", {}).get("content", "")
-                return True, text, fw.model, (time.time() - t0) * 1000, None, "ollama_temp0"
+                return True, text, model, (time.time() - t0) * 1000, None, "ollama_temp0"
             except Exception as e:  # noqa: BLE001
-                return False, "", fw.model, (time.time() - t0) * 1000, str(e)[:200], "ollama_fail"
+                return False, "", model, (time.time() - t0) * 1000, str(e)[:200], "ollama_fail"
         if fw.api_kind == "gemini" and fw.get_api_key():
             try:
                 import requests
 
                 api_key = fw.get_api_key()
                 url = (
-                    f"{fw.base_url().rstrip('/')}/models/{fw.model}:generateContent"
+                    f"{fw.base_url().rstrip('/')}/models/{model}:generateContent"
                     f"?key={api_key}"
                 )
                 user_text = messages[-1]["content"]
@@ -265,9 +319,9 @@ def _invoke_accuracy(
                 r.raise_for_status()
                 parts = r.json().get("candidates", [{}])[0].get("content", {}).get("parts", [])
                 text = "".join(p.get("text", "") for p in parts)
-                return True, text, fw.model, (time.time() - t0) * 1000, None, "gemini_temp0"
+                return True, text, model, (time.time() - t0) * 1000, None, "gemini_temp0"
             except Exception as e:  # noqa: BLE001
-                return False, "", fw.model, (time.time() - t0) * 1000, str(e)[:200], "gemini_fail"
+                return False, "", model, (time.time() - t0) * 1000, str(e)[:200], "gemini_fail"
         # fallback invoke (may not be temp 0)
         from llm_frameworks.registry import invoke
 
@@ -332,6 +386,7 @@ def run_control_panel(
 ) -> ControlReport:
     """Run all (or selected) control instances with max accuracy."""
     cfg = _load_cfg()
+    _load_dotenv(cfg)
     acc = cfg.get("accuracy_force") or {}
     temperature = float(acc.get("temperature", 0.0))
     max_tokens = int(acc.get("max_tokens", 2048))
@@ -349,12 +404,16 @@ def run_control_panel(
         iid = str(inst.get("id") or pid)
         label = str(inst.get("label") or pid)
         always = bool(inst.get("always"))
+        model_override = inst.get("model_override")
+        if not model_override and inst.get("model_env"):
+            model_override = os.getenv(str(inst["model_env"]), "").strip() or None
         ok, text, model, lat, err, source = _invoke_accuracy(
             pid,
             prompt,
             temperature=temperature,
             max_tokens=max_tokens,
             timeout=timeout,
+            model_override=str(model_override) if model_override else None,
         )
         if not ok and not always and source in ("skip", "missing", "not configured"):
             results.append(

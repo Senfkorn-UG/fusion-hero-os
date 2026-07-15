@@ -1,12 +1,14 @@
 # Control instances — each model forces highest accuracy
 # Policy: pseudo_inhouse_only · freemium=false · multi-model control
+# Gemini + further providers analogous (temp=0, verifier JSON)
 
-version: "1.0"
+version: "1.1"
 platform_version: "10.0.0"
 principle: >
   Independent control instances run on different models. Each instance is forced
   to maximum accuracy (temperature=0, verifier protocol, structured JSON score).
   Consensus / disagreement is recorded; no single model is source-of-truth alone.
+  Gemini and all listed providers share the same accuracy-force contract.
 
 accuracy_force:
   temperature: 0.0
@@ -16,8 +18,40 @@ accuracy_force:
   max_tokens: 2048
   timeout_sec: 120
 
+# dotenv: load operator keys without logging values
+secret_load:
+  enabled: true
+  dotenv_paths:
+    - .env
+    - .env.local
+    - ~/.fusion/secrets/push.env
+
 # Control instances (order = report order). Only live/configured providers run.
+# Gemini first among cloud vision/text for emphasis; all share accuracy: max.
 instances:
+  # --- Google Gemini (analog + flash/pro variants) ---
+  - id: control_gemini
+    provider: gemini
+    label: "Gemini control (default model)"
+    accuracy: max
+    model_env: FUSION_GEMINI_MODEL
+  - id: control_gemini_flash
+    provider: gemini
+    label: "Gemini 2.0 Flash control"
+    accuracy: max
+    model_override: gemini-2.0-flash
+  - id: control_gemini_flash_lite
+    provider: gemini
+    label: "Gemini 2.0 Flash-Lite control"
+    accuracy: max
+    model_override: gemini-2.0-flash-lite
+  - id: control_gemini_15_pro
+    provider: gemini
+    label: "Gemini 1.5 Pro control"
+    accuracy: max
+    model_override: gemini-1.5-pro
+
+  # --- Frontier / Trinity ---
   - id: control_grok
     provider: grok
     label: "Grok (xAI) control"
@@ -30,10 +64,8 @@ instances:
     provider: gpt
     label: "GPT control"
     accuracy: max
-  - id: control_gemini
-    provider: gemini
-    label: "Gemini control"
-    accuracy: max
+
+  # --- Fast / gateway membranes ---
   - id: control_groq
     provider: groq
     label: "Groq control"
@@ -42,10 +74,36 @@ instances:
     provider: openrouter
     label: "OpenRouter control"
     accuracy: max
+  - id: control_openrouter_free
+    provider: openrouter_free
+    label: "OpenRouter free-pool control"
+    accuracy: max
+
+  # --- Additional SOTA membranes ---
+  - id: control_huggingface
+    provider: huggingface
+    label: "Hugging Face control"
+    accuracy: max
+  - id: control_nvidia
+    provider: nvidia
+    label: "NVIDIA NIM control"
+    accuracy: max
+  - id: control_github_models
+    provider: github_models
+    label: "GitHub Models control"
+    accuracy: max
+  - id: control_cloudflare_ai
+    provider: cloudflare_ai
+    label: "Cloudflare Workers AI control"
+    accuracy: max
+
+  # --- Local ---
   - id: control_ollama
     provider: ollama
     label: "Ollama local control"
     accuracy: max
+
+  # --- Always-on honesty ---
   - id: control_internal
     provider: internal
     label: "Internal heroic control (always)"
@@ -54,5 +112,4 @@ instances:
 
 consensus:
   min_instances: 1
-  # scores 0-100 from each instance; agreement if answer hashes match or score band tight
   score_band: 15

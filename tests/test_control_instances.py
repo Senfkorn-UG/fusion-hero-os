@@ -14,6 +14,12 @@ def test_status_accuracy_force():
     assert st.get("ok")
     assert float(st.get("temperature", 1)) == 0.0
     assert len(list_instances()) >= 3
+    # Gemini multi-slot + further providers registered
+    ids = [i.get("id") for i in list_instances()]
+    assert "control_gemini" in ids
+    assert "control_gemini_flash" in ids
+    assert "control_huggingface" in ids or "control_nvidia" in ids
+    assert st.get("gemini_control_slots", 0) >= 2
 
 
 def test_parse_json():

@@ -17,11 +17,20 @@ Each instance is forced to max accuracy; consensus/disagreement is recorded.
 | output | JSON score schema |
 | internal | always-on honesty stub |
 
-## Instances
+## Instances (analog accuracy contract)
 
-Grok · Claude · GPT · Gemini · Groq · OpenRouter · Ollama · Internal  
+| Group | IDs |
+|-------|-----|
+| **Gemini** | `control_gemini`, `control_gemini_flash`, `control_gemini_flash_lite`, `control_gemini_15_pro` |
+| **Trinity** | `control_grok`, `control_claude`, `control_gpt` |
+| **Gateways** | `control_groq`, `control_openrouter`, `control_openrouter_free` |
+| **Further** | `control_huggingface`, `control_nvidia`, `control_github_models`, `control_cloudflare_ai` |
+| **Local** | `control_ollama` |
+| **Always** | `control_internal` |
 
-Only configured/live providers execute (internal always).
+All share **accuracy: max** (`temperature=0`, verifier JSON).  
+Only configured/live providers execute (internal always).  
+`model_override` allows multiple Gemini slots on one provider.
 
 ## CLI
 
