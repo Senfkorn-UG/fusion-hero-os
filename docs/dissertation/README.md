@@ -4,7 +4,7 @@
 Eine systemtheoretische, existenzphilosophische und softwarearchitektonische Grundlegung heroischer Eudaimonia
 
 **Autor:** Stephan Hagen Urban  
-**Version:** 1.0  
+**Version:** 1.1  
 **Kanon-Bezug:** Fusion Hero OS v10.0.0 (operativ) · Heroic Stack v8.3 · AscensionOS v9.x aspirational
 
 ## Ontologie (verbindlich)
@@ -32,7 +32,7 @@ Siehe: [`ONTOLOGIE_DISSERTATION_IST_DAS_OS.md`](ONTOLOGIE_DISSERTATION_IST_DAS_O
 
 ## Textuelle Ausdrucksform (Datei)
 
-`Dissertation_Stephan_Hagen_Urban_Autopoiesis_Autopolitik_Fusion_Hero_OS_v1.0.docx`
+`Dissertation_Stephan_Hagen_Urban_Autopoiesis_Autopolitik_Fusion_Hero_OS_v1.1.docx`
 
 ## Anhänge — Module & Funktionen aus dem Nichts
 
