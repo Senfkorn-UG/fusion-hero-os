@@ -58,6 +58,16 @@ class GrokBridge:
             (r"\b(ressourcen|resources|verteilung|allocator)\b", "resources"),
             (r"\b(signal|netzwerk|network|gelayert)\b", "signal_network"),
             (r"\b(hero[- ]?guide|geltung|projektion|epistemisch|werkbank)\b", "hero_guide"),
+            # Interconnect / Mainframe site (v10)
+            (r"\b(interconnect|vernetzung|grok[- ]?graph)\b", "interconnect"),
+            (r"\b(mainframe(\s+website)?|portal)\b", "mainframe"),
+            (r"\b(dauer[- ]?vr|persistent\s+vr|/mainframe/vr)\b", "dauer_vr"),
+            (r"\b(ide(\s+shell)?|/mainframe/ide)\b", "ide"),
+            (r"\b(worktree|dateibaum|repo\s+tree)\b", "worktree"),
+            (r"\b(mesh(\s+status)?|tailscale|coord(inator)?)\b", "mesh"),
+            (r"\b(publish|gce\s+publish|release\s+mirror)\b", "publish"),
+            (r"\b(race[- ]?guard|race\s+condition)\b", "race_guard"),
+            (r"\b(ops(\s+console)?|/mainframe/ops)\b", "ops"),
         ]
 
     def _load_skill_excerpt(self, max_chars: int = 1200) -> str:
@@ -158,15 +168,39 @@ class GrokBridge:
                 "profile_admin": "Setze Admin-Profil (max Ressourcen, Delta-Signale).",
                 "resources": "Zeige intelligente Agent/Subagent-Ressourcenverteilung.",
                 "signal_network": "Gelayerte Netzwerk-Signale (Pulse/Delta/Batch).",
+                "interconnect": "Capture + Evolve Grok-Interconnect-Graph → /mainframe/grok · /api/grok/interconnect",
+                "mainframe": "Mainframe Website Hub → /mainframe",
+                "dauer_vr": "Dauer-VR always-on → /mainframe/vr",
+                "ide": "Browser-IDE → /mainframe/ide",
+                "worktree": "Hyperlinked Worktree → /mainframe/worktree",
+                "mesh": "Mesh/Coordinator/Tailscale-Status (L1/L2)",
+                "publish": "GCE Publish Mirror v10 PDFs",
+                "race_guard": "Race-Condition-Guard Status (atomic multi-writer)",
+                "ops": "Mainframe Ops Console → /mainframe/ops",
             }
             for intent in intents:
                 lines.append(f"• **{intent}**: {intent_help.get(intent, 'Ausführung...')}")
+            # surface hints
+            surfaces = {
+                "interconnect": "/mainframe/grok",
+                "mainframe": "/mainframe",
+                "dauer_vr": "/mainframe/vr",
+                "ide": "/mainframe/ide",
+                "worktree": "/mainframe/worktree",
+                "ops": "/mainframe/ops",
+                "publish": "http://100.103.188.54:8088/docs/publish/v10/",
+            }
+            linked = [surfaces[i] for i in intents if i in surfaces]
+            if linked:
+                lines.append("")
+                lines.append("**Surfaces:** " + " · ".join(f"`{u}`" for u in linked))
         else:
             lines.append(
                 f"Zu deiner Anfrage «{message[:200]}»: "
                 "Ich bin lokal an den Mainframe angebunden. "
-                "Für Systemaktionen nutze Befehle wie «alle laden», «benchmark», «sync», «pipeline». "
-                "Für Code/Module: Editor-Tab → PeerReview."
+                "Befehle: «interconnect», «mainframe», «dauer vr», «ide», «worktree», "
+                "«alle laden», «benchmark», «sync», «pipeline». "
+                "Graph: /mainframe/grok · /api/grok/interconnect"
             )
 
         if history:
@@ -186,13 +220,27 @@ class GrokBridge:
         )
 
     def status(self, health: Optional[dict] = None) -> dict:
+        interconnect = {}
+        try:
+            from fusion_hero_os.core.grok_interconnect import get_graph
+
+            interconnect = get_graph(refresh=False)
+        except Exception as exc:  # noqa: BLE001
+            interconnect = {"error": str(exc)}
         return {
             "agent": GROK_IDENTITY,
             "skill_path": str(SKILL_PATH),
             "skill_loaded": self.skill_loaded,
             "grok_intern_aligned": (health or {}).get("v12", {}).get("grok_intern_aligned"),
-            "endpoints": ["/api/grok/chat", "/api/grok/status"],
+            "endpoints": [
+                "/api/grok/chat",
+                "/api/grok/status",
+                "/api/grok/interconnect",
+                "/mainframe/grok",
+            ],
             "commands": [i[1] for i in self._intents],
+            "interconnect_summary": (interconnect or {}).get("summary"),
+            "interconnect_health": (interconnect or {}).get("health_score"),
         }
 
 

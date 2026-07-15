@@ -209,14 +209,45 @@ async def api_grok_status():
     from core.local_llama import get_local_llama, default_model_pool
     from core.claude_science import status as science_status
     llama = get_local_llama().status()
+    interconnect = {}
+    try:
+        import sys
+        from pathlib import Path
+
+        root = Path(__file__).resolve().parents[2]
+        if str(root) not in sys.path:
+            sys.path.insert(0, str(root))
+        from fusion_hero_os.core.grok_interconnect import get_graph
+
+        interconnect = await asyncio.to_thread(get_graph, True)
+    except Exception as exc:  # noqa: BLE001
+        interconnect = {"error": str(exc)}
+    try:
+        from grok_bridge import get_grok_bridge
+
+        bridge_st = get_grok_bridge().status()
+    except Exception as exc:  # noqa: BLE001
+        bridge_st = {"error": str(exc)}
     return {
         "bridge": "grok-intern",
         "skill": "fusion-hero-os",
         "llama_local": llama,
         "claude_science": science_status(),
         "default_model_pool": default_model_pool(),
+        "grok_bridge": bridge_st,
+        "interconnect": {
+            "health_score": interconnect.get("health_score"),
+            "summary": interconnect.get("summary"),
+            "recommendations": interconnect.get("recommendations"),
+            "evolved": interconnect.get("evolved"),
+            "full": "/api/grok/interconnect",
+            "ui": "/mainframe/grok",
+        },
         "endpoints": [
             "/api/grok/chat",
+            "/api/grok/status",
+            "/api/grok/interconnect",
+            "/mainframe/grok",
             "/api/v12/orchestrate",
             "/api/claude-science/analyze",
             "/api/input",

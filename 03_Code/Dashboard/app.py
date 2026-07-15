@@ -1360,6 +1360,13 @@ try:
 except Exception as _site_err:
     print(f"[API] Mainframe site routes note: {_site_err}")
 
+# === Grok Interconnect (capture + evolve graph) ===
+try:
+    from grok_interconnect_routes import router as _gix_router
+    app.include_router(_gix_router)
+except Exception as _gix_err:
+    print(f"[API] Grok interconnect routes note: {_gix_err}")
+
 # === Businessplan + Energie/Subunternehmer-Preise ===
 try:
     from business_plan_routes import router as _bp_router
