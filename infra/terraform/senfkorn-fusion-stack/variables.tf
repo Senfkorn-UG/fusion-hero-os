@@ -1,7 +1,8 @@
 variable "project_id" {
   type        = string
   description = "Google Cloud project ID"
-  default     = "YOUR_GCE_PROJECT"
+  # Set explicitly: terraform apply -var="project_id=my-gcp-project"
+  default     = ""
 }
 
 variable "region" {

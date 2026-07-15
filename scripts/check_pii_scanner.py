@@ -164,6 +164,8 @@ class Finding:
 class Allowlist:
     literals: set = field(default_factory=set)  # exact "rule:match" or bare match
     path_globs: List[str] = field(default_factory=list)
+    match_suffixes: List[str] = field(default_factory=list)
+    match_prefixes: List[str] = field(default_factory=list)
 
     def allows(self, finding: Finding) -> bool:
         if finding.rule == "ipv4_address" and (
@@ -172,6 +174,13 @@ class Allowlist:
             return True
         if finding.match in self.literals or finding.key() in self.literals:
             return True
+        # Neutral placeholders: e.g. *.example.ts.net, YOUR_*
+        for suf in self.match_suffixes:
+            if finding.match.endswith(suf):
+                return True
+        for pref in self.match_prefixes:
+            if finding.match.startswith(pref):
+                return True
         norm = finding.path.replace(os.sep, "/")
         for glob in self.path_globs:
             # Treat a trailing "/**" as a recursive prefix match (fnmatch does
@@ -229,6 +238,8 @@ def load_allowlist(path: Path = ALLOWLIST_PATH) -> Allowlist:
     return Allowlist(
         literals=set(data.get("allow_literals", [])),
         path_globs=list(data.get("allow_paths", [])),
+        match_suffixes=list(data.get("allow_match_suffixes", [])),
+        match_prefixes=list(data.get("allow_match_prefixes", [])),
     )
 
 
