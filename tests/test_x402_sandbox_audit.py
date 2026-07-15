@@ -42,9 +42,12 @@ def test_full_sandbox_audit():
 
 
 def test_simulate_attack_goes_through_insecure_only():
-    sim = simulate_successful_attack()
+    sim = simulate_successful_attack(public_damage_eur_cents=0.01, dormant_days=900)
     assert sim["attack_succeeded_on_insecure_mock"] is True
     assert sim["attack_blocked_on_secure_mock"] is True
     assert sim["impact"]["unpaid_or_unbound_grants"] >= 2
     assert sim["impact"]["replay_worked"] is True
     assert sim["external_targets"] is False
+    assert sim["real_chain_transfer"] is False
+    assert sim["public_damage"]["amount_ct"] == 0.01
+    assert sim["impact"]["dormant_wallet"]["last_activity_days_ago"] == 900

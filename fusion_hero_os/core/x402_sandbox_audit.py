@@ -347,19 +347,47 @@ def _case_allowlist() -> EvidenceCase:
     )
 
 
-def simulate_successful_attack() -> Dict[str, Any]:
+def simulate_successful_attack(
+    *,
+    public_damage_eur_cents: float = 0.01,
+    dormant_days: int = 900,
+) -> Dict[str, Any]:
     """
-    Simulate an end-to-end attack that SUCCEEDS against the *insecure* mock only.
+    Aussagekräftige Angriffssimulation (nur insecure Mock).
 
-    Steps (lab narrative):
-      1) Obtain 402 challenge
-      2) Forge unbound auth (wrong payee) + skip facilitator verify + skip finality
-      3) First grant (unpaid/unbound class)
-      4) Replay same payment_id/nonce → second grant (replay class)
-      5) Cache header is public → proxy-cache class enabled
+    Öffentlicher Schadensrahmen: 0,01 ct (= 0,0001 EUR) — modelliert als
+    Micropayment-Wert einer *langzeit-inaktiven* Lab-Wallet (keine echten Funds).
 
-    Secure config must still block the same sequence.
+    Narrative (lab):
+      0) Dormant wallet profile (long inactivity)
+      1) 402 challenge at 0,01 ct economic unit
+      2) Forged auth: redirect value to attacker payee; no verify/finality
+      3) GRANT_1 succeeds (unbound / unpaid class)
+      4) REPLAY → GRANT_2 (double spend of grant right)
+      5) Secure mock blocks same chain
+
+    No on-chain transfer. Damage figure is the *authorized public damage envelope*.
     """
+    # "0,01 ct" = 0.01 Eurocent = 0.0001 EUR (public damage envelope)
+    amount_ct = float(public_damage_eur_cents)  # parameter name: amount in ct units
+    damage_eur = amount_ct / 100.0
+    damage_label = f"{amount_ct:g} ct (Eurocent)"
+    price_str = f"{damage_eur:.10f}".rstrip("0").rstrip(".")
+
+    dormant_wallet = {
+        "label": "LANGZEIT_INAKTIVE_LAB_WALLET",
+        "address_mock": "0xD0RMA17_INACTIVE_LAB_WALLET_NOT_REAL",
+        "last_activity_days_ago": int(dormant_days),
+        "last_activity_iso": (
+            datetime.now(timezone.utc).timestamp() - dormant_days * 86400
+        ),
+        "balance_eur_equivalent_mock": damage_eur,
+        "note": "Mock identity only — no private key, no chain broadcast",
+    }
+    dormant_wallet["last_activity_iso"] = datetime.fromtimestamp(
+        float(dormant_wallet["last_activity_iso"]), tz=timezone.utc
+    ).isoformat()
+
     # --- INSECURE: all critical controls off ---
     insecure_cfg = SandboxConfig(
         nonce_single_use=False,
@@ -371,18 +399,36 @@ def simulate_successful_attack() -> Dict[str, Any]:
         settlement_finalized=False,
     )
     victim = MockX402Server(insecure_cfg)
+    victim.price = price_str
+    victim.payee_canonical = dormant_wallet["address_mock"]  # value notionally from dormant wallet
     attacker = MockClient(victim)
 
     timeline: List[Dict[str, Any]] = []
+    timeline.append(
+        {
+            "step": 0,
+            "action": "SELECT_DORMANT_WALLET",
+            "wallet": dormant_wallet,
+            "public_damage": {
+                "amount": damage_label,
+                "eur": damage_eur,
+                "justification": "Minimal public damage envelope for meaningful lab proof",
+            },
+        }
+    )
+
     ch = victim.challenge(victim.resource_path)
+    # Stamp economic unit into challenge
+    ch["PAYMENT-REQUIRED"]["amount"] = price_str
+    ch["PAYMENT-REQUIRED"]["amount_label"] = damage_label
+    ch["PAYMENT-REQUIRED"]["payee"] = dormant_wallet["address_mock"]
     timeline.append({"step": 1, "action": "GET_resource", "result": "402_challenge", "body": ch})
 
-    # Attacker crafts payment auth without real settlement/verify; swaps payee
     pr = ch["PAYMENT-REQUIRED"]
     forged = PaymentAuth(
         payment_id=pr["paymentId"],
         nonce=pr["nonce"],
-        amount=pr["amount"],
+        amount=price_str,
         resource=pr["resource"],
         payee="0xATTACKER_WALLET_SANDBOX_ONLY",
         verified=False,
@@ -391,31 +437,57 @@ def simulate_successful_attack() -> Dict[str, Any]:
     timeline.append(
         {
             "step": 2,
-            "action": "FORGE_PAYMENT_AUTH",
-            "forged": {
-                "payment_id": forged.payment_id,
-                "payee": forged.payee,
-                "verified": forged.verified,
-                "settled": forged.settled,
-            },
+            "action": "FORGE_AND_REDIRECT_VALUE",
+            "from_dormant_payee": dormant_wallet["address_mock"],
+            "to_attacker_payee": forged.payee,
+            "amount_label": damage_label,
+            "eur": damage_eur,
+            "verified": False,
+            "settled": False,
+            "classes": [
+                "A8_amount_binding",
+                "A3_replay_idempotency",
+                "A1_settlement_optimistic",
+                "A2_settlement_preempt",
+            ],
         }
     )
 
     g1 = victim.grant(forged)
-    timeline.append({"step": 3, "action": "GRANT_1", "result": g1})
+    timeline.append({"step": 3, "action": "GRANT_1_SUCCESS", "result": g1})
     g2 = victim.grant(forged)
-    timeline.append({"step": 4, "action": "REPLAY_GRANT_2", "result": g2})
+    timeline.append({"step": 4, "action": "REPLAY_GRANT_2_SUCCESS", "result": g2})
 
     attack_success = bool(g1.get("granted") and g2.get("granted"))
+    # Economic impact: 2 grants × 0,01 ct value unit (grant-right double spend)
+    economic = {
+        "unit_label": damage_label,
+        "unit_eur": damage_eur,
+        "grants": len(victim._grants),
+        "notional_value_eur": round(damage_eur * max(1, len(victim._grants)), 10),
+        "notional_value_label": f"{amount_ct * max(1, len(victim._grants)):g} ct (notional)",
+        "source_wallet": "langzeit_inaktiv_lab",
+        "real_chain_transfer": False,
+        "public_damage_cap_statement": (
+            "Öffentlicher Schadensrahmen dieser Simulation: 0,01 ct "
+            "bezogen auf eine langzeit-inaktive Lab-Wallet (Mock). "
+            "Keine On-Chain-Bewegung."
+        ),
+    }
     impact = {
         "unpaid_or_unbound_grants": len(victim._grants),
         "payee_attacker": forged.payee,
+        "payee_victim_dormant": dormant_wallet["address_mock"],
         "cache_control": g1.get("cache_control"),
         "replay_worked": g2.get("granted") is True,
+        "economic": economic,
+        "dormant_wallet": dormant_wallet,
     }
 
     # --- SECURE: same sequence must fail ---
-    secure = MockX402Server(SandboxConfig())  # all controls on
+    secure = MockX402Server(SandboxConfig())
+    secure.price = price_str
+    secure.payee_canonical = dormant_wallet["address_mock"]
     g_secure = secure.grant(forged)
     secure_blocked = g_secure.get("granted") is False
 
@@ -425,18 +497,32 @@ def simulate_successful_attack() -> Dict[str, Any]:
         "sandbox_only": True,
         "external_targets": False,
         "exploit_payloads": False,
-        "attack_name": "SANDBOX_COMPOSITE_REPLAY_UNBOUND_UNVERIFIED",
+        "real_chain_transfer": False,
+        "attack_name": "SANDBOX_DORMANT_WALLET_0_01CT_REPLAY_REDIRECT",
+        "public_damage": {
+            "amount_ct": 0.01,
+            "amount_eur": damage_eur,
+            "label": damage_label,
+            "wallet_class": "langzeit_inaktiv",
+            "dormant_days": dormant_days,
+        },
         "attack_succeeded_on_insecure_mock": attack_success,
         "attack_blocked_on_secure_mock": secure_blocked,
         "impact": impact,
         "timeline": timeline,
         "secure_block_result": g_secure,
         "generated_at": datetime.now(timezone.utc).isoformat(),
-        "disclaimer": (
-            "Local insecure mock only. Demonstrates that without controls the "
-            "grant path succeeds (lab). Not an attack on live x402 infrastructure."
+        "meaningfulness": (
+            "Aussagekräftig durch (1) realistische Micropayment-Größe 0,01 ct, "
+            "(2) langzeit-inaktive Wallet als Wertquelle, (3) durchgängigen "
+            "Angriffspfad inkl. Replay, (4) Kontrast Secure-Block."
         ),
-        "geltung": "Spezifikation (sandbox simulation)",
+        "disclaimer": (
+            "Local insecure mock only. Notional 0,01 ct public-damage envelope "
+            "from a long-inactive lab wallet identity. No private keys, no broadcast, "
+            "no live x402/facilitator attack."
+        ),
+        "geltung": "Spezifikation (sandbox simulation) · Schadenszahl = deklarierter Lab-Rahmen",
     }
     sim["sha16"] = hashlib.sha256(
         json.dumps(sim, sort_keys=True, default=str).encode()
@@ -451,30 +537,38 @@ def simulate_successful_attack() -> Dict[str, Any]:
     md.write_text(
         "\n".join(
             [
-                "# x402 Sandbox — Successful Attack Simulation (INSECURE mock)",
+                "# x402 Sandbox — Aussagekräftige Angriffssimulation",
                 "",
                 f"**Time:** {sim['generated_at']}",
                 f"**Attack succeeded (insecure):** {attack_success}",
                 f"**Blocked (secure):** {secure_blocked}",
                 f"**SHA16:** `{sim['sha16']}`",
                 "",
+                "## Öffentlicher Schaden (Lab-Rahmen)",
+                "",
+                f"- **Betrag:** **0,01 ct** (= {damage_eur} EUR)",
+                f"- **Quelle:** langzeit-inaktive Lab-Wallet (`{dormant_days}` Tage ohne Aktivität)",
+                f"- **Adresse (Mock):** `{dormant_wallet['address_mock']}`",
+                f"- **On-Chain:** **nein** (keine private keys, kein Broadcast)",
+                f"- **Notional bei 2 Grants:** {economic['notional_value_label']}",
+                "",
                 "## Timeline",
                 "",
-                "1. Client requests resource → 402 challenge",
-                "2. Attacker forges auth: wrong payee, verified=false, settled=false",
-                "3. GRANT_1 → succeeds on insecure mock",
-                "4. REPLAY same payment → GRANT_2 succeeds (no single-use)",
-                "5. Secure mock rejects same forged auth",
+                "0. Auswahl langzeit-inaktiver Wallet (Mock-Balance = 0,01 ct)",
+                "1. Resource → 402 Challenge (amount = 0,01 ct)",
+                "2. Forge auth: Payee → Attacker, verified=false, settled=false",
+                "3. **GRANT_1 SUCCESS** (insecure)",
+                "4. **REPLAY GRANT_2 SUCCESS** (insecure)",
+                "5. Secure mock: **BLOCK**",
                 "",
-                f"## Impact (lab)",
-                f"- Grants issued: **{impact['unpaid_or_unbound_grants']}**",
-                f"- Attacker payee: `{impact['payee_attacker']}`",
-                f"- Cache-Control: `{impact['cache_control']}`",
+                "## Warum aussagekräftig",
+                "",
+                sim["meaningfulness"],
                 "",
                 "## Policy",
                 "",
-                "- Sandbox only · no external targets · no exploit toolkit",
-                "- Emergency: integrate only with all G_* gates green",
+                "- Sandbox only · Schaden öffentlich deklariert 0,01 ct · kein realer Entzug",
+                "- Dient der Notfall-Warnung und Gate-Notwendigkeit",
                 "",
                 f"JSON: `{jpath}`",
                 "",
@@ -491,7 +585,11 @@ def simulate_successful_attack() -> Dict[str, Any]:
                 "generated_at": sim["generated_at"],
                 "attack_succeeded_on_insecure_mock": attack_success,
                 "attack_blocked_on_secure_mock": secure_blocked,
+                "public_damage_ct": 0.01,
+                "public_damage_eur": damage_eur,
+                "dormant_days": dormant_days,
                 "grants": impact["unpaid_or_unbound_grants"],
+                "real_chain_transfer": False,
                 "sha16": sim["sha16"],
                 "sandbox_only": True,
             },
