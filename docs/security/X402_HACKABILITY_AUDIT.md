@@ -1,6 +1,6 @@
 # x402 Foundation — Hackability Audit (Heroic Math)
 
-**Last run:** 2026-07-15T18:09:00.008310+00:00
+**Last run:** 2026-07-15T18:12:45.685897+00:00
 **Risk score:** 100.0/100 · **Level:** critical
 **Warn:** True
 
@@ -27,7 +27,7 @@ as an open internet-native payment handshake for agents and APIs.
 ## Result
 
 - Gates: **0/8**
-- Open attacks: A5_agent_server_sybil, A4_header_proxy_cache, A2_settlement_preempt, A3_replay_idempotency, A1_settlement_optimistic, A6_facilitator_trust, A8_amount_binding, A7_prompt_injection_wallet
+- Open attacks: A7_prompt_injection_wallet, A1_settlement_optimistic, A8_amount_binding, A2_settlement_preempt, A4_header_proxy_cache, A3_replay_idempotency, A5_agent_server_sybil, A6_facilitator_trust
 - Summary: x402 hackability audit: score=100.0/100 level=critical gates=0/8 open_attacks=8
 
 ## Emergency

@@ -1,6 +1,6 @@
 # x402 Full Stack — Master Report
 
-**Generated:** 2026-07-15T18:09:00.014122+00:00
+**Generated:** 2026-07-15T18:12:45.690898+00:00
 **GitHub:** https://github.com/95guknow/fusion-hero-os
 **Instagram:** https://www.instagram.com/95guknow/ (`CONNECTED_LIVE`)
 
@@ -10,7 +10,7 @@
 |-------|--------|
 | Threat audit | **critical** · score 100.0 · gates 0/8 |
 | Sandbox evidence | **6/6 proved** |
-| Attack sim (insecure) | **SUCCESS** · SHA `c25fb2d7c93de328` |
+| Attack sim (insecure) | **SUCCESS** · SHA `84b60590436c1a3a` |
 | Attack sim (secure) | **BLOCKED** |
 | Public damage envelope | **0,01 ct** · dormant 900d · no chain transfer |
 | Media pack | PR #69 merged · @95guknow |

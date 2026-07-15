@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-15T18:09:00.008310+00:00",
+  "generated_at": "2026-07-15T18:12:45.685897+00:00",
   "protocol": "x402",
   "risk_score": 100.0,
   "level": "critical",
@@ -7,14 +7,14 @@
   "controls_ok": 0,
   "controls_total": 8,
   "open_attack_ids": [
-    "A5_agent_server_sybil",
-    "A4_header_proxy_cache",
-    "A2_settlement_preempt",
-    "A3_replay_idempotency",
+    "A7_prompt_injection_wallet",
     "A1_settlement_optimistic",
-    "A6_facilitator_trust",
     "A8_amount_binding",
-    "A7_prompt_injection_wallet"
+    "A2_settlement_preempt",
+    "A4_header_proxy_cache",
+    "A3_replay_idempotency",
+    "A5_agent_server_sybil",
+    "A6_facilitator_trust"
   ],
   "math_ok": 4,
   "math_total": 4,
