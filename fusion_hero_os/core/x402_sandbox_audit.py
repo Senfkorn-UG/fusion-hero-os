@@ -347,6 +347,162 @@ def _case_allowlist() -> EvidenceCase:
     )
 
 
+def simulate_successful_attack() -> Dict[str, Any]:
+    """
+    Simulate an end-to-end attack that SUCCEEDS against the *insecure* mock only.
+
+    Steps (lab narrative):
+      1) Obtain 402 challenge
+      2) Forge unbound auth (wrong payee) + skip facilitator verify + skip finality
+      3) First grant (unpaid/unbound class)
+      4) Replay same payment_id/nonce → second grant (replay class)
+      5) Cache header is public → proxy-cache class enabled
+
+    Secure config must still block the same sequence.
+    """
+    # --- INSECURE: all critical controls off ---
+    insecure_cfg = SandboxConfig(
+        nonce_single_use=False,
+        finality_before_grant=False,
+        bind_amount_resource=False,
+        reject_unverified=False,
+        no_cache_paid=False,
+        agent_allowlist=False,
+        settlement_finalized=False,
+    )
+    victim = MockX402Server(insecure_cfg)
+    attacker = MockClient(victim)
+
+    timeline: List[Dict[str, Any]] = []
+    ch = victim.challenge(victim.resource_path)
+    timeline.append({"step": 1, "action": "GET_resource", "result": "402_challenge", "body": ch})
+
+    # Attacker crafts payment auth without real settlement/verify; swaps payee
+    pr = ch["PAYMENT-REQUIRED"]
+    forged = PaymentAuth(
+        payment_id=pr["paymentId"],
+        nonce=pr["nonce"],
+        amount=pr["amount"],
+        resource=pr["resource"],
+        payee="0xATTACKER_WALLET_SANDBOX_ONLY",
+        verified=False,
+        settled=False,
+    )
+    timeline.append(
+        {
+            "step": 2,
+            "action": "FORGE_PAYMENT_AUTH",
+            "forged": {
+                "payment_id": forged.payment_id,
+                "payee": forged.payee,
+                "verified": forged.verified,
+                "settled": forged.settled,
+            },
+        }
+    )
+
+    g1 = victim.grant(forged)
+    timeline.append({"step": 3, "action": "GRANT_1", "result": g1})
+    g2 = victim.grant(forged)
+    timeline.append({"step": 4, "action": "REPLAY_GRANT_2", "result": g2})
+
+    attack_success = bool(g1.get("granted") and g2.get("granted"))
+    impact = {
+        "unpaid_or_unbound_grants": len(victim._grants),
+        "payee_attacker": forged.payee,
+        "cache_control": g1.get("cache_control"),
+        "replay_worked": g2.get("granted") is True,
+    }
+
+    # --- SECURE: same sequence must fail ---
+    secure = MockX402Server(SandboxConfig())  # all controls on
+    g_secure = secure.grant(forged)
+    secure_blocked = g_secure.get("granted") is False
+
+    sim = {
+        "ok": attack_success and secure_blocked,
+        "simulation": True,
+        "sandbox_only": True,
+        "external_targets": False,
+        "exploit_payloads": False,
+        "attack_name": "SANDBOX_COMPOSITE_REPLAY_UNBOUND_UNVERIFIED",
+        "attack_succeeded_on_insecure_mock": attack_success,
+        "attack_blocked_on_secure_mock": secure_blocked,
+        "impact": impact,
+        "timeline": timeline,
+        "secure_block_result": g_secure,
+        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "disclaimer": (
+            "Local insecure mock only. Demonstrates that without controls the "
+            "grant path succeeds (lab). Not an attack on live x402 infrastructure."
+        ),
+        "geltung": "Spezifikation (sandbox simulation)",
+    }
+    sim["sha16"] = hashlib.sha256(
+        json.dumps(sim, sort_keys=True, default=str).encode()
+    ).hexdigest()[:16]
+
+    alert_dir = Path.home() / ".fusion" / "alerts"
+    alert_dir.mkdir(parents=True, exist_ok=True)
+    jpath = alert_dir / "x402_sandbox_attack_sim.json"
+    jpath.write_text(json.dumps(sim, indent=2, ensure_ascii=False), encoding="utf-8")
+
+    md = alert_dir / "X402_SANDBOX_ATTACK_SIMULATION.md"
+    md.write_text(
+        "\n".join(
+            [
+                "# x402 Sandbox — Successful Attack Simulation (INSECURE mock)",
+                "",
+                f"**Time:** {sim['generated_at']}",
+                f"**Attack succeeded (insecure):** {attack_success}",
+                f"**Blocked (secure):** {secure_blocked}",
+                f"**SHA16:** `{sim['sha16']}`",
+                "",
+                "## Timeline",
+                "",
+                "1. Client requests resource → 402 challenge",
+                "2. Attacker forges auth: wrong payee, verified=false, settled=false",
+                "3. GRANT_1 → succeeds on insecure mock",
+                "4. REPLAY same payment → GRANT_2 succeeds (no single-use)",
+                "5. Secure mock rejects same forged auth",
+                "",
+                f"## Impact (lab)",
+                f"- Grants issued: **{impact['unpaid_or_unbound_grants']}**",
+                f"- Attacker payee: `{impact['payee_attacker']}`",
+                f"- Cache-Control: `{impact['cache_control']}`",
+                "",
+                "## Policy",
+                "",
+                "- Sandbox only · no external targets · no exploit toolkit",
+                "- Emergency: integrate only with all G_* gates green",
+                "",
+                f"JSON: `{jpath}`",
+                "",
+            ]
+        ),
+        encoding="utf-8",
+    )
+
+    docs = ROOT / "docs" / "security"
+    docs.mkdir(parents=True, exist_ok=True)
+    (docs / "x402_attack_sim.summary.json").write_text(
+        json.dumps(
+            {
+                "generated_at": sim["generated_at"],
+                "attack_succeeded_on_insecure_mock": attack_success,
+                "attack_blocked_on_secure_mock": secure_blocked,
+                "grants": impact["unpaid_or_unbound_grants"],
+                "sha16": sim["sha16"],
+                "sandbox_only": True,
+            },
+            indent=2,
+        ),
+        encoding="utf-8",
+    )
+    sim["evidence_paths"] = [str(jpath), str(md), str(docs / "x402_attack_sim.summary.json")]
+    return sim
+
+
 def run_sandbox_audit(*, budget_eur: float = 500.0) -> Dict[str, Any]:
     """Run full local sandbox evidence suite + write proof artifacts."""
     # Import math audit for combined evidence
@@ -511,10 +667,38 @@ def main() -> int:
     ap = argparse.ArgumentParser(description="x402 local sandbox security audit (defensive)")
     ap.add_argument("--status", action="store_true")
     ap.add_argument("--budget-eur", type=float, default=500.0)
+    ap.add_argument(
+        "--simulate-attack",
+        action="store_true",
+        help="Run successful attack path against INSECURE mock only (sandbox)",
+    )
     args = ap.parse_args()
     if args.status:
         print(json.dumps(status(), indent=2, ensure_ascii=False))
         return 0
+    if args.simulate_attack:
+        sim = simulate_successful_attack()
+        print(
+            json.dumps(
+                {
+                    "ok": sim["ok"],
+                    "simulation": True,
+                    "sandbox_only": True,
+                    "attack_succeeded_on_insecure_mock": sim[
+                        "attack_succeeded_on_insecure_mock"
+                    ],
+                    "attack_blocked_on_secure_mock": sim["attack_blocked_on_secure_mock"],
+                    "impact": sim["impact"],
+                    "timeline_steps": len(sim["timeline"]),
+                    "sha16": sim["sha16"],
+                    "evidence_paths": sim["evidence_paths"],
+                    "disclaimer": sim["disclaimer"],
+                },
+                indent=2,
+                ensure_ascii=False,
+            )
+        )
+        return 0 if sim["ok"] else 1
     report = run_sandbox_audit(budget_eur=args.budget_eur)
     print(
         json.dumps(

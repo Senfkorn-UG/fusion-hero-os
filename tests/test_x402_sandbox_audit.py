@@ -4,6 +4,7 @@ from fusion_hero_os.core.x402_sandbox_audit import (
     MockX402Server,
     MockClient,
     run_sandbox_audit,
+    simulate_successful_attack,
     _case_replay,
     _case_binding,
 )
@@ -38,3 +39,12 @@ def test_full_sandbox_audit():
     assert r["exploit_payloads"] is False
     assert r["proved_count"] == r["case_count"]
     assert r["ok"] is True
+
+
+def test_simulate_attack_goes_through_insecure_only():
+    sim = simulate_successful_attack()
+    assert sim["attack_succeeded_on_insecure_mock"] is True
+    assert sim["attack_blocked_on_secure_mock"] is True
+    assert sim["impact"]["unpaid_or_unbound_grants"] >= 2
+    assert sim["impact"]["replay_worked"] is True
+    assert sim["external_targets"] is False

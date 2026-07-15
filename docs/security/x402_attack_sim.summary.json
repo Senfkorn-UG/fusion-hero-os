@@ -1,0 +1,8 @@
+{
+  "generated_at": "2026-07-15T17:49:47.322649+00:00",
+  "attack_succeeded_on_insecure_mock": true,
+  "attack_blocked_on_secure_mock": true,
+  "grants": 2,
+  "sha16": "0c7fafc83fc9d53f",
+  "sandbox_only": true
+}
