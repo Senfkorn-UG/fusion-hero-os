@@ -1,22 +1,25 @@
 # Instagram live status · @95guknow
 
 **Profile:** https://www.instagram.com/95guknow/  
-**Operator report:** post should be live (2026-07-15)  
-**Agent verify:** Instagram web is login-walled — full grid not machine-readable without Graph API.
+**Status:** **LIVE** (operator confirmed 2026-07-15)  
+**Agent verify:** Instagram Graph API not connected; web endpoints rate-limited/login-walled. Profile is the canonical public surface until a permanent `/p/...` permalink is pasted.
 
-## Assets published via PR #69
+## Assets (merged PR #69)
 - Caption: `docs/security/media/IG_CAPTION.txt`
 - Image: `docs/security/media/IG_x402_block_hack_lab.jpg`
 - Proof: `docs/security/media/PROOF_attack_sim.json`
 - Media block: `docs/security/media/MEDIA_BLOCK.md`
 
 ## Deep links
-- Repo security: https://github.com/95guknow/fusion-hero-os/tree/main/docs/security
-- Media pack: https://github.com/95guknow/fusion-hero-os/tree/main/docs/security/media
-- Profile: https://www.instagram.com/95guknow/
+| Surface | URL |
+|---------|-----|
+| Instagram profile | https://www.instagram.com/95guknow/ |
+| GitHub security | https://github.com/95guknow/fusion-hero-os/tree/main/docs/security |
+| GitHub media pack | https://github.com/95guknow/fusion-hero-os/tree/main/docs/security/media |
+| PR | https://github.com/95guknow/fusion-hero-os/pull/69 |
 
-## Optional
-Paste permanent post URL (`/p/...` or `/reel/...`) here when available for citation:
+## Permalink (optional precision)
+When available, set:
+- `post_url:` *(paste Instagram /p/ or /reel/ link)*
 
-- post_url: (pending operator permalink)
-
+Lab proof SHA (attack sim family): see `PROOF_attack_sim.json` / alerts `x402_sandbox_attack_sim.json`
