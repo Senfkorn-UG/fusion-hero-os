@@ -5,6 +5,8 @@
 **Engine:** `scripts/mesh_cluster_coordinator.py`  
 **Cluster:** `infra/k8s/fusion-coordination/` · GKE `senfkorn-gke-cluster` (europe-west3)
 
+**Dissertation-as-OS:** Placement (L0–L4), Inhouse-Wahrheit und SaaS-Membranen sind **Autopolitik der Dissertation** — das OS *ist* die Arbeit; Koordination ist ihr Organsystem. Siehe `docs/dissertation/ONTOLOGIE_DISSERTATION_IST_DAS_OS.md`.
+
 ## Problem
 
 Externe Dienste (Tailscale, GKE, GCS, Supabase, MCP-SaaS) und Inhouse-Lösungen (Dashboard, Fractal Mesh, QUBO, Orchestrator) liefen parallel, ohne gemeinsame Placement-Wahrheit. Cluster-Rechenzeit wurde fast nur für Training genutzt, nicht für Koordination.

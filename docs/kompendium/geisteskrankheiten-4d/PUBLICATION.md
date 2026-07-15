@@ -4,6 +4,8 @@
 **BCG:** full v7 Kompendium embedded  
 **Platform:** Fusion Hero OS v10.0.0  
 
+**Dissertation-as-OS:** Dieses Kompendium ist eine **klinische Ausdrucksform** der Dissertation (Fusion Hero OS *ist* die Arbeit; Text nur eine Form). Crosswalk: Release `dissertation-v1.0` · Ontologie `docs/dissertation/ONTOLOGIE_DISSERTATION_IST_DAS_OS.md`.
+
 ## Files
 
 - `Geisteskrankheiten_4D_Matrix_v10.0.0_Kompendium.md`

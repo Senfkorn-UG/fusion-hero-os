@@ -8,6 +8,8 @@
 **Purpose:** Mesh VPN + phone bridge + optional funnel for mainframe and peers.  
 **Coordination purpose:** Cluster-backed inventory/placement so external SaaS and in-house modules share one routing truth.
 
+**Dissertation-as-OS:** Mesh + coordinator are *organs of the dissertation* (the OS *is* the work; text is one expression). See `docs/dissertation/ONTOLOGIE_DISSERTATION_IST_DAS_OS.md`. Canonical re-routes: `docs/mesh/GROK_INTERCONNECT.md`, control plane `/mainframe/grok`.
+
 ## Principle
 
 Each connector is its own mesh segment (ID, host role, health path, Tailscale tag).

@@ -7,6 +7,21 @@ trennt explizit den **operativen Kanon** von Roadmap-/Forschungs-Tracks
 (siehe `docs/v8/erkenntnisse_index.yaml` → `bestversion-vs-ascension`,
 erweitert um v10 Stage-A/B).
 
+## Dissertation-as-OS
+
+> **Das gesamte Fusion Hero OS ist die Dissertation.**  
+> Der Text (Monographie/PDF/Abstract) ist nur **eine** Form seines Ausdrucks.
+
+| Ausdruck | Ort |
+|----------|-----|
+| Operativ | dieses Repo + Dashboard :8000 + Mesh + MCP |
+| Textuell | `docs/dissertation/` · Release `dissertation-v1.0` |
+| Ontologie | `docs/dissertation/ONTOLOGIE_DISSERTATION_IST_DAS_OS.md` |
+| Bifokal-Verweis | `docs/dissertation/VERWEIS_BIFOKALITAET_UNIVERSUM_GEHIRN_SM.md` (Universum↔Gehirn · Standardmodell; Modell/OFFEN) |
+| Control Plane | `/mainframe/grok` · `/api/grok/route` · `/api/grok/routes` |
+
+Code Honesty bleibt organisch: Proof Registry **BEWIESEN / OFFEN / WIDERLEGT** — die Ontologie entbindet nicht von Nachweis.
+
 ## Operativer Kanon: v10.0.0 / main
 
 **`VERSION` = `10.0.0` ist die kanonische Plattform-Version.** Quelle der
@@ -63,8 +78,10 @@ optionaler Layer (`ascension`) in `fusion_unified.yaml` registriert und über
 
 ## Architektur-Prinzipien
 
+- **Dissertation-as-OS**: Betrieb *ist* die Arbeit; Text ist Verdichtung, nicht das Ganze.
 - **Inside-Out**: MasterSeed / Sisyphos im Kern, Strahlung nach außen.
 - **Coevolutionär**: kontrollierte gegenseitige Beeinflussung.
+- **Bifokal**: Kosmos-Pfad (u. a. SM-Referenz) und Gehirn-/Operativ-Pfad als Dualität, nicht Identität.
 - **Persistent + Stateful**: kritische Zustände werden persistiert.
 - **BCG / Additive Evolution**: neue Versionen entfernen keine alten Fähigkeiten.
 - **Ehrlich**: Roadmap-Anspruch ≠ Ist-Zustand (`proof_registry.yaml`, Status-Reports).

@@ -7,6 +7,23 @@
 **Hybrid AI / mainframe platform** | operative kanon **v10.0.0**  
 Core: **ALTE_Frau_95g Heroic Core** | additive over the v8.3 stack (BCG)
 
+### Dissertation-as-OS (canonical ontology)
+
+> **The entire Fusion Hero OS *is* the dissertation.**  
+> The monograph / PDF / abstract is **only one form of expression**.
+
+| Expression | Examples |
+|------------|----------|
+| Operative | this repo, runtime, dashboard, mesh, MCP |
+| Textual | [docs/dissertation/](docs/dissertation/) PDF · DOCX · abstracts |
+| Empirical | live hot-runs, health, releases, coordinator |
+| Epistemic | Proof Registry (PROVEN / OPEN / REFUTED) |
+| Archival | Master Archive, kompendia, curriculum |
+
+Ontology: [docs/dissertation/ONTOLOGIE_DISSERTATION_IST_DAS_OS.md](docs/dissertation/ONTOLOGIE_DISSERTATION_IST_DAS_OS.md) ·  
+Bifocal verweis (universe ↔ brain · Standard Model): [docs/dissertation/VERWEIS_BIFOKALITAET_UNIVERSUM_GEHIRN_SM.md](docs/dissertation/VERWEIS_BIFOKALITAET_UNIVERSUM_GEHIRN_SM.md) ·  
+Release: [dissertation-v1.0](https://github.com/95guknow/fusion-hero-os/releases/tag/dissertation-v1.0)
+
 > This public repository must not contain personal profile data, private
 > locations, or live Tailscale inventory (IPs, node IDs, private MagicDNS).
 > Runtime topology lives only on the operator machine / private config.
@@ -76,6 +93,9 @@ docker compose up --build -d
 | Endpoint | Purpose |
 |----------|---------|
 | http://127.0.0.1:8000 | Standard GUI |
+| `/mainframe` | Mainframe hub (dissertation surface) |
+| `/mainframe/grok` | Grok interconnect control plane |
+| `/api/grok/routes` | Canonical route table |
 | `/api/health?light=true` | Fast health probe |
 | `/api/health` | Full status |
 | `/docs` | OpenAPI |
@@ -134,6 +154,9 @@ Public surface policy: no personal identity, no private location, no live mesh i
 | Doc | Role |
 |-----|------|
 | [BEST_VERSION.md](BEST_VERSION.md) | Operative kanon vs roadmap |
+| [docs/dissertation/](docs/dissertation/) | **Dissertation-as-OS** · abstracts · ontology · bifocal verweis |
+| [docs/mesh/GROK_INTERCONNECT.md](docs/mesh/GROK_INTERCONNECT.md) | Interconnect graph + re-routes |
+| [docs/mesh/MAINFRAME_WEBSITE.md](docs/mesh/MAINFRAME_WEBSITE.md) | Dauer-VR · IDE · Worktree |
 | [DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUIDE.md) | Boot / ports / troubleshooting |
 | [BRANCH_STRATEGY.md](BRANCH_STRATEGY.md) | SemVer / tags |
 | [docs/mesh/README.md](docs/mesh/README.md) | Mesh ops (placeholders) |

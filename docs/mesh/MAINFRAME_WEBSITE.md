@@ -3,16 +3,20 @@
 **Status:** operational (Dashboard Port **8000**)  
 **Platform:** Fusion Hero OS v10.0.0
 
+**Dissertation-as-OS:** Diese Surfaces sind **Ausdrucksorgane** der Dissertation (Fusion Hero OS *ist* die Arbeit; Text nur eine Form). Ontologie: `docs/dissertation/ONTOLOGIE_DISSERTATION_IST_DAS_OS.md`.
+
 ## Surfaces
 
 | URL | Funktion |
 |-----|----------|
 | http://127.0.0.1:8000/mainframe | Hub / Portal |
+| http://127.0.0.1:8000/mainframe/grok | **Grok Interconnect** Control Plane |
 | http://127.0.0.1:8000/mainframe/vr | **Dauer-VR** (A-Frame always-on + HUD) |
 | http://127.0.0.1:8000/mainframe/ide | Browser-IDE (Tree + Preview + Live-APIs) |
 | http://127.0.0.1:8000/mainframe/worktree | Komplettes Repo hyperlinked |
 | http://127.0.0.1:8000/mainframe/ops | Ops Console |
-| http://127.0.0.1:8000/vr/persistent | Alias → Dauer-VR |
+| http://127.0.0.1:8000/vr/persistent | Alias → Dauer-VR (307) |
+| http://127.0.0.1:8000/grok · `/ide` · `/worktree` · `/portal` | Legacy → canonical (307) |
 
 ## API
 
@@ -22,6 +26,7 @@
 - `GET /api/mainframe/worktree/content?path=`
 - `GET /api/mainframe/worktree/raw?path=`
 - `GET /api/mainframe/ide/status`
+- `GET /api/grok/interconnect` · `/api/grok/route` · `/api/grok/routes`
 
 ## Start
 
