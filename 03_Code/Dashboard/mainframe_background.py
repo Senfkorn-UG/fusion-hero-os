@@ -58,15 +58,19 @@ def start_mainframe_daemons() -> Dict[str, Any]:
     cost_int = float(os.getenv("FUSION_COST_ANALYSIS_INTERVAL_SEC", "60"))
     mirror_int = float(os.getenv("FUSION_REPO_MIRROR_INTERVAL_SEC", "45"))
     energy_int = float(os.getenv("FUSION_ENERGY_PRICING_INTERVAL_SEC", "60"))
+    # When energy-pricing-daemon runs as a separate container, skip in-process loop
+    energy_external = os.getenv("FUSION_ENERGY_PRICING_EXTERNAL", "0") == "1"
 
     asyncio.create_task(cost_analysis_loop(cost_int))
     asyncio.create_task(repo_mirror_loop(mirror_int))
-    asyncio.create_task(energy_pricing_loop(energy_int))
+    if not energy_external:
+        asyncio.create_task(energy_pricing_loop(energy_int))
     _running = True
     return {
         "started": True,
         "cost_interval_sec": cost_int,
         "mirror_interval_sec": mirror_int,
         "energy_interval_sec": energy_int,
+        "energy_external": energy_external,
         "mirror_auto_correct": os.getenv("FUSION_REPO_MIRROR_AUTO_CORRECT", "1") == "1",
     }
