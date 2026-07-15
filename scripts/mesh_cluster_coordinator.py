@@ -299,11 +299,21 @@ def atlas(catalog: Dict[str, Any]) -> Dict[str, Any]:
 
 
 def write_local(report: Dict[str, Any], name: str) -> Path:
+    """Race-safe write: exclusive lock + atomic replace (desktop + GCE cron)."""
     LOCAL_OUT.mkdir(parents=True, exist_ok=True)
     path = LOCAL_OUT / f"{name}.json"
-    path.write_text(json.dumps(report, indent=2, ensure_ascii=False), encoding="utf-8")
     latest = LOCAL_OUT / "latest.json"
-    latest.write_text(json.dumps(report, indent=2, ensure_ascii=False), encoding="utf-8")
+    try:
+        from fusion_hero_os.core.race_guard import locked_atomic_write_json
+    except ImportError:
+        # GCE / thin checkout: load sibling package path
+        sys.path.insert(0, str(ROOT))
+        from fusion_hero_os.core.race_guard import locked_atomic_write_json  # type: ignore
+
+    payload = dict(report)
+    payload.setdefault("race_guard", True)
+    locked_atomic_write_json(path, payload)
+    locked_atomic_write_json(latest, payload)
     return path
 
 
