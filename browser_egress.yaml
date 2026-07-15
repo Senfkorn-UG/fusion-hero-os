@@ -1,0 +1,59 @@
+# Browser egress — how Fusion Hero OS opens URLs
+# Bug+Feature: default OS handler tunnels everything through one browser
+# (here: Perplexity Comet = CometHTM). Controlled choice is the fix.
+
+version: "1.0"
+platform_version: "10.0.0"
+principle: >
+  Opening https via Start-Process / webbrowser.open uses the Windows default
+  association. On this workstation that is Comet (Perplexity) — one tunnel for
+  all agent links. Feature: single membrane, auditable, consistent session.
+  Bug: Google One / Drive / Play Store may need Chrome profile with the 5TB
+  Google account, not Comet. Solution: explicit egress profiles.
+
+# detected default (operator workstation)
+default_progid: CometHTM
+default_exe: "C:\\Program Files\\Perplexity\\Comet\\Application\\comet.exe"
+default_label: "Perplexity Comet (Business-Suite / default tunnel)"
+
+# active policy: which profile to use when open_browser=true
+# values: default | chrome_personal | chrome_work | edge | none
+active: chrome_personal
+
+profiles:
+  default:
+    label: "OS default (Comet tunnel) — feature path"
+    kind: shell
+  chrome_personal:
+    label: "Chrome Profil 1 / Default — stephan95g@googlemail.com (Google One 5TB likely)"
+    kind: chrome
+    exe: "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe"
+    # Chrome "Default" directory = Profil 1 name in UI on this machine
+    user_data_dir: "%LOCALAPPDATA%\\Google\\Chrome\\User Data"
+    profile_directory: "Default"
+  chrome_work:
+    label: "Chrome Profile 1 — stephan95v@gmail.com"
+    kind: chrome
+    exe: "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe"
+    user_data_dir: "%LOCALAPPDATA%\\Google\\Chrome\\User Data"
+    profile_directory: "Profile 1"
+  edge:
+    label: "Microsoft Edge"
+    kind: exe
+    exe: "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe"
+  comet:
+    label: "Force Comet (explicit tunnel)"
+    kind: exe
+    exe: "C:\\Program Files\\Perplexity\\Comet\\Application\\comet.exe"
+  none:
+    label: "Do not open browser"
+    kind: none
+
+# URL classes → preferred profile (override active when set)
+routes:
+  google_one: chrome_personal
+  google_drive: chrome_personal
+  play_store: chrome_personal
+  app_store: chrome_personal
+  local_dashboard: default
+  github: default

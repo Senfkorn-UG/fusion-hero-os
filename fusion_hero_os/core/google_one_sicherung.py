@@ -19,11 +19,28 @@ import os
 import shutil
 import sys
 import time
-import webbrowser
 from dataclasses import asdict, dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
+
+try:
+    from fusion_hero_os.core.browser_egress import open_url as _egress_open
+except Exception:  # noqa: BLE001
+    _egress_open = None  # type: ignore
+
+
+def _open_browser_url(url: str) -> bool:
+    """Open via browser_egress (Chrome for Google) — not blind OS default/Comet."""
+    if _egress_open is not None:
+        r = _egress_open(url)
+        return bool(r.get("ok"))
+    try:
+        import webbrowser
+
+        return bool(webbrowser.open(url))
+    except Exception:
+        return False
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -175,19 +192,11 @@ def activate(*, open_browser: bool = True) -> Dict[str, Any]:
     if open_browser:
         for key in ("landing_url", "storage_url"):
             url = cfg.get(key) or flag.get(key)
-            if url:
-                try:
-                    webbrowser.open(url)
-                    opened.append(url)
-                except Exception:
-                    pass
+            if url and _open_browser_url(url):
+                opened.append(url)
         link = drive.get("web_view_link")
-        if link:
-            try:
-                webbrowser.open(link)
-                opened.append(link)
-            except Exception:
-                pass
+        if link and _open_browser_url(link):
+            opened.append(link)
 
     return {
         "ok": True,
@@ -529,13 +538,8 @@ def setup_desktop(*, open_browser: bool = True, start_app: bool = True) -> Dict[
             (cfg.get("drive") or {}).get("web_view_link"),
             desk_cfg.get("download_url") or "https://www.google.com/drive/download/",
         ):
-            if not url:
-                continue
-            try:
-                webbrowser.open(url)
+            if url and _open_browser_url(url):
                 opened.append(url)
-            except Exception:
-                pass
     state["browser_opened"] = opened
     return state
 
@@ -627,13 +631,8 @@ Keine Secrets (.env, API-Keys, private GPG) aufs Handy-Backup laden.
     if open_browser:
         for key in ("drive_android", "one_android", "device_backup", "drive_folder"):
             url = links.get(key)
-            if not url:
-                continue
-            try:
-                webbrowser.open(url)
+            if url and _open_browser_url(url):
                 opened.append(url)
-            except Exception:
-                pass
     state["browser_opened"] = opened
     return state
 

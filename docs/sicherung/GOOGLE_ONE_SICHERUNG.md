@@ -1,6 +1,6 @@
 # Google One Sicherung — aktiv
 
-**Status:** ACTIVATED (`2026-07-15T15:08:40.484751+00:00`)
+**Status:** ACTIVATED (`2026-07-15T15:11:10.440910+00:00`)
 **Provider:** Google One + Drive
 **Landing:** https://one.google.com/?g1_landing_page=1
 **Storage:** https://one.google.com/storage
