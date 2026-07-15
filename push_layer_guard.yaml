@@ -1,0 +1,150 @@
+# Push Layer Guard — weave update structure into layers
+# Goal: block unwanted pushes, never block intentional wanted pushes
+# Known identifications only (no freemium; pseudo_inhouse_only)
+
+version: "1.0"
+platform_version: "10.0.0"
+policy: pseudo_inhouse_only
+freemium: false
+
+principle: >
+  Every push is classified against layer structure and known identities.
+  Unwanted pushes fail closed. Wanted pushes use explicit intent + known allow.
+
+# --- Known identities (authoritative) ---
+identities:
+  remote_urls:
+    - https://github.com/95guknow/fusion-hero-os.git
+    - git@github.com:95guknow/fusion-hero-os.git
+    - https://github.com/95guknow/fusion-hero-os
+  remotes:
+    - origin
+  branches_default_allow:
+    - main
+  platform_version_file: VERSION
+  platform_version: "10.0.0"
+  repo_name: fusion-hero-os
+  owner: 95guknow
+
+# Intent tokens — any one unlocks "wanted" path (does not skip secret denylist)
+intent:
+  env_keys:
+    - FUSION_PUSH_INTENT
+    - FUSION_ALLOW_PUSH
+  env_true_values: ["1", "true", "yes", "WANTED", "push-ok"]
+  commit_markers:
+    - "[push-ok]"
+    - "[push-intent]"
+    - "push-ok:"
+  # Conventional commits count as intentional (wanted) when not pure auto-save
+  conventional_prefixes:
+    - "feat:"
+    - "fix:"
+    - "docs:"
+    - "refactor:"
+    - "test:"
+    - "chore:"
+    - "perf:"
+    - "security:"
+
+# Auto-save identification (known) — push only with intent or allowlisted
+auto_save:
+  message_prefixes:
+    - "auto-save"
+    - "auto save"
+    - "autosave"
+  # Alone, auto-save to main is UNWANTED unless intent env set
+  require_intent_for_push: true
+
+# Hard denylist — always block (even with intent, secrets stay blocked)
+deny_globs:
+  - "**/.env"
+  - "**/.env.*"
+  - "**/*secret*"
+  - "**/*credentials*"
+  - "**/*.pem"
+  - "**/*.p12"
+  - "**/id_rsa"
+  - "**/id_ed25519"
+  - "**/mesh_live_inventory.json"
+  - "**/*private*key*"
+  - "**/google_application_credentials*.json"
+
+# Soft denylist — block unless intent
+soft_deny_globs:
+  - "**/*.gguf"
+  - "**/*.bin"
+  - "**/node_modules/**"
+  - "**/.venv/**"
+
+# Layer weave — path → layer id (known map, aligned with dual_timeline / unified)
+layers:
+  L0_foundation:
+    rank: 0
+    paths:
+      - VERSION
+      - fusion_hero_os/core/
+      - fusion_hero_os/engine/
+      - proof_registry.yaml
+      - push_layer_guard.yaml
+    push_default: allow_with_intent_or_conventional
+  L1_mainframe:
+    rank: 1
+    paths:
+      - 03_Code/Dashboard/
+      - fusion_hero_os/methodology/
+      - scripts/
+    push_default: allow_with_intent_or_conventional
+  L2_surface:
+    rank: 2
+    paths:
+      - docs/
+      - docs/dissertation/
+      - docs/mesh/
+      - docs/training/
+      - README.md
+      - BEST_VERSION.md
+    push_default: allow_with_intent_or_conventional
+  L3_creative_train:
+    rank: 3
+    paths:
+      - creative_inhouse_services.yaml
+      - training_dual_timeline.yaml
+      - llm_free_services.yaml
+      - fusion_hero_os/core/pseudo_inhouse
+      - fusion_hero_os/core/dual_timeline
+    push_default: allow_with_intent_or_conventional
+  L4_ascension:
+    rank: 4
+    paths:
+      - ascension_os/
+    push_default: allow_with_intent_or_conventional
+  L5_mesh:
+    rank: 5
+    paths:
+      - mesh_connectors.yaml
+      - mesh_service_coordination.yaml
+      - fusion_unified.yaml
+    push_default: allow_with_intent_or_conventional
+  L6_protected_local:
+    rank: 6
+    paths:
+      - .fusion/
+      - "**/*live_inventory*"
+    push_default: deny
+
+# Branch protections
+branches:
+  main:
+    require_identity_remote: true
+    block_force: true
+    block_delete: true
+    auto_save_needs_intent: true
+  "*":
+    require_identity_remote: true
+    block_force: true
+    auto_save_needs_intent: true
+
+# Allowed without extra intent if ALL changed paths are under these prefixes
+# (wanted docs/tests micro-fixes still need conventional or intent when on main with only auto-save msgs)
+always_scan: true

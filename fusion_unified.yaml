@@ -225,6 +225,7 @@ endpoints:
   openai_images: /v1/images/generations
   dual_timeline_status: /api/training/dual-timeline/status
   dual_timeline_run: /api/training/dual-timeline/run
+  push_layer_guard: push_layer_guard.yaml
   mainframe_hub: /mainframe
   dauer_vr: /mainframe/vr
   ide: /mainframe/ide

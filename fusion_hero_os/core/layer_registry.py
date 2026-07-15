@@ -27,6 +27,7 @@ PMS_CONFIG = REPO_ROOT / "PMS.yaml"
 PROOF_REGISTRY = REPO_ROOT / "proof_registry.yaml"
 GELTUNGSSTAND = REPO_ROOT / "hero-guide_geltungsstand.json"
 ERKENNTNISSE_INDEX = REPO_ROOT / "docs" / "v8" / "erkenntnisse_index.yaml"
+PUSH_LAYER_GUARD = REPO_ROOT / "push_layer_guard.yaml"
 
 
 def _load_yaml(path: Path) -> Dict[str, Any]:
