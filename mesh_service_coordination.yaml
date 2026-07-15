@@ -158,15 +158,21 @@ inhouse:
     env: FUSION_HYPERTHREADING=1
   qubo-anneal:
     path: qb_qubo.py
-    placement: [L1_mainframe, L3_cluster]
-    note: Small jobs local; large anneal/train → GKE
+    placement: [L3_cluster, L1_mainframe]
+    force_cluster: true
+    note: >
+      Default FORCE CLUSTER via poly_mesh_router. Local only if
+      FUSION_QUBO_LOCAL=1 AND FUSION_QUBO_FORCE_CLUSTER=0 (explicit operator override).
   fusion-stability-train:
     path: 03_Code/training/fusion_stability_train.py
     placement: L3_cluster
+    force_cluster: true
     k8s: infra/k8s/fusion-training/
+    note: Never start locally when router is active — GPU job may Pending on quota; use CPU fallback Job
   academia-curriculum-train:
     path: scripts/academia_curriculum_train.py
-    placement: [L1_mainframe, L3_cluster]
+    placement: [L3_cluster, L1_mainframe]
+    force_cluster: true
     purpose: Parallel self-train on operator Academia reading trail + Heroismus axioms
     curriculum: docs/training/ACADEMIA_CURRICULUM_v1.md
   dissertation-autopoiesis-autopolitik:
@@ -181,7 +187,9 @@ inhouse:
   service-coordinator:
     path: scripts/mesh_cluster_coordinator.py
     placement: [L1_mainframe, L3_cluster]
-    purpose: Unify inventory + placement decisions using cluster CPU when available
+    # plan may run on L1 to *decide*; execution of heavy cluster_jobs is L3-only
+    force_cluster: false
+    purpose: Unify inventory + placement; heavy work never dual-starts on L1
   race-condition-guard:
     path: fusion_hero_os/core/race_guard.py
     placement: [L1_mainframe, L2_mesh_anchor]

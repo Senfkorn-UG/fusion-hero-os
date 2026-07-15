@@ -1,0 +1,17 @@
+{
+  "generated_at": "2026-07-15T17:43:14.510139+00:00",
+  "gke_live": true,
+  "counts": {
+    "total": 15,
+    "cluster": 4,
+    "local_l1": 9,
+    "blocked": 0
+  },
+  "cluster_ids": [
+    "qubo-anneal",
+    "fusion-stability-train",
+    "academia-curriculum-train",
+    "service-coordinator"
+  ],
+  "blocked_ids": []
+}

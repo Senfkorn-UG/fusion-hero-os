@@ -181,90 +181,100 @@ def inventory(catalog: Dict[str, Any]) -> Dict[str, Any]:
 
 
 def plan(catalog: Dict[str, Any], inv: Dict[str, Any]) -> Dict[str, Any]:
-    """Build a placement plan for each in-house + external capability."""
-    online_tiers = set()
-    for m in inv.get("matched_roles") or []:
-        if m.get("live"):
-            online_tiers.add(m.get("tier"))
+    """Build placement via poly_mesh_router sole authority (no silent L1 for L3 work)."""
+    # Prefer dedicated router — highest tier wins; force_cluster never falls back to L1
+    try:
+        sys.path.insert(0, str(ROOT))
+        from fusion_hero_os.core.poly_mesh_router import probe_gke, route_all
 
-    # Cluster is "available" if kubeconfig exists (may still fail auth)
-    kube = Path.home() / ".kube" / "config"
-    if kube.is_file():
-        online_tiers.add("L3_cluster")
-
-    placements: List[Dict[str, Any]] = []
-    for name, svc in (catalog.get("inhouse") or {}).items():
-        raw = svc.get("placement")
-        candidates = raw if isinstance(raw, list) else [raw]
-        chosen = None
-        for c in candidates:
-            if c in online_tiers or c == "L4_external_saas":
-                chosen = c
-                break
-        if chosen is None:
-            chosen = candidates[0] if candidates else "L1_mainframe"
-            status = "deferred-offline"
-        else:
-            status = "ready"
-        placements.append(
-            {
-                "id": name,
-                "kind": "inhouse",
-                "placement": chosen,
-                "candidates": candidates,
-                "status": status,
-                "path": svc.get("path"),
-            }
-        )
-
-    for name, svc in (catalog.get("external") or {}).items():
-        placements.append(
-            {
-                "id": name,
-                "kind": "external",
-                "placement": svc.get("placement", "L4_external_saas"),
-                "owner_inhouse": svc.get("owner_inhouse"),
-                "type": svc.get("type"),
-                "status": "external-target",
-            }
-        )
-
-    # Anti-pattern checks
-    flags = []
-    for ap in catalog.get("anti_patterns") or []:
-        flags.append({"id": ap.get("id"), "description": ap.get("description"), "severity": "policy"})
-
-    # Prefer cluster for heavy jobs if L3 available
-    cluster_jobs = []
-    if "L3_cluster" in online_tiers:
-        for job_id, job in ((catalog.get("cluster_coordination") or {}).get("jobs") or {}).items():
-            cluster_jobs.append(
+        gke = probe_gke()
+        routed = route_all()
+        placements = []
+        for r in routed.get("routes") or []:
+            placements.append(
                 {
-                    "id": job_id,
-                    "description": job.get("description"),
-                    "cpu": job.get("cpu"),
-                    "memory": job.get("memory"),
-                    "args": job.get("args"),
-                    "status": "schedulable",
+                    "id": r.get("id"),
+                    "kind": r.get("kind"),
+                    "placement": r.get("chosen"),
+                    "candidates": r.get("candidates"),
+                    "status": r.get("status"),
+                    "path": r.get("path"),
+                    "force_cluster": r.get("force_cluster"),
+                    "router": "poly_mesh_router",
                 }
             )
-    else:
-        cluster_jobs.append(
-            {
-                "id": "_gate",
-                "status": "blocked",
-                "reason": "L3_cluster health gate not satisfied (no kubeconfig or no auth)",
-            }
-        )
-
-    return {
-        "ts": _utc_now(),
-        "online_tiers": sorted(t for t in online_tiers if t),
-        "placements": placements,
-        "cluster_jobs": cluster_jobs,
-        "anti_patterns": flags,
-        "routing_rules": catalog.get("routing_rules") or [],
-    }
+        # external targets still listed from catalog
+        for name, svc in (catalog.get("external") or {}).items():
+            placements.append(
+                {
+                    "id": name,
+                    "kind": "external",
+                    "placement": svc.get("placement", "L4_external_saas"),
+                    "owner_inhouse": svc.get("owner_inhouse"),
+                    "type": svc.get("type"),
+                    "status": "external-target",
+                    "router": "poly_mesh_router",
+                }
+            )
+        flags = []
+        for ap in catalog.get("anti_patterns") or []:
+            flags.append(
+                {"id": ap.get("id"), "description": ap.get("description"), "severity": "policy"}
+            )
+        cluster_jobs = []
+        if gke.get("ok"):
+            for job_id, job in ((catalog.get("cluster_coordination") or {}).get("jobs") or {}).items():
+                cluster_jobs.append(
+                    {
+                        "id": job_id,
+                        "description": job.get("description"),
+                        "cpu": job.get("cpu"),
+                        "memory": job.get("memory"),
+                        "args": job.get("args"),
+                        "status": "schedulable_on_cluster_only",
+                    }
+                )
+        else:
+            cluster_jobs.append(
+                {
+                    "id": "_gate",
+                    "status": "blocked",
+                    "reason": gke.get("error") or "GKE not live (kubectl Ready nodes required)",
+                }
+            )
+        return {
+            "ts": _utc_now(),
+            "online_tiers": (routed.get("routes") or [{}])[0].get("online_tiers")
+            or sorted({t for t in (routed.get("routes") or []) for t in (t.get("online_tiers") or [])}),
+            "placements": placements,
+            "cluster_jobs": cluster_jobs,
+            "anti_patterns": flags,
+            "routing_rules": catalog.get("routing_rules") or [],
+            "gke_probe": {
+                "ok": gke.get("ok"),
+                "ready_nodes": gke.get("ready_nodes"),
+                "context": gke.get("context"),
+                "error": gke.get("error"),
+            },
+            "router_counts": routed.get("counts"),
+            "sole_authority": "poly_mesh_router",
+            "no_local_dual_start": True,
+        }
+    except Exception as exc:  # noqa: BLE001
+        # Fail closed: do not invent L3 from bare kubeconfig
+        return {
+            "ts": _utc_now(),
+            "online_tiers": [],
+            "placements": [],
+            "cluster_jobs": [
+                {"id": "_gate", "status": "blocked", "reason": f"router_import_failed:{exc}"}
+            ],
+            "anti_patterns": [],
+            "routing_rules": catalog.get("routing_rules") or [],
+            "error": str(exc)[:400],
+            "sole_authority": "poly_mesh_router",
+            "no_local_dual_start": True,
+        }
 
 
 def atlas(catalog: Dict[str, Any]) -> Dict[str, Any]:
