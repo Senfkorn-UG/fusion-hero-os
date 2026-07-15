@@ -423,7 +423,12 @@ def build_file_manifest(*, base_url: Optional[str] = None) -> dict:
 def save_file_manifest(*, base_url: Optional[str] = None) -> dict:
     manifest = build_file_manifest(base_url=base_url)
     FILES_ROOT.mkdir(parents=True, exist_ok=True)
-    MANIFEST_PATH.write_text(json.dumps(manifest, indent=2, ensure_ascii=False), encoding="utf-8")
+    try:
+        from fusion_hero_os.core.race_guard import locked_atomic_write_json
+
+        locked_atomic_write_json(MANIFEST_PATH, manifest)
+    except ImportError:
+        MANIFEST_PATH.write_text(json.dumps(manifest, indent=2, ensure_ascii=False), encoding="utf-8")
     manifest["manifest_path"] = str(MANIFEST_PATH)
     return manifest
 
@@ -662,7 +667,12 @@ def sync_mesh_all(*, notify_phone: bool = True) -> dict:
         "phone_portal_url": manifest.get("phone_portal_url"),
     }
     FILES_ROOT.mkdir(parents=True, exist_ok=True)
-    SYNC_STATE_PATH.write_text(json.dumps(state, indent=2, ensure_ascii=False), encoding="utf-8")
+    try:
+        from fusion_hero_os.core.race_guard import locked_atomic_write_json
+
+        locked_atomic_write_json(SYNC_STATE_PATH, state)
+    except ImportError:
+        SYNC_STATE_PATH.write_text(json.dumps(state, indent=2, ensure_ascii=False), encoding="utf-8")
 
     if notify_phone:
         out["notify"] = notify_phone_mirror_updated(manifest)

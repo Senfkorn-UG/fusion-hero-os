@@ -383,8 +383,8 @@ def main(argv: Optional[List[str]] = None) -> int:
 
     if args.upload_gcs:
         report["gcs"] = upload_gcs(path, args.gcs_prefix)
-        # rewrite with gcs result
-        path.write_text(json.dumps(report, indent=2, ensure_ascii=False), encoding="utf-8")
+        # rewrite with gcs result (race-safe)
+        write_local(report, path.stem)
         write_local(report, "latest")
 
     if not args.quiet:

@@ -132,6 +132,11 @@ inhouse:
     path: scripts/mesh_cluster_coordinator.py
     placement: [L1_mainframe, L3_cluster]
     purpose: Unify inventory + placement decisions using cluster CPU when available
+  race-condition-guard:
+    path: fusion_hero_os/core/race_guard.py
+    placement: [L1_mainframe, L2_mesh_anchor]
+    purpose: Atomic writes + file locks against desktop/GCE multi-writer races
+
   ascension-os:
     path: ascension_os/
     placement: L1_mainframe

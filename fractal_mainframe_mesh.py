@@ -392,14 +392,25 @@ def save_fractal_tree(*, replicate_peers: bool = False) -> dict:
     FRACTAL_ROOT.mkdir(parents=True, exist_ok=True)
     SLICES_DIR.mkdir(parents=True, exist_ok=True)
 
+    try:
+        from fusion_hero_os.core.race_guard import locked_atomic_write_json
+    except ImportError:
+        locked_atomic_write_json = None  # type: ignore
+
     for sl in tree["slices"]:
         slice_path = SLICES_DIR / f"{sl['slice_hash']}.json"
-        slice_path.write_text(json.dumps(sl, indent=2, ensure_ascii=False), encoding="utf-8")
+        if locked_atomic_write_json is not None:
+            locked_atomic_write_json(slice_path, sl)
+        else:
+            slice_path.write_text(json.dumps(sl, indent=2, ensure_ascii=False), encoding="utf-8")
 
     manifest = {k: v for k, v in tree.items() if k != "slices"}
     manifest["slice_hashes"] = [s["slice_hash"] for s in tree["slices"]]
     manifest["storage_root"] = str(FRACTAL_ROOT)
-    MANIFEST_PATH.write_text(json.dumps(manifest, indent=2, ensure_ascii=False), encoding="utf-8")
+    if locked_atomic_write_json is not None:
+        locked_atomic_write_json(MANIFEST_PATH, manifest)
+    else:
+        MANIFEST_PATH.write_text(json.dumps(manifest, indent=2, ensure_ascii=False), encoding="utf-8")
 
     replicas = []
     if replicate_peers:
