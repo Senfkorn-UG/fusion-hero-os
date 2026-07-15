@@ -1,0 +1,10 @@
+# v10 Activation Record
+
+**Platform:** `10.0.0`
+**UTC:** 2026-07-15T13:19:59.551238+00:00
+**Local OK:** True
+**HTTP OK:** True
+
+Env pins: FUSION_PLATFORM_VERSION, FUSION_ALL_MODULES, FUSION_AUTO_LOAD, FUSION_HYPERTHREADING, FUSION_DISSERTATION_AS_OS, FUSION_V33_DESIGN, …
+
+Regenerate: `python scripts/activate_v10.py`
