@@ -8,6 +8,8 @@ metadata:
   labels:
     app.kubernetes.io/part-of: fusion-hero-os
     org: senfkorn-ug
+    app.kubernetes.io/version: "10.0.0"
+    fusion-hero-os/platform-version: "10.0.0"
 ---
 apiVersion: v1
 kind: ServiceAccount
@@ -24,6 +26,8 @@ metadata:
   namespace: fusion-training
   labels:
     app: fusion-training
+    app.kubernetes.io/version: "10.0.0"
+    fusion-hero-os/platform-version: "10.0.0"
     tier: tier1-l4
 spec:
   backoffLimit: 2
@@ -33,6 +37,8 @@ spec:
     metadata:
       labels:
         app: fusion-training
+    app.kubernetes.io/version: "10.0.0"
+    fusion-hero-os/platform-version: "10.0.0"
         tier: tier1-l4
     spec:
       serviceAccountName: fusion-training-ksa
