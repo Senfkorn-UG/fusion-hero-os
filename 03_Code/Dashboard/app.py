@@ -1388,6 +1388,13 @@ try:
 except Exception as _dt_err:
     print(f"[API] Dual-timeline training routes note: {_dt_err}")
 
+# === Multi-model control instances (max accuracy) ===
+try:
+    from control_instances_routes import router as _ctrl_router
+    app.include_router(_ctrl_router)
+except Exception as _ctrl_err:
+    print(f"[API] Control instances routes note: {_ctrl_err}")
+
 # === Businessplan + Energie/Subunternehmer-Preise ===
 try:
     from business_plan_routes import router as _bp_router

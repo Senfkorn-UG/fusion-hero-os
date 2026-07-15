@@ -1,0 +1,129 @@
+{
+  "generated_at": "2026-07-15T14:51:08.164602+00:00",
+  "instances_run": 8,
+  "instances_ok": 1,
+  "consensus": {
+    "agreement": true,
+    "score_band_tight": true,
+    "majority_size": 1,
+    "majority_answer": "internal_control: external model not used; verify against code/docs",
+    "mean_confidence": 50.0,
+    "mean_accuracy_self": 55.0,
+    "clusters": 1,
+    "instance_ids_majority": [
+      "control_internal"
+    ]
+  },
+  "accuracy_force": {
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "max_tokens": 2048,
+    "timeout_sec": 120
+  },
+  "results": [
+    {
+      "instance_id": "control_grok",
+      "provider": "grok",
+      "ok": false,
+      "confidence": 0.0,
+      "accuracy_self": 0.0,
+      "geltung": "Unbekannt",
+      "model": "grok-2-latest",
+      "source": "skip",
+      "latency_ms": 7.8678131103515625,
+      "error": "not configured",
+      "answer_preview": ""
+    },
+    {
+      "instance_id": "control_claude",
+      "provider": "claude",
+      "ok": false,
+      "confidence": 0.0,
+      "accuracy_self": 0.0,
+      "geltung": "Unbekannt",
+      "model": "claude-3-5-sonnet-20241022",
+      "source": "skip",
+      "latency_ms": 0.0,
+      "error": "not configured",
+      "answer_preview": ""
+    },
+    {
+      "instance_id": "control_gpt",
+      "provider": "gpt",
+      "ok": false,
+      "confidence": 0.0,
+      "accuracy_self": 0.0,
+      "geltung": "Unbekannt",
+      "model": "gpt-4o-mini",
+      "source": "skip",
+      "latency_ms": 0.0,
+      "error": "not configured",
+      "answer_preview": ""
+    },
+    {
+      "instance_id": "control_gemini",
+      "provider": "gemini",
+      "ok": false,
+      "confidence": 0.0,
+      "accuracy_self": 0.0,
+      "geltung": "Unbekannt",
+      "model": "gemini-2.0-flash",
+      "source": "skip",
+      "latency_ms": 0.0,
+      "error": "not configured",
+      "answer_preview": ""
+    },
+    {
+      "instance_id": "control_groq",
+      "provider": "groq",
+      "ok": false,
+      "confidence": 0.0,
+      "accuracy_self": 0.0,
+      "geltung": "Unbekannt",
+      "model": "llama-3.3-70b-versatile",
+      "source": "skip",
+      "latency_ms": 0.0,
+      "error": "not configured",
+      "answer_preview": ""
+    },
+    {
+      "instance_id": "control_openrouter",
+      "provider": "openrouter",
+      "ok": false,
+      "confidence": 0.0,
+      "accuracy_self": 0.0,
+      "geltung": "Unbekannt",
+      "model": "openai/gpt-4o-mini",
+      "source": "skip",
+      "latency_ms": 0.0,
+      "error": "not configured",
+      "answer_preview": ""
+    },
+    {
+      "instance_id": "control_ollama",
+      "provider": "ollama",
+      "ok": false,
+      "confidence": 0.0,
+      "accuracy_self": 0.0,
+      "geltung": "Unbekannt",
+      "model": "llama3.2",
+      "source": "ollama_fail",
+      "latency_ms": 2053.495168685913,
+      "error": "HTTPConnectionPool(host='127.0.0.1', port=11434): Max retries exceeded with url: /api/chat (Caused by NewConnectionError(\"HTTPConnection(host='127.0.0.1', port=11434): Failed to establish a new connec",
+      "answer_preview": ""
+    },
+    {
+      "instance_id": "control_internal",
+      "provider": "internal",
+      "ok": true,
+      "confidence": 50.0,
+      "accuracy_self": 55.0,
+      "geltung": "Fragment",
+      "model": "fusion-hero-internal",
+      "source": "internal",
+      "latency_ms": 0.0,
+      "error": null,
+      "answer_preview": "internal_control: external model not used; verify against code/docs"
+    }
+  ]
+}
