@@ -33,6 +33,7 @@ Design        ⊇  Kompendium V3.3
 | [dissertation/ACADEMIA_ABSTRACT_EN.md](dissertation/ACADEMIA_ABSTRACT_EN.md) | Abstract EN | textuelle Form |
 | [dissertation/VERWEIS_BIFOKALITAET_UNIVERSUM_GEHIRN_SM.md](dissertation/VERWEIS_BIFOKALITAET_UNIVERSUM_GEHIRN_SM.md) | Bifokal + SM | **Modell / OFFEN** |
 | [dissertation/PUBLICATION.md](dissertation/PUBLICATION.md) | Release-URLs | Spezifikation |
+| [dissertation/anhaenge/00_INDEX_ANHAENGE.md](dissertation/anhaenge/00_INDEX_ANHAENGE.md) | **Anhänge** Module/Funktionen aus dem Nichts | Herleitung + Spezifikation |
 | [mesh/GROK_INTERCONNECT.md](mesh/GROK_INTERCONNECT.md) | Control Plane | Spezifikation |
 | [../BEST_VERSION.md](../BEST_VERSION.md) | Operativer Kanon | ehrlich getrennt Roadmap |
 

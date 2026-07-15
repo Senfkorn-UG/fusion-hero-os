@@ -34,6 +34,18 @@ Siehe: [`ONTOLOGIE_DISSERTATION_IST_DAS_OS.md`](ONTOLOGIE_DISSERTATION_IST_DAS_O
 
 `Dissertation_Stephan_Hagen_Urban_Autopoiesis_Autopolitik_Fusion_Hero_OS_v1.0.docx`
 
+## Anhänge — Module & Funktionen aus dem Nichts
+
+Ausführliche Herleitungen (V3.3: Synthese · 6 Bögen · Geltungsmarken):
+
+| Anhang | Inhalt |
+|--------|--------|
+| [anhaenge/00_INDEX_ANHAENGE.md](anhaenge/00_INDEX_ANHAENGE.md) | Index |
+| A01–A09 | Fundament → Core → Engine → Methodik → Meta → Dashboard → Mesh → Modules → Genealogie |
+| [anhaenge/A10_Funktionskatalog_AST.md](anhaenge/A10_Funktionskatalog_AST.md) | AST-Vollkatalog (181 Klassen · 181 Top-Level-Funktionen · 78 Dateien) |
+
+Regenerate Katalog: `python scripts/generate_anhang_katalog.py`
+
 ## Kopien
 
 | Ort | Pfad |

@@ -30,3 +30,4 @@
 - GitHub Release `dissertation-v1.0` published with PDF/DOCX/abstracts
 - Local Desktop + Drive Streaming copies remain for offline use
 - **Ontology docs on GitHub:** root `README.md`, `BEST_VERSION.md`, `docs/DISSERTATION_AS_OS.md`, mesh/kompendium cross-links
+- **Anhänge (Herleitung aus dem Nichts):** `docs/dissertation/anhaenge/` (A01–A10 + Index)
