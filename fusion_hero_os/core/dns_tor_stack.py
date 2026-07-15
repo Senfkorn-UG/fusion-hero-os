@@ -241,9 +241,10 @@ def _encode_name(name: str) -> bytes:
 
 
 def _build_query(name: str, qtype: int = 1) -> bytes:
-    # standard A query
+    # standard A/AAAA query — DNS header is 12 bytes total
     tid = os.urandom(2)
-    header = tid + struct.pack("!HHHHHH", 0x0100, 1, 0, 0, 0, 0)
+    # flags RD=1, qdcount=1, ancount=0, nscount=0, arcount=0
+    header = tid + struct.pack("!HHHHH", 0x0100, 1, 0, 0, 0)
     return header + _encode_name(name) + struct.pack("!HH", qtype, 1)
 
 
@@ -304,30 +305,32 @@ def _handle_query(data: bytes, addr, sock: socket.socket) -> None:
 
     cfg = _cfg()
     tor_c = cfg.get("tor") or {}
-    ups = list(cfg.get("clearnet_upstream") or ["9.9.9.9", "1.1.1.1"])
+    ups = [u for u in (cfg.get("clearnet_upstream") or ["9.9.9.9", "1.1.1.1"]) if isinstance(u, str) and not u.startswith("http")]
 
     resp = None
-    if qname.endswith(".onion"):
+    if qname.endswith(".onion") or qname.endswith(".exit"):
         th = tor_c.get("dns_host") or "127.0.0.1"
-        tp = int(tor_c.get("dns_port") or 5354)
-        resp = _forward_udp(data, th, tp, timeout=8.0)
+        tp = int(tor_c.get("dns_port") or 8853)
+        resp = _forward_udp(data, th, tp, timeout=12.0)
     else:
-        # MagicDNS / clearnet: try clearnet first; Tailscale MagicDNS is OS-side
+        # clearnet; MagicDNS remains OS/Tailscale-side
         for u in ups:
-            if not isinstance(u, str) or u.startswith("http"):
-                continue
-            resp = _forward_udp(data, u, 53, timeout=2.0)
-            if resp:
+            resp = _forward_udp(data, u, 53, timeout=2.5)
+            if resp and len(resp) >= 12:
                 break
 
-    if resp:
-        # preserve transaction id
+    if not resp:
+        # SERVFAIL
+        flags = 0x8182
+        resp = data[:2] + struct.pack("!HHHH", flags, 1, 0, 0) + data[12:]
+    else:
         out = bytearray(resp)
         out[0:2] = data[0:2]
-        try:
-            sock.sendto(bytes(out), addr)
-        except OSError:
-            pass
+        resp = bytes(out)
+    try:
+        sock.sendto(resp, addr)
+    except OSError:
+        pass
 
 
 def serve(blocking: bool = True) -> Dict[str, Any]:
