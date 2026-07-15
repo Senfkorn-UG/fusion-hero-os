@@ -7,9 +7,10 @@
 **Hybrid AI / mainframe platform** | operative kanon **v10.0.0**  
 Core: **ALTE_Frau_95g Heroic Core** | additive over the v8.3 stack (BCG)
 
+## ´´
 > This public repository must not contain personal profile data, private
 > locations, or live Tailscale inventory (IPs, node IDs, private MagicDNS).
-> Runtime topology lives only on the operator machine / private config.
+> Runtime topology lives only on the operator machine / private config.``
 
 ---
 
