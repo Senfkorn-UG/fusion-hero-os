@@ -1,6 +1,4 @@
-Ja — die Fehler sind vor allem falsches Escaping und ein kaputter Codeblock. Hier ist die bereinigte Version:
 
-```md
 <img width="100%" src="https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=6,11,20,24,25&height=180&section=header&text=Fusion%20Hero%20OS%20v10&fontSize=50&fontColor=fff&fontAlignY=35&desc=Major%20Release%20%7C%20Autopoietic%20System%20Evolution&descAlignY=58&descSize=18" />
 
 <div align="center">
@@ -32,13 +30,4 @@ const release_v10 = {
 ```
 
 ```
-
-Die konkreten Fehler waren:
-- `\[` und `\]` statt normaler Markdown-Linksyntax
-- `\---` statt `---`
-- `\## typescript` statt echtem Codeblock mit ```typescript
-- abschließender Codeblock ohne öffnenden Codeblock
-- Zeilenumbruch mitten in `"Local AI model workflows"`
-
-Ich kann dir das auch direkt als **perfekte GitHub Release Description für v10** umschreiben.
-```
+ 
