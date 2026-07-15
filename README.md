@@ -1,111 +1,63 @@
-# Tailscale Mesh Integration – Fusion Hero OS v8
+<img width="100%" src="https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=6,11,20,24,25&height=180&section=header&text=95guknow&fontSize=55&fontColor=fff&fontAlignY=35&desc=Stephan%20Urban%20%7C%20Architect%20of%20Autopoietic%20Systems&descAlignY=58&descSize=18" />
 
-> **Stand:** v8.3.0 · 2026-07-11 · Mesh-Integration (09.07.2026) + Legacy-Spiegel + Dependency Atlas
+<div align="center">
 
-**Status:** Vollständig integriert (09.07.2026)  
-**Zweck:** Zero-Config Mesh-VPN + Phone-Bridge + Funnel für den gesamten Heimserver
+# 👨‍💻 Stephan Urban (95guknow)
 
-## Mesh-Prinzip: Jeder Konnektor = eigenes Teil
+**System Architect & AI Developer** | Python · Local AI Orchestration · Telemetry
 
-Kein Monolith. Jedes Mesh-Segment hat:
+<a href="https://github.com/95guknow">
+  <img src="https://readme-typing-svg.demolab.com/?font=Fira+Code&size=20&pause=1000&color=9333EA&center=true&vCenter=true&width=600&lines=Building+Fusion-Hero-OS;Local+LLM+Orchestration;Cyberpunk+Hacker+Aesthetics;System:+Heroic+Core+Active" alt="Typing SVG" />
+</a>
 
-- **Eigene ID** (`mesh-connector-github`, `mesh-connector-gmail`, …)
-- **Eigener Host-Knoten** (`mainframe` oder `desktop`)
-- **Eigene Health-Probe** (`/mesh/{connector}/status`)
-- **Eigener Tailscale-Tag** (`tag:fusion-connector-github`, …)
+[![GitHub](https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/95guknow)
 
-Registry: `mesh_connectors.yaml`
+<br>
 
-### Physische Knoten
+![Heroic Core](https://img.shields.io/badge/System-Heroic_Core_Loaded-00FF00?style=for-the-badge&logo=terminal&logoColor=black)
+![Cyberpunk](https://img.shields.io/badge/Aesthetic-Hyper_Glitch-8B008B?style=for-the-badge)
+![Status](https://img.shields.io/badge/💻_Mode-Autopolitics_Active-success?style=for-the-badge&labelColor=006400)
 
-| Knoten | Rolle | MagicDNS |
-|--------|-------|----------|
-| `mainframe` | Orchestrator (**Windows-Desktop**, kanonisch) | `device.example.ts.net` |
-| `desktop` | Alias → mainframe (gleicher PC) | `device.example.ts.net` |
-| `phone` | Mobile Client (Android) | `mobile-node.example.ts.net` |
-| `legacy-linux` | Archiviert (früherer Linux-Knoten) | `mainframe-host.example.ts.net` |
-
-Kanonische Rollen: `src/normal_os/integration/mesh_roles.yaml`
-
-### MCP-Konnektor-Segmente (je eigenständig)
-
-| Konnektor | Mesh-ID | Host |
-|-----------|---------|------|
-| GitHub | `mesh-connector-github` | desktop |
-| Gmail | `mesh-connector-gmail` | desktop |
-| Google Drive | `mesh-connector-google-drive` | desktop |
-| Google Calendar | `mesh-connector-google-calendar` | desktop |
-| Canva | `mesh-connector-canva` | desktop |
-| Gamma | `mesh-connector-gamma` | desktop |
-| Notion | `mesh-connector-notion` | desktop |
-| Vercel | `mesh-connector-vercel` | desktop |
-| HyperFrames | `mesh-connector-hyperframes` | desktop |
-| Tasks | `mesh-connector-tasks` | desktop |
-
-## Ein-Klick Mesh Setup
-
-### Von Windows (Git Bash) aus (empfohlen)
-
-```bash
-chmod +x run_on_heimgserver.sh
-./run_on_heimgserver.sh all
-```
-
-Einzelne Kommandos:
-```bash
-./run_on_heimgserver.sh install
-./run_on_heimgserver.sh start
-./run_on_heimgserver.sh funnel
-./run_on_heimgserver.sh status
-./run_on_heimgserver.sh mesh
-```
-
-### Direkt auf dem Linux-Heimserver
-
-```bash
-chmod +x tailscale_control.sh
-sudo ./tailscale_control.sh all
-sudo ./tailscale_control.sh mesh
-sudo ./tailscale_control.sh mesh-connector github
-```
-
-## Verfügbare Kommandos
-
-| Command | Beschreibung |
-|---------|-------------|
-| `install` | Installation + Authentifizierung |
-| `start` | Start + Service einrichten |
-| `status` | Tailscale-Status |
-| `mesh` | Alle Konnektor-Segmente anzeigen |
-| `mesh-connector <id>` | Einzelnes Segment prüfen |
-| `funnel` | Funnel für Hero Docs Server |
-| `notify` | Phone Notification Monitor |
-| `all` | Komplettes Mesh-Setup |
-
-## Erreichbare URLs (nach Funnel + MagicDNS)
-
-- **Hero Docs Server**: `https://device.example.ts.net`
-- **MasterSeed Status**: `https://device.example.ts.net/status`
-- **Tailscale Status**: `https://device.example.ts.net/tailscale/status`
-- **Mesh Overview**: `https://device.example.ts.net/mesh/status`
-- **Einzelner Konnektor**: `https://device.example.ts.net/mesh/github/status`
-- **Fusion Dashboard (lokal/Mainframe)**: `http://127.0.0.1:8000` / `http://device.example.ts.net:8000`
-
-## Dateien
-
-| Datei | Zweck |
-|-------|-------|
-| `mesh_connectors.yaml` | Registry aller Mesh-Segmente |
-| `tailscale_mesh_registry.py` | Health-Probes pro Konnektor |
-| `tailscale_control.sh` | Zentrales Control Center |
-| `tailscale_install.sh` | Installation + Login |
-| `tailscale_start.sh` | Start + Service |
-| `tailscale_status.py` | Tailscale-Status als JSON |
-| `tailscale_funnel.sh` | Funnel-Aktivierung |
-| `tailscale_phone_notify.py` | Phone Notifications |
-| `run_on_heimgserver.sh` | Remote-Ausführung per SSH |
-| `hero-docs-server.py` | Docs + Mesh-Endpoints |
+</div>
 
 ---
 
-**Layer 0 verankert** – Vollständig integriert in ALTE_Frau_95g Heroic Core v8 + HorkruxSelfUpdateProtocol.
+<div align="center">
+
+### 🧭 Navigation
+
+[📊 Stats](#-github-stats) · [👋 Über mich](#-über-mich) · [🛠️ Tech Stack](#️-tech-stack) · [🚀 Projekte](#-projekte)
+
+</div>
+
+---
+
+<div align="center">
+<img src="https://capsule-render.vercel.app/api?type=soft&color=gradient&customColorList=11,20,24&height=70&section=header&text=Über%20Mich&fontSize=28&fontColor=fff&fontAlignY=65&animation=fadeIn" width="100%" />
+</div>
+
+## 👋 Über mich
+
+```typescript
+const guknow = {
+  identity: "Stephan Urban",
+  alias:    "95guknow",
+  role:     "Software Developer / Systems Architect",
+  location: "📍 Hoyerswerda / Cyberspace",
+  
+  system:   "Heroic Core loaded & active ⚡",
+
+  focus: [
+    "🤖 Autopolitische Systemarchitektur & Fusion-Hero-OS",
+    "📊 Telemetrische Nervensysteme (Streamlit, Plotly)",
+    "🧠 Lokale KI-Inferenz & Orchestrierung (Ollama, OpenRouter)",
+  ],
+
+  stack: {
+    languages: ["Python", "Bash", "Markdown"],
+    tools:     ["Streamlit", "Pytest", "GitHub Actions", "Git"],
+  },
+
+  learning:  "Lokales Speech Recognition Training",
+  vibe:      "Droning Techno · ASMR · Counter-Strike · Glitch Art",
+};
