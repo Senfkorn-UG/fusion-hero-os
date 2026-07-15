@@ -1,0 +1,41 @@
+# Grok Interconnect — Abgreifen & Weiterentwickeln
+
+**Modul:** `fusion_hero_os/core/grok_interconnect.py`  
+**UI:** http://127.0.0.1:8000/mainframe/grok  
+**API:** `GET /api/grok/interconnect` · `POST /api/grok/interconnect/capture`  
+**State:** `~/.fusion/grok_interconnect.json` (race-guard atomic)
+
+## Zweck
+
+1. **Abgreifen** — Live-Graph aller Grok-Knoten und Kanten  
+2. **Weiterentwickeln** — Intent-Map, Growth-Flags, Architektur-Empfehlungen  
+
+## Knoten (Auszug)
+
+| ID | Kind | Rolle |
+|----|------|--------|
+| grok-cli | cli | Grok Build CLI |
+| grok-skill | skill | `~/.grok/skills/fusion-hero-os` |
+| grok-bridge | bridge | Dashboard Intent-Bridge |
+| grok-llm | llm | xAI API Framework |
+| grok-pc-bridge | bridge | optional :8765 |
+| dashboard | surface | :8000 |
+| mainframe-* | surface | Hub / VR / IDE / Worktree |
+| tailscale-mesh | mesh | Operator host |
+| gce-publish | mesh | L2 PDF mirror |
+| mcp-host | host | MCP session host |
+| mesh-coordinator | host | coord latest.json |
+| sync-grok-intern | sync | Skill/Workspace mirror |
+
+## Bridge-Intents (erweitert)
+
+`interconnect`, `mainframe`, `dauer_vr`, `ide`, `worktree`, `mesh`, `publish`, `race_guard`, `ops` (+ bestehende load_all, qubo, …)
+
+## CLI
+
+```powershell
+cd C:\Users\Admin\fusion-hero-os
+python -m fusion_hero_os.core.grok_interconnect
+# or
+python -c "from fusion_hero_os.core.grok_interconnect import capture, evolve; print(evolve(capture()).health_score)"
+```
