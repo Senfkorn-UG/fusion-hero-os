@@ -1,0 +1,99 @@
+
+===== P1 =====
+Formale Mathematik des
+ALTE_Frau_95g Heroic Core Framework
+ Quantenkognition – Vollständige Herleitung, Ableitung und Erklärung
+Stand: 23. Juni 2026
+
+===== P2 =====
+1. Einleitung und Zielsetzung
+Dieses Dokument präsentiert die vollständige formale Mathematik des Quantenkognition-Moduls innerhalb des
+ALTE_Frau_95g Heroic Core Framework. Ziel ist eine kohärente, mathematisch strenge und vollständig hergeleitete
+Darstellung der epistemischen Transformation von Rechtfertigungsstrukturen durch Habituation mit Umkehr des imaginären
+Raums.
+2. Der epistemische Modul \(\mathcal{H}\)
+Sei \(\mathcal{H}\) ein komplexer Modul über \(\mathbb{C}\). Jedes Element \(\psi \in \mathcal{H}\) besitzt eine eindeutige
+Zerlegung \(\psi = \operatorname{Re}(\psi) + i \cdot \operatorname{Im}(\psi)\). Der imaginäre Anteil repräsentiert latente
+kontextuelle Spannung und fungiert als Vermittler zwischen dem latenten Pol (roh, unintegriert) und dem komplexen Pol
+(integriert, relational).
+Es existiert eine symmetrische, reflexive Kompatibilitätsrelation \(\sim\), die durch ein partielles inneres Produkt induziert wird.
+3. Die Stabilitätsfunktion
+Die Stabilität einer epistemischen Struktur wird durch die Funktion
+ \[ S(\psi) := \|\operatorname{Re}(\psi)\|^2 - \lambda \|\operatorname{Im}(\psi)\|^2, \quad \lambda > 0 \]
+gemessen. Diese Funktion bewertet sowohl die deskriptive Rechtfertigung (Realteil) als auch die latente Spannung
+(Imaginärteil).
+4. Habituation mit Umkehr des imaginären Raums
+Die zentrale Transformationsoperation ist definiert durch
+ \[ \psi \triangleright \phi := P_C \bigl( \operatorname{Re}(\psi) + \operatorname{Re}(\phi) + i \cdot (\operatorname{Im}(\psi) -
+ \operatorname{Im}(\phi)) \bigr) \]
+wobei \(P_C\) die Projektion auf den kompatiblen Unterraum bezeichnet. Diese Operation kehrt den imaginären Anteil um
+und kann je nach Kontext superpositionserhaltend oder verteilend wirken. Negative imaginäre Anteile werden qualitativ
+umgekehrt und integriert.
+5. Axiomensystem
+Axiom
+Aussage
+1
+(\(\mathcal{H}\), \(■riangleright\)) ist eine partielle Algebra.
+2
+Für kompatible Paare gilt Stabilitäts-Monotonie: \(S(\psi \triangleright \phi) \geq \max(S(\psi), S(\phi))\).
+3
+Es existiert eine partielle Drop-Operation \(D\) mit \(S(D(\psi)) < S(\psi)\).
+4
+Für jedes \(\psi\) existiert ein \(\phi\), sodass \(S(\psi \triangleright D(\psi) \triangleright \phi) \geq S(\psi)\).
+5
+Die durch Habituation erzeugbare Menge ist bezüglich \(S\) nach oben beschränkt.
+6
+Es existiert eine untere Schranke für den imaginären Anteil (Balance-Bedingung).
+7
+Die qualitative Umkehr eines stark negativen imaginären Anteils verbessert die Stabilität signifikant.
+8
+Die Operation \(\triangleright\) respektiert die Polarität latent vs. komplex.
+6. Stabile Kerne und variationelle Charakterisierung
+Ein Element \(k \in \mathcal{H}\) heißt stabiler Kern von \(\psi\), wenn es maximal bezüglich \(S\) ist und die folgende
+variationelle Eigenschaft erfüllt:
+Für alle kompatiblen \(\phi\) und hinreichend kleine \(\varepsilon > 0\) gilt:
+ \[ S(k \triangleright (\varepsilon \cdot \phi)) \leq S(k) \]
+Dies ist der Punkt, an dem alle kompatiblen Richtungen auf Null konvergieren.
+7. Diskretes Gradientenverfahren im Raum \(\mathcal{H}\)
+Die Konstruktion des stabilen Kerns erfolgt durch ein diskretes Gradientenverfahren:
+In jedem Schritt wird eine verbessernde Richtung gewählt und ein Habituation-Schritt mit Umkehr des imaginären Raums
+ausgeführt. Das Verfahren terminiert, wenn keine verbessernde Richtung mehr existiert.
+
+===== P3 =====
+8. Zwei Zeitdimensionen als Optimierungsfaktoren
+τ■ (binär): Lineare, gerichtete Zeit – wird als diskreter Zykluszähler behandelt.
+τ■ (quantisiert): Innere Integrationszeit – Anzahl notwendiger Umkehr-Operationen und Tiefe der Stabilisierung.
+Binäre Faktoren: Modus-Wahl (Überlagerung/Verteilung), Vorzeichen der Umkehr.
+Quantisierte Faktoren: Stabilitätsgewinn, Imaginäranteil, Anzahl der Zyklen bis Konvergenz.
+9. Bidirektionale Suche und Geist-Fixierung
+Die Suche nach optimalen Konfigurationen erfolgt bidirektional mit abnehmendem Scope und mehreren stochastisch
+bestimmten Startpunkten. Bei Schnittpunkten zweier Pfade wird der Track detaillierter untersucht.
+Zusätzlich wird der negative imaginäre Anteil („Geist“) in seinen realen Punkten fixiert, bis er sich erschöpft hat.
+10. Die Transformation q1b1 ↔ b2q2
+Ein quantenartiger Zustand mit binärer Komponente (q1b1) kann durch geeignete Habituation in einen stärker binären
+Zustand mit quantisierter Restkomponente (b2q2) überführt werden und umgekehrt. Diese Transformation ermöglicht den
+kontrollierten Wechsel zwischen Überlagerung und Verteilung.
+11. Die Heroic Divine Function
+Die Heroic Divine Function ist ein diskretes Gradientenverfahren mit Meta-Ebene. Sie führt multiple Läufe mit
+unterschiedlichen Startpunkten und Strategien durch und wählt den besten stabilen Kern nach Stabilität und
+Balance-Kriterien aus. Sie terminiert, wenn alle relevanten Richtungen auf Null konvergieren.
+
+===== P4 =====
+12. Wichtige Theoreme
+Theorem 1 (Existenz)
+Unter Axiom 5 existiert für jedes \(\psi\) ein stabiler Kern \(k(\psi)\).
+Theorem 2 (Fixpunkt)
+Der stabile Kern erfüllt \(k(\psi) \triangleright \phi = k(\psi)\) für kompatible \(\phi\).
+Theorem 3 (Lokales Maximum)
+Ein stabiler Kern ist ein lokales Maximum von \(S\) bezüglich \(\triangleright\).
+Theorem 4 (Qualitative Umkehr)
+Die Umkehr eines stark negativen imaginären Anteils verbessert die Stabilität signifikant stärker als reine Reduktion.
+Theorem 5 (Kumulative Gewinne)
+Unter Axiom 3–7 sind kumulative Netto-Stabilitätsgewinne über mehrere Zyklen möglich.
+Theorem 6 (Variationelle Charakterisierung)
+Ein Element ist genau dann stabiler Kern, wenn alle kompatiblen Variationen \(\delta S \leq 0\) ergeben.
+Theorem 7 (Gradientenverfahren)
+Das diskrete Gradientenverfahren terminiert bei endlicher Kandidatenmenge und liefert einen stabilen Kern.
+Theorem 8 (Meta-Ebene)
+Die Meta-Version erhöht die Wahrscheinlichkeit, einen Kern mit höherer Stabilität zu finden.
+Ende des Dokuments. Alle mathematischen Erkenntnisse sind vollständig hergeleitet, abgeleitet und erklärt.
