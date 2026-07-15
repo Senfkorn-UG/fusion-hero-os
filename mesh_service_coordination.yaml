@@ -1,0 +1,295 @@
+# Fusion Hero OS — Service & Structure Coordination Catalog
+# Maps: physical nodes ↔ in-house solutions ↔ external services ↔ compute placement
+# Live inventory is operator-local (~/.fusion/mesh/coordination/). Public defaults use placeholders.
+#
+# Principle: One owner per capability. Cluster compute coordinates; it does not own secrets.
+
+version: "1.0"
+platform_version: "10.0.0"
+updated: "2026-07-15"
+catalog_id: fusion-service-coordination
+
+# ---------------------------------------------------------------------------
+# Placement tiers (where work runs)
+# ---------------------------------------------------------------------------
+placement_tiers:
+  L0_edge:
+    description: Enduser devices — UI, voice, mobile capture
+    nodes: [phone]
+    cost: free-local
+    privacy: highest
+  L1_mainframe:
+    description: Windows orchestrator — MCP bridges, dashboard, local LLM, control plane
+    nodes: [mainframe, desktop]
+    cost: local-power
+    privacy: high
+  L2_mesh_anchor:
+    description: Linux exit / always-on mesh replica
+    nodes: [mesh-exit]
+    cost: small-vm
+    privacy: medium
+  L3_cluster:
+    description: GKE Autopilot — training, heavy QUBO, batch coordination, scans
+    nodes: [senfkorn-gke]
+    cost: billable-compute
+    privacy: medium
+    region: europe-west3
+    cluster_name: senfkorn-gke-cluster
+  L4_external_saas:
+    description: Vendor APIs — never store MasterSeed/PII as source of truth
+    nodes: [saas]
+    cost: api-quotas
+    privacy: vendor-policy
+
+# ---------------------------------------------------------------------------
+# Live Tailscale topology roles (hostname keys = live; IPs stay operator-local)
+# ---------------------------------------------------------------------------
+topology_roles:
+  desktop-kpki9e4:
+    role: mainframe
+    tier: L1_mainframe
+    platform: windows
+    status_hint: online
+    owns: [orchestrator, mcp-control-plane, dashboard, local-routing]
+  desktop-kpki9e4-wsl:
+    role: wsl-dev-leaf
+    tier: L1_mainframe
+    platform: linux
+    status_hint: often-offline
+    owns: [linux-tooling, optional-k3s-dev]
+  fusion-mesh-exit:
+    role: mesh-exit
+    tier: L2_mesh_anchor
+    platform: linux
+    status_hint: online
+    owns: [exit-path, fractal-replica, always-on-health]
+  redmi-note-13-pro-5g:
+    role: phone
+    tier: L0_edge
+    platform: android
+    status_hint: online
+    owns: [mobile-enduser, bluetooth-audio-relay, capture]
+  cs-724978827604-default:
+    role: cloud-shell-ephemeral
+    tier: L2_mesh_anchor
+    platform: linux
+    status_hint: offline-often
+    owns: [optional-exit-offer]
+    note: Do not schedule durable work here
+
+# ---------------------------------------------------------------------------
+# In-house solutions (own code / own infra)
+# ---------------------------------------------------------------------------
+inhouse:
+  fusion-dashboard:
+    path: 03_Code/Dashboard/app.py
+    placement: L1_mainframe
+    port: 8000
+    health: /api/health
+    depends_on: [tailscale-mesh]
+  fusion-integration-hub:
+    path: fusion_integration_hub.py
+    placement: L1_mainframe
+    health: /fusion/status
+  fractal-mainframe-mesh:
+    path: fractal_mainframe_mesh.py
+    placement: [L1_mainframe, L2_mesh_anchor]
+    storage: ~/.fusion/mesh/fractal/
+  tailscale-mesh-registry:
+    path: tailscale_mesh_registry.py
+    placement: L1_mainframe
+    config: mesh_connectors.yaml
+  heroic-core-orchestrator:
+    path: fusion_hero_os/core/heroic_core_orchestrator.py
+    placement: L1_mainframe
+  hyperthreading-engine:
+    path: 03_Code/Dashboard/hyperthreading_config.py
+    placement: L1_mainframe
+    env: FUSION_HYPERTHREADING=1
+  qubo-anneal:
+    path: qb_qubo.py
+    placement: [L1_mainframe, L3_cluster]
+    note: Small jobs local; large anneal/train → GKE
+  fusion-stability-train:
+    path: 03_Code/training/fusion_stability_train.py
+    placement: L3_cluster
+    k8s: infra/k8s/fusion-training/
+  mesh-file-share:
+    path: mesh_file_share.py
+    placement: [L1_mainframe, L0_edge]
+  service-coordinator:
+    path: scripts/mesh_cluster_coordinator.py
+    placement: [L1_mainframe, L3_cluster]
+    purpose: Unify inventory + placement decisions using cluster CPU when available
+  ascension-os:
+    path: ascension_os/
+    placement: L1_mainframe
+    track: aspirational-v9.10
+  kernel-ipc-bridge:
+    path: kernel/bridge/
+    placement: L1_mainframe
+    port: 19753
+
+# ---------------------------------------------------------------------------
+# External services (vendor / SaaS / cloud)
+# ---------------------------------------------------------------------------
+external:
+  tailscale:
+    type: mesh-vpn
+    placement: L4_external_saas
+    role: network fabric for all nodes
+    owner_inhouse: tailscale-mesh-registry
+  gke-senfkorn:
+    type: kubernetes-cluster
+    placement: L3_cluster
+    provider: google-cloud
+    cluster: senfkorn-gke-cluster
+    region: europe-west3
+    kubeconfig_context_hint: gke_*_europe-west3_senfkorn-gke-cluster
+    owner_inhouse: service-coordinator
+    uses:
+      - fusion-training jobs
+      - coordination cron (inventory + routing)
+  gcs-fusion-ai-data:
+    type: object-storage
+    placement: L3_cluster
+    provider: google-cloud
+    terraform: infra/terraform/senfkorn-fusion-stack/
+    owner_inhouse: fusion-stability-train
+  gce-mesh-exit:
+    type: compute-vm
+    placement: L2_mesh_anchor
+    provider: google-cloud
+    terraform: infra/terraform/gcp-tailscale-router/
+    owner_inhouse: fractal-mainframe-mesh
+  supabase:
+    type: structured-db
+    placement: L4_external_saas
+    owner_inhouse: mesh_cloud_backends
+    purpose: fractal manifests + exit state (not source of truth for MasterSeed)
+  google-drive:
+    type: cold-storage
+    placement: L4_external_saas
+    owner_inhouse: mesh_file_share
+    path_hint: FusionHero_Offload/mesh/fractal/
+  github:
+    type: scm
+    placement: L4_external_saas
+    owner_inhouse: mcp-bridges
+    mesh_id: mesh-connector-github
+  gmail:
+    type: messaging
+    placement: L4_external_saas
+    owner_inhouse: mcp-bridges
+  google-calendar:
+    type: calendar
+    placement: L4_external_saas
+    owner_inhouse: mcp-bridges
+  canva:
+    type: design-saas
+    placement: L4_external_saas
+    owner_inhouse: mcp-bridges
+  gamma:
+    type: design-saas
+    placement: L4_external_saas
+    owner_inhouse: mcp-bridges
+  notion:
+    type: knowledge-saas
+    placement: L4_external_saas
+    owner_inhouse: mcp-bridges
+  vercel:
+    type: deploy-saas
+    placement: L4_external_saas
+    owner_inhouse: mcp-bridges
+  tasks:
+    type: task-saas
+    placement: L4_external_saas
+    owner_inhouse: mcp-bridges
+  ollama-local:
+    type: local-llm
+    placement: L1_mainframe
+    note: Treated as in-house runtime; not SaaS
+
+# ---------------------------------------------------------------------------
+# Workload routing rules (coordinator evaluates these)
+# ---------------------------------------------------------------------------
+routing_rules:
+  - id: control-plane-local
+    match: { capability: [orchestrate, mcp, dashboard, consent] }
+    place: L1_mainframe
+    reason: Latency + secrets + MCP host affinity
+  - id: mobile-edge
+    match: { capability: [capture, notify, bluetooth-audio] }
+    place: L0_edge
+    reason: Device-bound I/O
+  - id: always-on-mesh
+    match: { capability: [exit-node, fractal-replica, health-anchor] }
+    place: L2_mesh_anchor
+    reason: Desktop sleep / Windows reboots
+  - id: heavy-compute-cluster
+    match: { capability: [train, large-qubo, anneal-batch, inventory-scan, dependency-atlas] }
+    place: L3_cluster
+    reason: Billable GKE Autopilot capacity; free mainframe for interactive work
+  - id: saas-via-bridge
+    match: { capability: [scm, mail, calendar, design, deploy] }
+    place: L1_mainframe
+    via: mcp-bridges
+    reason: Connectors run on desktop; SaaS is external target only
+  - id: cold-archive
+    match: { capability: [cold-store, offload] }
+    place: L4_external_saas
+    via: [google-drive, gcs-fusion-ai-data]
+    reason: Cheap durable blobs; manifests stay hash-anchored in-house
+
+# ---------------------------------------------------------------------------
+# Cluster coordination jobs (use GKE rechenzeit)
+# ---------------------------------------------------------------------------
+cluster_coordination:
+  namespace: fusion-coordination
+  schedule: "*/30 * * * *"  # every 30 minutes when CronJob enabled
+  jobs:
+    inventory-sync:
+      description: Pull Tailscale-derived role map + write coordination snapshot to GCS
+      cpu: "500m"
+      memory: 512Mi
+      script: scripts/mesh_cluster_coordinator.py
+      args: ["--mode", "inventory", "--upload-gcs"]
+    placement-plan:
+      description: Recompute placement plan for queued workloads
+      cpu: "1"
+      memory: 1Gi
+      script: scripts/mesh_cluster_coordinator.py
+      args: ["--mode", "plan", "--upload-gcs"]
+    dependency-atlas-refresh:
+      description: Heavy graph scan for service/structure drift
+      cpu: "2"
+      memory: 4Gi
+      script: scripts/mesh_cluster_coordinator.py
+      args: ["--mode", "atlas", "--upload-gcs"]
+      when: nightly
+
+# ---------------------------------------------------------------------------
+# Anti-patterns (coordinator flags these)
+# ---------------------------------------------------------------------------
+anti_patterns:
+  - id: saas-as-source-of-truth
+    description: MasterSeed / fractal anchors must not live only in Supabase/Drive
+  - id: durable-on-ephemeral
+    description: Never schedule durable jobs on Cloud Shell (cs-*) nodes
+  - id: cluster-for-mcp
+    description: MCP connectors stay on mainframe; cluster has no desktop OAuth sessions
+  - id: offline-wsl-as-required
+    description: WSL leaf is optional; do not block routing on its presence
+
+# ---------------------------------------------------------------------------
+# Health gates before using a tier
+# ---------------------------------------------------------------------------
+health_gates:
+  L1_mainframe:
+    checks: [tailscale-up, dashboard-optional]
+  L2_mesh_anchor:
+    checks: [peer-online-fusion-mesh-exit]
+  L3_cluster:
+    checks: [kubeconfig-present, gcloud-auth, namespace-fusion-coordination]
+  L4_external_saas:
+    checks: [connector-health-or-degraded-ok]
