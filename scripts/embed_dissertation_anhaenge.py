@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import re
 import shutil
 import subprocess
@@ -38,6 +39,7 @@ PDF = DOCX.with_suffix(".pdf")
 MARKER = "ANHANG_MODULE_FUNKTIONEN_AUS_DEM_NICHTS_V1"
 
 ORDER = [
+    "A00_V10_ACTIVATION.md",
     "00_INDEX_ANHAENGE.md",
     "A01_Fundament_aus_dem_Nichts.md",
     "A02_Core_Module_Herleitung.md",
@@ -248,7 +250,34 @@ def main() -> int:
         action="store_true",
         help="Embed even if marker already present (creates duplicate — avoid)",
     )
+    ap.add_argument(
+        "--activate-v10",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+        help="Activate full Fusion Hero OS v10.0.0 before embed (default: on)",
+    )
+    ap.add_argument(
+        "--dashboard-url",
+        default=os.environ.get("FUSION_DASHBOARD_URL", "http://127.0.0.1:8000"),
+        help="Dashboard base URL for v10 HTTP activation",
+    )
     args = ap.parse_args()
+
+    # --- automatic v10 full activation (default) ---
+    if args.activate_v10:
+        act = ROOT / "scripts" / "activate_v10.py"
+        print("=== auto-activate v10.0.0 ===")
+        r = subprocess.run(
+            [sys.executable, str(act), "--base", args.dashboard_url],
+            cwd=str(ROOT),
+        )
+        if r.returncode not in (0,):
+            # version pin hard-fail; still continue catalog if only HTTP soft issues
+            # activate_v10 returns 2 on VERSION mismatch
+            if r.returncode == 2:
+                print("ERROR: v10 platform pin failed")
+                return 2
+            print(f"activate_v10 exit {r.returncode} — continuing with local pin")
 
     if args.regen_catalog:
         gen = ROOT / "scripts" / "generate_anhang_katalog.py"
