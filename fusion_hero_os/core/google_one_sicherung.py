@@ -27,7 +27,14 @@ from typing import Any, Dict, List, Optional, Tuple
 
 ROOT = Path(__file__).resolve().parents[2]
 
-__all__ = ["activate", "status", "run_snapshot", "load_config"]
+__all__ = [
+    "activate",
+    "status",
+    "run_snapshot",
+    "load_config",
+    "setup_desktop",
+    "setup_phone",
+]
 
 
 def load_config() -> Dict[str, Any]:
@@ -297,6 +304,308 @@ def run_snapshot() -> Dict[str, Any]:
     return manifest
 
 
+def _find_drivefs_exe() -> Optional[str]:
+    bases = [
+        Path(os.environ.get("ProgramFiles", r"C:\Program Files")) / "Google" / "Drive File Stream",
+        Path(os.environ.get("ProgramFiles(x86)", r"C:\Program Files (x86)"))
+        / "Google"
+        / "Drive File Stream",
+    ]
+    for base in bases:
+        if not base.is_dir():
+            continue
+        versions = sorted(
+            [p for p in base.iterdir() if p.is_dir() and p.name[0].isdigit()],
+            key=lambda p: p.name,
+            reverse=True,
+        )
+        for v in versions:
+            exe = v / "GoogleDriveFS.exe"
+            if exe.is_file():
+                return str(exe)
+    return None
+
+
+def _drivefs_running() -> bool:
+    try:
+        import subprocess
+
+        r = subprocess.run(
+            ["tasklist", "/FI", "IMAGENAME eq GoogleDriveFS.exe"],
+            capture_output=True,
+            text=True,
+            timeout=15,
+        )
+        return "GoogleDriveFS.exe" in (r.stdout or "")
+    except Exception:
+        return False
+
+
+def _find_my_drive_paths() -> List[str]:
+    candidates = [
+        Path.home() / "Google Drive",
+        Path.home() / "Meine Ablage",
+        Path.home() / "My Drive",
+        Path("G:/Meine Ablage"),
+        Path("G:/My Drive"),
+        Path("G:/"),
+        Path("H:/Meine Ablage"),
+        Path("H:/My Drive"),
+    ]
+    found: List[str] = []
+    for p in candidates:
+        try:
+            if p.exists():
+                found.append(str(p))
+        except OSError:
+            continue
+    # letter scan
+    for letter in "DEFGHIJKLMNOPQRSTUVWXYZ":
+        for name in ("Meine Ablage", "My Drive", "Google Drive"):
+            p = Path(f"{letter}:/{name}")
+            try:
+                if p.is_dir():
+                    found.append(str(p))
+            except OSError:
+                continue
+    # unique preserve order
+    out: List[str] = []
+    for x in found:
+        if x not in out:
+            out.append(x)
+    return out
+
+
+def setup_desktop(*, open_browser: bool = True, start_app: bool = True) -> Dict[str, Any]:
+    """Start Drive for Desktop if present; stage local mirror of latest snapshot."""
+    cfg = load_config()
+    root = _local_root(cfg)
+    desk_cfg = cfg.get("desktop") or {}
+    exe = _find_drivefs_exe()
+    started = False
+    if start_app and exe and not _drivefs_running():
+        try:
+            os.startfile(exe)  # type: ignore[attr-defined]
+            started = True
+            time.sleep(3)
+        except Exception:
+            try:
+                import subprocess
+
+                subprocess.Popen([exe], close_fds=True)
+                started = True
+                time.sleep(3)
+            except Exception as e:  # noqa: BLE001
+                return {"ok": False, "error": f"start_failed:{e}", "exe": exe}
+
+    my_drives = _find_my_drive_paths()
+    mirror = root / "drive_mirror"
+    mirror.mkdir(parents=True, exist_ok=True)
+    snap_root = root / "snapshots"
+    latest = None
+    if snap_root.is_dir():
+        dirs = sorted(
+            [p for p in snap_root.iterdir() if p.is_dir()],
+            key=lambda p: p.stat().st_mtime,
+            reverse=True,
+        )
+        latest = dirs[0] if dirs else None
+    mirror_latest = mirror / "latest_snapshot"
+    if latest:
+        if mirror_latest.exists():
+            shutil.rmtree(mirror_latest, ignore_errors=True)
+        shutil.copytree(latest, mirror_latest)
+
+    cloud_folder = None
+    cloud_copied = False
+    folder_name = (cfg.get("drive") or {}).get("folder_name") or "Fusion_Hero_OS_Sicherung"
+    for md in my_drives:
+        cand = Path(md) / folder_name
+        try:
+            cand.mkdir(parents=True, exist_ok=True)
+            cloud_folder = str(cand)
+            if latest:
+                dest = cand / "snapshots" / latest.name
+                if not dest.exists():
+                    dest.parent.mkdir(parents=True, exist_ok=True)
+                    shutil.copytree(latest, dest)
+                    cloud_copied = True
+            break
+        except OSError:
+            continue
+
+    now = datetime.now(timezone.utc).isoformat()
+    state = {
+        "ok": True,
+        "device": "desktop",
+        "updated_at": now,
+        "drivefs_exe": exe,
+        "drivefs_running": _drivefs_running(),
+        "started_now": started,
+        "my_drive_paths": my_drives,
+        "cloud_fusion_folder": cloud_folder,
+        "cloud_copied_latest": cloud_copied,
+        "local_mirror": str(mirror_latest if latest else mirror),
+        "latest_snapshot": str(latest) if latest else None,
+        "drive_web_view_link": (cfg.get("drive") or {}).get("web_view_link"),
+        "plan_tb": (cfg.get("plan") or {}).get("capacity_tb", 5),
+        "needs_signin": not bool(my_drives),
+        "hint": (
+            "My Drive mount not visible yet — sign in via Google Drive tray icon, then re-run --desktop"
+            if not my_drives
+            else "Drive mount detected"
+        ),
+    }
+    (root / "google_one" / "DESKTOP_STATE.json").write_text(
+        json.dumps(state, indent=2, ensure_ascii=False), encoding="utf-8"
+    )
+    docs = ROOT / "docs" / "sicherung"
+    docs.mkdir(parents=True, exist_ok=True)
+    (docs / "DRIVE_FOR_DESKTOP.md").write_text(
+        "\n".join(
+            [
+                "# Google Drive for Desktop",
+                "",
+                f"**DriveFS running:** {state['drivefs_running']}",
+                f"**Exe:** `{exe or 'not found'}`",
+                f"**My Drive paths:** {', '.join(my_drives) or '(noch nicht gemountet — anmelden)'}",
+                f"**Cloud folder:** `{cloud_folder or 'pending sign-in'}`",
+                f"**Local mirror:** `{state['local_mirror']}`",
+                f"**Drive web:** {(cfg.get('drive') or {}).get('web_view_link')}",
+                "",
+                "## Setup",
+                "",
+                "```powershell",
+                "powershell -File scripts/setup_drive_desktop_phone.ps1",
+                "python -m fusion_hero_os.core.google_one_sicherung --desktop --status",
+                "```",
+                "",
+                "1. Taskleiste → Google Drive → **anmelden** (5-TB-Konto).",
+                "2. Einstellungen → Streamen oder Spiegeln.",
+                "3. Ordner `Fusion_Hero_OS_Sicherung` erscheint in My Drive.",
+                "4. Skript erneut ausführen → Snapshot in Cloud kopieren.",
+                "",
+                "Install falls fehlend: `winget install Google.GoogleDrive`",
+                "",
+            ]
+        ),
+        encoding="utf-8",
+    )
+    opened: List[str] = []
+    if open_browser:
+        for url in (
+            (cfg.get("drive") or {}).get("web_view_link"),
+            desk_cfg.get("download_url") or "https://www.google.com/drive/download/",
+        ):
+            if not url:
+                continue
+            try:
+                webbrowser.open(url)
+                opened.append(url)
+            except Exception:
+                pass
+    state["browser_opened"] = opened
+    return state
+
+
+def setup_phone(*, open_browser: bool = True) -> Dict[str, Any]:
+    """Write phone checklist + open app/store links (analog to desktop Drive)."""
+    cfg = load_config()
+    root = _local_root(cfg)
+    phone_cfg = cfg.get("phone") or {}
+    phone_dir = root / "phone"
+    phone_dir.mkdir(parents=True, exist_ok=True)
+    drive = cfg.get("drive") or {}
+    links = {
+        "drive_android": phone_cfg.get("drive_android")
+        or "https://play.google.com/store/apps/details?id=com.google.android.apps.docs",
+        "drive_ios": phone_cfg.get("drive_ios")
+        or "https://apps.apple.com/app/google-drive/id507874739",
+        "one_android": phone_cfg.get("one_android")
+        or "https://play.google.com/store/apps/details?id=com.google.android.apps.subscriptions.red",
+        "one_ios": phone_cfg.get("one_ios")
+        or "https://apps.apple.com/app/google-one/id1454120035",
+        "device_backup": phone_cfg.get("device_backup")
+        or "https://one.google.com/about/device-backup",
+        "drive_folder": drive.get("web_view_link")
+        or "https://drive.google.com/drive/folders/1a_jWLVX7p5Zw4UCOCbpZjGoAOaj3qUpO",
+        "storage": cfg.get("storage_url") or "https://one.google.com/storage",
+    }
+    checklist = f"""# Handy-Sicherung (analog Drive for Desktop)
+
+**Gleicher Account wie PC · Google One 5 TB**  
+**Cloud-Ordner:** [{drive.get('folder_name') or 'Fusion_Hero_OS_Sicherung'}]({links['drive_folder']})
+
+## Apps
+
+| App | Android | iOS |
+|-----|---------|-----|
+| Google Drive | [Play]({links['drive_android']}) | [App Store]({links['drive_ios']}) |
+| Google One | [Play]({links['one_android']}) | [App Store]({links['one_ios']}) |
+
+## Schritte (analog Desktop)
+
+| Desktop | Handy (analog) |
+|---------|----------------|
+| Drive for Desktop starten | Google Drive App öffnen |
+| Mit 5-TB-Konto anmelden | **Derselbe** Google-Account |
+| Ordner Fusion_Hero_OS_Sicherung | In Drive-App denselben Ordner öffnen |
+| Snapshot spiegeln | Optional: Dateien nach `phone_uploads` hochladen |
+| (PC-Dateien) | Google One → **Geräte-Backup** (Fotos, Kontakte, SMS/Android) |
+
+## Checkliste
+
+1. [ ] Google Drive App installiert + Login
+2. [ ] Google One App installiert + Login (5 TB sichtbar)
+3. [ ] Geräte-Backup aktiv: {links['device_backup']}
+4. [ ] Ordner `Fusion_Hero_OS_Sicherung` in Drive sichtbar
+5. [ ] Optional: wichtige Handy-Dateien nach `Fusion_Hero_OS_Sicherung/phone_uploads`
+6. [ ] Optional Mesh lokal: `powershell -File workstation/mesh_phone_mirror.ps1`
+
+## Policy
+
+Keine Secrets (.env, API-Keys, private GPG) aufs Handy-Backup laden.
+"""
+    (phone_dir / "HANDY_CHECKLISTE.md").write_text(checklist, encoding="utf-8")
+    docs = ROOT / "docs" / "sicherung"
+    docs.mkdir(parents=True, exist_ok=True)
+    (docs / "HANDY_CHECKLISTE.md").write_text(checklist, encoding="utf-8")
+    now = datetime.now(timezone.utc).isoformat()
+    state = {
+        "ok": True,
+        "device": "phone",
+        "updated_at": now,
+        "links": links,
+        "checklist_path": str(phone_dir / "HANDY_CHECKLISTE.md"),
+        "docs_path": str(docs / "HANDY_CHECKLISTE.md"),
+        "drive_folder": drive.get("folder_name"),
+        "plan_tb": (cfg.get("plan") or {}).get("capacity_tb", 5),
+        "operator_action": "install apps + enable device backup on phone",
+    }
+    (root / "google_one" / "PHONE_STATE.json").write_text(
+        json.dumps(state, indent=2, ensure_ascii=False), encoding="utf-8"
+    )
+    # create phone_uploads marker folder id note (cloud side via Drive app)
+    (phone_dir / "phone_uploads.README.txt").write_text(
+        "Upload phone files into Drive folder Fusion_Hero_OS_Sicherung/phone_uploads\n"
+        f"{links['drive_folder']}\n",
+        encoding="utf-8",
+    )
+    opened: List[str] = []
+    if open_browser:
+        for key in ("drive_android", "one_android", "device_backup", "drive_folder"):
+            url = links.get(key)
+            if not url:
+                continue
+            try:
+                webbrowser.open(url)
+                opened.append(url)
+            except Exception:
+                pass
+    state["browser_opened"] = opened
+    return state
+
+
 def status() -> Dict[str, Any]:
     cfg = load_config()
     root = _local_root(cfg)
@@ -315,17 +624,57 @@ def status() -> Dict[str, Any]:
         except Exception:
             pass
     drive = cfg.get("drive") or {}
+    desktop_state = None
+    phone_state = None
+    for name, attr in (
+        ("DESKTOP_STATE.json", "desktop"),
+        ("PHONE_STATE.json", "phone"),
+        ("DESKTOP_PHONE_STATE.json", "desktop_phone"),
+    ):
+        p = root / "google_one" / name
+        if p.is_file():
+            try:
+                data = json.loads(p.read_text(encoding="utf-8"))
+                if "desktop" in name.lower() and "phone" not in name.lower().replace(
+                    "desktop_phone", "x"
+                ):
+                    desktop_state = data
+                elif name.startswith("PHONE"):
+                    phone_state = data
+            except Exception:
+                pass
+    # simpler reload
+    dp = root / "google_one" / "DESKTOP_STATE.json"
+    if dp.is_file():
+        try:
+            desktop_state = json.loads(dp.read_text(encoding="utf-8"))
+        except Exception:
+            pass
+    pp = root / "google_one" / "PHONE_STATE.json"
+    if pp.is_file():
+        try:
+            phone_state = json.loads(pp.read_text(encoding="utf-8"))
+        except Exception:
+            pass
     return {
         "ok": True,
         "activated": bool(flag and flag.get("activated")),
         "flag": flag,
         "provider": "google_one",
+        "plan": cfg.get("plan"),
         "landing_url": cfg.get("landing_url"),
         "storage_url": cfg.get("storage_url"),
         "drive_folder_id": drive.get("folder_id"),
         "drive_web_view_link": drive.get("web_view_link"),
         "local_root": str(root),
         "last_snapshot": last_snap,
+        "desktop": desktop_state
+        or {
+            "drivefs_running": _drivefs_running(),
+            "drivefs_exe": _find_drivefs_exe(),
+            "my_drive_paths": _find_my_drive_paths(),
+        },
+        "phone": phone_state,
         "config_version": cfg.get("version"),
         "freemium": False,
         "secrets_excluded": True,
@@ -337,18 +686,24 @@ def main() -> int:
 
     ap = argparse.ArgumentParser(description="Google One Sicherung (Fusion Hero OS)")
     ap.add_argument("--activate", action="store_true", help="activate + open Google One URLs")
+    ap.add_argument("--desktop", action="store_true", help="Drive for Desktop setup")
+    ap.add_argument("--phone", action="store_true", help="Handy analog checklist + links")
     ap.add_argument("--no-browser", action="store_true")
     ap.add_argument("--snapshot", action="store_true")
     ap.add_argument("--status", action="store_true")
     args = ap.parse_args()
-    if args.status and not (args.activate or args.snapshot):
+    if args.status and not (args.activate or args.snapshot or args.desktop or args.phone):
         print(json.dumps(status(), indent=2, ensure_ascii=False))
         return 0
     out: Dict[str, Any] = {}
-    do_all = not (args.activate or args.snapshot or args.status)
+    do_all = not (args.activate or args.snapshot or args.status or args.desktop or args.phone)
 
     if args.activate or do_all:
         out["activate"] = activate(open_browser=not args.no_browser)
+    if args.desktop or do_all:
+        out["desktop"] = setup_desktop(open_browser=not args.no_browser)
+    if args.phone or do_all:
+        out["phone"] = setup_phone(open_browser=not args.no_browser)
     if args.snapshot or do_all:
         m = run_snapshot()
         out["snapshot"] = {
