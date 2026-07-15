@@ -7,7 +7,7 @@
 </div>
 
 ```typescript
-const guknow = {
+const 95guknow = {
   identity: "Stephan Urban",
   alias:    "95guknow",
   role:     "Sys-Architect & Dev",
