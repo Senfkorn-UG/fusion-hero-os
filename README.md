@@ -15,7 +15,7 @@
 <img src="https://capsule-render.vercel.app/api?type=soft&color=gradient&customColorList=11,20,24&height=70&section=header&text=System%20Konfiguration&fontSize=28&fontColor=fff&fontAlignY=65&animation=fadeIn" width="100%" />
 </div>
 
-```typescript
+``typescript
 const system_state = {
   active_core: "Heroic_Core_v1.0",
   mode:        "Autopoietic_Self_Sustaining",
