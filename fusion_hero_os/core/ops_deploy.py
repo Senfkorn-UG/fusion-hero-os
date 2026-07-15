@@ -28,7 +28,12 @@ def status() -> Dict[str, Any]:
     }
 
 
-def deploy(*, seal_masterseed: bool = True, train_timeline: bool = True) -> Dict[str, Any]:
+def deploy(
+    *,
+    seal_masterseed: bool = True,
+    train_timeline: bool = True,
+    inside_out_inventory: bool = False,
+) -> Dict[str, Any]:
     """Private deploy: local vault + local training. No public push."""
     t0 = time.time()
     out: Dict[str, Any] = {
@@ -37,6 +42,23 @@ def deploy(*, seal_masterseed: bool = True, train_timeline: bool = True) -> Dict
         "started_at": datetime.now(timezone.utc).isoformat(),
         "steps": [],
     }
+    if inside_out_inventory:
+        try:
+            from fusion_hero_os.core.inside_out_inventory import run_inventory
+
+            inv = run_inventory(write=True)
+            out["steps"].append(
+                {
+                    "step": "inside_out_inventory",
+                    "ok": bool(inv.get("ok")),
+                    "files": (inv.get("counts") or {}).get("files"),
+                    "items": (inv.get("counts") or {}).get("items"),
+                    "paths": inv.get("paths"),
+                }
+            )
+        except Exception as e:  # noqa: BLE001
+            out["steps"].append({"step": "inside_out_inventory", "ok": False, "error": str(e)[:200]})
+
     if seal_masterseed:
         try:
             from fusion_hero_os.core.masterseed_vault import seal_all_modules, export_public_display
