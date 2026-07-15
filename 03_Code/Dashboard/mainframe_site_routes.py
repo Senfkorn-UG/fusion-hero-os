@@ -28,7 +28,7 @@ _BASE = Path(__file__).resolve().parent
 _TEMPLATES = _BASE / "templates"
 
 # Repo root: 03_Code/Dashboard -> parents[2] = fusion-hero-os
-_DEFAULT_REPO = Path(os.getenv("FUSION_REPO_ROOT", _BASE.parents[1])).resolve()
+_DEFAULT_REPO = Path(os.getenv("FUSION_REPO_ROOT", _BASE.parents[2])).resolve()
 _SKIP_DIR = {
     ".git", ".venv", "venv", "node_modules", "__pycache__", ".pytest_cache",
     ".mypy_cache", "dist", "build", ".cursor", ".cargo", ".npm",

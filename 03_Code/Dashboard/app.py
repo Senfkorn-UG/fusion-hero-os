@@ -1353,6 +1353,13 @@ try:
 except Exception as _ops_err:
     print(f"[API] Mainframe ops routes note: {_ops_err}")
 
+# === Mainframe Website (Dauer-VR + IDE + hyperlinked worktree) ===
+try:
+    from mainframe_site_routes import router as _site_router
+    app.include_router(_site_router)
+except Exception as _site_err:
+    print(f"[API] Mainframe site routes note: {_site_err}")
+
 # === Businessplan + Energie/Subunternehmer-Preise ===
 try:
     from business_plan_routes import router as _bp_router
