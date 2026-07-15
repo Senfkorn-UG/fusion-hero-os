@@ -120,7 +120,33 @@ class GrokBridge:
 
         intents = self._detect_intents(message)
         ctx_block = self._build_context_block(health)
-        actions = [{"intent": i} for i in intents]
+        # Re-route all intents through canonical route table
+        route_plan: dict = {}
+        try:
+            from fusion_hero_os.core.grok_route_table import route_message
+
+            route_plan = route_message(message, intents)
+        except Exception as exc:  # noqa: BLE001
+            route_plan = {"ok": False, "error": str(exc)}
+        actions = []
+        for i in intents:
+            act = {"intent": i}
+            for r in route_plan.get("routes") or []:
+                if r.get("intent") == i:
+                    act["surface"] = r.get("surface")
+                    act["api"] = r.get("api")
+                    act["node_id"] = r.get("node_id")
+                    break
+            actions.append(act)
+        if not actions and route_plan.get("primary"):
+            p = route_plan["primary"]
+            actions.append({
+                "intent": p.get("intent", "interconnect"),
+                "surface": p.get("surface"),
+                "api": p.get("api"),
+                "node_id": p.get("node_id"),
+                "default_route": True,
+            })
 
         lines = [
             f"**{GROK_IDENTITY}**",
@@ -132,9 +158,18 @@ class GrokBridge:
             "",
         ]
 
+        if route_plan.get("primary"):
+            prim = route_plan["primary"]
+            lines.append(
+                f"**Route:** `{prim.get('intent')}` → "
+                f"`{prim.get('surface')}`"
+                + (f" · API `{prim.get('api')}`" if prim.get("api") else "")
+            )
+            lines.append("")
+
         if intents:
             lines.append(f"**Erkannte Aktionen:** {', '.join(intents)}")
-            lines.append("*(werden automatisch ausgeführt)*")
+            lines.append("*(über Grok-Route-Table umgeroutet)*")
             lines.append("")
 
         if orchestrator_result:
@@ -216,6 +251,9 @@ class GrokBridge:
                 "skill_loaded": self.skill_loaded,
                 "intents": intents,
                 "grok_intern_aligned": (health or {}).get("v12", {}).get("grok_intern_aligned"),
+                "route_plan": route_plan,
+                "redirect_hint": route_plan.get("redirect_hint"),
+                "entry_control_plane": "/mainframe/grok",
             },
         )
 

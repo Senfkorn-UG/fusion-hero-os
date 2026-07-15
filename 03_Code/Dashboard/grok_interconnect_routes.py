@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
-"""Grok Interconnect API + HTML surface."""
+"""Grok Interconnect API + HTML surface + global re-routes."""
 from __future__ import annotations
 
 import asyncio
 import sys
 from pathlib import Path
 
-from fastapi import APIRouter, Query
-from fastapi.responses import HTMLResponse
+from fastapi import APIRouter, Query, Request
+from fastapi.responses import HTMLResponse, RedirectResponse
 
 router = APIRouter(tags=["grok-interconnect"])
 _ROOT = Path(__file__).resolve().parents[2]
@@ -34,6 +34,87 @@ async def api_grok_interconnect_capture():
 
     g = await asyncio.to_thread(lambda: evolve(capture()).to_dict())
     return {"ok": True, "graph": g}
+
+
+@router.get("/api/grok/route")
+async def api_grok_route(
+    intent: str = Query(""),
+    message: str = Query(""),
+):
+    """Resolve intent/message through canonical route table (alles umgeroutet)."""
+    from fusion_hero_os.core.grok_route_table import all_routes, resolve, route_message
+
+    if intent:
+        rt = resolve(intent)
+        return {
+            "ok": bool(rt),
+            "intent": intent,
+            "target": rt.to_dict() if rt else None,
+            "table_entrypoints": all_routes()["entrypoints"],
+        }
+    intents = []
+    if message:
+        try:
+            from grok_bridge import get_grok_bridge
+
+            intents = get_grok_bridge()._detect_intents(message)
+        except Exception:  # noqa: BLE001
+            intents = []
+    plan = route_message(message, intents)
+    plan["intents"] = intents
+    plan["entrypoints"] = all_routes()["entrypoints"]
+    return plan
+
+
+@router.get("/api/grok/routes")
+async def api_grok_routes_table():
+    from fusion_hero_os.core.grok_route_table import all_routes
+
+    return all_routes()
+
+
+# --- Legacy path re-routes (alles entsprechend umrouten) ---
+
+@router.get("/grok")
+async def redir_grok():
+    return RedirectResponse("/mainframe/grok", status_code=307)
+
+
+@router.get("/interconnect")
+async def redir_interconnect():
+    return RedirectResponse("/mainframe/grok", status_code=307)
+
+
+@router.get("/ide")
+async def redir_ide():
+    return RedirectResponse("/mainframe/ide", status_code=307)
+
+
+@router.get("/worktree")
+async def redir_worktree():
+    return RedirectResponse("/mainframe/worktree", status_code=307)
+
+
+@router.get("/portal")
+async def redir_portal():
+    return RedirectResponse("/mainframe", status_code=307)
+
+
+@router.get("/api/interconnect")
+async def redir_api_interconnect():
+    return RedirectResponse("/api/grok/interconnect", status_code=307)
+
+
+@router.get("/api/grok/route/redirect")
+async def api_route_redirect(intent: str = Query("interconnect")):
+    """HTTP redirect to surface for an intent (for browsers / deep links)."""
+    from fusion_hero_os.core.grok_route_table import resolve
+
+    rt = resolve(intent) or resolve("interconnect")
+    target = (rt.surface if rt else "/mainframe/grok")
+    if target.startswith("http"):
+        return RedirectResponse(target, status_code=307)
+    return RedirectResponse(target, status_code=307)
 
 
 @router.get("/mainframe/grok", response_class=HTMLResponse)

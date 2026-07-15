@@ -405,6 +405,24 @@ async def api_grok_chat(payload: ChatPayload):
     msg = (payload.message or "").strip()
     if not msg:
         return {"status": "error", "error": "empty message"}
+    # Pre-route every chat message through interconnect route table
+    route_plan = {}
+    try:
+        import sys
+        from pathlib import Path
+
+        _root = Path(__file__).resolve().parents[2]
+        if str(_root) not in sys.path:
+            sys.path.insert(0, str(_root))
+        from fusion_hero_os.core.grok_route_table import route_message
+        from grok_bridge import get_grok_bridge
+
+        _intents = get_grok_bridge()._detect_intents(msg)
+        route_plan = route_message(msg, _intents)
+        route_plan["intents"] = _intents
+    except Exception as _route_exc:  # noqa: BLE001
+        route_plan = {"ok": False, "error": str(_route_exc)[:160]}
+
     from core.heroic_orchestration import classify_and_normalize
     from core.local_llama import get_local_llama, default_model_pool
     from core.provider_switcher import select_provider_for_query
