@@ -87,18 +87,24 @@ auto_save:
   require_intent_for_push: true
 
 # Hard denylist — always block (even with intent, secrets stay blocked)
+# Note: do NOT use broad *secret* (would block wanted_push_via_secrets.py)
 deny_globs:
   - "**/.env"
   - "**/.env.*"
-  - "**/*secret*"
-  - "**/*credentials*"
+  - "**/.env.local"
+  - "**/secrets.env"
+  - "**/credentials.json"
+  - "**/credentials*.json"
+  - "**/*credentials*.json"
   - "**/*.pem"
   - "**/*.p12"
   - "**/id_rsa"
   - "**/id_ed25519"
+  - "**/id_rsa.pub"
   - "**/mesh_live_inventory.json"
   - "**/*private*key*"
   - "**/google_application_credentials*.json"
+  - "**/.fusion/secrets/**"
 
 # Soft denylist — block unless intent
 soft_deny_globs:
