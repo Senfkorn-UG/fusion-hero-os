@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-15T17:53:10.075051+00:00",
+  "generated_at": "2026-07-15T18:08:47.116163+00:00",
   "attack_succeeded_on_insecure_mock": true,
   "attack_blocked_on_secure_mock": true,
   "public_damage_ct": 0.01,
@@ -7,6 +7,6 @@
   "dormant_days": 900,
   "grants": 2,
   "real_chain_transfer": false,
-  "sha16": "ab18ecd473a5cd16",
+  "sha16": "bc5185b464b233dd",
   "sandbox_only": true
 }

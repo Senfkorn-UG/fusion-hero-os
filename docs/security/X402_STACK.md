@@ -20,13 +20,28 @@ python scripts\run_x402_stack.py --broadcast-onchain  # needs FUSION_PUBLICITY_P
 | Instagram pack @95guknow | `docs/security/media/` · LIVE |
 | Config | `x402_hackability.yaml` |
 | API | `GET /api/x402/status` · `POST /api/x402/run` |
+| Mesh catalog | `mesh_service_coordination.yaml` → `x402-security-stack` |
 | Master report | `~/.fusion/x402/X402_STACK_MASTER.md` |
+
+## Last run
+
+**Generated:** 2026-07-15T18:08:47.117162+00:00
+
+| Layer | Status |
+|-------|--------|
+| Threat audit | **critical** · score 100.0 · gates 0/8 |
+| Sandbox evidence | **6/6 proved** |
+| Attack sim (insecure) | **SUCCESS** · SHA `bc5185b464b233dd` |
+| Attack sim (secure) | **BLOCKED** |
+| Public damage envelope | **0,01 ct** · dormant 900d · no chain transfer |
+| Media pack | PR #69 merged · @95guknow |
+| On-chain publicity | script ready (needs `FUSION_PUBLICITY_PRIVATE_KEY`) |
 
 ## Public surfaces
 
-- **GitHub:** https://github.com/95guknow/fusion-hero-os  
-- **Instagram:** https://www.instagram.com/95guknow/ (CONNECTED · LIVE)  
-- **PR media:** https://github.com/95guknow/fusion-hero-os/pull/69  
+- **GitHub:** https://github.com/95guknow/fusion-hero-os
+- **Instagram:** https://www.instagram.com/95guknow/ (CONNECTED · LIVE)
+- **PR media:** https://github.com/95guknow/fusion-hero-os/pull/69
 
 ## Policy
 
@@ -37,5 +52,5 @@ python scripts\run_x402_stack.py --broadcast-onchain  # needs FUSION_PUBLICITY_P
 
 ## Grok / GitHub notes
 
-Grok-on-GitHub suggestions (CI honesty, export modules, connectors) live elsewhere in the repo.  
+Grok-on-GitHub suggestions (CI honesty, export modules, connectors) live elsewhere in the repo.
 This stack is the **complete x402 security + media product** wired into v10.

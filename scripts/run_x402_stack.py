@@ -110,6 +110,15 @@ def _run_all(budget_eur: float = 500.0) -> dict:
     master_path = OUT / "x402_stack_master.json"
     master_path.write_text(json.dumps(master, indent=2, ensure_ascii=False), encoding="utf-8")
 
+    results_table = [
+        f"| Threat audit | **{threat.level}** · score {threat.risk_score} · gates {threat.controls_ok}/{threat.controls_total} |",
+        f"| Sandbox evidence | **{sandbox.get('proved_count')}/{sandbox.get('case_count')} proved** |",
+        f"| Attack sim (insecure) | **SUCCESS** · SHA `{attack.get('sha16')}` |",
+        f"| Attack sim (secure) | **BLOCKED** |",
+        f"| Public damage envelope | **0,01 ct** · dormant 900d · no chain transfer |",
+        f"| Media pack | PR #69 merged · @95guknow |",
+        f"| On-chain publicity | script ready (needs `FUSION_PUBLICITY_PRIVATE_KEY`) |",
+    ]
     md_lines = [
         "# x402 Full Stack — Master Report",
         "",
@@ -119,15 +128,9 @@ def _run_all(budget_eur: float = 500.0) -> dict:
         "",
         "## Results",
         "",
-        f"| Layer | Status |",
-        f"|-------|--------|",
-        f"| Threat audit | **{threat.level}** · score {threat.risk_score} · gates {threat.controls_ok}/{threat.controls_total} |",
-        f"| Sandbox evidence | **{sandbox.get('proved_count')}/{sandbox.get('case_count')} proved** |",
-        f"| Attack sim (insecure) | **SUCCESS** · SHA `{attack.get('sha16')}` |",
-        f"| Attack sim (secure) | **BLOCKED** |",
-        f"| Public damage envelope | **0,01 ct** · dormant 900d · no chain transfer |",
-        f"| Media pack | PR #69 merged · @95guknow |",
-        f"| On-chain publicity | script ready (needs `FUSION_PUBLICITY_PRIVATE_KEY`) |",
+        "| Layer | Status |",
+        "|-------|--------|",
+        *results_table,
         "",
         "## One-liner",
         "",
@@ -146,22 +149,77 @@ def _run_all(budget_eur: float = 500.0) -> dict:
     ]
     md_path = OUT / "X402_STACK_MASTER.md"
     md_path.write_text("\n".join(md_lines), encoding="utf-8")
-    (DOCS / "X402_STACK.md").write_text("\n".join(md_lines), encoding="utf-8")
+    # Durable package index (not overwritten by ephemeral-only content)
+    package_md = "\n".join(
+        [
+            "# x402 Full Stack — Fusion Hero OS",
+            "",
+            "**One command builds the whole thing.**",
+            "",
+            "```powershell",
+            r"cd C:\Users\Admin\fusion-hero-os",
+            "python scripts\\run_x402_stack.py",
+            "python scripts\\run_x402_stack.py --release          # optional gh release",
+            "python scripts\\run_x402_stack.py --broadcast-onchain  # needs FUSION_PUBLICITY_PRIVATE_KEY",
+            "```",
+            "",
+            "## Package contents",
+            "",
+            "| Piece | Path / command |",
+            "|-------|----------------|",
+            "| Threat audit (heroic math + gates + emergency) | `python -m fusion_hero_os.core.x402_hackability_audit --audit` |",
+            "| Sandbox evidence (6 cases) | `python -m fusion_hero_os.core.x402_sandbox_audit` |",
+            "| Attack sim SUCCESS (0,01 ct, dormant wallet) | `python -m fusion_hero_os.core.x402_sandbox_audit --simulate-attack` |",
+            "| On-chain publicity (Base self-tx) | `scripts/x402_onchain_publicity.py` |",
+            "| Instagram pack @95guknow | `docs/security/media/` · LIVE |",
+            "| Config | `x402_hackability.yaml` |",
+            "| API | `GET /api/x402/status` · `POST /api/x402/run` |",
+            "| Mesh catalog | `mesh_service_coordination.yaml` → `x402-security-stack` |",
+            "| Master report | `~/.fusion/x402/X402_STACK_MASTER.md` |",
+            "",
+            "## Last run",
+            "",
+            f"**Generated:** {master['generated_at']}",
+            "",
+            "| Layer | Status |",
+            "|-------|--------|",
+            *results_table,
+            "",
+            "## Public surfaces",
+            "",
+            "- **GitHub:** https://github.com/95guknow/fusion-hero-os",
+            "- **Instagram:** https://www.instagram.com/95guknow/ (CONNECTED · LIVE)",
+            "- **PR media:** https://github.com/95guknow/fusion-hero-os/pull/69",
+            "",
+            "## Policy",
+            "",
+            "- Attack path: **sandbox only**",
+            "- Public damage envelope: **0,01 ct** notional · long-dormant lab wallet · **no real chain drain**",
+            "- x402 is **not** source-of-truth for MasterSeed",
+            "- Emergency warn when production gates open (default)",
+            "",
+            "## Grok / GitHub notes",
+            "",
+            "Grok-on-GitHub suggestions (CI honesty, export modules, connectors) live elsewhere in the repo.",
+            "This stack is the **complete x402 security + media product** wired into v10.",
+            "",
+        ]
+    )
+    (DOCS / "X402_STACK.md").write_text(package_md, encoding="utf-8")
+    (DOCS / "X402_STACK_MASTER.md").write_text("\n".join(md_lines), encoding="utf-8")
+    summary = {
+        "generated_at": master["generated_at"],
+        "threat_level": threat.level,
+        "threat_score": threat.risk_score,
+        "sandbox_proved": f"{sandbox.get('proved_count')}/{sandbox.get('case_count')}",
+        "attack_insecure": attack.get("attack_succeeded_on_insecure_mock"),
+        "attack_secure_block": attack.get("attack_blocked_on_secure_mock"),
+        "attack_sha16": attack.get("sha16"),
+        "instagram": master["instagram"],
+        "github": master["github"],
+    }
     (DOCS / "x402_stack.summary.json").write_text(
-        json.dumps(
-            {
-                "generated_at": master["generated_at"],
-                "threat_level": threat.level,
-                "threat_score": threat.risk_score,
-                "sandbox_proved": f"{sandbox.get('proved_count')}/{sandbox.get('case_count')}",
-                "attack_insecure": attack.get("attack_succeeded_on_insecure_mock"),
-                "attack_secure_block": attack.get("attack_blocked_on_secure_mock"),
-                "attack_sha16": attack.get("sha16"),
-                "instagram": master["instagram"],
-                "github": master["github"],
-            },
-            indent=2,
-        ),
+        json.dumps(summary, indent=2),
         encoding="utf-8",
     )
 
@@ -169,6 +227,7 @@ def _run_all(budget_eur: float = 500.0) -> dict:
         str(master_path),
         str(md_path),
         str(DOCS / "X402_STACK.md"),
+        str(DOCS / "X402_STACK_MASTER.md"),
         str(DOCS / "x402_stack.summary.json"),
     ]
     return master
