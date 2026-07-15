@@ -15,7 +15,7 @@
   <img src="https://capsule-render.vercel.app/api?type=soft&color=gradient&customColorList=11,20,24&height=70&section=header&text=Release%20Overview&fontSize=28&fontColor=fff&fontAlignY=65&animation=fadeIn" width="100%" />
 </div>
 
-``typescript
+## typescript
 const release_v10 = {
   version: "v10.0.0",
   active_core: "Heroic_Core_v1.0",
@@ -28,23 +28,4 @@ const release_v10 = {
     "🧠 Refined local AI model workflows"
   ]
 };
-```
-
-## What's new
-
-* Improved orchestration across core system flows
-* Stronger real-time telemetry and system visibility
-* Refined local AI model integration and execution
-* Continued enforcement of self-sustaining architectural patterns
-
-## Notes
-
-This release marks a major step in the evolution of Fusion Hero OS, with a focus on orchestration, observability, and autonomous system behavior.
-
-```
-
-Possible next steps:
-- I can make it more technical and changelog-like.
-- I can make it shorter and more GitHub-release friendly.
-- I can rewrite it in German.
 ```
