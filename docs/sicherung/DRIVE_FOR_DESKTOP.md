@@ -3,7 +3,7 @@
 **DriveFS running:** True
 **Exe:** `C:\Program Files\Google\Drive File Stream\128.0.0.0\GoogleDriveFS.exe`
 **My Drive paths:** (noch nicht gemountet — anmelden)
-**Cloud folder:** `pending sign-in`
+**Cloud folder:** `C:\Users\Admin\Documents\Fusion_Hero_OS_Sicherung`
 **Local mirror:** `C:\Users\Admin\.fusion\sicherung\drive_mirror\latest_snapshot`
 **Drive web:** https://drive.google.com/drive/folders/1a_jWLVX7p5Zw4UCOCbpZjGoAOaj3qUpO
 

@@ -476,11 +476,16 @@ def setup_desktop(*, open_browser: bool = True, start_app: bool = True) -> Dict[
         "latest_snapshot": str(latest) if latest else None,
         "drive_web_view_link": (cfg.get("drive") or {}).get("web_view_link"),
         "plan_tb": (cfg.get("plan") or {}).get("capacity_tb", 5),
-        "needs_signin": not bool(my_drives),
+        "needs_signin": not bool(my_drives) and not cloud_copied,
+        "mirror_mode": "documents_desktop_folder_mirror",
         "hint": (
-            "My Drive mount not visible yet — sign in via Google Drive tray icon, then re-run --desktop"
-            if not my_drives
-            else "Drive mount detected"
+            "Snapshot placed under Documents/Desktop (DriveFS folder mirror → Google One 5TB)"
+            if cloud_copied
+            else (
+                "My Drive letter not visible — using Documents/Desktop mirror roots"
+                if not my_drives
+                else "Drive mount detected"
+            )
         ),
     }
     (root / "google_one" / "DESKTOP_STATE.json").write_text(
