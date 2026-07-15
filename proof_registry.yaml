@@ -32,10 +32,11 @@ claims:
       - tests/test_heroic_math_engine.py::test_reciprocity_holds_only_in_trivial_case
 
   - id: K17
-    statement: "Projektor-Eigenschaften (Knoten 17) sind im Modul NICHT implementiert (kein Code, kein Test) — bewusst offen statt behauptet."
-    status: OFFEN
-    proofs: []
-    notes: "Frueher als BEWIESEN behauptet; der zugehoerige Test wurde im Honesty-Rewrite entfernt, das Modul markiert Knoten 17 als nicht implementiert."
+    statement: "Orthogonalprojektor P=UU^T (Knoten 17): idempotent, symmetrisch, Spektrum in {0,1}, nicht-expansiv — SATZ im Code + pytest-Sweep."
+    status: BEWIESEN
+    proofs:
+      - tests/test_heroic_math_engine.py::test_k17_orthogonal_projector_properties
+    notes: "Sync 2026-07-15: Implementierung OrthogonalProjector + Sandbox-Asserts existierten; Registry war veraltet (OFFEN). CI-Knoten nachgezogen."
 
   - id: K19
     statement: "Monotone Fusion (Knoten 19) haelt im dokumentierten Beispiel, ist aber KEIN universelles Gesetz — per Sweep ~5-60 % Verletzungen (MODELL-Status)."
@@ -45,16 +46,17 @@ claims:
       - tests/test_heroic_math_engine.py::test_monotonicity_is_not_a_universal_law
 
   - id: K20
-    statement: "Banach-Fixpunkt (Knoten 20) ist im Modul NICHT implementiert (kein Code, kein Test) — bewusst offen statt behauptet."
-    status: OFFEN
-    proofs: []
-    notes: "Wie K17: frueherer Test entfernt; Modul markiert Knoten 20 als nicht implementiert."
-
-  - id: MATH-DOCSTRING-HONESTY
-    statement: "Der Modul-Docstring von heroic_math_engine behauptet die vier Knoten NICHT pauschal als erledigt und markiert Knoten 17/20 explizit als nicht implementiert (Waechter gegen Ueberclaim-Rueckfall)."
+    statement: "Banach-Kontraktion T(x)=Ax+c mit ||A||_2<1 (Knoten 20): eindeutiger Fixpunkt, geometrische Konvergenz — SATZ im Code + pytest."
     status: BEWIESEN
     proofs:
-      - tests/test_heroic_math_engine.py::test_module_docstring_does_not_reclaim_all_four_nodes
+      - tests/test_heroic_math_engine.py::test_k20_banach_contraction_fixed_point
+    notes: "Sync 2026-07-15: BanachContraction + Sandbox existierten; Registry war veraltet (OFFEN). CI-Knoten nachgezogen."
+
+  - id: MATH-DOCSTRING-HONESTY
+    statement: "Der Modul-Docstring von heroic_math_engine vermeidet pauschale 'Repariert alle Knoten'-Phrase und kennzeichnet K17/K20 als SATZ (nicht als nicht-implementiert)."
+    status: BEWIESEN
+    proofs:
+      - tests/test_heroic_math_engine.py::test_module_docstring_does_not_use_blanket_repair_claim
 
   - id: ISING-BRIDGE
     statement: "qubo_to_ising/ising_energy: E_QUBO(x) == E_Ising(s) fuer symmetrische Q unter x=(1+s)/2."
@@ -210,13 +212,19 @@ claims:
     statement: "N-Knoten-Gossip ueber mutual_sync konvergiert in erwartet O(log N) Runden zum globalen Fitness-Max."
     status: OFFEN
     proofs: []
-    notes: "Wird erst BEWIESEN mit fusion_hero_os/core/horkrux_gossip.py + Property-Test (Rundenzaehlung vs. log2(N)-Schranke). Paarweiser Kern ist via SYNC-SEMILATTICE gedeckt."
+    notes: >
+      MODELL/OFFEN — nicht mythologisieren. Paarweiser Sync-Kern via SYNC-SEMILATTICE
+      gedeckt. O(log N) Gossip braucht horkrux_gossip.py + Property-Test
+      (Rundenzaehlung vs log2(N)). Bis dahin: KEIN Betriebsclaim.
 
   - id: BFT-ROBUSTHEIT
     statement: "Das Sync-Netz ist robust gegen byzantinische Knoten (Aequivokation/Omission)."
     status: OFFEN
     proofs: []
-    notes: "Gemini-Claim, HERUNTERGESTUFT: CRDT-Monotonie allein ist KEIN BFT. Bewiesen ist nur fail-closed gegen Hash-Manipulation (SYNC-FAILCLOSED). Volle Aussage braeuchte Signaturen + eigenes Adversarial-Testmodell."
+    notes: >
+      MODELL/OFFEN — CRDT-Monotonie ist KEIN BFT. Bewiesen nur fail-closed gegen
+      Hash-Manipulation (SYNC-FAILCLOSED). Volle BFT-Aussage braucht Signaturen +
+      Adversarial-Testmodell. Nicht als Mesh-Sicherheit verkaufen.
 
   - id: QUBO-SCHEDULER-NUTZEN
     statement: "QUBO-basierte Task-Zuweisung schlaegt die Supervisor-Heuristik messbar (Durchsatz/Wartezeit auf synthetischen Workloads)."
