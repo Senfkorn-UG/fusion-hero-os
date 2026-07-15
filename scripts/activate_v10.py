@@ -138,6 +138,7 @@ def verify_local() -> Dict[str, Any]:
         ("layer_registry", "fusion_hero_os.core.layer_registry"),
         ("engine_mainframe", "fusion_hero_os.engine.mainframe"),
         ("methodology", "fusion_hero_os.methodology.core_modules"),
+        ("pseudo_inhouse_ai", "fusion_hero_os.core.pseudo_inhouse_ai"),
     ):
         try:
             __import__(path)

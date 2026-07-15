@@ -236,6 +236,15 @@ ROUTE_TABLE: Dict[str, RouteTarget] = {
         ["home", "gui"],
         "Classic dashboard (still available)",
     ),
+    "ai_inhouse": RouteTarget(
+        "ai_inhouse",
+        "/api/ai/inhouse/status",
+        "/api/ai/inhouse/chat",
+        "api",
+        "pseudo-inhouse-ai",
+        ["inhouse-ai", "free-ai", "openai-proxy", "v1-chat"],
+        "Pseudo-inhouse free SOTA AI facade",
+    ),
 }
 
 
