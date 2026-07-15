@@ -223,6 +223,8 @@ endpoints:
   openai_compatible: /v1/chat/completions
   openai_models: /v1/models
   openai_images: /v1/images/generations
+  dual_timeline_status: /api/training/dual-timeline/status
+  dual_timeline_run: /api/training/dual-timeline/run
   mainframe_hub: /mainframe
   dauer_vr: /mainframe/vr
   ide: /mainframe/ide

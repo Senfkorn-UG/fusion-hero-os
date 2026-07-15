@@ -254,6 +254,15 @@ ROUTE_TABLE: Dict[str, RouteTarget] = {
         ["creative", "image-gen", "video-gen", "pdf-gen", "graphics"],
         "Pseudo-inhouse creative facade (image/video/PDF/graphics)",
     ),
+    "dual_timeline": RouteTarget(
+        "dual_timeline",
+        "/api/training/dual-timeline/status",
+        "/api/training/dual-timeline/run",
+        "api",
+        "dual-timeline-training",
+        ["auto-train", "imaginary-time", "zeitstrahl", "tau"],
+        "Auto-training dual timeline t ∥ τ",
+    ),
 }
 
 

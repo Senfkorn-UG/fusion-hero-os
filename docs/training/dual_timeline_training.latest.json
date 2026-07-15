@@ -1,0 +1,26 @@
+{
+  "generated_at": "2026-07-15T14:08:52.206158+00:00",
+  "files": 704,
+  "samples": 4041,
+  "consistency_ok": true,
+  "tau_mean": 0.36367824573863655,
+  "t_min_iso": "2026-06-27T13:31:41.778134+00:00",
+  "t_max_iso": "2026-07-15T14:08:46.505551+00:00",
+  "roots": [
+    "03_Code",
+    "ascension_os",
+    "core",
+    "docs",
+    "fusion_hero_os",
+    "scripts",
+    "tests"
+  ],
+  "jsonl": "C:\\Users\\Admin\\.fusion\\training\\dual_timeline\\samples_dual_timeline.jsonl",
+  "timeline": "C:\\Users\\Admin\\.fusion\\training\\dual_timeline\\timeline_dual.json",
+  "policy": "pseudo_inhouse_only",
+  "freemium": false,
+  "axes": {
+    "t": "real",
+    "tau": "imaginary_structural"
+  }
+}

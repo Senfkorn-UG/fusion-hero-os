@@ -1381,6 +1381,13 @@ try:
 except Exception as _pic_err:
     print(f"[API] Pseudo-inhouse creative routes note: {_pic_err}")
 
+# === Dual-Timeline Auto-Training (real t ∥ imaginary τ) ===
+try:
+    from dual_timeline_routes import router as _dt_router
+    app.include_router(_dt_router)
+except Exception as _dt_err:
+    print(f"[API] Dual-timeline training routes note: {_dt_err}")
+
 # === Businessplan + Energie/Subunternehmer-Preise ===
 try:
     from business_plan_routes import router as _bp_router
