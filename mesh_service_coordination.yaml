@@ -218,12 +218,11 @@ external:
     type: research-network
     placement: L4_external_saas
     owner_inhouse: academia-curriculum-train
-    account_hint: Stephan Urban (Premium; mail-derived)
-    public_profile_candidate: https://independent.academia.edu/StephanUrban1
-    profile_confidence: low-medium
-    note: >
-      Train on Gmail reading trail + inhouse Heroismus, not auto-claimed
-      name-collision papers (e.g. HBV) until operator confirms profile.
+    account: Stephan Urban (Premium)
+    public_profile: https://independent.academia.edu/StephanUrban1
+    profile_confidence: confirmed
+    profile_confirmed_at: "2026-07-15"
+    domains: [existenz-reading, agentic-ai-reading, ancient-philosophy, hbv-hdv-virology]
     curriculum: docs/training/ACADEMIA_CURRICULUM_v1.md
     state: ~/.fusion/mesh/coordination/academia_training_state.json
 

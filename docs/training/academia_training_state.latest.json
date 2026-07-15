@@ -1,23 +1,41 @@
 {
-  "generated_at": "2026-07-15T09:02:57.605184+00:00",
-  "epoch": 1784106177.605184,
+  "generated_at": "2026-07-15T09:09:37.489501+00:00",
+  "epoch": 1784106577.4895017,
   "account": {
     "display_name": "Stephan Urban",
     "mail_hint": "stephan95g@…",
     "premium": true,
-    "public_profile_candidate": "https://independent.academia.edu/StephanUrban1",
-    "profile_confidence": "low-medium",
-    "profile_note": "Virology uploads likely name collision; confirm with operator"
+    "public_profile": "https://independent.academia.edu/StephanUrban1",
+    "profile_confidence": "confirmed",
+    "profile_confirmed_at": "2026-07-15",
+    "profile_note": "Operator confirmed: own Academia profile (StephanUrban1)",
+    "interests": [
+      "Body and Soul",
+      "Aristotle's Metaphysics",
+      "Hellenistic Philosophy",
+      "Plato and Platonism",
+      "Ancient Greek Philosophy"
+    ],
+    "followers": 5,
+    "following": 1,
+    "domains": [
+      "existenzphilosophie_reading",
+      "agentic_ai_reading",
+      "ancient_philosophy_interests",
+      "hbv_hdv_virology_uploads"
+    ]
   },
   "curriculum": {
     "ok": true,
     "path": "docs\\training\\ACADEMIA_CURRICULUM_v1.md",
-    "hash": "94fda95971d5755a",
-    "chars": 4455,
+    "hash": "bf258fa3c75c2815",
+    "chars": 5528,
     "clusters": {
       "existenzphilosophie": true,
       "agentic_ai": true,
-      "name_collision_gate": true
+      "ancient_philosophy": true,
+      "hbv_hdv": true,
+      "profile_confirmed": true
     },
     "links": [
       {
@@ -29,7 +47,7 @@
         "url": "https://independent.academia.edu/StephanUrban1"
       }
     ],
-    "bullet_count": 21,
+    "bullet_count": 33,
     "sample_bullets": [
       "Almut Furchert — *Das Stichwort: Existenz / Existieren*",
       "Michael Niehaus — *Existieren Sie bloß – oder leben Sie schon?*",
@@ -45,13 +63,17 @@
       "*Towards trustworthy agentic AI* (safety, robustness, privacy, system security)",
       "*Meta-reasoning in autonomous agents*",
       "*Real-time … YOLOv11n on edge devices* (edge compute — Cluster-relevant)",
-      "Artemision / Ephesos (antike Religion) — schwächer gekoppelt an Heroismus-Kanon",
-      "Ungeclaimte HBV/HDV-Papers auf Namens-Profilen",
-      "Mentions-Spam ohne Kontext (Name-Mentions von Dritten)",
-      "Keypass-/Auth-Links aus Mails (nie persistieren)",
-      "State: `~/.fusion/mesh/coordination/academia_training_state.json`",
-      "Engine-Hook: `scripts/academia_curriculum_train.py`",
-      "Catalog: `mesh_service_coordination.yaml` → external `academia`"
+      "Body and Soul",
+      "Aristotle's Metaphysics",
+      "Hellenistic Philosophy",
+      "Plato and Platonism",
+      "Ancient Greek Philosophy",
+      "*Binding of Duck Carboxypeptidase D to Duck Hepatitis B Virus* (2004)",
+      "*Infection of a human hepatoma cell line by hepatitis B virus* (PNAS 2002) — HepaRG-Modell",
+      "*Liver capsule: Entry and entry inhibition of HBV/HDV* (Hepatology 2016) — NTCP",
+      "*HDV replication sensed by MDA5 / IFN-β/λ* (J. Hepatology 2018)",
+      "*Medical Advances in Hepatitis D Therapy: Molecular Targets* (IJMS) — Hepcludex/entry inhibitors",
+      "*Delta cure meeting 2022* report; RNA-based HBV replication system (Science Advances 2023)"
     ]
   },
   "heroismus_axioms": [
@@ -108,7 +130,7 @@
     "score": 1.0,
     "phase": "curriculum_active",
     "axioms_loaded": 6,
-    "clusters_active": 3,
+    "clusters_active": 5,
     "notes": [
       "Gmail reading trail is source for cluster A/B",
       "Public HBV uploads on name profiles not ingested",
@@ -145,7 +167,37 @@
       "from_cluster": "B",
       "inhouse": "heroic_core_orchestrator",
       "status": "active"
+    },
+    {
+      "id": "ancient_philosophy_structure",
+      "from_cluster": "C",
+      "inhouse": "Axiom_II_Somatic + formal math",
+      "status": "active"
+    },
+    {
+      "id": "hbv_hdv_domain_pack",
+      "from_cluster": "D",
+      "inhouse": "domain knowledge (epistemically separate from heroism axioms)",
+      "status": "active",
+      "themes": [
+        "HepaRG infection model",
+        "NTCP entry receptor",
+        "HDV MDA5 / IFN sensing",
+        "entry inhibitors (Hepcludex)",
+        "cccDNA quantification",
+        "neutralizing antibodies (VIR-3434)"
+      ]
     }
+  ],
+  "profile_papers_sample": [
+    "Binding of Duck Carboxypeptidase D to Duck Hepatitis B Virus (2004)",
+    "Infection of a human hepatoma cell line by hepatitis B virus (PNAS 2002)",
+    "Liver capsule: Entry and entry inhibition of HBV/HDV (Hepatology 2016)",
+    "HDV replication sensed by MDA5 (J. Hepatology 2018)",
+    "Medical Advances in Hepatitis D Therapy: Molecular Targets",
+    "RNA-based system to study HBV replication (Science Advances 2023)",
+    "cccDNA quantification guidelines (Gut)",
+    "VIR-3434 broadly neutralizing antibody"
   ],
   "placement": {
     "curriculum_refresh": "L1_mainframe",
