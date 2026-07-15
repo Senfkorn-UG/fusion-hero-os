@@ -10,6 +10,8 @@
 1. **Abgreifen** — Live-Graph aller Grok-Knoten und Kanten  
 2. **Weiterentwickeln** — Intent-Map, Growth-Flags, Architektur-Empfehlungen  
 
+**Dissertation-as-OS:** Interconnect ist Ausdrucksorgan der Dissertation (das OS *ist* die Arbeit; Text nur eine Form) — siehe `docs/dissertation/ONTOLOGIE_DISSERTATION_IST_DAS_OS.md`.  
+
 ## Knoten (Auszug)
 
 | ID | Kind | Rolle |

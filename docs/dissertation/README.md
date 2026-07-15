@@ -7,7 +7,22 @@ Eine systemtheoretische, existenzphilosophische und softwarearchitektonische Gru
 **Version:** 1.0  
 **Kanon-Bezug:** Fusion Hero OS v10.0.0 (operativ) · Heroic Stack v8.3 · AscensionOS v9.x aspirational
 
-## Datei
+## Ontologie (verbindlich)
+
+> **Das gesamte Fusion Hero OS ist die Dissertation.**  
+> Der Text ist nur **eine** Form seines Ausdrucks.
+
+| Ausdruck | Beispiele |
+|----------|-----------|
+| Operativ | Repo, Runtime, Dashboard, Mesh, MCP |
+| Textuell | DOCX / PDF / Abstracts |
+| Empirisch | Heißlauf, Releases, Health, Coordinator |
+| Epistemisch | Proof Registry |
+| Archivalisch | Master Archive, Kompendia |
+
+Siehe: [`ONTOLOGIE_DISSERTATION_IST_DAS_OS.md`](ONTOLOGIE_DISSERTATION_IST_DAS_OS.md) · Bifokal-Verweis: [`VERWEIS_BIFOKALITAET_UNIVERSUM_GEHIRN_SM.md`](VERWEIS_BIFOKALITAET_UNIVERSUM_GEHIRN_SM.md)
+
+## Textuelle Ausdrucksform (Datei)
 
 `Dissertation_Stephan_Hagen_Urban_Autopoiesis_Autopolitik_Fusion_Hero_OS_v1.0.docx`
 

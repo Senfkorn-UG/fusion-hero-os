@@ -5,6 +5,8 @@
 **Tag:** `dissertation-v1.0`  
 **Repo:** https://github.com/95guknow/fusion-hero-os (public)
 
+**Ontologie:** Das gesamte Fusion Hero OS *ist* die Dissertation; PDF/DOCX/Abstract sind textuelle Ausdrucksformen. Vollform = öffentliches Repo + laufende Instanzen + Proof Registry + Mesh.
+
 ## Canonical URLs
 
 | Asset | URL |

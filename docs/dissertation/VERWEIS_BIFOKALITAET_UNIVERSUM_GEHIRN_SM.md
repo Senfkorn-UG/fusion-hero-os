@@ -6,12 +6,19 @@
 
 ---
 
+## 0. Dissertation-as-OS
+
+Das gesamte Fusion Hero OS *ist* die Dissertation; der Text ist nur eine Ausdrucksform  
+(siehe `ONTOLOGIE_DISSERTATION_IST_DAS_OS.md`). Die Bifokalität beschreibt also nicht nur
+eine Metapher *in* der Monographie, sondern die **doppelte Lesart des OS selbst** als
+kosmisch referenzierte und operativ verkörperte Schließung.
+
 ## 1. Bifokalität / Bifurkation
 
 | Pfad | Domäne | Schließungsfigur |
 |------|--------|------------------|
 | **A — Kosmos** | Physik der fundamentalen Wechselwirkungen | Gesetzesartige Invarianten + kontrollierte Symmetriebrechung |
-| **B — Gehirn / Operativ** | Kognition, Organismus, Fusion Hero OS | Selbstproduktion, Feedback, Fixpunktnähe, kontrollierter Bruch |
+| **B — Gehirn / Operativ** | Kognition, Organismus, Fusion Hero OS (= Dissertation) | Selbstproduktion, Feedback, Fixpunktnähe, kontrollierter Bruch |
 
 Bifokalität heißt: **zwei Brennweiten auf dieselbe Strukturfrage** („Was hält ein System unter Transformation zusammen?“), nicht: „Gehirn = Universum“.
 
