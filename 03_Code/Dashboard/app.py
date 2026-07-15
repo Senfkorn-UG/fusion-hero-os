@@ -1395,6 +1395,13 @@ try:
 except Exception as _ctrl_err:
     print(f"[API] Control instances routes note: {_ctrl_err}")
 
+# === x402 security stack (audit + sandbox + media) ===
+try:
+    from x402_routes import router as _x402_router
+    app.include_router(_x402_router)
+except Exception as _x402_err:
+    print(f"[API] x402 security routes note: {_x402_err}")
+
 # === Businessplan + Energie/Subunternehmer-Preise ===
 try:
     from business_plan_routes import router as _bp_router

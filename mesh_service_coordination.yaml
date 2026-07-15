@@ -194,6 +194,17 @@ inhouse:
     path: fusion_hero_os/core/race_guard.py
     placement: [L1_mainframe, L2_mesh_anchor]
     purpose: Atomic writes + file locks against desktop/GCE multi-writer races
+  x402-security-stack:
+    path: scripts/run_x402_stack.py
+    placement: L1_mainframe
+    purpose: >
+      Full x402 package — threat audit, sandbox evidence, attack sim (0.01 ct),
+      Instagram media, on-chain publicity prep. Sandbox-only attacks.
+    docs: docs/security/X402_STACK.md
+    api: [/api/x402/status, /api/x402/run]
+    media: docs/security/media/
+    github: https://github.com/95guknow/fusion-hero-os
+    instagram: https://www.instagram.com/95guknow/
 
   ascension-os:
     path: ascension_os/
