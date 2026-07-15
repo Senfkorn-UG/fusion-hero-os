@@ -38,7 +38,18 @@ TIER_RANK = {
 FORCE_CLUSTER_IDS = frozenset(
     {
         "fusion-stability-train",
-        "service-coordinator",  # coordination plan refresh prefers cluster
+        "academia-curriculum-train",
+        "qubo-anneal",
+    }
+)
+# Control plane stays on mainframe even if L3 is up (no dual cluster noise)
+CONTROL_PLANE_IDS = frozenset(
+    {
+        "service-coordinator",
+        "fusion-dashboard",
+        "heroic-core-orchestrator",
+        "tailscale-mesh-registry",
+        "fusion-integration-hub",
     }
 )
 # Prefer highest tier among candidates when multiple online
@@ -214,21 +225,21 @@ def route(
     candidates = [c for c in candidates if c]
 
     force = bool(svc.get("force_cluster")) or capability_id in FORCE_CLUSTER_IDS
-    # heavy list includes L3 and not only L1-first preference
-    if "L3_cluster" in candidates and capability_id in (
-        "fusion-stability-train",
-        "academia-curriculum-train",
-        "qubo-anneal",
-    ):
-        # qubo small may stay local only if explicitly size=small via env
+    if "L3_cluster" in candidates and capability_id in FORCE_CLUSTER_IDS:
         if capability_id == "qubo-anneal" and os.environ.get("FUSION_QUBO_LOCAL", "") == "1":
             force = False
         elif capability_id == "qubo-anneal":
             force = os.environ.get("FUSION_QUBO_FORCE_CLUSTER", "1") == "1"
-        elif capability_id == "fusion-stability-train":
+        else:
             force = True
 
-    chosen, status = _pick_tier(candidates, tiers, force_cluster=force)
+    prefer_high = PREFER_HIGH_TIER
+    if capability_id in CONTROL_PLANE_IDS and "L1_mainframe" in candidates:
+        prefer_high = False  # keep interactive control plane on L1
+
+    chosen, status = _pick_tier(
+        candidates, tiers, force_cluster=force, prefer_high=prefer_high
+    )
 
     deny_local = False
     if not allow_local_dual and force and chosen == "L1_mainframe":
