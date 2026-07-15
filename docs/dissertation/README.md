@@ -37,3 +37,13 @@ python scripts/expand_dissertation_shu.py
 ## Vermerk
 
 **[MAINFRAME GELADEN | ALTE_Frau_95g Heroic Core + Fusion Hero OS | Dissertation unter ausschließlicher Core-/Archiv-Nutzung]**
+
+
+## Band III + PDF + Academia (v1.0+band3)
+
+- Band III in DOCX integriert (Empirie + Proof-Tabellen)
+- Academia-Abstracts: `ACADEMIA_ABSTRACT_DE.md`, `ACADEMIA_ABSTRACT_EN.md`, `ACADEMIA_ABSTRACT_SHORT.txt`, `ACADEMIA_UPLOAD_PASTE.txt`
+- PDF: siehe `*.pdf` neben DOCX (LibreOffice-Export)
+- Manifest: `~/.fusion/mesh/coordination/dissertation_band3_manifest.json`
+
+Wörter ca.: 16992
