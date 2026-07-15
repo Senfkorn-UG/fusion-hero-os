@@ -114,6 +114,11 @@ inhouse:
     path: 03_Code/training/fusion_stability_train.py
     placement: L3_cluster
     k8s: infra/k8s/fusion-training/
+  academia-curriculum-train:
+    path: scripts/academia_curriculum_train.py
+    placement: [L1_mainframe, L3_cluster]
+    purpose: Parallel self-train on operator Academia reading trail + Heroismus axioms
+    curriculum: docs/training/ACADEMIA_CURRICULUM_v1.md
   mesh-file-share:
     path: mesh_file_share.py
     placement: [L1_mainframe, L0_edge]
@@ -209,6 +214,18 @@ external:
     type: local-llm
     placement: L1_mainframe
     note: Treated as in-house runtime; not SaaS
+  academia:
+    type: research-network
+    placement: L4_external_saas
+    owner_inhouse: academia-curriculum-train
+    account_hint: Stephan Urban (Premium; mail-derived)
+    public_profile_candidate: https://independent.academia.edu/StephanUrban1
+    profile_confidence: low-medium
+    note: >
+      Train on Gmail reading trail + inhouse Heroismus, not auto-claimed
+      name-collision papers (e.g. HBV) until operator confirms profile.
+    curriculum: docs/training/ACADEMIA_CURRICULUM_v1.md
+    state: ~/.fusion/mesh/coordination/academia_training_state.json
 
 # ---------------------------------------------------------------------------
 # Workload routing rules (coordinator evaluates these)
