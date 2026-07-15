@@ -5,6 +5,16 @@
 **Hook:** `scripts/install_push_guard_hooks.py` → `.git/hooks/pre-push`  
 **Policy:** pseudo_inhouse_only · freemium=false
 
+## Vocabulary
+
+| Op | Meaning |
+|----|---------|
+| **deploy** | **private** |
+| **push** | **public** (this guard applies) |
+| **merge** | **both** via dual timeline \(t \parallel \tau\) |
+
+See `docs/ops/DEPLOY_PUSH_MERGE.md` and `python scripts/ops.py vocabulary`.
+
 ## Goal
 
 | | Unwanted | Wanted |

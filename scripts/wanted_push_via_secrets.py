@@ -1,13 +1,15 @@
 #!/usr/bin/env python3
 """
-Trigger a *wanted* git push using operator secrets from .env / environment.
+Trigger a *wanted* PUBLIC push (ops vocabulary: push = public)
+using operator secrets from .env / environment.
 
-Never prints secret values. Hard denylist still blocks .env itself from being pushed.
+deploy = private · push = public · merge = both via timeline
+Never prints secret values. Hard denylist still blocks .env from being pushed.
 
 Usage:
   python scripts/wanted_push_via_secrets.py
   python scripts/wanted_push_via_secrets.py --dry
-  python scripts/wanted_push_via_secrets.py --remote origin --branch main
+  python scripts/ops.py push
 """
 from __future__ import annotations
 

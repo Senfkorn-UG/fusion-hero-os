@@ -226,6 +226,10 @@ endpoints:
   dual_timeline_status: /api/training/dual-timeline/status
   dual_timeline_run: /api/training/dual-timeline/run
   push_layer_guard: push_layer_guard.yaml
+  ops_vocabulary: ops_vocabulary.yaml
+  ops_deploy: private
+  ops_push: public
+  ops_merge: both_via_timeline
   mainframe_hub: /mainframe
   dauer_vr: /mainframe/vr
   ide: /mainframe/ide
