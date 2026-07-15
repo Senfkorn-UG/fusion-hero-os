@@ -345,27 +345,11 @@ def main() -> int:
         print(json.dumps(status(), indent=2, ensure_ascii=False))
         return 0
     out: Dict[str, Any] = {}
-    if args.activate or not (args.snapshot or args.status):
-        # default: activate if no flags? only if --activate
-        pass
-    if args.activate:
+    do_all = not (args.activate or args.snapshot or args.status)
+
+    if args.activate or do_all:
         out["activate"] = activate(open_browser=not args.no_browser)
-    if args.snapshot:
-        out["snapshot"] = {
-            k: run_snapshot()[k]
-            for k in (
-                "ok",
-                "snapshot_id",
-                "file_count",
-                "bytes_total",
-                "dest",
-                "drive_web_view_link",
-                "latency_ms",
-            )
-        }
-        # re-get full for keys
-        full = run_snapshot() if False else out  # noqa — keep single snapshot
-    if args.snapshot and "snapshot" not in out:
+    if args.snapshot or do_all:
         m = run_snapshot()
         out["snapshot"] = {
             "ok": m["ok"],
@@ -376,20 +360,7 @@ def main() -> int:
             "drive_web_view_link": m.get("drive_web_view_link"),
             "latency_ms": m["latency_ms"],
         }
-    if args.status:
-        out["status"] = status()
-    if not out:
-        # default: activate + snapshot + status
-        out["activate"] = activate(open_browser=not args.no_browser)
-        m = run_snapshot()
-        out["snapshot"] = {
-            "ok": m["ok"],
-            "snapshot_id": m["snapshot_id"],
-            "file_count": m["file_count"],
-            "bytes_total": m["bytes_total"],
-            "dest": m["dest"],
-            "latency_ms": m["latency_ms"],
-        }
+    if args.status or do_all:
         out["status"] = status()
     print(json.dumps(out, indent=2, ensure_ascii=False))
     return 0
