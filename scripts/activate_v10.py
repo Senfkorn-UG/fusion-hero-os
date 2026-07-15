@@ -146,21 +146,18 @@ def verify_local() -> Dict[str, Any]:
             out["core_imports"][label] = f"FAIL: {e}"
             out["errors"].append(f"import {path}: {e}")
 
-    # Registry load (best-effort)
+    # Registry load (best-effort) — full v10 module set
     try:
-        from fusion_hero_os.registry import Registry
+        from fusion_hero_os.registry import load_all, status_report
 
-        reg = Registry()
-        if hasattr(reg, "load_all"):
-            reg.load_all()
-        elif hasattr(reg, "ensure_loaded"):
-            reg.ensure_loaded()
-        status = {}
-        if hasattr(reg, "status"):
-            status = reg.status()
-        elif hasattr(reg, "list_modules"):
-            status = {"modules": reg.list_modules()}
-        out["registry"] = status if status else "loaded"
+        load_all()
+        rows = status_report()
+        out["registry"] = {
+            "modules": len(rows),
+            "loaded": sum(1 for r in rows if r.get("status") == "loaded"),
+            "failed": sum(1 for r in rows if r.get("status") in ("failed", "unavailable")),
+            "report": rows,
+        }
     except Exception as e:  # noqa: BLE001
         out["registry"] = f"note: {e}"
 

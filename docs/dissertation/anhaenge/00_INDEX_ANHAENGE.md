@@ -12,6 +12,7 @@ Diese Anhänge leisten, was der Haupttext verdichtet und der Code *ist*: sie **l
 
 | Anhang | Inhalt | Register |
 |--------|--------|----------|
+| [A00](A00_V10_ACTIVATION.md) | **v10.0.0 Auto-Activation** Record | Spezifikation |
 | [A01](A01_Fundament_aus_dem_Nichts.md) | Logik, Geltung, Modulbegriff, BaseModule | Herleitung |
 | [A02](A02_Core_Module_Herleitung.md) | `fusion_hero_os.core.*` | Herleitung + Spezifikation |
 | [A03](A03_Engine_QUBO_Mainframe.md) | QUBO, Annealing, Mainframe-Engine | Herleitung + Satz/Bedingt |
@@ -23,9 +24,13 @@ Diese Anhänge leisten, was der Haupttext verdichtet und der Code *ist*: sie **l
 | [A09](A09_Entwicklungsgeschichte_Null_bis_v10.md) | Genealogie der Entwicklung | Fragment/Historie + Spezifikation |
 | [A10](A10_Funktionskatalog_AST.md) | Vollkatalog Klassen/Funktionen (AST) — `fusion_hero_os` + `03_Code/Dashboard` | Spezifikation |
 
+**v10 aktivieren:** `python scripts/activate_v10.py`  
+
 **Regenerate Katalog:** `python scripts/generate_anhang_katalog.py`  
 
-**In DOCX/PDF einbetten:** `python scripts/embed_dissertation_anhaenge.py --regen-catalog --pdf`
+**Pipeline (v10 + Katalog + DOCX/PDF):** `python scripts/pipeline_dissertation_v10.py`  
+
+**In DOCX/PDF einbetten:** `python scripts/embed_dissertation_anhaenge.py --regen-catalog --pdf` (aktiviert v10 standardmäßig)
 
 ### Geltungsschnellreferenz
 

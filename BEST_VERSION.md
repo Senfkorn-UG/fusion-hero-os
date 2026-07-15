@@ -112,6 +112,11 @@ python -m pytest tests/test_version_consistency.py tests/test_archive_salt.py `
 powershell -File start_all.ps1
 # oder Fast-Boot: $env:FUSION_AUTO_LOAD=0; uvicorn in 03_Code/Dashboard
 
+# Alles auf v10 aktivieren (Registry + Dashboard load-all/autoload/interconnect)
+python scripts/activate_v10.py
+# Dissertation-Anhänge-Pipeline (aktiviert v10 automatisch)
+python scripts/pipeline_dissertation_v10.py
+
 # Release
 git tag -a v10.0.0 -m "Fusion Hero OS v10.0.0 — operational platform"
 git push origin main --tags

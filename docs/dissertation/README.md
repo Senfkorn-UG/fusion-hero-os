@@ -45,12 +45,18 @@ Ausführliche Herleitungen (V3.3: Synthese · 6 Bögen · Geltungsmarken):
 | [anhaenge/A10_Funktionskatalog_AST.md](anhaenge/A10_Funktionskatalog_AST.md) | AST-Vollkatalog (**239** Klassen · **722** Top-Level-Funktionen · **135** Dateien: `fusion_hero_os` + Dashboard) |
 
 ```powershell
-# Katalog neu + in DOCX/PDF einbetten
+# Empfohlen: v10 voll aktivieren + Katalog + DOCX/PDF
+python scripts/pipeline_dissertation_v10.py
+
+# oder einzeln (activate-v10 ist bei embed Standard AN)
+python scripts/activate_v10.py
 python scripts/generate_anhang_katalog.py
 python scripts/embed_dissertation_anhaenge.py --regen-catalog --pdf
 ```
 
-DOCX/PDF enthalten Band **„Anhang: Module und Funktionen — Herleitung aus dem Nichts“** (A01–A10).
+**v10 auto-activate:** `scripts/activate_v10.py` pinnt Platform `10.0.0`, lädt Registry, und triggert am Dashboard (`:8000`) `load-all` + Autoload full + Interconnect/Routes/Mainframe.
+
+DOCX/PDF enthalten Band **„Anhang: Module und Funktionen — Herleitung aus dem Nichts“** (A00 v10 · A01–A10).
 
 ## Kopien
 
