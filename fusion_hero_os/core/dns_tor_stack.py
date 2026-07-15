@@ -58,6 +58,7 @@ def find_tor_exe() -> Optional[str]:
         return env
     candidates = [
         Path.home() / "Desktop" / "Tor Browser" / "Browser" / "TorBrowser" / "Tor" / "tor.exe",
+        Path.home() / "OneDrive" / "Desktop" / "Tor Browser" / "Browser" / "TorBrowser" / "Tor" / "tor.exe",
         Path(os.environ.get("LOCALAPPDATA", ""))
         / "Tor Browser"
         / "Browser"
@@ -66,6 +67,7 @@ def find_tor_exe() -> Optional[str]:
         / "tor.exe",
         Path(r"C:\Program Files\Tor Browser\Browser\TorBrowser\Tor\tor.exe"),
         Path(r"C:\Program Files (x86)\Tor Browser\Browser\TorBrowser\Tor\tor.exe"),
+        Path(r"C:\Users\Admin\OneDrive\Desktop\Tor Browser\Browser\TorBrowser\Tor\tor.exe"),
     ]
     # winget installs often under LocalAppData\Tor Project or similar
     bases = [
