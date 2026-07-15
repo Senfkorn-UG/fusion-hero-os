@@ -43,6 +43,7 @@ Ausführliche Herleitungen (V3.3: Synthese · 6 Bögen · Geltungsmarken):
 | [anhaenge/00_INDEX_ANHAENGE.md](anhaenge/00_INDEX_ANHAENGE.md) | Index |
 | A01–A09 | Fundament → Core → Engine → Methodik → Meta → Dashboard → Mesh → Modules → Genealogie |
 | [anhaenge/A10_Funktionskatalog_AST.md](anhaenge/A10_Funktionskatalog_AST.md) | AST-Vollkatalog (**239** Klassen · **722** Top-Level-Funktionen · **135** Dateien: `fusion_hero_os` + Dashboard) |
+| [anhaenge/A11_Konversationsarchive_Multi_Instanz.md](anhaenge/A11_Konversationsarchive_Multi_Instanz.md) | **Konversationsarchive** auf mehreren Instanzen (Grok sessions; Struktur public, Dialogtext private) |
 
 ```powershell
 # Empfohlen: v10 voll aktivieren + Katalog + DOCX/PDF

@@ -51,6 +51,7 @@ ORDER = [
     "A08_Modules_Providers_Orchestration.md",
     "A09_Entwicklungsgeschichte_Null_bis_v10.md",
     "A10_Funktionskatalog_AST.md",
+    "A11_Konversationsarchive_Multi_Instanz.md",
 ]
 
 

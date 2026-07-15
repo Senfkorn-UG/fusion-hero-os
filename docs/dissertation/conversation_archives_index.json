@@ -1,0 +1,133 @@
+{
+  "ok": true,
+  "scanned_at": "2026-07-15T14:45:10.821536+00:00",
+  "totals": {
+    "instances": 7,
+    "session_search_db": 1,
+    "sessions": 51,
+    "bytes": 184222522,
+    "chat_history_files": 10
+  },
+  "instances": [
+    {
+      "role_hint": "drive_root_session",
+      "path_public": "C:\\",
+      "session_count": 1,
+      "file_count": 10,
+      "bytes": 30313,
+      "artifact_totals": {
+        "announcements": 1,
+        "dialog_stream": 1,
+        "event_stream": 1,
+        "prompt_context": 1,
+        "rewind": 1,
+        "session_summary": 1,
+        "system_prompt": 1,
+        "update_stream": 1
+      }
+    },
+    {
+      "role_hint": "git_workspace_session",
+      "path_public": "C:\\Program Files\\Git",
+      "session_count": 3,
+      "file_count": 212,
+      "bytes": 138362442,
+      "artifact_totals": {
+        "announcements": 1,
+        "dialog_stream": 1,
+        "event_stream": 1,
+        "code_hunks": 1,
+        "plan": 1,
+        "plan_mode": 1,
+        "prompt_context": 1,
+        "resources": 1,
+        "rewind": 1,
+        "signals": 1,
+        "session_summary": 1,
+        "system_prompt": 1,
+        "update_stream": 1,
+        "compaction_md": 2,
+        "terminal_log": 191
+      }
+    },
+    {
+      "role_hint": "user_home_session",
+      "path_public": "~",
+      "session_count": 40,
+      "file_count": 83,
+      "bytes": 7293688,
+      "artifact_totals": {
+        "terminal_log": 56,
+        "announcements": 1,
+        "dialog_stream": 2,
+        "event_stream": 2,
+        "code_hunks": 1,
+        "prompt_context": 2,
+        "resources": 2,
+        "rewind": 2,
+        "signals": 2,
+        "session_summary": 2,
+        "system_prompt": 2,
+        "update_stream": 2
+      }
+    },
+    {
+      "role_hint": "desktop_dashboard_instance",
+      "path_public": "~\\Desktop\\ALTE_Frau_95g_Beste_Version\\03_Code\\Dashboard",
+      "session_count": 1,
+      "file_count": 0,
+      "bytes": 0,
+      "artifact_totals": {}
+    },
+    {
+      "role_hint": "worktree_agent_instance",
+      "path_public": "~\\Desktop\\best-FuHOS\\.worktrees\\fusion-hero-os-agent-0aa308ee",
+      "session_count": 0,
+      "file_count": 1,
+      "bytes": 410,
+      "artifact_totals": {}
+    },
+    {
+      "role_hint": "worktree_agent_instance",
+      "path_public": "~\\Desktop\\best-FuHOS\\.worktrees\\normalOS-nummer2-8a9ae021",
+      "session_count": 1,
+      "file_count": 10,
+      "bytes": 35514,
+      "artifact_totals": {
+        "announcements": 1,
+        "dialog_stream": 1,
+        "event_stream": 1,
+        "prompt_context": 1,
+        "rewind": 1,
+        "session_summary": 1,
+        "system_prompt": 1,
+        "update_stream": 1
+      }
+    },
+    {
+      "role_hint": "system32_cwd_session",
+      "path_public": "C:\\Windows\\system32",
+      "session_count": 5,
+      "file_count": 428,
+      "bytes": 38500155,
+      "artifact_totals": {
+        "announcements": 4,
+        "dialog_stream": 5,
+        "event_stream": 5,
+        "code_hunks": 2,
+        "plan": 1,
+        "plan_mode": 2,
+        "prompt_context": 5,
+        "resources": 3,
+        "rewind": 4,
+        "signals": 3,
+        "session_summary": 5,
+        "system_prompt": 5,
+        "update_stream": 5,
+        "terminal_log": 352
+      }
+    }
+  ],
+  "appendix": "docs/dissertation/anhaenge/A11_Konversationsarchive_Multi_Instanz.md",
+  "principle": "Conversation archives on diverse instances are organs of the living dissertation (Dissertation-as-OS). Inventory records existence and structure; full chat bodies stay operator-local (privacy + volume)."
+}

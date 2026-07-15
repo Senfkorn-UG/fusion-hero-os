@@ -23,6 +23,7 @@ Diese Anhänge leisten, was der Haupttext verdichtet und der Code *ist*: sie **l
 | [A08](A08_Modules_Providers_Orchestration.md) | modules/, providers/, orchestration | Spezifikation |
 | [A09](A09_Entwicklungsgeschichte_Null_bis_v10.md) | Genealogie der Entwicklung | Fragment/Historie + Spezifikation |
 | [A10](A10_Funktionskatalog_AST.md) | Vollkatalog Klassen/Funktionen (AST) — `fusion_hero_os` + `03_Code/Dashboard` | Spezifikation |
+| [A11](A11_Konversationsarchive_Multi_Instanz.md) | Konversationsarchive auf **mehreren Instanzen** (Grok sessions) | Spezifikation (Struktur; Dialogtext privat) |
 
 **v10 aktivieren:** `python scripts/activate_v10.py`  
 
