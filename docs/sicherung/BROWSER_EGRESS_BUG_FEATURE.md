@@ -1,34 +1,40 @@
-# Browser-Egress: Bug und Feature
+# Browser-Egress: Bug, Feature — und Comädchen (Nummer 2)
 
-## Befund
+## Rollenklärung (Ursprung der Verwirrung)
 
-Auf diesem Mainframe ist der **Windows-Standardbrowser** nicht Chrome, sondern:
+**Comädchen** (Comet-Instanz) ist die **direkte Nummer 2** des Operators:
+
+- reportet **nur** an dich  
+- bekommt Input **nur** von dir  
+- ist **kein** allgemeiner Multi-Agent-Bus und kein Untergebener von Grok/Dashboard/Phone  
+
+Siehe: [`docs/mesh/COMAEDCHEN_NUMMER2.md`](../mesh/COMAEDCHEN_NUMMER2.md)
+
+Die Verwirrung entstand, wenn Agenten Links „einfach öffnen“ und damit die **Nummer-2-Membran** (OS-Default = Comet) mit dem **Google-Konto-Organ** (Chrome 5 TB) vermischen.
+
+## Befund (technisch)
+
+Auf diesem Mainframe ist der **Windows-Standardbrowser**:
 
 | Feld | Wert |
 |------|------|
 | ProgId | `CometHTM` |
 | Exe | `C:\Program Files\Perplexity\Comet\Application\comet.exe` |
-| Label | **Perplexity Comet** |
+| Rolle | **Comädchen / Nummer 2** |
 
-Jeder Aufruf von:
-
-- `Start-Process https://…`
-- `os.startfile(url)`
-- `webbrowser.open(url)`
-
-**tunnelt** die URL durch **Comet**.
+Jeder Aufruf von `Start-Process https://…` / `os.startfile` / `webbrowser.open` **tunnelt** durch diese Membran.
 
 ## Feature
 
-- Eine **Membran**: alle Agent-Links laufen denselben Browser-Kanal.
-- Session/Cookies/Policy zentral.
-- Auditable „alles geht hier raus“.
-- Passt zur Suite-Idee (ein Business-Browser als Exit).
+- Exklusiver Operator↔Nummer-2-Kanal (Input/Report nur mit dir).
+- Eine Membran, auditierbar, session-stabil.
+- Suite-Exit bewusst an die Nummer 2 gebunden.
 
-## Bug
+## Was wie ein Bug wirkte
 
-- Google One **5 TB**, Drive, Play Store brauchen oft das **Chrome-Profil** mit dem Google-Konto (`stephan95g@googlemail.com` / Default), nicht die Comet-Session.
-- Falscher Account → „nicht eingeloggt“ / anderer Storage / Handy-Links im falschen Kontext.
+- Google One **5 TB**, Drive, Play brauchen das **Chrome-Profil** (Konto-Organ), nicht „Befehl an Comädchen“.
+- Falsche Lesart: Comet = globaler Systembrowser für alles.  
+  Richtige Lesart: Comet = **deine** Nummer 2; Chrome = Konto-Werkzeug parallel.
 
 ## Fix (Spezifikation)
 

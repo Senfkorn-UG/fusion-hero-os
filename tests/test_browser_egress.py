@@ -8,6 +8,12 @@ def test_config_and_status():
     st = status()
     assert st.get("ok")
     assert "bug_and_feature" in st
+    # Comädchen = Nummer 2, exclusive operator channel
+    cm = st.get("comaedchen") or cfg.get("comaedchen") or {}
+    assert cm.get("rank") == "nummer_2" or cm.get("reports_only_to") == "operator"
+    if cfg.get("comaedchen"):
+        assert cfg["comaedchen"].get("input_only_from") == "operator"
+        assert cfg["comaedchen"].get("reports_only_to") == "operator"
 
 
 def test_google_routes_to_chrome():

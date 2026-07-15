@@ -155,10 +155,18 @@ def status() -> Dict[str, Any]:
         "default_label": cfg.get("default_label"),
         "profiles": list((cfg.get("profiles") or {}).keys()),
         "routes": cfg.get("routes"),
+        "comaedchen": cfg.get("comaedchen")
+        or {
+            "codename": "Comädchen",
+            "rank": "nummer_2",
+            "reports_only_to": "operator",
+            "input_only_from": "operator",
+        },
         "bug_and_feature": {
-            "feature": "Single OS default tunnel (Comet) = one membrane for all agent links",
-            "bug": "Google One / Drive / Play need Chrome account profile, not Comet session",
-            "fix": "browser_egress.yaml active + routes",
+            "feature": "Comädchen/Comet = operator-exclusive Nummer-2 membrane (input+report only with you)",
+            "confusion": "Agents treated Comet as general system browser / command bus",
+            "account_organ": "Google One/Drive/Play use Chrome profile — parallel organ, not her boss",
+            "fix": "browser_egress.yaml routes + docs/mesh/COMAEDCHEN_NUMMER2.md",
         },
         "principle": cfg.get("principle"),
     }

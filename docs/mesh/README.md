@@ -12,6 +12,8 @@
 
 **Power Mesh Fusion (bottom-up Langzeit):** long-term evolution of mesh+power+fusion strata as dissertation organs — `power_mesh_fusion_evolution.yaml`, `python -m fusion_hero_os.core.power_mesh_fusion_evolution`, dissertation annex **A12**.
 
+**Comädchen (Nummer 2):** Perplexity Comet-Instanz — reportet nur an den Operator, Input nur vom Operator. Nicht Befehlskette für Google One (Chrome = Konto-Organ). Siehe [`COMAEDCHEN_NUMMER2.md`](COMAEDCHEN_NUMMER2.md) · Egress: `browser_egress.yaml`.
+
 ## Principle
 
 Each connector is its own mesh segment (ID, host role, health path, Tailscale tag).
