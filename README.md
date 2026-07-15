@@ -1,6 +1,6 @@
 <img width="100%" src="https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=6,11,20,24,25&height=180&section=header&text=95guknow&fontSize=55&fontColor=fff&fontAlignY=35&desc=Stephan%20Urban%20%7C%20Architect%20of%20Autopoietic%20Systems%20%7C%20Fusion%20Hero%20OS%20v10&descAlignY=58&descSize=16" />
 
-<div align="center">
+
 
 # 👨‍💻 Stephan Urban (95guknow)
 
@@ -25,7 +25,7 @@
 
 ---
 
-<div align="center">
+
 
 ### 🧭 Navigation
 
