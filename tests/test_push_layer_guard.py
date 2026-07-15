@@ -15,6 +15,27 @@ def test_config_identities():
 def test_block_auto_save_without_intent(monkeypatch):
     monkeypatch.delenv("FUSION_PUSH_INTENT", raising=False)
     monkeypatch.delenv("FUSION_ALLOW_PUSH", raising=False)
+    # no operator secrets for this test
+    for k in (
+        "FUSION_PUSH_SECRET",
+        "GITHUB_TOKEN",
+        "GH_TOKEN",
+        "GROQ_API_KEY",
+        "OPENROUTER_API_KEY",
+        "XAI_API_KEY",
+        "GROK_API_KEY",
+        "ANTHROPIC_API_KEY",
+        "OPENAI_API_KEY",
+    ):
+        monkeypatch.delenv(k, raising=False)
+    monkeypatch.setattr(
+        "fusion_hero_os.core.push_layer_guard._load_dotenv_files",
+        lambda cfg: [],
+    )
+    monkeypatch.setattr(
+        "fusion_hero_os.core.push_layer_guard._secret_intent",
+        lambda cfg: (False, []),
+    )
     d = evaluate_push(
         remote="origin",
         branch="main",
