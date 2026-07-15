@@ -26,7 +26,7 @@
     "📊 Enhanced real-time system telemetry",
     "🧠 Refined local AI model workflows"
   ]
-};
+};```
 
 
  
