@@ -119,6 +119,12 @@ inhouse:
     placement: [L1_mainframe, L3_cluster]
     purpose: Parallel self-train on operator Academia reading trail + Heroismus axioms
     curriculum: docs/training/ACADEMIA_CURRICULUM_v1.md
+  dissertation-autopoiesis-autopolitik:
+    path: docs/dissertation/Dissertation_Stephan_Hagen_Urban_Autopoiesis_Autopolitik_Fusion_Hero_OS_v1.0.docx
+    placement: L1_mainframe
+    purpose: Monograph of Stephan Hagen Urban on autopoietic/autopolitical FHOS foundations
+    archive_copy: 04_Buch_und_Archiv/Dissertation_Stephan_Hagen_Urban/
+    generator: scripts/generate_dissertation_shu.py
   mesh-file-share:
     path: mesh_file_share.py
     placement: [L1_mainframe, L0_edge]
