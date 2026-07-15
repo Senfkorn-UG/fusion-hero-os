@@ -194,7 +194,7 @@ def resolve_mainframe_base_url() -> str:
                     port = get_file_share_config()["serve_port"]
                     return f"http://{dns}:{port}"
         port = get_file_share_config()["serve_port"]
-        return f"http://{host}.tail391adb.ts.net:{port}"
+        return f"http://{host}.example.ts.net:{port}"
     except Exception:
         port = get_file_share_config()["serve_port"]
         return f"http://127.0.0.1:{port}"

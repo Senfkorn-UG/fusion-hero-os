@@ -34,9 +34,9 @@ fi
 
 if [[ -z "${TS_HOSTNAME:-}" ]]; then
     if grep -qi microsoft /proc/version 2>/dev/null; then
-        TS_HOSTNAME="desktop-kpki9e4-wsl"
+        TS_HOSTNAME="mainframe-wsl"
     else
-        TS_HOSTNAME="desktop-kpki9e4"
+        TS_HOSTNAME="mainframe"
     fi
 fi
 

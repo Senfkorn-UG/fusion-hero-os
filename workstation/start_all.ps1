@@ -138,7 +138,7 @@ try {
     Write-Host " FALLBACK" -ForegroundColor Yellow
 }
 
-Write-Host "[Supabase] Projekt swmmoxhdzarmoupyssqe..." -NoNewline
+Write-Host "[Supabase] Projekt YOUR_SUPABASE_PROJECT_REF..." -NoNewline
 try {
     $sb = Invoke-RestMethod -Uri "$GuiUrl/api/supabase/health?probe=true" -TimeoutSec 10
     if ($sb.probe.key_accepted) {

@@ -88,3 +88,8 @@ src/normal_os/internal_llm/output/
 legacy_sources/**/token.txt
 legacy_sources/**/header.txt
 legacy_sources/**/body.json
+
+# Live Tailscale inventory (never public)
+mesh_live_inventory.json
+**/*mesh_live_inventory*.json
+

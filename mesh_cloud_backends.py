@@ -3,9 +3,9 @@
 Fusion Hero OS — Cloud backends for fractal mainframe mesh persistence.
 
 Backends:
-  1. Supabase (swmmoxhdzarmoupyssqe) — structured manifests + exit state
+  1. Supabase (YOUR_SUPABASE_PROJECT_REF) — structured manifests + exit state
   2. Google Drive cold storage — FusionHero_Offload/mesh/fractal/
-  3. Google server (GCE cs-724978827604-default) — Tailscale replica + exit node
+  3. Google server (GCE legacy-exit) — Tailscale replica + exit node
 """
 from __future__ import annotations
 
@@ -23,23 +23,23 @@ DASHBOARD = ROOT / "03_Code" / "Dashboard"
 PENDING_GOOGLE = Path.home() / ".fusion" / "mesh" / "fractal" / "pending_google_server.json"
 
 GOOGLE_SERVER = {
-    "hostname": os.environ.get("FUSION_GCE_MESH_HOSTNAME", "fusion-mesh-exit"),
-    "gce_instance": os.environ.get("FUSION_GCE_INSTANCE", "fusion-mesh-exit"),
-    "gce_project": os.environ.get("FUSION_GCE_PROJECT", "project-bbf0e6db-52e1-462b-8e3"),
+    "hostname": os.environ.get("FUSION_GCE_MESH_HOSTNAME", "mesh-exit"),
+    "gce_instance": os.environ.get("FUSION_GCE_INSTANCE", "mesh-exit"),
+    "gce_project": os.environ.get("FUSION_GCE_PROJECT", "YOUR_GCE_PROJECT"),
     "gce_zone": os.environ.get("FUSION_GCE_ZONE", "europe-west3-a"),
-    "gce_external_ip": os.environ.get("FUSION_GCE_EXTERNAL_IP", "34.40.58.207"),
-    "tailscale_ip": os.environ.get("FUSION_GCE_TAILSCALE_IP", "100.103.188.54"),
+    "gce_external_ip": os.environ.get("FUSION_GCE_EXTERNAL_IP", "0.0.0.0"),
+    "tailscale_ip": os.environ.get("FUSION_GCE_TAILSCALE_IP", "100.64.0.3"),
     "magicdns": os.environ.get(
         "FUSION_GCE_MAGICDNS",
-        f"{os.environ.get('FUSION_GCE_MESH_HOSTNAME', 'fusion-mesh-exit')}.tail391adb.ts.net",
+        f"{os.environ.get('FUSION_GCE_MESH_HOSTNAME', 'mesh-exit')}.example.ts.net",
     ),
     "platform": "google_compute_engine",
     "replica_url": os.environ.get(
         "FUSION_GCE_REPLICA_URL",
-        f"http://{os.environ.get('FUSION_GCE_MESH_HOSTNAME', 'fusion-mesh-exit')}.tail391adb.ts.net:8088/mesh/fractal/replica",
+        f"http://{os.environ.get('FUSION_GCE_MESH_HOSTNAME', 'mesh-exit')}.example.ts.net:8088/mesh/fractal/replica",
     ),
     "remote_fractal_dir": "~/.fusion/mesh/fractal",
-    "legacy_hostname": "cs-724978827604-default",
+    "legacy_hostname": "legacy-exit",
 }
 
 GOOGLE_DRIVE_COLD_ROOTS = [
@@ -90,7 +90,7 @@ def sync_to_supabase(manifest: Optional[dict] = None) -> Dict[str, Any]:
                 "backend": "supabase",
                 "error": "not_configured",
                 "hint": f"Create {DASHBOARD / '.env'} with SUPABASE_URL + SUPABASE_PUBLISHABLE_KEY",
-                "project": "swmmoxhdzarmoupyssqe",
+                "project": "YOUR_SUPABASE_PROJECT_REF",
                 "schema": "03_Code/Dashboard/supabase/schema_migration_v5_fractal_mesh.sql",
             }
 
@@ -208,7 +208,7 @@ def sync_to_google_server(manifest: Optional[dict] = None, *, queue_if_offline: 
         req = urllib.request.Request(
             GOOGLE_SERVER["replica_url"],
             data=body,
-            headers={"Content-Type": "application/json", "X-Mesh-Peer": "desktop-kpki9e4"},
+            headers={"Content-Type": "application/json", "X-Mesh-Peer": "mainframe"},
             method="POST",
         )
         with urllib.request.urlopen(req, timeout=8) as resp:
@@ -265,7 +265,7 @@ def cloud_backends_status() -> Dict[str, Any]:
     drive_roots = [str(p) for p in GOOGLE_DRIVE_COLD_ROOTS if p.parent.exists()]
     return {
         "supabase": {
-            "project": "swmmoxhdzarmoupyssqe",
+            "project": "YOUR_SUPABASE_PROJECT_REF",
             "configured": supa_cfg,
             "schema_v5": "03_Code/Dashboard/supabase/schema_migration_v5_fractal_mesh.sql",
         },

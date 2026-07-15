@@ -3,10 +3,10 @@
 # Run from Google Cloud Shell or any machine with gcloud + kubectl.
 set -euo pipefail
 
-PROJECT="project-bbf0e6db-52e1-462b-8e3"
+PROJECT="YOUR_GCE_PROJECT"
 REGION="europe-west3"
 CLUSTER="senfkorn-gke-cluster"
-BUCKET="fusion-ai-data-project-bbf0e6db-52e1-462b-8e3"
+BUCKET="fusion-ai-data-YOUR_GCE_PROJECT"
 REPO_ROOT="${REPO_ROOT:-$HOME/fusion-hero-os}"
 
 gcloud config set project "$PROJECT"

@@ -35,7 +35,7 @@
                       "nodes":  {
                                     "mainframe":  {
                                                       "role":  "orchestrator",
-                                                      "hostname":  "desktop-kpki9e4",
+                                                      "hostname":  "mainframe",
                                                       "magicdns":  "device.example.ts.net",
                                                       "platform":  "windows",
                                                       "canonical":  true,
@@ -52,7 +52,7 @@
                                     "desktop":  {
                                                     "role":  "grok-workstation",
                                                     "alias_of":  "mainframe",
-                                                    "hostname":  "desktop-kpki9e4",
+                                                    "hostname":  "mainframe",
                                                     "magicdns":  "device.example.ts.net",
                                                     "platform":  "windows"
                                                 },

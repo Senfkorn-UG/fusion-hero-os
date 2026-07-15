@@ -208,7 +208,7 @@ class AutoLoader:
         except Exception:
             pass
 
-        # Supabase (swmmoxhdzarmoupyssqe)
+        # Supabase (YOUR_SUPABASE_PROJECT_REF)
         if supa:
             self.register("supabase", lambda: supa.get_client() or supa.status(probe=True), "storage")
 

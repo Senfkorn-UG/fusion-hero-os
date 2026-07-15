@@ -86,16 +86,16 @@ nodes:
     magicdns: device.example.ts.net
   phone:
     role: mobile-client
-    hostname: redmi-note-13-pro-5g
-    hostname_aliases: [phone-node, redmi-note-13-pro-5g, redmi]
+    hostname: phone
+    hostname_aliases: [phone-node, phone, redmi]
     hosts: [tailscale-app, mesh-files-portal]
-    magicdns: redmi-note-13-pro-5g.tail391adb.ts.net
+    magicdns: phone.example.ts.net
     reachable_from: [desktop, mainframe]
     can_reach:
-      - desktop-kpki9e4:8088/mesh/files/phone
-      - desktop-kpki9e4:8088/mesh/files/manifest
-      - desktop-kpki9e4:8088/fusion/status
-      - desktop-kpki9e4:8765
+      - mainframe:8088/mesh/files/phone
+      - mainframe:8088/mesh/files/manifest
+      - mainframe:8088/fusion/status
+      - mainframe:8765
     login_hint: "Gleicher Login wie Desktop (Google user@example.com), nicht GitHub"
     file_mirror:
       portal: /mesh/files/phone

@@ -1,17 +1,17 @@
 #!/bin/bash
-# Run FROM Google Cloud Shell to finish fusion-mesh-exit setup
+# Run FROM Google Cloud Shell to finish mesh-exit setup
 # Usage: bash gce_cloudshell_bootstrap.sh
 set -euo pipefail
 
-PROJECT="project-bbf0e6db-52e1-462b-8e3"
+PROJECT="YOUR_GCE_PROJECT"
 ZONE="europe-west3-a"
-VM="fusion-mesh-exit"
+VM="mesh-exit"
 
 gcloud config set project "$PROJECT"
 
 echo "=== 1) Tailscale login URL (open in browser, same account as desktop) ==="
 gcloud compute ssh "$VM" --zone="$ZONE" --command \
-  "sudo tailscale up --hostname=fusion-mesh-exit --accept-routes --advertise-exit-node --ssh 2>&1 || true; sudo tailscale status 2>&1 | head -6"
+  "sudo tailscale up --hostname=mesh-exit --accept-routes --advertise-exit-node --ssh 2>&1 || true; sudo tailscale status 2>&1 | head -6"
 
 echo ""
 echo "=== 2) Clone repo + hero-docs ==="

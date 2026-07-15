@@ -31,7 +31,7 @@ Write-Host "=== Fusion Mesh — Remote Join per SSH ===" -ForegroundColor Cyan
 Write-Host "Target:   $SshTarget"
 Write-Host "Hostname: $Hostname"
 Write-Host "Role:     $Role"
-Write-Host "Tailnet:  tail391adb.ts.net"
+Write-Host "Tailnet:  example.ts.net"
 
 $remoteEnv = @(
     "export TS_AUTHKEY='$TsAuthKey'",
@@ -59,7 +59,7 @@ Write-Ok "remote bootstrap"
 
 Write-Host "[3/3] Verify..." -ForegroundColor Yellow
 Start-Sleep -Seconds 3
-$magic = "$Hostname.tail391adb.ts.net"
+$magic = "$Hostname.example.ts.net"
 try {
     $ts = tailscale status 2>&1 | Out-String
     if ($ts -match [regex]::Escape($Hostname)) { Write-Ok "peer in tailscale status" }
@@ -81,7 +81,7 @@ if ($Role -eq "subnet") {
 Write-Host ""
 Write-Host "Verify URLs:" -ForegroundColor Green
 Write-Host "  tailscale ping $magic"
-Write-Host "  ssh $SshTarget   # oder: ssh ${Hostname}.tail391adb.ts.net (Tailscale SSH)"
+Write-Host "  ssh $SshTarget   # oder: ssh ${Hostname}.example.ts.net (Tailscale SSH)"
 Write-Host "  http://${magic}:8088/status"
 Write-Host "  http://${magic}:8088/mesh/fractal/status"
 

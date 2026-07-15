@@ -51,11 +51,11 @@ def test_render_phone_portal_html():
             "download_url": "http://x/mesh/files/get/docs/docs/a.md",
             "size_bytes": 100,
         }],
-        "phone_peer": {"hostname": "redmi-note-13-pro-5g"},
+        "phone_peer": {"hostname": "phone"},
     }
     html = mfs.render_phone_portal_html(manifest)
     assert "Mesh Files" in html
-    assert "redmi-note-13-pro-5g" in html
+    assert "phone" in html
     assert "docs/a.md" in html
 
 

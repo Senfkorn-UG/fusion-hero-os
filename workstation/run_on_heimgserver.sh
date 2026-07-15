@@ -1,7 +1,7 @@
 #!/bin/bash
 # run_on_heimgserver.sh
 # Führt Tailscale-Kommandos remote auf dem archivierten Linux-Knoten aus (optional).
-# Mainframe = Windows-Desktop (desktop-kpki9e4). Dieses Skript nur für Legacy-Linux.
+# Mainframe = Windows-Desktop (mainframe). Dieses Skript nur für Legacy-Linux.
 
 set -e
 

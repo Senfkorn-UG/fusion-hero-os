@@ -38,10 +38,10 @@ def _load_registry_fallback():
         nodes = {
             "mainframe": {
                 "role": "orchestrator",
-                "hostname": "desktop-kpki9e4",
+                "hostname": "mainframe",
                 "platform": "windows",
             },
-            "desktop": {"role": "grok-workstation", "hostname": "desktop-kpki9e4"},
+            "desktop": {"role": "grok-workstation", "hostname": "mainframe"},
         }
         tailnet = "example.ts.net"
 

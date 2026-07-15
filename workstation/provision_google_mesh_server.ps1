@@ -1,10 +1,10 @@
 # provision_google_mesh_server.ps1 — Create GCE VM for mesh exit + fractal replica
 param(
-    [string]$ProjectId = "project-bbf0e6db-52e1-462b-8e3",
+    [string]$ProjectId = "YOUR_GCE_PROJECT",
     [string]$Zone = "europe-west3-a",
-    [string]$InstanceName = "fusion-mesh-exit",
+    [string]$InstanceName = "mesh-exit",
     [string]$MachineType = "e2-micro",
-    [string]$TailscaleHostname = "fusion-mesh-exit",
+    [string]$TailscaleHostname = "mesh-exit",
     [string]$TsAuthKey = $env:TS_AUTHKEY
 )
 

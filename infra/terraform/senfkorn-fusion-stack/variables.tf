@@ -1,7 +1,7 @@
 variable "project_id" {
   type        = string
   description = "Google Cloud project ID"
-  default     = "project-bbf0e6db-52e1-462b-8e3"
+  default     = "YOUR_GCE_PROJECT"
 }
 
 variable "region" {
@@ -19,7 +19,7 @@ variable "cluster_name" {
 variable "bucket_name" {
   type        = string
   description = "GCS bucket for Fusion training data and checkpoints"
-  default     = "fusion-ai-data-project-bbf0e6db-52e1-462b-8e3"
+  default     = "fusion-ai-data-YOUR_GCE_PROJECT"
 }
 
 variable "training_namespace" {

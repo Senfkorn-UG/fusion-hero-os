@@ -82,5 +82,5 @@ EOF
 fi
 
 echo "=== Mesh join complete ==="
-echo "MAGICDNS=${HOSTNAME}.tail391adb.ts.net"
-echo "VERIFY=http://${HOSTNAME}.tail391adb.ts.net:8088/mesh/fractal/status"
+echo "MAGICDNS=${HOSTNAME}.example.ts.net"
+echo "VERIFY=http://${HOSTNAME}.example.ts.net:8088/mesh/fractal/status"

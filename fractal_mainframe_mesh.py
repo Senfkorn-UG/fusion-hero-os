@@ -263,7 +263,7 @@ def apply_virtual_exit(profile_id: str, *, dry_run: bool = False) -> dict:
                 "profile_id": profile_id,
                 "error": "No online exit-capable peer for this profile",
                 "resolved": resolved,
-                "hint": "Bring cs-724978827604-default online or advertise exit on WSL/desktop",
+                "hint": "Bring legacy-exit online or advertise exit on WSL/desktop",
                 "dry_run": dry_run,
             }
         cmd = ["tailscale", "set", "--exit-node="]

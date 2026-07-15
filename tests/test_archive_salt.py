@@ -169,4 +169,4 @@ def test_module_has_no_personal_salt_literal():
     text = _MODULE_PATH.read_text(encoding="utf-8")
     assert "kpki9e4" not in text
     assert "tail391adb" not in text
-    assert "desktop-kpki9e4|" not in text
+    assert "mainframe|" not in text

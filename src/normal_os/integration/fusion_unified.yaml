@@ -43,7 +43,7 @@ layers:
 nodes:
   mainframe:
     role: orchestrator
-    hostname: desktop-kpki9e4
+    hostname: mainframe
     hosts: [fusion-dashboard, hero-docs-server, normalos-bridge, tailscale-control, fusion-integration-hub, grok-cli, mcp-bridges]
     magicdns: device.example.ts.net
     platform: windows
@@ -59,9 +59,9 @@ nodes:
     magicdns: mobile-node.example.ts.net
     reachable_from: [mainframe, desktop]
     can_reach:
-      - desktop-kpki9e4:8000
-      - desktop-kpki9e4:8088
-      - desktop-kpki9e4:8765
+      - mainframe:8000
+      - mainframe:8088
+      - mainframe:8765
     login_hint: "Gleicher Login wie Desktop (Google user@example.com), nicht GitHub"
 
   legacy-linux:

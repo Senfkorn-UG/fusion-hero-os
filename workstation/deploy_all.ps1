@@ -7,12 +7,12 @@ param(
 )
 $ErrorActionPreference = "Continue"
 $RepoRoot = if ($env:FUSION_REPO_ROOT) { $env:FUSION_REPO_ROOT } else { "C:\Users\Admin\fusion-hero-os" }
-$Project = "project-bbf0e6db-52e1-462b-8e3"
+$Project = "YOUR_GCE_PROJECT"
 $Region = "europe-west3"
 $Cluster = "senfkorn-gke-cluster"
-$Bucket = "fusion-ai-data-project-bbf0e6db-52e1-462b-8e3"
+$Bucket = "fusion-ai-data-YOUR_GCE_PROJECT"
 $Zone = "europe-west3-a"
-$Vm = "fusion-mesh-exit"
+$Vm = "mesh-exit"
 $Python = if (Test-Path "C:\Users\Admin\venv\Scripts\python.exe") { "C:\Users\Admin\venv\Scripts\python.exe" } else { "python" }
 $Kubectl = if (Test-Path "$env:TEMP\gke-kubectl\kubectl.exe") { "$env:TEMP\gke-kubectl\kubectl.exe" } else { "kubectl" }
 

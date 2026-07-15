@@ -19,7 +19,7 @@ _FALLBACK = {
         "mainframe": {
             "node_id": "mainframe",
             "role": "orchestrator",
-            "hostname": "desktop-kpki9e4",
+            "hostname": "mainframe",
             "magicdns": "device.example.ts.net",
             "platform": "windows",
             "canonical": True,
@@ -29,7 +29,7 @@ _FALLBACK = {
             "node_id": "desktop",
             "role": "grok-workstation",
             "same_as": "mainframe",
-            "hostname": "desktop-kpki9e4",
+            "hostname": "mainframe",
             "magicdns": "device.example.ts.net",
             "platform": "windows",
         },
@@ -51,7 +51,7 @@ _FALLBACK = {
     },
     "routing": {
         "base_url": "https://device.example.ts.net",
-        "mainframe_hostname": "desktop-kpki9e4",
+        "mainframe_hostname": "mainframe",
         "funnel_port": 8088,
     },
 }
@@ -96,7 +96,7 @@ def get_mainframe() -> dict:
 
 
 def get_mainframe_hostname() -> str:
-    return get_mainframe().get("hostname", "desktop-kpki9e4")
+    return get_mainframe().get("hostname", "mainframe")
 
 
 def get_mainframe_magicdns() -> str:

@@ -25,7 +25,7 @@ $upArgs = @(
     "up",
     "--reset",
     "--auth-key=$env:TS_AUTHKEY",
-    "--hostname=desktop-kpki9e4",
+    "--hostname=mainframe",
     "--accept-routes",
     "--unattended"
 )

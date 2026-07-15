@@ -1,23 +1,20 @@
 # Fusion Hero OS — Mesh Connector Registry
-# Prinzip: Jeder Konnektor ist ein eigenständiges Mesh-Segment.
-# Kein Monolith — jede Verbindung hat eigene Identität, Health-Probe und Routing.
+# Public placeholders only. Live hostnames/IPs stay operator-local.
 
-mesh_version: "1.1"
-tailnet: tail391adb.ts.net
+mesh_version: "1.2"
+tailnet: example.ts.net
 updated: "2026-07-15"
-live_inventory: mesh_live_inventory.json
+live_inventory: null  # never commit live inventory JSON
 principle: "Jeder Konnektor = ein einzelnes Teil des Mesh (eigene ID, Host, Health, Tag)"
 
-# Physische Mesh-Knoten (Tailscale Devices) — Live 2026-07-15
-# Kanon: Windows-Desktop = Mainframe (siehe mesh_roles.yaml)
+# Physical mesh nodes (role keys). Override locally if needed.
 nodes:
   mainframe:
     role: orchestrator
-    hostname: desktop-kpki9e4
-    magicdns: desktop-kpki9e4.tail391adb.ts.net
-    tailscale_ip: 100.64.104.58
+    hostname: mainframe
+    magicdns: mainframe.example.ts.net
     platform: windows
-    status: online
+    status: configured
     aliases: [desktop]
     tailscale_tag: tag:fusion-node-mainframe
     services:
@@ -28,15 +25,12 @@ nodes:
       - mcp-bridges
 
   desktop:
-    # Doppelrolle: Grok-Workstation UND Enduser-Stelle (peer_of phone).
-    # same_as mainframe — physisch identisch mit dem Windows-Orchestrator.
     role: grok-workstation
     same_as: mainframe
-    hostname: desktop-kpki9e4
-    magicdns: desktop-kpki9e4.tail391adb.ts.net
-    tailscale_ip: 100.64.104.58
+    hostname: mainframe
+    magicdns: mainframe.example.ts.net
     platform: windows
-    status: online
+    status: configured
     tailscale_tag: tag:fusion-node-desktop
     services:
       - grok-cli
@@ -51,16 +45,14 @@ nodes:
         - connector-admin
       note: >
         Erweiterte Protokolle erst nach bewusster Freischaltung durch den Owner.
-        Bis dahin verhaelt sich desktop als Enduser wie das phone.
 
   phone:
     role: mobile-client
-    hostname: redmi-note-13-pro-5g
-    hostname_aliases: [phone-node, redmi-note-13-pro-5g, redmi, "Redmi Note 13 Pro 5G"]
-    magicdns: redmi-note-13-pro-5g.tail391adb.ts.net
-    tailscale_ip: 100.108.67.116
+    hostname: phone
+    hostname_aliases: [phone-node]
+    magicdns: phone.example.ts.net
     platform: android
-    status: online
+    status: configured
     tailscale_tag: tag:fusion-node-phone
     services:
       - tailscale-app
@@ -71,41 +63,35 @@ nodes:
       security_layer: standard
       active_protocol: classic-enduser-only
 
-  fusion-mesh-exit:
+  mesh-exit:
     role: mesh-exit
-    hostname: fusion-mesh-exit
-    magicdns: fusion-mesh-exit.tail391adb.ts.net
-    tailscale_ip: 100.103.188.54
+    hostname: mesh-exit
+    magicdns: mesh-exit.example.ts.net
     platform: linux
-    status: online
+    status: configured
     tailscale_tag: tag:fusion-node-exit
 
   wsl:
     role: dev-leaf
-    hostname: desktop-kpki9e4-wsl
-    magicdns: desktop-kpki9e4-wsl.tail391adb.ts.net
-    tailscale_ip: 100.125.58.100
+    hostname: mainframe-wsl
+    magicdns: mainframe-wsl.example.ts.net
     platform: linux
-    status: offline
+    status: optional
     tailscale_tag: tag:fusion-node-wsl
 
-# Logische Agenten-Instanzen — eigene Mesh-Identitaet, aber kein physisches
-# Tailscale-Geraet. Bewusst von 'nodes' getrennt, damit sichtbar bleibt, was
-# Hardware ist und was ein laufender Agent.
 agents:
   researcher:
     mesh_id: mesh-agent-researcher
     role: research
-    runs_on: mainframe          # ausgefuehrt auf dem Orchestrator-Knoten
+    runs_on: mainframe
     health_path: /mesh/agent/researcher/status
     tailscale_tag: tag:fusion-agent-researcher
     capabilities:
       - literatur-recherche
       - quellen-erhebung
       - evidenz-auswertung
-    description: "Researcher — eigene Mesh-Instanz fuer Recherche/Evidenz"
+    description: "Researcher — Mesh-Instanz fuer Recherche/Evidenz"
 
-# MCP-Konnektoren — jeweils eigenes Mesh-Segment (logisch isoliert)
 connectors:
   github:
     mesh_id: mesh-connector-github
@@ -113,83 +99,73 @@ connectors:
     host_node: desktop
     health_path: /mesh/github/status
     tailscale_tag: tag:fusion-connector-github
-    description: "GitHub MCP — Repos, PRs, Issues"
-
+    description: "GitHub MCP"
   gmail:
     mesh_id: mesh-connector-gmail
     type: mcp
     host_node: desktop
     health_path: /mesh/gmail/status
     tailscale_tag: tag:fusion-connector-gmail
-    description: "Gmail MCP — E-Mail Bridge"
-
+    description: "Gmail MCP"
   google_drive:
     mesh_id: mesh-connector-google-drive
     type: mcp
     host_node: desktop
     health_path: /mesh/google_drive/status
     tailscale_tag: tag:fusion-connector-google-drive
-    description: "Google Drive MCP — Datei-Sync"
-
+    description: "Google Drive MCP"
   google_calendar:
     mesh_id: mesh-connector-google-calendar
     type: mcp
     host_node: desktop
     health_path: /mesh/google_calendar/status
     tailscale_tag: tag:fusion-connector-google-calendar
-    description: "Google Calendar MCP — Termine"
-
+    description: "Google Calendar MCP"
   canva:
     mesh_id: mesh-connector-canva
     type: mcp
     host_node: desktop
     health_path: /mesh/canva/status
     tailscale_tag: tag:fusion-connector-canva
-    description: "Canva MCP — Design-Assets"
-
+    description: "Canva MCP"
   gamma:
     mesh_id: mesh-connector-gamma
     type: mcp
     host_node: desktop
     health_path: /mesh/gamma/status
     tailscale_tag: tag:fusion-connector-gamma
-    description: "Gamma MCP — Präsentationen"
-
+    description: "Gamma MCP"
   notion:
     mesh_id: mesh-connector-notion
     type: mcp
     host_node: desktop
     health_path: /mesh/notion/status
     tailscale_tag: tag:fusion-connector-notion
-    description: "Notion MCP — Wissensbasis"
-
+    description: "Notion MCP"
   vercel:
     mesh_id: mesh-connector-vercel
     type: mcp
     host_node: desktop
     health_path: /mesh/vercel/status
     tailscale_tag: tag:fusion-connector-vercel
-    description: "Vercel MCP — Deployments"
-
+    description: "Vercel MCP"
   hyperframes:
     mesh_id: mesh-connector-hyperframes
     type: mcp
     host_node: desktop
     health_path: /mesh/hyperframes/status
     tailscale_tag: tag:fusion-connector-hyperframes
-    description: "HyperFrames by HeyGen MCP — Video"
-
+    description: "HyperFrames MCP"
   tasks:
     mesh_id: mesh-connector-tasks
     type: mcp
     host_node: desktop
     health_path: /mesh/tasks/status
     tailscale_tag: tag:fusion-connector-tasks
-    description: "Tasks MCP — Aufgabenverwaltung"
+    description: "Tasks MCP"
 
-# Routing-Schema (Funnel + MagicDNS)
 routing:
-  base_url: "https://desktop-kpki9e4.tail391adb.ts.net"
+  base_url: "https://mainframe.example.ts.net"
   unified: "/fusion/status"
   fusion_graph: "/fusion/graph"
   mesh_overview: "/mesh/status"
@@ -203,12 +179,10 @@ routing:
   per_llm: "/llm/{provider}/status"
   tailscale_overview: "/tailscale/status"
 
-# Fractal mainframe persistence + virtual exit routing
 fractal_mesh:
   module: fractal_mainframe_mesh.py
   exit_config: mesh_virtual_exit_nodes.yaml
   storage: "~/.fusion/mesh/fractal/manifest.json"
 
-# Verknüpfung mit LLM-Frameworks (siehe fusion_unified.yaml)
 integration_hub: fusion_integration_hub.py
 unified_config: fusion_unified.yaml

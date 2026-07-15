@@ -88,14 +88,14 @@ Nach `./workstation/mesh_phone_mirror.sh` auf dem Mainframe:
 
 | Was | URL (MagicDNS) |
 |-----|----------------|
-| Portal | `http://desktop-kpki9e4.tail391adb.ts.net:8088/mesh/files/phone` |
+| Portal | `http://mainframe.example.ts.net:8088/mesh/files/phone` |
 | Manifest | `.../mesh/files/manifest` |
 | Filedrop POST | `.../mesh/files/drop` + Header `X-Mesh-Drop-Token` |
 
 **Android Filedrop (Termux/curl):**
 
 ```bash
-curl -X POST "http://desktop-kpki9e4.tail391adb.ts.net:8088/mesh/files/drop" \
+curl -X POST "http://mainframe.example.ts.net:8088/mesh/files/drop" \
   -H "Content-Type: application/json" \
   -H "X-Mesh-Drop-Token: $JOURNAL_TOKEN" \
   -d '{"filename":"notiz.txt","content_b64":"'$(echo -n "Hallo Mesh" | base64)'","source":"android"}'
