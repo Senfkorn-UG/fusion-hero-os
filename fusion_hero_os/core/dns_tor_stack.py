@@ -69,22 +69,6 @@ def find_tor_exe() -> Optional[str]:
         Path(r"C:\Program Files (x86)\Tor Browser\Browser\TorBrowser\Tor\tor.exe"),
         Path(r"C:\Users\Admin\OneDrive\Desktop\Tor Browser\Browser\TorBrowser\Tor\tor.exe"),
     ]
-    # winget installs often under LocalAppData\Tor Project or similar
-    bases = [
-        Path(os.environ.get("LOCALAPPDATA", "")),
-        Path(os.environ.get("ProgramFiles", r"C:\Program Files")),
-        Path.home() / "AppData" / "Local",
-    ]
-    for base in bases:
-        if not base.is_dir():
-            continue
-        try:
-            for p in base.rglob("tor.exe"):
-                # skip crash dumps etc
-                if "Tor" in str(p) or "tor" in p.parent.name.lower():
-                    return str(p)
-        except Exception:
-            continue
     for c in candidates:
         if c.is_file():
             return str(c)

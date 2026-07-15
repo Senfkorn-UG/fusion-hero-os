@@ -17,12 +17,13 @@ tailscale:
 
 clearnet_upstream:
   # privacy-friendly, DNSSEC-capable
-  - 9.9.9.9          # Quad9
-  - 149.112.112.112  # Quad9 secondary
-  - 1.1.1.1          # Cloudflare
-  doh_optional:
-    - https://dns.quad9.net/dns-query
-    - https://cloudflare-dns.com/dns-query
+  - "9.9.9.9"           # Quad9
+  - "149.112.112.112"   # Quad9 secondary
+  - "1.1.1.1"           # Cloudflare
+
+doh_optional:
+  - https://dns.quad9.net/dns-query
+  - https://cloudflare-dns.com/dns-query
 
 tor:
   enabled: true
