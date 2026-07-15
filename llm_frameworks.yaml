@@ -83,6 +83,74 @@ frameworks:
     trinity: false
     role_default: worker
     docs: https://build.nvidia.com/settings/api-keys
+  # --- Free-tier / pseudo-inhouse membranes (v10) ---
+  openrouter_free:
+    module: 03_Code/llm_frameworks/openrouter_free.py
+    display_name: OpenRouter Free Models
+    api_key_env:
+    - OPENROUTER_API_KEY
+    model_env: FUSION_OPENROUTER_FREE_MODEL
+    default_model: google/gemma-2-9b-it:free
+    base_url: https://openrouter.ai/api/v1
+    mesh_id: mesh-llm-openrouter-free
+    free_tier: true
+    trinity: false
+    role_default: fallback
+  groq:
+    module: 03_Code/llm_frameworks/groq.py
+    display_name: Groq (Free Tier)
+    api_key_env:
+    - GROQ_API_KEY
+    model_env: FUSION_GROQ_MODEL
+    default_model: llama-3.3-70b-versatile
+    base_url: https://api.groq.com/openai/v1
+    mesh_id: mesh-llm-groq
+    free_tier: true
+    trinity: false
+    role_default: worker
+  huggingface:
+    module: 03_Code/llm_frameworks/huggingface.py
+    display_name: Hugging Face Inference
+    api_key_env:
+    - HF_TOKEN
+    - HUGGINGFACE_API_KEY
+    model_env: FUSION_HF_MODEL
+    default_model: meta-llama/Meta-Llama-3-8B-Instruct
+    base_url: https://router.huggingface.co/v1
+    mesh_id: mesh-llm-hf
+    free_tier: true
+    trinity: false
+    role_default: worker
+  cloudflare_ai:
+    module: 03_Code/llm_frameworks/cloudflare_ai.py
+    display_name: Cloudflare Workers AI
+    api_key_env:
+    - CLOUDFLARE_API_TOKEN
+    - CF_API_TOKEN
+    model_env: FUSION_CF_AI_MODEL
+    default_model: "@cf/meta/llama-3.1-8b-instruct"
+    mesh_id: mesh-llm-cf-ai
+    free_tier: true
+    trinity: false
+    role_default: worker
+  github_models:
+    module: 03_Code/llm_frameworks/github_models.py
+    display_name: GitHub Models
+    api_key_env:
+    - GITHUB_TOKEN
+    - GH_TOKEN
+    model_env: FUSION_GITHUB_MODELS_MODEL
+    default_model: gpt-4o-mini
+    base_url: https://models.inference.ai.azure.com
+    mesh_id: mesh-llm-github
+    free_tier: true
+    trinity: false
+    role_default: worker
+pseudo_inhouse:
+  config: llm_free_services.yaml
+  facade: /api/ai/inhouse/status
+  openai_compatible: /v1/chat/completions
+  module: fusion_hero_os.core.pseudo_inhouse_ai
 trinity_order:
 - grok
 - claude

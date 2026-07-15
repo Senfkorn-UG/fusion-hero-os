@@ -166,6 +166,9 @@ routing:
   grok_routes_table: /api/grok/routes
   grok_chat: /api/grok/chat
   grok_status: /api/grok/status
+  ai_inhouse_status: /api/ai/inhouse/status
+  ai_inhouse_chat: /api/ai/inhouse/chat
+  openai_compatible: /v1/chat/completions
   mainframe_hub: /mainframe
   dauer_vr: /mainframe/vr
   ide: /mainframe/ide

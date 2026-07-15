@@ -6,8 +6,21 @@ from typing import Dict, List, Optional
 
 from .base import FrameworkResult, LLMFramework
 from . import grok, claude, gpt, gemini, openrouter, ollama, nvidia_nim
+from . import groq, huggingface, cloudflare_ai, github_models, openrouter_free
 
 TRINITY_LLMS = ("grok", "claude", "gpt")
+
+# Pseudo-inhouse free chain (first available wins — see pseudo_inhouse_ai)
+FREE_CHAIN = (
+    "ollama",
+    "openrouter_free",
+    "groq",
+    "gemini",
+    "huggingface",
+    "cloudflare_ai",
+    "nvidia",
+    "github_models",
+)
 
 _FRAMEWORKS: Dict[str, LLMFramework] = {}
 _ALIAS_MAP: Dict[str, str] = {}
@@ -24,8 +37,13 @@ _register(claude.framework)
 _register(gpt.framework)
 _register(gemini.framework)
 _register(openrouter.framework)
+_register(openrouter_free.framework)
 _register(ollama.framework)
 _register(nvidia_nim.framework)
+_register(groq.framework)
+_register(huggingface.framework)
+_register(cloudflare_ai.framework)
+_register(github_models.framework)
 
 
 def normalize_provider(name: str) -> str:
@@ -49,13 +67,33 @@ def all_status() -> Dict[str, dict]:
 def connector_status() -> Dict[str, object]:
     statuses = all_status()
     available = [pid for pid, s in statuses.items() if s.get("configured")]
+    free_ready = [
+        pid
+        for pid in FREE_CHAIN
+        if pid in statuses and statuses[pid].get("configured")
+    ]
     return {
         "frameworks": statuses,
         "available": available,
         "trinity": list(TRINITY_LLMS),
-        "any_live": any(s.get("api_key_set") for s in statuses.values()),
+        "free_chain": list(FREE_CHAIN),
+        "free_ready": free_ready,
+        "any_live": any(s.get("api_key_set") for s in statuses.values())
+        or "ollama" in free_ready,
         "count": len(_FRAMEWORKS),
+        "pseudo_inhouse": True,
     }
+
+
+def free_ready_providers() -> List[str]:
+    statuses = all_status()
+    out: List[str] = []
+    for pid in FREE_CHAIN:
+        s = statuses.get(pid) or {}
+        if s.get("configured") or pid == "ollama":
+            # ollama always "configured"; probe separately for live
+            out.append(pid)
+    return out
 
 
 def invoke(

@@ -1367,6 +1367,13 @@ try:
 except Exception as _gix_err:
     print(f"[API] Grok interconnect routes note: {_gix_err}")
 
+# === Pseudo-Inhouse AI (free SOTA services behind local facade) ===
+try:
+    from pseudo_inhouse_routes import router as _pih_router
+    app.include_router(_pih_router)
+except Exception as _pih_err:
+    print(f"[API] Pseudo-inhouse AI routes note: {_pih_err}")
+
 # === Businessplan + Energie/Subunternehmer-Preise ===
 try:
     from business_plan_routes import router as _bp_router

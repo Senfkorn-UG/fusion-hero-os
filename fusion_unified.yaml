@@ -214,6 +214,12 @@ endpoints:
   grok_routes_table: /api/grok/routes
   grok_chat: /api/grok/chat
   grok_status: /api/grok/status
+  # Pseudo-inhouse free AI facade
+  ai_inhouse_status: /api/ai/inhouse/status
+  ai_inhouse_chat: /api/ai/inhouse/chat
+  ai_inhouse_catalog: /api/ai/inhouse/catalog
+  openai_compatible: /v1/chat/completions
+  openai_models: /v1/models
   mainframe_hub: /mainframe
   dauer_vr: /mainframe/vr
   ide: /mainframe/ide

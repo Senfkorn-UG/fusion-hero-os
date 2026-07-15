@@ -102,6 +102,8 @@ docker compose up --build -d
 | `/mainframe` | Mainframe hub (dissertation surface) |
 | `/mainframe/grok` | Grok interconnect control plane |
 | `/api/grok/routes` | Canonical route table |
+| `/api/ai/inhouse/status` | Pseudo-inhouse free AI hub |
+| `/v1/chat/completions` | OpenAI-compatible local AI facade |
 | `/api/health?light=true` | Fast health probe |
 | `/api/health` | Full status |
 | `/docs` | OpenAPI |
@@ -162,6 +164,7 @@ Public surface policy: no personal identity, no private location, no live mesh i
 | [BEST_VERSION.md](BEST_VERSION.md) | Operative kanon vs roadmap |
 | [docs/dissertation/](docs/dissertation/) | **Dissertation-as-OS** · abstracts · ontology · bifocal verweis |
 | [docs/mesh/GROK_INTERCONNECT.md](docs/mesh/GROK_INTERCONNECT.md) | Interconnect graph + re-routes |
+| [docs/mesh/PSEUDO_INHOUSE_AI.md](docs/mesh/PSEUDO_INHOUSE_AI.md) | Free SOTA services → local AI server |
 | [docs/mesh/MAINFRAME_WEBSITE.md](docs/mesh/MAINFRAME_WEBSITE.md) | Dauer-VR · IDE · Worktree |
 | [DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUIDE.md) | Boot / ports / troubleshooting |
 | [BRANCH_STRATEGY.md](BRANCH_STRATEGY.md) | SemVer / tags |
