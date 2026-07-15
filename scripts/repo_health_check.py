@@ -20,6 +20,7 @@ def main() -> int:
         ["scripts/check_erkenntnisse_index.py"],
         ["scripts/check_doc_versions.py"],
         ["scripts/check_pii_scanner.py"],
+        ["scripts/check_yaml.py"],
         ["-m", "fusion_hero_os.core.dependency_atlas", "--check"],
         ["-m", "pytest", "tests/", "-q", "--tb=line", "--ignore=tests/integration"],
     ]

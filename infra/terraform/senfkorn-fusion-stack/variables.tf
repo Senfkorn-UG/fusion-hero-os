@@ -20,7 +20,7 @@ variable "cluster_name" {
 variable "bucket_name" {
   type        = string
   description = "GCS bucket for Fusion training data and checkpoints"
-  default     = "fusion-ai-data-YOUR_GCE_PROJECT"
+  default     = ""
 }
 
 variable "training_namespace" {

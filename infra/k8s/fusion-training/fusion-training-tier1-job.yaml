@@ -33,7 +33,7 @@ spec:
               ls -la /workspace/training
           env:
             - name: GCS_BUCKET
-              value: fusion-ai-data-YOUR_GCE_PROJECT
+              value: fusion-ai-data-${GCP_PROJECT_ID}
           volumeMounts:
             - name: workspace
               mountPath: /workspace
@@ -84,7 +84,7 @@ spec:
           csi:
             driver: gcsfuse.csi.storage.gke.io
             volumeAttributes:
-              bucketName: fusion-ai-data-YOUR_GCE_PROJECT
+              bucketName: fusion-ai-data-${GCP_PROJECT_ID}
               mountOptions: "implicit-dirs"
       nodeSelector:
         cloud.google.com/gke-accelerator: nvidia-l4

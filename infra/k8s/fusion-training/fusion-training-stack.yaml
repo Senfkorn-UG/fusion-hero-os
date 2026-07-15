@@ -15,7 +15,7 @@ metadata:
   name: fusion-training-ksa
   namespace: fusion-training
   annotations:
-    iam.gke.io/gcp-service-account: fusion-training-sa@YOUR_GCE_PROJECT.iam.gserviceaccount.com
+    iam.gke.io/gcp-service-account: fusion-training-sa@${GCP_PROJECT_ID}.iam.gserviceaccount.com
 ---
 apiVersion: batch/v1
 kind: Job
@@ -51,7 +51,7 @@ spec:
               ls -la /workspace/training
           env:
             - name: GCS_BUCKET
-              value: fusion-ai-data-YOUR_GCE_PROJECT
+              value: fusion-ai-data-${GCP_PROJECT_ID}
           volumeMounts:
             - name: workspace
               mountPath: /workspace
@@ -102,7 +102,7 @@ spec:
           csi:
             driver: gcsfuse.csi.storage.gke.io
             volumeAttributes:
-              bucketName: fusion-ai-data-YOUR_GCE_PROJECT
+              bucketName: fusion-ai-data-${GCP_PROJECT_ID}
               mountOptions: "implicit-dirs"
       nodeSelector:
         cloud.google.com/gke-accelerator: nvidia-l4

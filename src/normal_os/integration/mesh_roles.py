@@ -13,14 +13,16 @@ from typing import Any, Dict, Optional
 ROLES_PATH = Path(__file__).parent / "mesh_roles.yaml"
 
 _FALLBACK = {
-    "mesh_roles_version": "1.1",
+    "mesh_roles_version": "1.3",
+    "platform_version": "10.0.0",
     "tailnet": "example.ts.net",
+    "live_inventory": False,
     "role_assignments": {
         "mainframe": {
             "node_id": "mainframe",
             "role": "orchestrator",
             "hostname": "mainframe",
-            "magicdns": "device.example.ts.net",
+            "magicdns": "mainframe.example.ts.net",
             "platform": "windows",
             "canonical": True,
             "aliases": ["desktop"],
@@ -30,27 +32,27 @@ _FALLBACK = {
             "role": "grok-workstation",
             "same_as": "mainframe",
             "hostname": "mainframe",
-            "magicdns": "device.example.ts.net",
+            "magicdns": "mainframe.example.ts.net",
             "platform": "windows",
         },
         "mobile": {
             "node_id": "phone",
             "role": "mobile-client",
-            "hostname": "phone-node",
-            "magicdns": "mobile-node.example.ts.net",
+            "hostname": "phone",
+            "magicdns": "phone.example.ts.net",
             "platform": "android",
         },
         "legacy": {
             "node_id": "legacy-linux",
             "role": "archived",
-            "hostname": "mainframe",
-            "magicdns": "mainframe-host.example.ts.net",
+            "hostname": "legacy-mainframe",
+            "magicdns": "legacy-mainframe.example.ts.net",
             "platform": "linux",
             "status": "offline",
         },
     },
     "routing": {
-        "base_url": "https://device.example.ts.net",
+        "base_url": "https://mainframe.example.ts.net",
         "mainframe_hostname": "mainframe",
         "funnel_port": 8088,
     },

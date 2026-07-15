@@ -1,12 +1,7 @@
-# Fusion Hero OS — Virtual Exit Node Profiles
-# Public placeholders only. No live Tailscale IPs or cloud project IDs.
-
-mesh_exit_version: "1.1"
+mesh_exit_version: '1.1'
 tailnet: example.ts.net
-principle: "Virtual exit = routing policy; physical peer = Tailscale exit candidate"
-
+principle: Virtual exit = routing policy; physical peer = Tailscale exit candidate
 default_profile: direct
-
 physical_candidates:
   mesh-exit:
     hostname: mesh-exit
@@ -18,8 +13,7 @@ physical_candidates:
     cloud_provider: google
     fractal_replica_url: http://mesh-exit.example.ts.net:8088/mesh/fractal/replica
     supabase_role: cloud_anchor
-    note: "Cloud mesh exit + fractal replica (override locally)"
-
+    note: Cloud mesh exit + fractal replica (override locally)
   legacy-exit:
     hostname: legacy-exit
     magicdns: legacy-exit.example.ts.net
@@ -27,70 +21,70 @@ physical_candidates:
     offers_exit: true
     region: eu
     status: offline
-    note: "Legacy exit placeholder"
-
+    note: Legacy exit placeholder
   mainframe-wsl:
     hostname: mainframe-wsl
     platform: linux
     status: optional
     offers_exit: false
     region: local-wsl
-    note: "WSL dev leaf"
-
+    note: WSL dev leaf
+    magicdns: mainframe-wsl.example.ts.net
   mainframe:
     hostname: mainframe
     platform: windows
     status: configured
     offers_exit: false
     region: local-desktop
-    note: "Windows mainframe orchestrator"
-
+    note: Windows mainframe orchestrator
+    magicdns: mainframe.example.ts.net
   phone:
     hostname: phone
     platform: android
     status: configured
     offers_exit: false
     region: mobile
-    note: "Phone peer — not an exit candidate"
-
+    note: Phone peer — not an exit candidate
+    magicdns: phone.example.ts.net
 virtual_profiles:
   direct:
-    label: "No exit node (mesh-only)"
+    label: No exit node (mesh-only)
     primary: null
     fallbacks: []
     clear_exit: true
-
   cloud-eu:
-    label: "EU cloud egress"
+    label: EU cloud egress
     primary: mesh-exit
-    fallbacks: [legacy-exit, mainframe-wsl]
+    fallbacks:
+    - legacy-exit
+    - mainframe-wsl
     require_online: true
-
   wsl-dev:
-    label: "WSL development egress"
+    label: WSL development egress
     primary: mainframe-wsl
-    fallbacks: [legacy-exit]
+    fallbacks:
+    - legacy-exit
     require_online: true
-
   mainframe-local:
-    label: "Desktop mainframe egress"
+    label: Desktop mainframe egress
     primary: mainframe
-    fallbacks: [mainframe-wsl, legacy-exit]
+    fallbacks:
+    - mainframe-wsl
+    - legacy-exit
     require_online: true
-
   phone-safe:
-    label: "Mobile-safe — never use exit"
+    label: Mobile-safe — never use exit
     primary: null
     fallbacks: []
     clear_exit: true
-    blocked_on_platforms: [android]
-
+    blocked_on_platforms:
+    - android
   google-server:
-    label: "Cloud server egress"
+    label: Cloud server egress
     primary: mesh-exit
-    fallbacks: [legacy-exit]
+    fallbacks:
+    - legacy-exit
     require_online: true
-
 segment_routing:
   mainframe:
     default_profile: direct
@@ -113,16 +107,14 @@ segment_routing:
     default_profile: cloud-eu
   researcher:
     default_profile: cloud-eu
-
 cloud_backends:
   supabase:
-    # Set real project via env / local .env — not in public tree
     project_ref: YOUR_SUPABASE_PROJECT_REF
     url: https://YOUR_SUPABASE_PROJECT_REF.supabase.co
     schema_migration: 03_Code/Dashboard/supabase/schema_migration_v5_fractal_mesh.sql
     tables:
-      - fusion_mesh_fractal_manifests
-      - fusion_mesh_exit_state
+    - fusion_mesh_fractal_manifests
+    - fusion_mesh_exit_state
   google_drive:
     cold_root: FusionHero_Offload/mesh/fractal
     policy: google_drive_cold_default
@@ -130,3 +122,4 @@ cloud_backends:
     hostname: mesh-exit
     role: fractal_replica_host
     legacy: legacy-exit
+platform_version: 10.0.0

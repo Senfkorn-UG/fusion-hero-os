@@ -31,7 +31,7 @@ spec:
               gsutil -m cp -r "gs://${GCS_BUCKET}/training/*" /workspace/training/ || true
           env:
             - name: GCS_BUCKET
-              value: fusion-ai-data-YOUR_GCE_PROJECT
+              value: fusion-ai-data-${GCP_PROJECT_ID}
           volumeMounts:
             - name: workspace
               mountPath: /workspace
@@ -53,7 +53,7 @@ spec:
               gsutil -m cp -r /workspace/data/* "gs://${GCS_BUCKET}/checkpoints/" || true
           env:
             - name: GCS_BUCKET
-              value: fusion-ai-data-YOUR_GCE_PROJECT
+              value: fusion-ai-data-${GCP_PROJECT_ID}
             - name: FUSION_QUBO_N
               value: "128"
             - name: FUSION_ANNEAL_STEPS
