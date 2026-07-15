@@ -156,6 +156,15 @@ connectors:
     tailscale_tag: tag:fusion-connector-tasks
     description: Tasks MCP
 routing:
+  # Grok interconnect control plane (canonical re-routes)
+  control_plane: /mainframe/grok
+  interconnect: /api/grok/interconnect
+  grok_route: /api/grok/route
+  mainframe_hub: /mainframe
+  dauer_vr: /mainframe/vr
+  ide: /mainframe/ide
+  worktree: /mainframe/worktree
+  ops: /mainframe/ops
   base_url: https://mainframe.example.ts.net
   unified: /fusion/status
   fusion_graph: /fusion/graph

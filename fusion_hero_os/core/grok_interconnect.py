@@ -431,19 +431,34 @@ def evolve(graph: Optional[InterconnectGraph] = None) -> InterconnectGraph:
     if "mesh-coordinator" in online_ids:
         growth.append("coord_state_present")
 
+    # merge canonical route table (alles umgeroutet)
+    route_table: Dict[str, Any] = {}
+    try:
+        from fusion_hero_os.core.grok_route_table import ROUTE_TABLE, all_routes
+
+        route_table = all_routes()
+        for k, rt in ROUTE_TABLE.items():
+            intent_map[k] = rt.surface or rt.api
+    except Exception as exc:  # noqa: BLE001
+        route_table = {"error": str(exc)}
+
     g.evolved = {
         "intent_map": intent_map,
+        "route_table": route_table.get("table") if isinstance(route_table, dict) else {},
+        "entrypoints": route_table.get("entrypoints") if isinstance(route_table, dict) else {},
+        "legacy_redirects": route_table.get("legacy_redirects") if isinstance(route_table, dict) else {},
         "growth_flags": growth,
         "next_intents_for_bridge": [
             "mainframe", "dauer_vr", "ide", "worktree", "interconnect",
             "mesh", "publish", "race_guard", "coord",
         ],
         "architecture": {
-            "control_plane": "grok-cli + mcp-host (L1)",
-            "local_brain": "dashboard + grok-bridge",
+            "control_plane": "grok-cli + mcp-host (L1) → /mainframe/grok",
+            "local_brain": "dashboard + grok-bridge + grok_route_table",
             "optional_api": "grok-llm (xAI)",
             "mesh_anchor": "gce-publish (L2)",
             "sync": "sync_grok_intern.ps1 → skill + workspace",
+            "routing": "all intents resolve via fusion_hero_os.core.grok_route_table",
         },
     }
     # bump recommendations from evolve

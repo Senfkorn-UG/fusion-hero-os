@@ -481,6 +481,10 @@ async def api_grok_chat(payload: ChatPayload):
         "dom": dom,
         "model_pool": default_model_pool(normalized),
         "provider_auto": os.getenv("FUSION_PROVIDER_AUTO", "1") == "1",
+        # re-routed interconnect plan (primary surface for UI)
+        "route_plan": route_plan,
+        "redirect_hint": route_plan.get("redirect_hint") if isinstance(route_plan, dict) else "/mainframe/grok",
+        "control_plane": "/mainframe/grok",
     }
 
 

@@ -39,3 +39,24 @@ python -m fusion_hero_os.core.grok_interconnect
 # or
 python -c "from fusion_hero_os.core.grok_interconnect import capture, evolve; print(evolve(capture()).health_score)"
 ```
+
+## Umroutung (canonical)
+
+Alle Intents laufen über `fusion_hero_os.core.grok_route_table`:
+
+| Intent | Surface |
+|--------|---------|
+| interconnect | `/mainframe/grok` |
+| mainframe | `/mainframe` |
+| dauer_vr | `/mainframe/vr` |
+| ide | `/mainframe/ide` |
+| worktree | `/mainframe/worktree` |
+| ops | `/mainframe/ops` |
+| chat | `/api/grok/chat` (+ redirect_hint) |
+
+Legacy redirects: `/grok` → `/mainframe/grok`, `/ide` → `/mainframe/ide`, `/worktree` → `/mainframe/worktree`, `/portal` → `/mainframe`, `/vr/persistent` → `/mainframe/vr`, `/api/interconnect` → `/api/grok/interconnect`.
+
+Route APIs:
+- `GET /api/grok/route?intent=ide`
+- `GET /api/grok/route?message=öffne%20dauer%20vr`
+- `GET /api/grok/routes` — volle Tabelle
