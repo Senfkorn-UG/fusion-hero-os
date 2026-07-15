@@ -221,7 +221,11 @@ def _parse_qname(data: bytes, offset: int) -> Tuple[str, int]:
             seen += 1
             continue
         offset += 1
-        labels.append(data[offset : offset + length].decode("idna", errors="replace"))
+        raw = data[offset : offset + length]
+        try:
+            labels.append(raw.decode("idna"))
+        except Exception:
+            labels.append(raw.decode("ascii", errors="ignore") or "x")
         offset += length
         seen += 1
     name = ".".join(labels).lower()
@@ -233,7 +237,10 @@ def _encode_name(name: str) -> bytes:
     for label in name.rstrip(".").split("."):
         if not label:
             continue
-        b = label.encode("idna")
+        try:
+            b = label.encode("idna")
+        except Exception:
+            b = label.encode("ascii", errors="ignore")
         out.append(len(b))
         out.extend(b)
     out.append(0)
