@@ -2,6 +2,8 @@
 
 **Kontext:** Dissertation *Autopoiesis und Autopolitik des Fusion Hero OS* (Stephan Hagen Urban, v1.0)  
 **Status (Proof Registry):** Modell-Isomorphie **OFFEN** — heuristisch, nicht als physische Identität behauptet  
+**Geltungsmarke (V3.3):** **Modell** — niemals als Satz lesen  
+**Designvorlage:** `docs/kompendium/V3.3_DESIGNVORLAGE_VERBINDLICH.md` (zwingend)  
 **Kanon-Bezug:** MasterSeed-Fixpunkt · CEC · bifurkale Mesh-Sync · Code Honesty
 
 ---

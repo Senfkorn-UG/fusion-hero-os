@@ -4,7 +4,7 @@ Stephan Hagen Urban
 
 Abstract (Deutsch)
 
-**Ontologische These:** Das gesamte Fusion Hero OS *ist* die Dissertation; der Text (Monographie, PDF, Abstract) ist nur eine Form seines Ausdrucks. Die Arbeit wird nicht über ein externes System geschrieben — sie *läuft* als System: Code, Mesh, Dashboard, Tests, Archive, Proof Registry, Heißlauf und Embodied Praxis sind gleichberechtigte Ausdrucksorgane.
+**Ontologische These [Modell]:** Das gesamte Fusion Hero OS *ist* die Dissertation; der Text (Monographie, PDF, Abstract) ist nur eine Form seines Ausdrucks. Die Arbeit wird nicht über ein externes System geschrieben — sie *läuft* als System: Code, Mesh, Dashboard, Tests, Archive, Proof Registry, Heißlauf und Embodied Praxis sind Ausdrucksorgane eines Organismus im Sinne des Kompendiums der Heroik **V3.3** (Mythos · Grund · Beweis; Geltung Satz/Bedingt/Modell/Fragment; Designvorlage zwingend — Arbeitsqualität darf nicht hinter das Original zurückfallen).
 
 Diese Arbeit entwickelt eine vollständige Theorie der autopoietischen und autopolitischen Organisation am und *als* System Fusion Hero OS (operativer Kanon v10.0.0, Heroic Stack v8.3, AscensionOS v9.x aspirational). Autopoiesis bezeichnet die operative Selbstproduktion systemessentieller Komponenten (MasterSeed-Anker, Co-Evolutionary Closure, Sisyphos-Zyklus, Layer-/Fraktalmesh, Archive, Tests). Autopolitik bezeichnet die Selbstgesetzgebung dieser Schließung: Placement-Tiers L0–L4, Consent-Gates, MCP-Konnektoren als Membranen, Tailscale-Mesh als Organsystem und die Trennung von Inhouse-Wahrheit versus externer SaaS-Erinnerung.
 

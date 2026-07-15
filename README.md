@@ -12,16 +12,22 @@ Core: **ALTE_Frau_95g Heroic Core** | additive over the v8.3 stack (BCG)
 > **The entire Fusion Hero OS *is* the dissertation.**  
 > The monograph / PDF / abstract is **only one form of expression**.
 
+**Design template V3.3 is mandatory** (work quality must not regress):  
+[docs/kompendium/V3.3_DESIGNVORLAGE_VERBINDLICH.md](docs/kompendium/V3.3_DESIGNVORLAGE_VERBINDLICH.md) ·  
+Original PDF: `legacy_sources/heroic-fusion-os-manifest/Kompendium_der_Heroik_V3.3.pdf`  
+→ Mythos · Grund · Beweis · claim marks Satz/Bedingt/Modell/Fragment · Synthese + 6 Bögen · no metaphor-as-proof.
+
 | Expression | Examples |
 |------------|----------|
 | Operative | this repo, runtime, dashboard, mesh, MCP |
 | Textual | [docs/dissertation/](docs/dissertation/) PDF · DOCX · abstracts |
 | Empirical | live hot-runs, health, releases, coordinator |
 | Epistemic | Proof Registry (PROVEN / OPEN / REFUTED) |
-| Archival | Master Archive, kompendia, curriculum |
+| Archival | Master Archive, kompendia V3.3→v10, curriculum |
 
 Ontology: [docs/dissertation/ONTOLOGIE_DISSERTATION_IST_DAS_OS.md](docs/dissertation/ONTOLOGIE_DISSERTATION_IST_DAS_OS.md) ·  
-Bifocal verweis (universe ↔ brain · Standard Model): [docs/dissertation/VERWEIS_BIFOKALITAET_UNIVERSUM_GEHIRN_SM.md](docs/dissertation/VERWEIS_BIFOKALITAET_UNIVERSUM_GEHIRN_SM.md) ·  
+Index: [docs/DISSERTATION_AS_OS.md](docs/DISSERTATION_AS_OS.md) ·  
+Bifocal verweis (universe ↔ brain · Standard Model, **Model/OPEN**): [docs/dissertation/VERWEIS_BIFOKALITAET_UNIVERSUM_GEHIRN_SM.md](docs/dissertation/VERWEIS_BIFOKALITAET_UNIVERSUM_GEHIRN_SM.md) ·  
 Release: [dissertation-v1.0](https://github.com/95guknow/fusion-hero-os/releases/tag/dissertation-v1.0)
 
 > This public repository must not contain personal profile data, private

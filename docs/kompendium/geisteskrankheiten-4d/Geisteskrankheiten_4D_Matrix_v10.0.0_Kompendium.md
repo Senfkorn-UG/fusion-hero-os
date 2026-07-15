@@ -4,7 +4,8 @@
 > **Version 10.0.0** · additive Evolution über **v7 Kompendium** (vollständig erhalten)  
 > Duktus: Kompendium der Heroik V3.3 · Plattform: Fusion Hero OS **v10.0.0**  
 > Autor/Operator: Stephan Hagen Urban · Stand: 2026-07-15  
-> **Dissertation-as-OS:** Fusion Hero OS *ist* die Dissertation; dieses Kompendium ist eine **klinische Ausdrucksform**. Text/PDF sind Verdichtung, nicht das Ganze. Ontologie: `docs/dissertation/ONTOLOGIE_DISSERTATION_IST_DAS_OS.md`.
+> **Dissertation-as-OS:** Fusion Hero OS *ist* die Dissertation; dieses Kompendium ist eine **klinische Ausdrucksform**. Text/PDF sind Verdichtung, nicht das Ganze. Ontologie: `docs/dissertation/ONTOLOGIE_DISSERTATION_IST_DAS_OS.md`.  
+> **Designvorlage V3.3 zwingend:** Duktus, Geltung (Satz/Bedingt/Modell/Fragment), BCG und Herleitung aus dem Nichts — `docs/kompendium/V3.3_DESIGNVORLAGE_VERBINDLICH.md` · Original `legacy_sources/heroic-fusion-os-manifest/Kompendium_der_Heroik_V3.3.pdf`. Arbeitsqualität nicht opfern.
 
 ---
 

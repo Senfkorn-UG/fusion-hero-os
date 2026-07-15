@@ -12,13 +12,21 @@ Eine systemtheoretische, existenzphilosophische und softwarearchitektonische Gru
 > **Das gesamte Fusion Hero OS ist die Dissertation.**  
 > Der Text ist nur **eine** Form seines Ausdrucks.
 
+### Designvorlage V3.3 — zwingend
+
+Arbeitsqualität darf **nicht** hinter dem Original zurückfallen:
+
+- Vorlage: [`../kompendium/V3.3_DESIGNVORLAGE_VERBINDLICH.md`](../kompendium/V3.3_DESIGNVORLAGE_VERBINDLICH.md)  
+- Original: `legacy_sources/heroic-fusion-os-manifest/Kompendium_der_Heroik_V3.3.pdf`  
+- Pflicht: Synthese + 6 Bögen + Anhang · Geltung Satz/Bedingt/Modell/Fragment · Register trennen · Duktus Mythos·Grund·Beweis
+
 | Ausdruck | Beispiele |
 |----------|-----------|
 | Operativ | Repo, Runtime, Dashboard, Mesh, MCP |
 | Textuell | DOCX / PDF / Abstracts |
 | Empirisch | Heißlauf, Releases, Health, Coordinator |
 | Epistemisch | Proof Registry |
-| Archivalisch | Master Archive, Kompendia |
+| Archivalisch | Master Archive, Kompendia V3.3→v10 |
 
 Siehe: [`ONTOLOGIE_DISSERTATION_IST_DAS_OS.md`](ONTOLOGIE_DISSERTATION_IST_DAS_OS.md) · Bifokal-Verweis: [`VERWEIS_BIFOKALITAET_UNIVERSUM_GEHIRN_SM.md`](VERWEIS_BIFOKALITAET_UNIVERSUM_GEHIRN_SM.md)
 

@@ -12,6 +12,18 @@ erweitert um v10 Stage-A/B).
 > **Das gesamte Fusion Hero OS ist die Dissertation.**  
 > Der Text (Monographie/PDF/Abstract) ist nur **eine** Form seines Ausdrucks.
 
+### Designvorlage V3.3 — zwingend (Arbeitsqualität)
+
+Original und Verfassung der Textqualität:
+
+| Asset | Pfad |
+|-------|------|
+| **Original PDF** | `legacy_sources/heroic-fusion-os-manifest/Kompendium_der_Heroik_V3.3.pdf` |
+| **Verbindliche Vorlage** | `docs/kompendium/V3.3_DESIGNVORLAGE_VERBINDLICH.md` |
+| Extrakt | `docs/kompendium/_extract_v33.txt` |
+
+**Nicht opfern:** Synthese + 6 Bögen + Anhang · Geltung Satz/Bedingt/Modell/Fragment · Register Spezifikation / Heroischer Exkurs / Herleitung aus dem Nichts · Duktus Mythos·Grund·Beweis · keine Metapher-als-Beweis. v10 und Dissertation-as-OS sind **additiv** zu V3.3, nicht Ersatz.
+
 | Ausdruck | Ort |
 |----------|-----|
 | Operativ | dieses Repo + Dashboard :8000 + Mesh + MCP |
@@ -79,6 +91,7 @@ optionaler Layer (`ascension`) in `fusion_unified.yaml` registriert und über
 ## Architektur-Prinzipien
 
 - **Dissertation-as-OS**: Betrieb *ist* die Arbeit; Text ist Verdichtung, nicht das Ganze.
+- **V3.3 Designvorlage**: Kompendium-Qualität ist Pflicht; Changelog-Duktus ersetzt keinen Satz.
 - **Inside-Out**: MasterSeed / Sisyphos im Kern, Strahlung nach außen.
 - **Coevolutionär**: kontrollierte gegenseitige Beeinflussung.
 - **Bifokal**: Kosmos-Pfad (u. a. SM-Referenz) und Gehirn-/Operativ-Pfad als Dualität, nicht Identität.

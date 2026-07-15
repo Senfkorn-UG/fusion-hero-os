@@ -6,7 +6,8 @@
 **Stand:** 2026-07-15 (UTC)  
 **Methode:** Herleitung aus dem Nichts (V3.3) · Geltungskategorien · Code-Honesty / Proof Registry  
 **Implementierungsanker:** `fusion_hero_os/core/heroic_math_engine.py`, `qb_qubo.py`, `proof_registry.yaml`  
-**Dissertation-as-OS:** Fusion Hero OS *ist* die Dissertation; diese formale Herleitung ist eine **epistemische Ausdrucksform**. Bifokal-Verweis (Universum↔Gehirn · Standardmodell): `docs/dissertation/VERWEIS_BIFOKALITAET_UNIVERSUM_GEHIRN_SM.md` (Modell/OFFEN). Ontologie: `docs/dissertation/ONTOLOGIE_DISSERTATION_IST_DAS_OS.md`.
+**Dissertation-as-OS:** Fusion Hero OS *ist* die Dissertation; diese formale Herleitung ist eine **epistemische Ausdrucksform**. Bifokal-Verweis (Universum↔Gehirn · Standardmodell): `docs/dissertation/VERWEIS_BIFOKALITAET_UNIVERSUM_GEHIRN_SM.md` (Modell/OFFEN). Ontologie: `docs/dissertation/ONTOLOGIE_DISSERTATION_IST_DAS_OS.md`.  
+**Designvorlage V3.3 zwingend:** `docs/kompendium/V3.3_DESIGNVORLAGE_VERBINDLICH.md` · Original-PDF im Manifest-Legacy. Geltungsmarken und Herleitung aus dem Nichts sind **nicht verhandelbar**.
 
 ---
 
