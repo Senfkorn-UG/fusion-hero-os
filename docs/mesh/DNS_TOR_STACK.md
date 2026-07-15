@@ -12,8 +12,10 @@ Ein DNS, das **auch Tor-Protokoll** beherrscht:
 |-------------|-----|
 | `*.ts.net` / MagicDNS | Tailscale (`accept-dns`) |
 | Clearnet (normal) | Quad9 `9.9.9.9` / Cloudflare `1.1.1.1` |
-| `*.onion` | **Tor DNSPort** `127.0.0.1:5354` |
+| `*.onion` | **Tor DNSPort** `127.0.0.1:8853` |
 | Apps mit SOCKS | Tor SOCKS5 `127.0.0.1:9050` |
+
+Ports **5353/5354** sind auf Windows oft **mDNS/Bonjour** — daher Fusion: **5454** (Proxy) + **8853** (Tor DNS).
 
 ## Architektur
 
@@ -22,13 +24,13 @@ App / OS
    │
    ├─ MagicDNS (Tailscale) ──► 100.x mesh names
    │
-   └─ Fusion DNS Proxy :5353
-         ├─ *.onion ──► Tor DNSPort :5354 ──► Tor network
+   └─ Fusion DNS Proxy :5454
+         ├─ *.onion ──► Tor DNSPort :8853 ──► Tor network
          └─ * ────────► 9.9.9.9 / 1.1.1.1
 ```
 
 Tor **SOCKS** (9050) = volles Tor-Protokoll für Browser/Apps.  
-Tor **DNSPort** (5354) = Namensauflösung inkl. `.onion` (AutomapHostsOnResolve).
+Tor **DNSPort** (8853) = Namensauflösung inkl. `.onion` (AutomapHostsOnResolve).
 
 ## Start
 

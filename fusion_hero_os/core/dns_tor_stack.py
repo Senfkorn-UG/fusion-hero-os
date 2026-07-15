@@ -81,8 +81,15 @@ def start_tor_if_possible() -> Dict[str, Any]:
     tor_c = cfg.get("tor") or {}
     dns_port = int(tor_c.get("dns_port") or 5354)
     socks_port = int(tor_c.get("socks_port") or 9050)
-    if _port_open("127.0.0.1", dns_port):
-        return {"ok": True, "already_running": True, "dns_port": dns_port, "socks_port": socks_port}
+    if _port_open("127.0.0.1", dns_port, udp=True) or _port_open("127.0.0.1", socks_port):
+        return {
+            "ok": True,
+            "already_running": True,
+            "dns_port": dns_port,
+            "socks_port": socks_port,
+            "dns_udp": _port_open("127.0.0.1", dns_port, udp=True),
+            "socks": _port_open("127.0.0.1", socks_port),
+        }
 
     exe = find_tor_exe()
     if not exe:
@@ -136,9 +143,11 @@ AvoidDiskWrites 1
             creationflags=creation,
         )
         # wait bootstrap briefly
-        for _ in range(30):
+        for _ in range(45):
             time.sleep(1)
-            if _port_open("127.0.0.1", dns_port):
+            if _port_open("127.0.0.1", dns_port, udp=True) or _port_open(
+                "127.0.0.1", socks_port
+            ):
                 return {
                     "ok": True,
                     "started": True,
@@ -146,6 +155,8 @@ AvoidDiskWrites 1
                     "exe": exe,
                     "dns_port": dns_port,
                     "socks_port": socks_port,
+                    "dns_udp": _port_open("127.0.0.1", dns_port, udp=True),
+                    "socks": _port_open("127.0.0.1", socks_port),
                     "log": str(log),
                 }
         return {
@@ -155,19 +166,36 @@ AvoidDiskWrites 1
             "exe": exe,
             "dns_port": dns_port,
             "socks_port": socks_port,
-            "warn": "DNSPort not open yet — still bootstrapping",
+            "warn": "DNSPort not open yet — still bootstrapping (check tor.log)",
             "log": str(log),
         }
     except Exception as e:  # noqa: BLE001
         return {"ok": False, "error": str(e)[:200], "exe": exe}
 
 
-def _port_open(host: str, port: int) -> bool:
+def _port_open(host: str, port: int, *, udp: bool = False) -> bool:
+    """TCP connect check, or UDP probe for DNS ports."""
+    if not udp:
+        try:
+            with socket.create_connection((host, port), timeout=0.4):
+                return True
+        except OSError:
+            return False
+    # UDP: send minimal DNS query and expect any response/error that is not timeout
+    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    sock.settimeout(0.6)
     try:
-        with socket.create_connection((host, port), timeout=0.4):
-            return True
+        # empty-ish A query for "."
+        q = b"\x00\x01\x01\x00\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00\x01\x00\x01"
+        sock.sendto(q, (host, port))
+        sock.recvfrom(512)
+        return True
+    except socket.timeout:
+        return False
     except OSError:
         return False
+    finally:
+        sock.close()
 
 
 def _parse_qname(data: bytes, offset: int) -> Tuple[str, int]:
@@ -358,10 +386,10 @@ def status() -> Dict[str, Any]:
     return {
         "ok": True,
         "tor_exe": tor_exe,
-        "tor_dns_open": _port_open("127.0.0.1", dns_port),
+        "tor_dns_open": _port_open("127.0.0.1", dns_port, udp=True),
         "tor_socks_open": _port_open("127.0.0.1", socks_port),
         "proxy_listen": f"{proxy.get('listen_host') or '127.0.0.1'}:{listen_port}",
-        "proxy_open": _port_open("127.0.0.1", listen_port),
+        "proxy_open": _port_open("127.0.0.1", listen_port, udp=True),
         "clearnet_upstream": cfg.get("clearnet_upstream"),
         "routing": cfg.get("routing_table"),
         "principle": (cfg.get("principle") or "")[:200],
