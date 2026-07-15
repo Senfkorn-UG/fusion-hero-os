@@ -489,14 +489,5 @@ def _persist(g: InterconnectGraph) -> None:
         _STATE.write_text(json.dumps(payload, indent=2, ensure_ascii=False), encoding="utf-8")
 
 
-def _read_json(path: Path) -> Dict[str, Any]:
-    if not path.is_file():
-        return {}
-    try:
-        return json.loads(path.read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError):
-        return {}
-
-
 if __name__ == "__main__":
     print(json.dumps(evolve(capture()).to_dict(), indent=2, ensure_ascii=False))

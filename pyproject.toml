@@ -52,7 +52,7 @@ ascension-dashboard = "normal_os.dashboard.app:run"
 ascension-hub = "normal_os.integration.fusion_integration_hub:main"
 [tool.setuptools.packages.find]
 where = ["src", "."]
-include = ["normal_os*", "fusion_hero_os*"]
+include = ["normal_os*", "fusion_hero_os*", "ascension_os*"]
 exclude = ["tests*", "legacy_sources*"]
 [tool.ruff]
 target-version = "py311"

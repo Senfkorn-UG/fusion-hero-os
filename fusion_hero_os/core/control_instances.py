@@ -483,7 +483,8 @@ def run_control_panel(
         conf = float(parsed.get("confidence") or 0)
         acc_s = float(parsed.get("accuracy_self") or conf or 0)
         geltung = str(parsed.get("geltung") or "Unbekannt")
-        checks = parsed.get("checks") if isinstance(parsed.get("checks"), list) else []
+        raw_checks = parsed.get("checks")
+        check_items: List[Any] = list(raw_checks) if isinstance(raw_checks, list) else []
         results.append(
             ControlResult(
                 instance_id=iid,
@@ -499,7 +500,7 @@ def run_control_panel(
                 model=model,
                 error=err,
                 raw_text=(text or "")[:4000],
-                checks=[str(c) for c in checks],
+                checks=[str(c) for c in check_items],
                 temperature=temperature,
             )
         )
