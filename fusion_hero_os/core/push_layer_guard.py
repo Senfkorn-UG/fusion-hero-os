@@ -136,8 +136,14 @@ def _load_dotenv_files(cfg: Dict[str, Any]) -> List[str]:
     if not si.get("enabled", True) or not si.get("load_dotenv", True):
         return []
     loaded: List[str] = []
-    for rel in si.get("dotenv_paths") or [".env", ".env.local"]:
-        path = ROOT / rel if not str(rel).startswith("~") else Path(os.path.expanduser(rel))
+    paths = list(si.get("dotenv_paths") or [".env", ".env.local"])
+    # operator-local push secret file (never in git)
+    paths.append(str(Path.home() / ".fusion" / "secrets" / "push.env"))
+    for rel in paths:
+        if str(rel).startswith("~") or str(rel).startswith(str(Path.home())):
+            path = Path(os.path.expanduser(rel))
+        else:
+            path = ROOT / rel
         if not path.is_file():
             continue
         try:
@@ -152,10 +158,10 @@ def _load_dotenv_files(cfg: Dict[str, Any]) -> List[str]:
                 val = val.strip().strip('"').strip("'")
                 if not key:
                     continue
-                # do not override already-set env
-                if key not in os.environ or not (os.environ.get(key) or "").strip():
+                # do not override already-set non-empty env
+                if not (os.environ.get(key) or "").strip():
                     os.environ[key] = val
-            loaded.append(str(path.name))
+            loaded.append(path.name)
         except Exception:
             continue
     return loaded
