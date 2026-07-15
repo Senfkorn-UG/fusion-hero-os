@@ -22,42 +22,31 @@
 
 ---
 
-<div align="center">
-
-### 🧭 Navigation
-
-[📊 Stats](#-github-stats) · [👋 Über mich](#-über-mich) · [🛠️ Tech Stack](#️-tech-stack) · [🚀 Projekte](#-projekte)
-
-</div>
-
----
-
-<div align="center">
+ <div align="center">
 <img src="https://capsule-render.vercel.app/api?type=soft&color=gradient&customColorList=11,20,24&height=70&section=header&text=Über%20Mich&fontSize=28&fontColor=fff&fontAlignY=65&animation=fadeIn" width="100%" />
 </div>
-
-## 👋 Über mich
 
 ```typescript
 const guknow = {
   identity: "Stephan Urban",
   alias:    "95guknow",
-  role:     "Software Developer / Systems Architect",
-  location: "📍 Hoyerswerda / Cyberspace",
+  role:     "Sys-Architect & Dev",
+  location: "📍 Hoyerswerda/Cyberspace",
   
-  system:   "Heroic Core loaded & active ⚡",
+  system:   "Heroic Core active ⚡",
 
   focus: [
-    "🤖 Autopolitische Systemarchitektur & Fusion-Hero-OS",
-    "📊 Telemetrische Nervensysteme (Streamlit, Plotly)",
-    "🧠 Lokale KI-Inferenz & Orchestrierung (Ollama, OpenRouter)",
+    "🤖 Fusion-Hero-OS",
+    "⚙️ Autopolitische Systeme",
+    "📊 Telemetrie (Streamlit)",
+    "🧠 Lokale KI (Ollama)"
   ],
 
   stack: {
-    languages: ["Python", "Bash", "Markdown"],
-    tools:     ["Streamlit", "Pytest", "GitHub Actions", "Git"],
+    lang:  ["Python", "Bash", "MD"],
+    tools: ["Streamlit", "Pytest"]
   },
 
-  learning:  "Lokales Speech Recognition Training",
-  vibe:      "Droning Techno · ASMR · Counter-Strike · Glitch Art",
+  learning: "Local Speech Recognition",
+  vibe:     "Techno · ASMR · CS · Glitch"
 };
