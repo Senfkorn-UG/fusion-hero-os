@@ -69,6 +69,12 @@ layers:
     config: src/normal_os/integration/mesh_roles.yaml
     health: /mesh/files/status
     phone_portal: /mesh/files/phone
+  service_coordination:
+    module: scripts.mesh_cluster_coordinator
+    config: mesh_service_coordination.yaml
+    health: ~/.fusion/mesh/coordination/latest.json
+    cluster: infra/k8s/fusion-coordination/
+    purpose: "inhouse vs external placement + GKE rechenzeit for inventory/plan"
   knowledge:
     module: fusion_hero_os.core.layer_registry
     config:

@@ -2,9 +2,11 @@
 
 > **Stand:** v10.0.0 - public docs use placeholders only  
 > **Roles:** `src/normal_os/integration/mesh_roles.yaml`  
-> **Registry:** `mesh_connectors.yaml` - Exit profiles: `mesh_virtual_exit_nodes.yaml`
+> **Registry:** `mesh_connectors.yaml` - Exit profiles: `mesh_virtual_exit_nodes.yaml`  
+> **Coordination:** `mesh_service_coordination.yaml` + `docs/mesh/SERVICE_COORDINATION.md` (inhouse vs external + GKE placement)
 
-**Purpose:** Mesh VPN + phone bridge + optional funnel for mainframe and peers.
+**Purpose:** Mesh VPN + phone bridge + optional funnel for mainframe and peers.  
+**Coordination purpose:** Cluster-backed inventory/placement so external SaaS and in-house modules share one routing truth.
 
 ## Principle
 
