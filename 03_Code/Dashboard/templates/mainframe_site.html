@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fusion Hero OS · Mainframe Website</title>
+  <link rel="stylesheet" href="/static/mainframe_site.css">
+</head>
+<body class="mf-body">
+  <header class="mf-header">
+    <div class="mf-brand">
+      <span class="mf-logo">◈</span>
+      <div>
+        <h1>MAINFRAME WEBSITE</h1>
+        <p class="mf-sub">GUI · IDE · Dauer-VR · Worktree · Ops · v10.0.0</p>
+      </div>
+    </div>
+    <nav class="mf-nav">
+      <a href="/">Dashboard</a>
+      <a href="/mainframe/vr" class="accent">Dauer-VR</a>
+      <a href="/mainframe/ide">IDE</a>
+      <a href="/mainframe/worktree">Worktree</a>
+      <a href="/mainframe/ops">Ops</a>
+      <a href="/architecture">Atlas</a>
+      <a href="/heroic">Heroic</a>
+      <a href="/vr/viewer">360°</a>
+      <a href="/highest-layer-vr">HL-VR</a>
+    </nav>
+  </header>
+
+  <main class="mf-grid">
+    <section class="mf-card hero">
+      <h2>Operational Surfaces</h2>
+      <p class="muted">Komplett hyperverlinktes Mainframe-Portal. Dauer-VR läuft als eigene Fullscreen-Shell; IDE und Worktree teilen denselben sicheren File-API-Pfad.</p>
+      <div class="mf-tiles">
+        <a class="tile vr" href="/mainframe/vr">
+          <span class="tile-icon">◉</span>
+          <strong>Dauer-VR</strong>
+          <em>Always-on A-Frame · HUD · Auto-Refresh</em>
+        </a>
+        <a class="tile ide" href="/mainframe/ide">
+          <span class="tile-icon">⌘</span>
+          <strong>IDE Shell</strong>
+          <em>Tree · Preview · Live-APIs</em>
+        </a>
+        <a class="tile tree" href="/mainframe/worktree">
+          <span class="tile-icon">▤</span>
+          <strong>Worktree</strong>
+          <em>Komplett hyperlinked Repo</em>
+        </a>
+        <a class="tile ops" href="/mainframe/ops">
+          <span class="tile-icon">◈</span>
+          <strong>Ops Console</strong>
+          <em>Cost · Energy · Mirror</em>
+        </a>
+      </div>
+    </section>
+
+    <section class="mf-card">
+      <h2>Live Status</h2>
+      <pre id="site-status" class="mf-pre">loading…</pre>
+    </section>
+
+    <section class="mf-card">
+      <h2>Git Worktrees</h2>
+      <div id="worktree-list" class="mf-list">loading…</div>
+    </section>
+
+    <section class="mf-card">
+      <h2>Publish / Mesh</h2>
+      <ul class="mf-links">
+        <li><a href="http://100.103.188.54:8088/docs/publish/v10/" target="_blank" rel="noopener">GCE Publish v10</a></li>
+        <li><a href="https://github.com/95guknow/fusion-hero-os/releases" target="_blank" rel="noopener">GitHub Releases</a></li>
+        <li><a href="/api/mainframe/site/status">API site status (JSON)</a></li>
+        <li><a href="/api/health">API health</a></li>
+        <li><a href="/api/vr/status">API VR status</a></li>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="mf-footer">
+    Fusion Hero OS · ALTE_Frau_95g · Mainframe operational ·
+    <a href="/mainframe/vr">enter Dauer-VR</a>
+  </footer>
+  <script src="/static/mainframe_site.js"></script>
+  <script>MainframeSite.bootHub();</script>
+</body>
+</html>
