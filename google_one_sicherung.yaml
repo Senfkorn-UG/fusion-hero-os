@@ -1,0 +1,57 @@
+# Google One / Drive Sicherung — Fusion Hero OS
+# Policy: pseudo_inhouse_only · freemium=false · secrets NEVER synced
+# deploy=private local snapshots · cloud target = Google One / Drive (operator)
+
+version: "1.0"
+platform_version: "10.0.0"
+activated: true
+provider: google_one
+principle: >
+  Sicherung aktiv: local ~/.fusion/sicherung + Google Drive folder
+  Fusion_Hero_OS_Sicherung under Google One storage. Secrets excluded.
+  Product-level Google One device backup requires operator confirm in browser.
+
+landing_url: "https://one.google.com/?g1_landing_page=1"
+storage_url: "https://one.google.com/storage"
+drive_home: "https://drive.google.com/drive/my-drive"
+
+drive:
+  folder_name: Fusion_Hero_OS_Sicherung
+  folder_id: "1a_jWLVX7p5Zw4UCOCbpZjGoAOaj3qUpO"
+  web_view_link: "https://drive.google.com/drive/folders/1a_jWLVX7p5Zw4UCOCbpZjGoAOaj3qUpO"
+  # set after first create; operator may refresh via --activate
+
+local:
+  root: ~/.fusion/sicherung
+  snapshots: ~/.fusion/sicherung/snapshots
+  manifests: ~/.fusion/sicherung/manifests
+  google_one_flag: ~/.fusion/sicherung/google_one/ACTIVATED.json
+
+# public-safe include globs (repo-relative) — no .env, no secrets, no private keys
+include_globs:
+  - VERSION
+  - docs/dissertation/**/*.md
+  - docs/dissertation/**/*.json
+  - docs/control/*.md
+  - docs/control/*.json
+  - docs/mesh/*.md
+  - power_mesh_fusion_evolution.yaml
+  - control_instances.yaml
+  - proof_registry.yaml
+  - google_one_sicherung.yaml
+
+exclude_globs:
+  - "**/.env*"
+  - "**/*secret*"
+  - "**/*credential*"
+  - "**/push_secret*"
+  - "**/*.pem"
+  - "**/*.key"
+  - "**/id_rsa*"
+  - "**/.fusion/secrets/**"
+
+policy:
+  freemium: false
+  pseudo_inhouse_only: true
+  secrets_excluded: true
+  max_file_mb: 25
