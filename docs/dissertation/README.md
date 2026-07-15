@@ -44,8 +44,14 @@ Ausführliche Herleitungen (V3.3: Synthese · 6 Bögen · Geltungsmarken):
 | A01–A09 | Fundament → Core → Engine → Methodik → Meta → Dashboard → Mesh → Modules → Genealogie |
 | [anhaenge/A10_Funktionskatalog_AST.md](anhaenge/A10_Funktionskatalog_AST.md) | AST-Vollkatalog (**239** Klassen · **722** Top-Level-Funktionen · **135** Dateien: `fusion_hero_os` + Dashboard) |
 | [anhaenge/A11_Konversationsarchive_Multi_Instanz.md](anhaenge/A11_Konversationsarchive_Multi_Instanz.md) | **Konversationsarchive** auf mehreren Instanzen (Grok sessions; Struktur public, Dialogtext private) |
+| [anhaenge/A12_Power_Mesh_Fusion_Langzeit_Evolution_Bottom_Up.md](anhaenge/A12_Power_Mesh_Fusion_Langzeit_Evolution_Bottom_Up.md) | **Power Mesh Fusion** — Langzeit-Evolution **bottom-up** der Dissertation (S0→S6, t∥τ) |
+| [power_mesh_evolution.summary.json](power_mesh_evolution.summary.json) | Letzter Evolution-Lauf (public-safe Summary) |
 
 ```powershell
+# Power Mesh Fusion Langzeit-Evolution (bottom-up)
+python -m fusion_hero_os.core.power_mesh_fusion_evolution --status
+python -m fusion_hero_os.core.power_mesh_fusion_evolution --generations 64
+
 # Empfohlen: v10 voll aktivieren + Katalog + DOCX/PDF
 python scripts/pipeline_dissertation_v10.py
 

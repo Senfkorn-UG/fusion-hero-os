@@ -24,6 +24,9 @@ Diese Anhänge leisten, was der Haupttext verdichtet und der Code *ist*: sie **l
 | [A09](A09_Entwicklungsgeschichte_Null_bis_v10.md) | Genealogie der Entwicklung | Fragment/Historie + Spezifikation |
 | [A10](A10_Funktionskatalog_AST.md) | Vollkatalog Klassen/Funktionen (AST) — `fusion_hero_os` + `03_Code/Dashboard` | Spezifikation |
 | [A11](A11_Konversationsarchive_Multi_Instanz.md) | Konversationsarchive auf **mehreren Instanzen** (Grok sessions) | Spezifikation (Struktur; Dialogtext privat) |
+| [A12](A12_Power_Mesh_Fusion_Langzeit_Evolution_Bottom_Up.md) | **Power Mesh Fusion** — Langzeit-Evolution **bottom-up** der Dissertation | Herleitung + Spezifikation · Modell (Deutung) |
+
+**Power Mesh Evolution:** `python -m fusion_hero_os.core.power_mesh_fusion_evolution`  
 
 **v10 aktivieren:** `python scripts/activate_v10.py`  
 

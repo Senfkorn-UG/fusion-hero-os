@@ -10,6 +10,8 @@
 
 **Dissertation-as-OS:** Mesh + coordinator are *organs of the dissertation* (the OS *is* the work; text is one expression). See `docs/dissertation/ONTOLOGIE_DISSERTATION_IST_DAS_OS.md`. Canonical re-routes: `docs/mesh/GROK_INTERCONNECT.md`, control plane `/mainframe/grok`.
 
+**Power Mesh Fusion (bottom-up Langzeit):** long-term evolution of mesh+power+fusion strata as dissertation organs — `power_mesh_fusion_evolution.yaml`, `python -m fusion_hero_os.core.power_mesh_fusion_evolution`, dissertation annex **A12**.
+
 ## Principle
 
 Each connector is its own mesh segment (ID, host role, health path, Tailscale tag).

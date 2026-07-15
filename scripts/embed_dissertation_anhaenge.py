@@ -52,6 +52,7 @@ ORDER = [
     "A09_Entwicklungsgeschichte_Null_bis_v10.md",
     "A10_Funktionskatalog_AST.md",
     "A11_Konversationsarchive_Multi_Instanz.md",
+    "A12_Power_Mesh_Fusion_Langzeit_Evolution_Bottom_Up.md",
 ]
 
 
