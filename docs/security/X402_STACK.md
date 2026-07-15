@@ -25,13 +25,13 @@ python scripts\run_x402_stack.py --broadcast-onchain  # needs FUSION_PUBLICITY_P
 
 ## Last run
 
-**Generated:** 2026-07-15T18:08:47.117162+00:00
+**Generated:** 2026-07-15T18:09:00.014122+00:00
 
 | Layer | Status |
 |-------|--------|
 | Threat audit | **critical** · score 100.0 · gates 0/8 |
 | Sandbox evidence | **6/6 proved** |
-| Attack sim (insecure) | **SUCCESS** · SHA `bc5185b464b233dd` |
+| Attack sim (insecure) | **SUCCESS** · SHA `c25fb2d7c93de328` |
 | Attack sim (secure) | **BLOCKED** |
 | Public damage envelope | **0,01 ct** · dormant 900d · no chain transfer |
 | Media pack | PR #69 merged · @95guknow |
