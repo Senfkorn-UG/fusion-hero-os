@@ -1,8 +1,8 @@
 # Inside-Out Extension Run
 
-**Items inventoried:** 681
-**Files:** 681
-**Training samples:** 4225
+**Items inventoried:** 2121
+**Files:** 2088
+**Training samples:** 4230
 **MasterSeed public:** MS-PUB-v10-THC01H70-BB5A
 **Private refs linked:** 12
 

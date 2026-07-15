@@ -229,35 +229,39 @@ def _iter_files(base: Path, max_files: int) -> Iterable[Path]:
 
 
 def _match_repo_globs(repo: Path, patterns: List[str]) -> List[Path]:
+    """Resolve repo-relative patterns; 'foo/**' means full tree under foo/."""
     out: List[Path] = []
     for pat in patterns:
-        # pathlib rglob for ** 
-        if "**" in pat:
-            prefix, _, rest = pat.partition("**/")
-            base = repo / prefix if prefix else repo
-            if not base.exists():
-                continue
-            if rest.endswith("/**") or rest == "**":
-                # whole tree
-                for p in _iter_files(base, MAX_FILES_PER_RING):
+        pat = pat.replace("\\", "/").strip()
+        if not pat:
+            continue
+        # directory tree markers
+        if pat.endswith("/**"):
+            root = repo / pat[:-3]
+            if root.exists():
+                for p in _iter_files(root, MAX_FILES_PER_RING):
                     out.append(p)
+            continue
+        if pat.endswith("/"):
+            root = repo / pat.rstrip("/")
+            if root.exists():
+                for p in _iter_files(root, MAX_FILES_PER_RING):
+                    out.append(p)
+            continue
+        # single file or dir without **
+        p = repo / pat
+        if p.exists():
+            if p.is_dir():
+                for f in _iter_files(p, MAX_FILES_PER_RING):
+                    out.append(f)
             else:
-                # e.g. docs/**
-                if pat.endswith("/**"):
-                    root = repo / pat[:-3]
-                    if root.exists():
-                        for p in _iter_files(root, MAX_FILES_PER_RING):
-                            out.append(p)
-                else:
-                    out.extend(repo.glob(pat))
-        else:
-            p = repo / pat
-            if p.exists():
-                if p.is_dir():
-                    for f in _iter_files(p, MAX_FILES_PER_RING):
-                        out.append(f)
-                else:
-                    out.append(p)
+                out.append(p)
+            continue
+        # fallback glob
+        try:
+            out.extend(repo.glob(pat))
+        except Exception:
+            pass
     return out
 
 
