@@ -2,6 +2,9 @@ mesh_version: '1.2'
 tailnet: example.ts.net
 updated: '2026-07-15'
 live_inventory: false
+# Dissertation-as-OS: mesh registry is an organ of the dissertation
+# (OS = work; text = one expression). docs/dissertation/ONTOLOGIE_DISSERTATION_IST_DAS_OS.md
+ontology: dissertation_as_os
 principle: Jeder Konnektor = ein einzelnes Teil des Mesh (eigene ID, Host, Health, Tag)
 nodes:
   mainframe:

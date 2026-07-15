@@ -1,5 +1,9 @@
 # Branching Strategy — Fusion Hero OS → AscensionOS
 
+> **Dissertation-as-OS:** Tags/releases are **publication events of the living dissertation**
+> (the OS *is* the work). Text under `docs/dissertation/` is one expression.
+> See `docs/dissertation/ONTOLOGIE_DISSERTATION_IST_DAS_OS.md`.
+
 > **Stand:** v10.0.0 · 2026-07-15
 
 ## Versionierung (kanonisch ab v8.3.0, aktueller Kanon v10.0.0)

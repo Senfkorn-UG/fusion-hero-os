@@ -1,10 +1,17 @@
 # Fusion Hero OS v10 — Unified Integration Graph
 # Mesh <-> LLM <-> Tailscale <-> Orchestration
 # Public placeholders only (example.ts.net). Live topology is operator-local.
+#
+# Dissertation-as-OS: this graph is an organ of the dissertation
+# (Fusion Hero OS IS the work; text is one expression).
+# Ontology: docs/dissertation/ONTOLOGIE_DISSERTATION_IST_DAS_OS.md
+# Control plane endpoints below: control_plane / interconnect / grok_route
 
 version: "1.1"
 platform_version: "10.0.0"
 principle: "Jedes Segment ist eigenstaendig UND ueber den Integration Hub verbunden"
+ontology: "dissertation_as_os"
+dissertation_text: "docs/dissertation/"
 tailnet: example.ts.net
 
 layers:

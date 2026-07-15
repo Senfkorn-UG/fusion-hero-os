@@ -1,5 +1,7 @@
 # GCE fusion-mesh-exit in use
 
+**Dissertation-as-OS:** L2 publish mirror is an **empirical expression** of the dissertation (OS = work; text = one form). Ontology: `docs/dissertation/ONTOLOGIE_DISSERTATION_IST_DAS_OS.md`.
+
 - Project: project-bbf0e6db-52e1-462b-8e3
 - Zone: europe-west3-a
 - External: 34.40.58.207

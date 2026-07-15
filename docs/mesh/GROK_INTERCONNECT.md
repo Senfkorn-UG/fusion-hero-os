@@ -44,7 +44,8 @@ python -c "from fusion_hero_os.core.grok_interconnect import capture, evolve; pr
 
 ## Umroutung (canonical)
 
-Alle Intents laufen über `fusion_hero_os.core.grok_route_table`:
+Alle Intents laufen über `fusion_hero_os.core.grok_route_table`  
+(Dissertation-as-OS: die Route-Table ist **Autopolitik** der Arbeit, nicht nur API-Doku):
 
 | Intent | Surface |
 |--------|---------|

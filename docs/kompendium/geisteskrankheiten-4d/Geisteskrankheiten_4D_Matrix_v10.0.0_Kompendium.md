@@ -3,7 +3,8 @@
 
 > **Version 10.0.0** · additive Evolution über **v7 Kompendium** (vollständig erhalten)  
 > Duktus: Kompendium der Heroik V3.3 · Plattform: Fusion Hero OS **v10.0.0**  
-> Autor/Operator: Stephan Hagen Urban · Stand: 2026-07-15
+> Autor/Operator: Stephan Hagen Urban · Stand: 2026-07-15  
+> **Dissertation-as-OS:** Fusion Hero OS *ist* die Dissertation; dieses Kompendium ist eine **klinische Ausdrucksform**. Text/PDF sind Verdichtung, nicht das Ganze. Ontologie: `docs/dissertation/ONTOLOGIE_DISSERTATION_IST_DAS_OS.md`.
 
 ---
 
@@ -45,7 +46,7 @@ Erhalte und steigere die *rekonstruktive Kohärenz* und *autobiographische Konti
 - **Placement L0–L4** für Therapie-Artefakte (Phone-Journal, Mainframe, Mesh, Cluster)
 - **Harmonisierung & Geisterjagd** (AscensionOS loadable) als optionale α₂-Instrumente
 - **Sisyphos / CEC / Persistent cycle** als Rückfall- und Regenerationsmetrik
-- **Crosswalk** zur Dissertation *Autopoiesis und Autopolitik des Fusion Hero OS*
+- **Crosswalk** zur Dissertation *Autopoiesis und Autopolitik des Fusion Hero OS* (**Dissertation ≡ OS**; textuelle Form: Release `dissertation-v1.0`)
 - Erweiterte **Anti-Patterns** (SaaS-als-SoT für Klinik, Diagnose-by-LLM ohne Hygiene)
 
 ## Was v10 weiterhin *nicht* leistet

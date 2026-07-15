@@ -193,6 +193,10 @@ trinity_roles:
   worker: gpt
   verifier: grok
 
+# Dissertation-as-OS: endpoints are surfaces of the living dissertation
+# (see docs/dissertation/ONTOLOGIE_DISSERTATION_IST_DAS_OS.md)
+ontology: dissertation_as_os
+
 endpoints:
   # Control plane (Grok interconnect — canonical re-routes)
   control_plane: /mainframe/grok
