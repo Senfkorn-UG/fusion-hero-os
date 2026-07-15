@@ -4,4 +4,7 @@ metadata:
   name: fusion-training
   labels:
     app.kubernetes.io/part-of: fusion-hero-os
+    app.kubernetes.io/version: "10.0.0"
+    fusion-hero-os/platform-version: "10.0.0"
+    fusion-hero-os/operative-kanon: v10.0.0
     org: senfkorn-ug

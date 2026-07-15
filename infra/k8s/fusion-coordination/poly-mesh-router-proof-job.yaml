@@ -7,6 +7,8 @@ metadata:
   namespace: fusion-coordination
   labels:
     app: poly-mesh-router-proof
+    app.kubernetes.io/version: "10.0.0"
+    fusion-hero-os/platform-version: "10.0.0"
     routing: cluster-only
     sole-authority: poly-mesh-router
 spec:
