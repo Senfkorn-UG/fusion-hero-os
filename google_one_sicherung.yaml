@@ -2,18 +2,24 @@
 # Policy: pseudo_inhouse_only · freemium=false · secrets NEVER synced
 # deploy=private local snapshots · cloud target = Google One / Drive (operator)
 
-version: "1.0"
+version: "1.1"
 platform_version: "10.0.0"
 activated: true
 provider: google_one
 principle: >
   Sicherung aktiv: local ~/.fusion/sicherung + Google Drive folder
   Fusion_Hero_OS_Sicherung under Google One storage. Secrets excluded.
-  Product-level Google One device backup requires operator confirm in browser.
+  Operator-confirmed: Google One plan ACTIVE with 5 TB capacity.
 
 landing_url: "https://one.google.com/?g1_landing_page=1"
 storage_url: "https://one.google.com/storage"
 drive_home: "https://drive.google.com/drive/my-drive"
+
+plan:
+  active: true
+  capacity_tb: 5
+  confirmed_by_operator: true
+  # product quota is Google-side; local snapshots remain public-safe only
 
 drive:
   folder_name: Fusion_Hero_OS_Sicherung
