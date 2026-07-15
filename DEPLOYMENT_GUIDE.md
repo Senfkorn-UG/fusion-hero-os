@@ -1,6 +1,7 @@
 # Fusion Hero OS - Deployment Guide
 
-> **Stand:** v8.3.0 · 2026-07-11 · Dashboard + VR + Dependency Atlas
+> **Stand:** v10.0.0 · 2026-07-15 · Operativer Kanon + Dashboard + VR + Dependency Atlas  
+> **Plattform-Version:** Root-`VERSION` / Tag `v10.0.0` (siehe `BEST_VERSION.md`)
 
 ## Quick Start
 

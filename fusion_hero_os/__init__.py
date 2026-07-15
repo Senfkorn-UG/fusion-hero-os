@@ -1,4 +1,4 @@
-"""Fusion Hero OS — v8.
+"""Fusion Hero OS — v10.0.0 (operativer Kanon; v8.3-Funktionskern + Stage-A/B).
 
 Namespace-Paket für die aktiven Kernkomponenten des Projekts:
 
