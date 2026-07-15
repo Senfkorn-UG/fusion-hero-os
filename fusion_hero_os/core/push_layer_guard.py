@@ -84,14 +84,27 @@ def _git(args: Sequence[str], cwd: Optional[Path] = None) -> Tuple[int, str]:
 
 def _match_any(path: str, patterns: List[str]) -> Optional[str]:
     path_n = path.replace("\\", "/")
+    while path_n.startswith("./"):
+        path_n = path_n[2:]
+    base = path_n.split("/")[-1]
     for pat in patterns or []:
         pat_n = pat.replace("\\", "/")
-        if fnmatch.fnmatch(path_n, pat_n) or fnmatch.fnmatch(path_n, "**/" + pat_n.lstrip("*/")):
+        # basename / exact
+        if path_n == pat_n.lstrip("*/") or base == pat_n.lstrip("*/"):
+            return pat
+        if pat_n.startswith("**/"):
+            tail = pat_n[3:]
+            if fnmatch.fnmatch(path_n, pat_n) or fnmatch.fnmatch(base, tail) or path_n.endswith("/" + tail) or path_n == tail:
+                return pat
+        if fnmatch.fnmatch(path_n, pat_n) or fnmatch.fnmatch(base, pat_n):
             return pat
         # prefix style
-        if pat_n.endswith("/") and path_n.startswith(pat_n):
+        if pat_n.endswith("/") and (path_n.startswith(pat_n) or path_n.startswith(pat_n.lstrip("*/"))):
             return pat
         if path_n == pat_n.rstrip("/"):
+            return pat
+        # *secret* style on full path
+        if "*" in pat_n and fnmatch.fnmatch(path_n, pat_n):
             return pat
     return None
 

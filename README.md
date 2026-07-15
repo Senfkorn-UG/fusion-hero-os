@@ -168,6 +168,7 @@ Public surface policy: no personal identity, no private location, no live mesh i
 | [docs/mesh/GROK_INTERCONNECT.md](docs/mesh/GROK_INTERCONNECT.md) | Interconnect graph + re-routes |
 | [docs/mesh/PSEUDO_INHOUSE_AI.md](docs/mesh/PSEUDO_INHOUSE_AI.md) | Pseudo-inhouse LLM facade (no freemium) |
 | [docs/mesh/PSEUDO_INHOUSE_CREATIVE.md](docs/mesh/PSEUDO_INHOUSE_CREATIVE.md) | Image/Video/PDF/Graphics pseudo-inhouse |
+| [docs/mesh/PUSH_LAYER_GUARD.md](docs/mesh/PUSH_LAYER_GUARD.md) | Layer-woven push guard (wanted vs unwanted) |
 | [docs/mesh/MAINFRAME_WEBSITE.md](docs/mesh/MAINFRAME_WEBSITE.md) | Dauer-VR · IDE · Worktree |
 | [DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUIDE.md) | Boot / ports / troubleshooting |
 | [BRANCH_STRATEGY.md](BRANCH_STRATEGY.md) | SemVer / tags |

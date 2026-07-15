@@ -227,6 +227,7 @@ def get_all_layer_status() -> Dict[str, Any]:
     layers = unified.get("layers") or {}
     statuses = {lid: _build_status(lid, cfg or {}) for lid, cfg in layers.items()}
     ok_count = sum(1 for s in statuses.values() if s.present and s.config_ok)
+    push_guard = _load_yaml(PUSH_LAYER_GUARD) if PUSH_LAYER_GUARD.exists() else {}
     return {
         "layer_count": len(statuses),
         "layers_ok": ok_count,
@@ -234,6 +235,17 @@ def get_all_layer_status() -> Dict[str, Any]:
         "layer_edges": unified.get("layer_edges") or [],
         "principle": unified.get("principle"),
         "overall": "complete" if ok_count == len(statuses) else "partial",
+        # Weave: push structure known IDs + path→layer map (blocks unwanted pushes)
+        "push_layer_guard": {
+            "present": PUSH_LAYER_GUARD.exists(),
+            "policy": push_guard.get("policy"),
+            "freemium": push_guard.get("freemium", False),
+            "identities": push_guard.get("identities"),
+            "layer_ids": list((push_guard.get("layers") or {}).keys()),
+            "config": str(PUSH_LAYER_GUARD.relative_to(REPO_ROOT))
+            if PUSH_LAYER_GUARD.exists()
+            else None,
+        },
     }
 
 
