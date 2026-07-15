@@ -74,7 +74,10 @@ Write-Host ("My Drive candidates: " + ($myDrives -join " | ")) -ForegroundColor 
 $localRoot = Join-Path $env:USERPROFILE ".fusion\sicherung"
 $mirrorLocal = Join-Path $localRoot "drive_mirror"
 $phoneRoot = Join-Path $localRoot "phone"
-New-Item -ItemType Directory -Force -Path $mirrorLocal, $phoneRoot | Out-Null
+# Drive for Desktop on this machine mirrors Desktop/Documents/Downloads (not G:)
+$docsMirror = Join-Path $env:USERPROFILE "Documents\Fusion_Hero_OS_Sicherung"
+$deskMirror = Join-Path $env:USERPROFILE "Desktop\Fusion_Hero_OS_Sicherung"
+New-Item -ItemType Directory -Force -Path $mirrorLocal, $phoneRoot, $docsMirror, $deskMirror | Out-Null
 
 $targetDriveFolder = $null
 foreach ($md in $myDrives) {
@@ -87,6 +90,10 @@ foreach ($md in $myDrives) {
         continue
     }
 }
+# Prefer Documents mirror root (DriveFS already syncs it)
+if (-not $targetDriveFolder) {
+    $targetDriveFolder = $docsMirror
+}
 
 $snapRoot = Join-Path $localRoot "snapshots"
 $latest = Get-ChildItem $snapRoot -Directory -ErrorAction SilentlyContinue |
@@ -98,14 +105,20 @@ if ($latest) {
     }
     Copy-Item $latest.FullName $mirrorSnap -Recurse -Force
     Write-Host "Local mirror latest snapshot: $mirrorSnap" -ForegroundColor Green
-    if ($targetDriveFolder) {
-        $cloudSnap = Join-Path $targetDriveFolder "snapshots"
-        New-Item -ItemType Directory -Force -Path $cloudSnap | Out-Null
-        $cloudLatest = Join-Path $cloudSnap $latest.Name
-        if (-not (Test-Path $cloudLatest)) {
-            Copy-Item $latest.FullName $cloudLatest -Recurse -Force -ErrorAction SilentlyContinue
-        }
-        Write-Host "Cloud mirror path: $cloudLatest" -ForegroundColor Green
+
+    $cloudSnapRoot = Join-Path $docsMirror "snapshots"
+    New-Item -ItemType Directory -Force -Path $cloudSnapRoot,(Join-Path $docsMirror "phone_uploads"),(Join-Path $docsMirror "manifests") | Out-Null
+    $cloudLatest = Join-Path $cloudSnapRoot $latest.Name
+    if (Test-Path $cloudLatest) { Remove-Item $cloudLatest -Recurse -Force -ErrorAction SilentlyContinue }
+    Copy-Item $latest.FullName $cloudLatest -Recurse -Force
+    Copy-Item (Join-Path $localRoot "manifests\*") (Join-Path $docsMirror "manifests") -Force -ErrorAction SilentlyContinue
+    Write-Host "Documents (Drive mirror): $cloudLatest" -ForegroundColor Green
+
+    # Desktop pointer for phone
+    Copy-Item (Join-Path $docsMirror "README.md") (Join-Path $deskMirror "README.md") -Force -ErrorAction SilentlyContinue
+    if (Test-Path (Join-Path $phoneRoot "HANDY_CHECKLISTE.md")) {
+        Copy-Item (Join-Path $phoneRoot "HANDY_CHECKLISTE.md") (Join-Path $deskMirror "HANDY_CHECKLISTE.md") -Force
+        Copy-Item (Join-Path $phoneRoot "HANDY_CHECKLISTE.md") (Join-Path $docsMirror "HANDY_CHECKLISTE.md") -Force
     }
 }
 

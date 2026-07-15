@@ -419,20 +419,47 @@ def setup_desktop(*, open_browser: bool = True, start_app: bool = True) -> Dict[
     cloud_folder = None
     cloud_copied = False
     folder_name = (cfg.get("drive") or {}).get("folder_name") or "Fusion_Hero_OS_Sicherung"
-    for md in my_drives:
-        cand = Path(md) / folder_name
+    # Primary: Documents/Desktop (DriveFS folder-mirror mode on this workstation)
+    docs_candidates = [
+        Path.home() / "Documents" / folder_name,
+        Path.home() / "Desktop" / folder_name,
+    ]
+    for cand in docs_candidates:
         try:
             cand.mkdir(parents=True, exist_ok=True)
+            (cand / "snapshots").mkdir(exist_ok=True)
+            (cand / "phone_uploads").mkdir(exist_ok=True)
+            (cand / "manifests").mkdir(exist_ok=True)
             cloud_folder = str(cand)
             if latest:
                 dest = cand / "snapshots" / latest.name
-                if not dest.exists():
-                    dest.parent.mkdir(parents=True, exist_ok=True)
-                    shutil.copytree(latest, dest)
-                    cloud_copied = True
+                if dest.exists():
+                    shutil.rmtree(dest, ignore_errors=True)
+                shutil.copytree(latest, dest)
+                cloud_copied = True
+                man_src = root / "manifests"
+                if man_src.is_dir():
+                    for f in man_src.glob("*.json"):
+                        shutil.copy2(f, cand / "manifests" / f.name)
             break
         except OSError:
             continue
+    # Secondary: virtual My Drive letter if present
+    if not cloud_folder:
+        for md in my_drives:
+            cand = Path(md) / folder_name
+            try:
+                cand.mkdir(parents=True, exist_ok=True)
+                cloud_folder = str(cand)
+                if latest:
+                    dest = cand / "snapshots" / latest.name
+                    if not dest.exists():
+                        dest.parent.mkdir(parents=True, exist_ok=True)
+                        shutil.copytree(latest, dest)
+                        cloud_copied = True
+                break
+            except OSError:
+                continue
 
     now = datetime.now(timezone.utc).isoformat()
     state = {

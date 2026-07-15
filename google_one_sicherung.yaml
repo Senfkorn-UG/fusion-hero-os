@@ -38,7 +38,14 @@ desktop:
   download_url: "https://www.google.com/drive/download/"
   winget: Google.GoogleDrive
   mirror_local: ~/.fusion/sicherung/drive_mirror
-  # after sign-in: copy latest snapshot into My Drive / Fusion_Hero_OS_Sicherung
+  # This workstation: DriveFS mirrors Desktop + Documents + Downloads (no G: letter)
+  mirror_mode: folder_mirror
+  mirror_roots:
+    - ~/Documents
+    - ~/Desktop
+    - ~/Downloads
+  fusion_folder_documents: ~/Documents/Fusion_Hero_OS_Sicherung
+  fusion_folder_desktop: ~/Desktop/Fusion_Hero_OS_Sicherung
 
 phone:
   role: L0_enduser
