@@ -160,11 +160,22 @@ routing:
   control_plane: /mainframe/grok
   interconnect: /api/grok/interconnect
   grok_route: /api/grok/route
+  grok_routes_table: /api/grok/routes
+  grok_chat: /api/grok/chat
+  grok_status: /api/grok/status
   mainframe_hub: /mainframe
   dauer_vr: /mainframe/vr
   ide: /mainframe/ide
   worktree: /mainframe/worktree
   ops: /mainframe/ops
+  legacy_redirects:
+    /grok: /mainframe/grok
+    /ide: /mainframe/ide
+    /worktree: /mainframe/worktree
+    /portal: /mainframe
+    /interconnect: /mainframe/grok
+    /vr/persistent: /mainframe/vr
+    /api/interconnect: /api/grok/interconnect
   base_url: https://mainframe.example.ts.net
   unified: /fusion/status
   fusion_graph: /fusion/graph

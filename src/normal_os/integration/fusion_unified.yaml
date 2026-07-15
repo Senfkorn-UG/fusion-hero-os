@@ -194,6 +194,19 @@ trinity_roles:
   verifier: grok
 
 endpoints:
+  # Control plane (Grok interconnect — canonical re-routes)
+  control_plane: /mainframe/grok
+  interconnect: /api/grok/interconnect
+  grok_route: /api/grok/route
+  grok_routes_table: /api/grok/routes
+  grok_chat: /api/grok/chat
+  grok_status: /api/grok/status
+  mainframe_hub: /mainframe
+  dauer_vr: /mainframe/vr
+  ide: /mainframe/ide
+  worktree: /mainframe/worktree
+  ops: /mainframe/ops
+  # Legacy surfaces (still live; prefer control_plane)
   unified: /fusion/status
   graph: /fusion/graph
   mesh: /mesh/status
@@ -205,6 +218,7 @@ endpoints:
   masterseed: /status
   vr_status: /api/vr/status
   vr_viewer: /vr/viewer
+  vr_persistent: /mainframe/vr
   highest_layer_vr: /highest-layer-vr
   layers: /layers/status
   erkenntnisse: /erkenntnisse/status
@@ -212,3 +226,5 @@ endpoints:
   mesh_files_phone: /mesh/files/phone
   mesh_files_manifest: /mesh/files/manifest
   energy: /api/mainframe/energy
+  dashboard: /
+  architecture: /architecture

@@ -74,10 +74,21 @@ async def api_grok_routes_table():
 
 
 # --- Legacy path re-routes (alles entsprechend umrouten) ---
+# Keep in sync with fusion_hero_os.core.grok_route_table.LEGACY_REDIRECTS
 
 @router.get("/grok")
 async def redir_grok():
     return RedirectResponse("/mainframe/grok", status_code=307)
+
+
+@router.get("/grok/status")
+async def redir_grok_status():
+    return RedirectResponse("/api/grok/status", status_code=307)
+
+
+@router.get("/grok/chat")
+async def redir_grok_chat():
+    return RedirectResponse("/api/grok/chat", status_code=307)
 
 
 @router.get("/interconnect")
@@ -98,6 +109,16 @@ async def redir_worktree():
 @router.get("/portal")
 async def redir_portal():
     return RedirectResponse("/mainframe", status_code=307)
+
+
+@router.get("/mainframe/website")
+async def redir_mainframe_website():
+    return RedirectResponse("/mainframe", status_code=307)
+
+
+@router.get("/vr/persistent")
+async def redir_vr_persistent():
+    return RedirectResponse("/mainframe/vr", status_code=307)
 
 
 @router.get("/api/interconnect")
