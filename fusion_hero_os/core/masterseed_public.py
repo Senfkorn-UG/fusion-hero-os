@@ -98,11 +98,16 @@ def display_id_from_fingerprint(fp_hex: str, major: str = "10") -> str:
 def parse_display_id(display_id: str) -> Optional[Dict[str, str]]:
     m = re.fullmatch(
         r"MS-PUB-v(\d+)-([0-9A-Z]{8})-([0-9A-F]{4})",
-        (display_id or "").strip().upper(),
+        (display_id or "").strip(),
+        flags=re.IGNORECASE,
     )
     if not m:
         return None
-    return {"major": m.group(1), "short8": m.group(2), "check4": m.group(3)}
+    return {
+        "major": m.group(1),
+        "short8": m.group(2).upper(),
+        "check4": m.group(3).upper(),
+    }
 
 
 def public_view(
