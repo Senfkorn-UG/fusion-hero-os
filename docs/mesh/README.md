@@ -14,6 +14,8 @@
 
 **Comädchen (Nummer 2):** Perplexity Comet-Instanz — reportet nur an den Operator, Input nur vom Operator. Nicht Befehlskette für Google One (Chrome = Konto-Organ). Siehe [`COMAEDCHEN_NUMMER2.md`](COMAEDCHEN_NUMMER2.md) · Egress: `browser_egress.yaml`.
 
+**DNS + Tor:** Clearnet (Quad9) + MagicDNS + Tor DNSPort/SOCKS — [`DNS_TOR_STACK.md`](DNS_TOR_STACK.md) · Proxy `127.0.0.1:5454` · Tor DNS `8853` · SOCKS `9050`.
+
 ## Principle
 
 Each connector is its own mesh segment (ID, host role, health path, Tailscale tag).

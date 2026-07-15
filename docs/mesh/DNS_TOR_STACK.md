@@ -49,13 +49,12 @@ python -m fusion_hero_os.core.dns_tor_stack --resolve duckduckgogg42xjoc72x3sjas
 Nur mit Admin (ändert System-DNS):
 
 ```powershell
-# Beispiel WLAN — Achtung: bricht Fritzbox-DNS; MagicDNS weiter über Tailscale-Adapter
-netsh interface ip set dns name="WLAN" static 127.0.0.1
-# Port 53 vs 5353: Proxy lauscht standard auf 5353.
-# Für Port 53: listen_port in dns_tor_stack.yaml auf 53 + Admin.
+# Nur mit Admin — und nur wenn du Port 53 im Proxy willst (listen_port: 53)
+# netsh interface ip set dns name="WLAN" static 127.0.0.1
 ```
 
-Empfehlung: **nicht** global erzwingen — Tailscale MagicDNS + Proxy nur für Apps die `127.0.0.1:5353` nutzen, SOCKS für Tor-fähig Clients.
+Empfehlung: **nicht** global erzwingen — MagicDNS über Tailscale lassen;  
+Apps: DNS-Stub `127.0.0.1:5454` bzw. SOCKS `127.0.0.1:9050` für Tor-Protokoll.
 
 ## Tailscale Health
 

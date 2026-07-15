@@ -47,10 +47,11 @@ python -m fusion_hero_os.core.dns_tor_stack --resolve "quad9.net"
 python -m fusion_hero_os.core.dns_tor_stack --resolve "example.onion"
 
 Write-Host ""
-Write-Host "Local DNS proxy: 127.0.0.1:5353" -ForegroundColor Green
-Write-Host "  *.onion  -> Tor DNSPort 127.0.0.1:5354" -ForegroundColor Gray
+Write-Host "Local DNS proxy: 127.0.0.1:5454" -ForegroundColor Green
+Write-Host "  *.onion  -> Tor DNSPort 127.0.0.1:8853" -ForegroundColor Gray
 Write-Host "  clearnet -> Quad9 / Cloudflare" -ForegroundColor Gray
 Write-Host "  *.ts.net -> Tailscale MagicDNS (accept-dns)" -ForegroundColor Gray
-Write-Host "SOCKS5 Tor: 127.0.0.1:9050 (apps that speak Tor/SOCKS)" -ForegroundColor Green
+Write-Host "SOCKS5 Tor: 127.0.0.1:9050 (full Tor protocol for apps)" -ForegroundColor Green
 Write-Host "Proxy PID: $($proxy.Id)" -ForegroundColor Cyan
 Write-Host "Docs: docs/mesh/DNS_TOR_STACK.md" -ForegroundColor Cyan
+Write-Host "Note: 5353/5354 reserved by Windows mDNS — do not use." -ForegroundColor Yellow
