@@ -1,6 +1,4 @@
-Here’s an adapted version for **release** `v10.0.0`:
 
-```md
 <img width="100%" src="https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=6,11,20,24,25&height=180&section=header&text=Fusion%20Hero%20OS%20v10&fontSize=50&fontColor=fff&fontAlignY=35&desc=Major%20Release%20%7C%20Autopoietic%20System%20Evolution&descAlignY=58&descSize=18" />
 
 <div align="center">
