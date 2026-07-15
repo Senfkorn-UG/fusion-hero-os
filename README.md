@@ -14,7 +14,7 @@
 
 ## Release Overview
 
- ts [const release_v10 = {
+ ```ts {
   version: "v10.0.0",
   concept: "Hybrid README / Hybrid Architecture",
   system_state: "Operational + Governed",
