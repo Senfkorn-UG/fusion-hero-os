@@ -105,6 +105,8 @@ deny_globs:
   - "**/*private*key*"
   - "**/google_application_credentials*.json"
   - "**/.fusion/secrets/**"
+  - "**/.fusion/masterseed/private/**"
+  - "**/*.shard.gpg"
 
 # Soft denylist — block unless intent
 soft_deny_globs:
