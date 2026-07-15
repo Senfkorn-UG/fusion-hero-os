@@ -21,9 +21,11 @@ Diese Anhänge leisten, was der Haupttext verdichtet und der Code *ist*: sie **l
 | [A07](A07_Mesh_Interconnect_Routing.md) | Mesh, Route-Table, Race-Guard, Interconnect | Herleitung + Spezifikation |
 | [A08](A08_Modules_Providers_Orchestration.md) | modules/, providers/, orchestration | Spezifikation |
 | [A09](A09_Entwicklungsgeschichte_Null_bis_v10.md) | Genealogie der Entwicklung | Fragment/Historie + Spezifikation |
-| [A10](A10_Funktionskatalog_AST.md) | Vollkatalog Klassen/Funktionen (AST) | Spezifikation |
+| [A10](A10_Funktionskatalog_AST.md) | Vollkatalog Klassen/Funktionen (AST) — `fusion_hero_os` + `03_Code/Dashboard` | Spezifikation |
 
-**Regenerate Katalog:** `python scripts/generate_anhang_katalog.py`
+**Regenerate Katalog:** `python scripts/generate_anhang_katalog.py`  
+
+**In DOCX/PDF einbetten:** `python scripts/embed_dissertation_anhaenge.py --regen-catalog --pdf`
 
 ### Geltungsschnellreferenz
 

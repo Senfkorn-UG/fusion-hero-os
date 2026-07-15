@@ -4,9 +4,15 @@
 **Nicht:** Beweis der Korrektheit einzelner Funktionen.
 **Designvorlage:** V3.3 — Katalog = Spezifikation; Herleitungen in A01–A09.
 
-**Dateien:** 78 · **Klassen:** 181 · **Top-Level-Funktionen:** 181
+**Dateien gesamt:** 135 (fusion_hero_os: 78 · Dashboard: 57) · **Klassen:** 239 · **Top-Level-Funktionen:** 722
+
+Scan-Wurzeln:
+- `fusion_hero_os/`
+- `03_Code/Dashboard/`
 
 Regenerieren: `python scripts/generate_anhang_katalog.py`
+
+# Teil I — `fusion_hero_os`
 
 ## `fusion_hero_os/bridge/gateway.py`
 
@@ -857,4 +863,848 @@ Regenerieren: `python scripts/generate_anhang_katalog.py`
 - def `get`
 - def `status_report`
 - def `_print_status_report`
+
+# Teil II — `03_Code/Dashboard`
+
+## `03_Code/Dashboard/agent_resource_allocator.py`
+
+### class `AgentSlot`
+- public: `to_dict`
+### class `ResourcePlan`
+- public: `to_dict`
+- def `_tier_for_mode`
+- def `_system_pressure`
+- def `build_resource_plan`
+- def `get_resource_plan`
+- def `pick_agent_pool`
+
+## `03_Code/Dashboard/api_extensions.py`
+
+### class `ProfilePayload`
+- (Datenklasse / ohne Methoden)
+### class `GatePayload`
+- (Datenklasse / ohne Methoden)
+### class `ChatPayload`
+- (Datenklasse / ohne Methoden)
+### class `ValidatePayload`
+- (Datenklasse / ohne Methoden)
+### class `AgentControlPayload`
+- (Datenklasse / ohne Methoden)
+### class `AutoLoadPayload`
+- (Datenklasse / ohne Methoden)
+### class `HeroGuideResolvePayload`
+- (Datenklasse / ohne Methoden)
+### class `CodeValidatePayload`
+- (Datenklasse / ohne Methoden)
+- def `_orch`
+- def `api_load_all`
+- def `api_modules`
+- def `api_agent_use`
+- def `api_agent_control_status`
+- def `api_agent_control_history`
+- def `api_agent_control_verify`
+- def `api_agent_control_pre_check`
+- def `api_mainframe_load`
+- def `api_layer4_status`
+- def `api_foundation_gate`
+- def `api_v12_sync`
+- def `api_mod_validate`
+- def `api_grok_status`
+- def `api_heroic_audit_status`
+- def `api_heroic_audit_run`
+- def `api_heroic_audit_report`
+- def `api_claude_science_status`
+- def `api_claude_science_analyze`
+- def `api_claude_science_chat`
+- def `api_provider_status`
+- def `api_provider_select`
+- def `api_first_install_status`
+- def `api_first_install_run`
+- def `api_internal_optimize_parallel`
+- def `api_grok_chat`
+- def `api_meta_layer_status`
+- def `api_meta_layer_windows`
+- def `api_meta_layer_attach`
+- def `api_windows_substrate_tune`
+- def `api_windows_cyber_activate`
+- def `api_profile_status`
+- def `api_profile_set`
+- def `api_resources_plan`
+- def `api_resources_workflow`
+- def `api_v8_math_status`
+- def `api_v8_math_verify`
+- def `api_v8_orchestrator_status`
+- def `api_v8_orchestrator_bootstrap`
+- def `api_v8_orchestrator_query`
+- def `api_bridge_ipc_status`
+- def `api_bridge_ipc_dispatch`
+- def `api_phone_link_status`
+- def `api_phone_link_messages`
+- def `api_phone_link_conversations`
+- def `api_discovery`
+- def `api_connectivity`
+- def `api_process_exclusivity_status`
+- def `api_settings_sync`
+- def `api_settings_schema`
+- def `api_settings_get`
+- def `api_settings_set`
+- def `api_settings_reset`
+- def `api_faden_status`
+- def `api_faden_threads`
+- def `api_faden_upsert`
+- def `api_faden_delete`
+- def `api_faden_prune`
+- def `api_watch_create_room`
+- def `api_watch_room_info`
+- def `api_watch_room_state`
+- def `api_watch_room_cmd`
+- def `api_watch_network`
+- def `api_watch_realtime_config`
+- def `api_watch_room_qr`
+- def `api_viz_geisterjagd_banach`
+- def `api_suite_status`
+- def `api_suite_pipeline_status`
+- def `api_suite_pipeline_run`
+### class `GhosthuntPayload`
+- (Datenklasse / ohne Methoden)
+- def `api_suite_ghosthunt`
+- def `api_signal_health`
+- def `api_jobs_list`
+- def `api_job_get`
+- def `api_llama_status`
+- def `api_llama_chat`
+- def `api_llama_qubo_status`
+- def `api_llama_subagent_tests_status`
+- def `api_llama_subagent_tests_run`
+- def `api_agent_backend_policy`
+- def `api_agent_backend_dual_run`
+- def `api_agent_backend_invoke`
+- def `api_subagents_llama_test`
+- def `api_context_window_status`
+- def `api_context_window_init`
+- def `api_context_window_subagent`
+- def `api_context_window_feedback`
+- def `api_medienserver_status`
+- def `api_autoload_status`
+- def `api_autoload_run`
+- def `api_hero_guide_status`
+- def `api_hero_guide_audit`
+- def `api_hero_guide_resolve`
+- def `api_knowledge_graph_status`
+- def `api_knowledge_graph_nodes`
+- def `api_knowledge_graph_write`
+- def `api_mod_validate_code`
+
+## `03_Code/Dashboard/app.py`
+
+- def `detect_input_factors`
+- def `detect_output_factors`
+- def `get_input_factors`
+- def `get_output_factors`
+### class `AutoLoader`
+- public: `register`, `run`, `status`
+- intern: `__init__`, `_register_default_drivers`
+### class `EventIn`
+- (Datenklasse / ohne Methoden)
+### class `MetricsOut`
+- (Datenklasse / ohne Methoden)
+- def `_send_safe`
+- def `emit`
+- def `heroic_core_event_loop`
+- def `_schedule_agent_audit`
+- def `_start_supabase_background`
+- def `_acquire_dashboard_lock`
+- def `startup_event`
+- def `shutdown_event`
+- def `post_event`
+- def `index`
+- def `heroic_page`
+- def `about_page`
+- def `donation_page`
+- def `foundation_page`
+- def `_load_wallet`
+- def `_save_wallet`
+- def `api_wallet_get`
+### class `WalletUpdate`
+- (Datenklasse / ohne Methoden)
+- def `api_wallet_update`
+- def `watch_create_redirect`
+- def `watch_room`
+- def `api_gui_status`
+- def `api_gui_workspace`
+- def `get_metrics`
+- def `websocket_endpoint`
+- def `watch_party_ws`
+- def `api_health`
+- def `api_supabase_health`
+- def `_ensure_agents`
+### class `InputPayload`
+- (Datenklasse / ohne Methoden)
+### class `OrchestratePayload`
+- (Datenklasse / ohne Methoden)
+- def `get_hyperthreading`
+- def `post_hyperthreading`
+- def `api_agents`
+- def `api_agents_load`
+- def `api_agents_assign`
+- def `api_input`
+- def `api_orchestrate`
+- def `api_input_factors`
+- def `api_output_factors`
+- def `api_autoload_run`
+- def `api_autoload_status`
+- def `api_gpu_memory`
+- def `api_gpu_allocator_rebalance`
+- def `api_gpu_allocator_status`
+- def `api_cpu_tuner_status`
+- def `api_cpu_tuner_run`
+- def `api_resource_coupler_status`
+- def `api_resource_coupler_run`
+- def `api_gpu_compute_status`
+- def `api_gpu_compute_boost`
+- def `api_memory_status`
+- def `api_memory_relieve`
+- def `api_gpu_vram_prioritize`
+- def `api_supabase_events`
+- def `api_supabase_tables`
+- def `api_llama_train`
+- def `api_supabase_node_health`
+- def `api_supabase_sync_metrics`
+- def `api_supabase_sync_status`
+- def `api_supabase_audit`
+- def `api_supabase_settings_pull`
+
+## `03_Code/Dashboard/architecture_routes.py`
+
+- def `_load_atlas`
+- def `api_architecture_atlas`
+- def `api_multimodal_inventory`
+- def `architecture_page`
+
+## `03_Code/Dashboard/autoloader.py`
+
+### class `DriverSpec`
+- public: `to_dict`
+### class `ProcessSpec`
+- public: `to_dict`
+- def `catalog`
+- def `_set_driver`
+- def `_load_windows_skin`
+- def `_tune_windows_substrate`
+- def `_load_profile`
+- def `_load_hyperthreading`
+- def `_warm_worker_pools`
+- def `_load_signal_network`
+- def `_load_grok`
+- def `_load_registry_bundle`
+- def `_load_meta_layer`
+- def `_probe_windows_drivers_light`
+- def `_probe_processes`
+- def `run_autoload_sync`
+- def `_run_autoload_sync_impl`
+- def `run_autoload`
+- def `autoload_status`
+- def `schedule_deferred_full`
+
+## `03_Code/Dashboard/backends/base.py`
+
+### class `SolverBackend`
+- public: `solve`
+
+## `03_Code/Dashboard/backends/classical.py`
+
+### class `EudaimoniaGuard`
+- public: `validate_result`
+### class `ClassicalBackend`
+- public: `solve`
+- intern: `__init__`
+
+## `03_Code/Dashboard/boot_optimizer.py`
+
+- def `_medienserver_path`
+- def `medienserver_sync_needed`
+- def `sync_status`
+- def `boot_plan`
+- def `optimize_steps`
+
+## `03_Code/Dashboard/business_plan_routes.py`
+
+- def `api_businessplan`
+- def `api_businessplan_energy_model`
+- def `api_energy_status`
+- def `api_energy_tick`
+- def `api_subcontractor_pricing`
+
+## `03_Code/Dashboard/connectivity.py`
+
+- def `dashboard_port`
+- def `_score_ip`
+- def `list_lan_ips`
+- def `best_lan_ip`
+- def `local_network_base`
+- def `_device_id`
+- def `build_discovery`
+- def `build_connectivity_summary`
+
+## `03_Code/Dashboard/cyber_layer_windows.py`
+
+### class `CyberSignal`
+- public: `to_dict`
+### class `CyberLayerState`
+- public: `to_dict`
+- def `_read_file`
+- def `_write_file`
+- def `_build_signals`
+- def `_score`
+- def `activate_cyber_layer`
+- def `pulse_cyber_layer`
+- def `get_cyber_layer_status`
+
+## `03_Code/Dashboard/domain/entities.py`
+
+### class `QUBOProblem`
+- intern: `__init__`
+### class `SolverResult`
+- intern: `__init__`
+### class `QUBOSolverConfig`
+- intern: `__init__`
+
+## `03_Code/Dashboard/faden_store.py`
+
+- def `_state_root`
+- def `_index_path`
+### class `FadenThread`
+- public: `to_dict`, `from_dict`
+- def `strength_from_lambda`
+- def `_expires_for_strength`
+### class `FadenStore`
+- public: `prune`, `upsert`, `get`, `list_threads`, `delete`, `status`
+- intern: `__init__`, `_load`, `_save`, `_upsert_locked`
+- def `get_faden_store`
+
+## `03_Code/Dashboard/fusion_profile.py`
+
+### class `FusionProfileState`
+- public: `to_dict`
+- def `_read_file`
+- def `_write_file`
+- def `get_active_profile_name`
+- def `get_profile_config`
+- def `set_profile`
+- def `profile_status`
+- def `apply_performance_level`
+
+## `03_Code/Dashboard/fusion_settings.py`
+
+- def `_bool_str`
+- def `_read_file`
+- def `_write_file`
+- def `_core_module_options`
+- def `_resolve_options`
+- def `_current_value`
+- def `get_schema`
+- def `get_values`
+- def `_as_bool`
+- def `_apply_side_effects`
+- def `apply_settings`
+- def `boot_load`
+- def `reset_defaults`
+
+## `03_Code/Dashboard/grok_bridge.py`
+
+### class `GrokMessage`
+- public: `to_dict`
+### class `GrokChatResult`
+- public: `to_dict`
+### class `GrokBridge`
+- public: `chat`, `status`
+- intern: `__init__`, `_load_skill_excerpt`, `_detect_intents`, `_build_context_block`
+- def `get_grok_bridge`
+
+## `03_Code/Dashboard/grok_interconnect_routes.py`
+
+- def `_capture_evolve`
+- def `api_grok_interconnect`
+- def `api_grok_interconnect_capture`
+- def `api_grok_route`
+- def `api_grok_routes_table`
+- def `redir_grok`
+- def `redir_grok_status`
+- def `redir_grok_chat`
+- def `redir_interconnect`
+- def `redir_ide`
+- def `redir_worktree`
+- def `redir_portal`
+- def `redir_mainframe_website`
+- def `redir_vr_persistent`
+- def `redir_api_interconnect`
+- def `api_route_redirect`
+- def `mainframe_grok_page`
+
+## `03_Code/Dashboard/gui/era_design.py`
+
+- def `_skin_css_block`
+- def `workspace_css`
+- def `cyber_layer_css`
+- def `monitor_css`
+- def `era_meta`
+
+## `03_Code/Dashboard/gui/fusion_gui.py`
+
+- def `get_gui_status`
+- def `workspace_script_path`
+
+## `03_Code/Dashboard/gui/input_bridge.py`
+
+- def `api_call`
+- def `call_api`
+- def `submit_input`
+- def `fetch_signal_pulse`
+- def `fetch_health_full`
+- def `fetch_jobs`
+
+## `03_Code/Dashboard/gui/interactions.py`
+
+- def `inject_drag_script`
+- def `register_draggable`
+- def `init_panel_drag`
+- def `safe_run_javascript`
+- def `inject_drag_boot`
+- def `reset_panel_positions`
+- def `set_action_refs`
+- def `is_busy`
+- def `async_action`
+- def `copy_to_clipboard`
+- def `bind_enter`
+- def `job_status_class`
+- def `format_job_row`
+
+## `03_Code/Dashboard/gui/layer_panels.py`
+
+- def `build_stack_layers`
+- def `_layer_panel`
+
+## `03_Code/Dashboard/gui/task_panels.py`
+
+- def `build_task_layer`
+- def `_panel_jobs`
+- def `_panel_quick`
+- def `_panel_hints`
+- def `render_job_list`
+
+## `03_Code/Dashboard/gui/theme_3d.py`
+
+- def `inject_theme`
+- def `metric_bar_html`
+- def `update_metric_bar`
+
+## `03_Code/Dashboard/gui/web_scripts.py`
+
+- def `drag_script`
+
+## `03_Code/Dashboard/heroic_core_gui(2).py`
+
+### class `AdaptiveLimitWarning`
+- public: `update`
+- intern: `__init__`
+- def `boegen_self_synthesis`
+### class `HeroicCoreGUI`
+- public: `calculate_limit`, `run_boegen_synthesis`, `send_to_grok`, `apply_grok_response`
+- intern: `__init__`, `_setup_style`, `_create_widgets`, `_build_limit_tab`, `_build_boegen_tab`, `_build_grok_tab`, `_build_info_tab`
+
+## `03_Code/Dashboard/heroic_core_gui.py`
+
+### class `AdaptiveLimitWarning`
+- public: `update`
+- intern: `__init__`
+- def `boegen_self_synthesis`
+### class `HeroicCoreGUI`
+- public: `calculate_limit`, `run_boegen_synthesis`
+- intern: `__init__`, `_setup_style`, `_create_widgets`, `_build_limit_tab`, `_build_boegen_tab`, `_build_info_tab`
+
+## `03_Code/Dashboard/heroic_core_mainframe.py`
+
+- def `parallel_worker_count`
+### class `SelfModifyCoreModule`
+- public: `register_audit_hook`
+- intern: `__init__`
+### class `GenerationalEvolutionProtocolCoreModule`
+- public: `run_generation`
+- intern: `__init__`
+### class `CriticalMetaAnalysisCoreModule`
+- public: `analyze`
+### class `ExecutableAuditAgent`
+- intern: `__init__`
+### class `QUBOIntegrationCoreModule`
+- public: `execute_secure_run`, `execute_parallel_run`
+- intern: `__init__`, `_interlock_core_hooks`
+
+## `03_Code/Dashboard/input_gateway.py`
+
+### class `InputAck`
+- public: `to_dict`
+- def `_new_job_id`
+- def `validate_input`
+- def `classify_message`
+- def `accept_input`
+- def `build_job_payload`
+
+## `03_Code/Dashboard/layered_signal_network.py`
+
+### class `SignalEnvelope`
+- public: `to_dict`
+### class `_SignalSession`
+- intern: `__init__`
+- def `_session_id`
+- def `_get_session`
+- def `_hash_payload`
+- def `_estimate_bytes`
+- def `_flatten_delta`
+- def `_pulse_payload`
+- def `_batch_payload`
+- def `emit_signal`
+- def `network_stats`
+
+## `03_Code/Dashboard/mainframe_background.py`
+
+- def `cost_analysis_loop`
+- def `repo_mirror_loop`
+- def `energy_pricing_loop`
+- def `start_mainframe_daemons`
+
+## `03_Code/Dashboard/mainframe_ops_routes.py`
+
+- def `api_cost_status`
+- def `api_cost_tick`
+- def `api_repo_status`
+- def `api_repo_tick`
+- def `api_ops_summary`
+- def `mainframe_ops_page`
+
+## `03_Code/Dashboard/mainframe_site_routes.py`
+
+- def `_repo`
+- def `_safe_join`
+- def `_tpl`
+- def `_git_worktrees`
+- def `_related_trees`
+- def `_list_dir`
+- def `mainframe_hub`
+- def `mainframe_vr_persistent`
+- def `mainframe_ide`
+- def `mainframe_worktree_page`
+- def `mainframe_worktree_view`
+- def `api_site_status`
+- def `api_worktree_list`
+- def `api_worktree_git`
+- def `api_worktree_file_meta`
+- def `api_worktree_raw`
+- def `api_worktree_content`
+- def `api_ide_status`
+
+## `03_Code/Dashboard/meta_layer_windows.py`
+
+### class `WindowsSubstrate`
+- public: `to_dict`
+### class `MetaLayerProcess`
+- public: `to_dict`
+### class `MetaLayerState`
+- public: `to_dict`
+- def `set_internal_backend_context`
+- def `_read_state_file`
+- def `_write_state_file`
+- def `scan_windows_substrate`
+- def `scan_fusion_processes`
+- def `probe_stack_health`
+- def `attach_meta_layer`
+- def `get_meta_layer_status`
+- def `heartbeat_meta_layer`
+
+## `03_Code/Dashboard/module_registry.py`
+
+### class `AgentInfo`
+- public: `to_dict`
+### class `ModuleInfo`
+- public: `to_dict`
+### class `FusionRegistry`
+- public: `load_all`, `set_hyperthreading`, `list_modules`, `list_agents`, `resource_plan`, `use_agent`, `layer4_status`, `mainframe_pipeline_status`
+- intern: `__init__`, `_catalog`, `_scan_agents`, `_sync_medienserver`
+- def `get_registry`
+
+## `03_Code/Dashboard/process_worker.py`
+
+### class `JobRecord`
+- public: `to_dict`
+- def `_get_proc_pool`
+- def `_get_io_pool`
+- def `warm_pools`
+- def `pool_status`
+- def `_trim_jobs`
+- def `register_job`
+- def `get_job`
+- def `list_jobs`
+- def `_run_in_subprocess`
+- def `_run_in_thread`
+- def `_apply_worker_side_effects`
+- def `_is_heavy`
+- def `submit_job`
+- def `submit_job_async`
+
+## `03_Code/Dashboard/scripts/build_geisteskrankheiten_4d_kompendium.py`
+
+- def `_read`
+- def `_v7_body`
+- def `_merge`
+- def `main`
+
+## `03_Code/Dashboard/scripts/build_geisteskrankheiten_4d_v4.py`
+
+- def `_read`
+- def `_merge`
+- def `_write_pdf`
+- def `_write_index`
+- def `main`
+
+## `03_Code/Dashboard/scripts/build_geisteskrankheiten_4d_v5.py`
+
+- def `_read`
+- def `_v4_source`
+- def `_merge`
+- def `_write_pdf`
+- def `_write_index`
+- def `main`
+
+## `03_Code/Dashboard/scripts/build_geisteskrankheiten_4d_v6.py`
+
+- def `_read`
+- def `_v5_source`
+- def `_merge`
+- def `_write_pdf`
+- def `main`
+
+## `03_Code/Dashboard/scripts/build_geisteskrankheiten_4d_v7.py`
+
+- def `_read`
+- def `_v6`
+- def `_merge`
+- def `_write_pdf`
+- def `main`
+
+## `03_Code/Dashboard/scripts/improve_geisteskrankheiten_4d.py`
+
+- def `_load_source`
+- def `_run_claude_science`
+- def `_run_local_llama`
+- def `_build_improved_markdown`
+- def `_write_pdf`
+- def `main`
+
+## `03_Code/Dashboard/scripts/kompendium_pdf_renderer.py`
+
+- def `_styles`
+- def `_chapter_label`
+- def `_clean_inline`
+- def `_part_for_section`
+### class `_KompendiumCanvas`
+- intern: `__init__`, `__call__`
+- def `_parse_table`
+### class `_SVGFigure`
+- public: `wrap`, `draw`
+- intern: `__init__`
+- def `_insert_figures`
+- def `_collect_headings`
+- def `render_kompendium_pdf`
+
+## `03_Code/Dashboard/scripts/mer_diagram_generator.py`
+
+- def `_svg_header`
+- def `_svg_footer`
+- def `_save`
+- def `diagram_4d_overview`
+- def `_axis_plane`
+- def `diagram_pi_kg`
+- def `diagram_pi_sn`
+- def `diagram_schattenhuelle`
+- def `diagram_bipolar_cycle`
+- def `diagram_ptbs_attraktor`
+- def `diagram_alpha_phases`
+- def `diagram_schichten_pipeline`
+- def `diagram_memetisch_mimetisch`
+- def `generate_all`
+
+## `03_Code/Dashboard/scripts/run_heroic_science_audit.py`
+
+- def `main`
+
+## `03_Code/Dashboard/supabase_background.py`
+
+- def `_sync_enabled`
+- def `metrics_loop`
+- def `phone_link_snapshot_loop`
+- def `watch_server_sync_loop`
+- def `start_background_tasks`
+
+## `03_Code/Dashboard/supabase_client.py`
+
+- def `_env`
+- def `is_configured`
+- def `get_client`
+- def `probe`
+- def `status`
+
+## `03_Code/Dashboard/supabase_store.py`
+
+- def `_ensure_ready`
+- def `refresh_ready`
+- def `cloud_sync_enabled`
+- def `device_id`
+- def `_insert`
+- def `_upsert`
+- def `save_event`
+- def `save_metrics`
+- def `save_job`
+- def `save_llama_config`
+- def `list_recent_events`
+- def `save_watch_room`
+- def `load_watch_room`
+- def `load_watch_rooms`
+- def `save_settings_cloud`
+- def `load_settings_cloud`
+- def `pull_settings_from_cloud`
+- def `save_agent_audit`
+- def `save_phone_link_snapshot`
+- def `save_faden_thread`
+- def `load_faden_threads`
+- def `save_fractal_manifest`
+- def `load_latest_fractal_manifest`
+- def `save_mesh_exit_state`
+- def `list_recent_agent_audit`
+- def `store_status`
+- def `check_tables`
+- def `sync_status`
+- def `roundtrip_test`
+
+## `03_Code/Dashboard/vr_routes.py`
+
+- def `_scan_scene_files`
+- def `_hl_path`
+- def `_ensure_hl_import`
+- def `highest_layer_page`
+- def `highest_layer_vr_page`
+- def `vr_persistent_redirect`
+- def `vr_viewer`
+- def `vr_asset_file`
+- def `api_vr_assets`
+- def `api_vr_roadmap`
+- def `api_vr_status`
+
+## `03_Code/Dashboard/watch_party.py`
+
+### class `WatchRoom`
+- public: `current_position`, `bump_revision`, `to_state`
+### class `WatchPartyManager`
+- public: `hydrate_from_cloud`, `extract_video_id`, `create_room`, `get_room`, `ensure_room`, `register_ws`, `unregister_ws`, `subscribers`, `apply_command`, `room_info`
+- intern: `__init__`, `_room_row`, `_persist_room`, `_finalize_command`, `_ensure_controller`, `_apply_command_locked`
+- def `_server_sync_flag`
+- def `get_watch_manager`
+- def `local_network_base`
+- def `join_url_for_room`
+- def `render_watch_page`
+- def `broadcast_room_state`
+
+## `03_Code/Dashboard/watch_realtime_server.py`
+
+- def `watch_realtime_listener`
+- def `start_watch_realtime_task`
+
+## `03_Code/Dashboard/watch_sync_server.py`
+
+- def `server_sync_enabled`
+- def `realtime_enabled`
+- def `server_poll_interval_sec`
+- def `active_poll_interval_sec`
+- def `poll_fallback_only`
+- def `get_realtime_client_config`
+- def `extract_realtime_row`
+- def `row_to_watch_state`
+- def `apply_realtime_payload`
+- def `merge_row_into_room`
+- def `refresh_room_from_server`
+- def `_refresh_room_from_server_locked`
+- def `push_room_to_server`
+- def `_push_room_to_server_locked`
+- def `low_latency_enabled`
+- def `finalize_command`
+- def `state_response`
+- def `get_authoritative_state`
+- def `active_room_ids`
+
+## `03_Code/Dashboard/windows_perf_tuner.py`
+
+### class `TuneAction`
+- public: `to_dict`
+- def `_run_ps`
+- def `_list_power_schemes`
+- def `_active_power_scheme`
+- def `_resolve_high_performance_guid`
+- def `_fusion_backend_pids`
+- def `scan_windows_perf`
+- def `_recommendations`
+- def `_resolve_balanced_guid`
+- def `_set_power_balanced`
+- def `apply_windows_performance_level`
+- def `_set_power_high`
+- def `_dedupe_backends`
+- def `_boost_own_priority`
+- def `_set_substrate_env`
+- def `apply_substrate_tuning`
+- def `apply_windows_tuning`
+- def `substrate_status`
+- def `_cyber_layer_brief`
+- def `tuner_status`
+
+## `03_Code/Dashboard/windows_skin.py`
+
+### class `WindowsSkin`
+- public: `to_dict`
+- def `_read_json`
+- def `_write_json`
+- def `list_presets`
+- def `_load_preset`
+- def `_merge_skin`
+- def `_merge_dict`
+- def `load_skin`
+- def `set_preset`
+- def `patch_user_skin`
+- def `reset_user_skin`
+- def `skin_css_variables`
+- def `skin_layer_css`
+- def `render_full_skin_css`
+- def `skin_status`
+- def `ensure_user_skin_template`
+
+## `03_Code/Dashboard/worker_runner.py`
+
+- def `main`
+
+## `03_Code/Dashboard/worker_tasks.py`
+
+- def `_load_all`
+- def `_solve_qubo`
+- def `_health_light`
+- def `execute_intent`
+- def `execute_job`
+
+## `03_Code/Dashboard/workspace.py`
+
+- def `trigger_core_mod`
+- def `check_and_assign_task`
+- def `complete_task`
+- def `toggle_autonomous`
+- def `auto_generate_and_assign`
+- def `run_auto_save`
+- def `end_session_and_push`
+- def `toggle_auto_git_save`
+- def `periodic_git_save`
+- def `build_workspace`
 
