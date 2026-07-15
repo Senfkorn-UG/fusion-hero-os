@@ -11,29 +11,59 @@ default_profile: direct
 
 # Physical exit candidates (discovered from tailscale status + manual overrides)
 physical_candidates:
+  fusion-mesh-exit:
+    hostname: fusion-mesh-exit
+    tailscale_ip: 100.103.188.54
+    magicdns: fusion-mesh-exit.tail391adb.ts.net
+    gce_instance: fusion-mesh-exit
+    gce_project: project-bbf0e6db-52e1-462b-8e3
+    gce_zone: europe-west3-a
+    gce_external_ip: 34.40.58.207
+    platform: google_compute_engine
+    status: online
+    offers_exit: false
+    region: europe-west3
+    cloud_provider: google
+    fractal_replica_url: http://fusion-mesh-exit.tail391adb.ts.net:8088/mesh/fractal/replica
+    supabase_role: cloud_anchor
+    note: "Online GCE VM — mesh anchor + fractal replica (ExitNodeOption false at last inventory)"
+
   cs-724978827604-default:
     hostname: cs-724978827604-default
     tailscale_ip: 100.127.145.106
-    platform: linux
+    magicdns: cs-724978827604-default.tail391adb.ts.net
+    platform: google_compute_engine
     offers_exit: true
     region: eu-central
-    note: "Cloud VPS — primary EU egress when online"
+    status: offline
+    note: "Old deleted GCP project — offline ~4d; replaced by fusion-mesh-exit"
 
   desktop-kpki9e4-wsl:
     hostname: desktop-kpki9e4-wsl
     tailscale_ip: 100.125.58.100
     platform: linux
+    status: offline
     offers_exit: false
     region: local-wsl
-    note: "WSL dev leaf — enable with tailscale up --advertise-exit-node"
+    note: "WSL dev leaf — offline at 2026-07-15 inventory; enable with tailscale up --advertise-exit-node"
 
   desktop-kpki9e4:
     hostname: desktop-kpki9e4
     tailscale_ip: 100.64.104.58
     platform: windows
+    status: online
     offers_exit: false
     region: local-desktop
-    note: "Windows mainframe — optional egress after ACL tagOwners"
+    note: "Windows mainframe — online 2026-07-15; optional egress after ACL tagOwners"
+
+  redmi-note-13-pro-5g:
+    hostname: redmi-note-13-pro-5g
+    tailscale_ip: 100.108.67.116
+    platform: android
+    status: online
+    offers_exit: false
+    region: mobile
+    note: "Phone peer — not an exit candidate"
 
 # Virtual profiles (select with: fractal_mainframe_mesh.py apply-exit <id>)
 virtual_profiles:
@@ -45,8 +75,8 @@ virtual_profiles:
 
   cloud-eu:
     label: "EU cloud egress"
-    primary: cs-724978827604-default
-    fallbacks: [desktop-kpki9e4-wsl]
+    primary: fusion-mesh-exit
+    fallbacks: [cs-724978827604-default, desktop-kpki9e4-wsl]
     require_online: true
 
   wsl-dev:
@@ -67,6 +97,12 @@ virtual_profiles:
     fallbacks: []
     clear_exit: true
     blocked_on_platforms: [android]
+
+  google-server:
+    label: "Google GCE server egress (fusion-mesh-exit)"
+    primary: fusion-mesh-exit
+    fallbacks: [cs-724978827604-default]
+    require_online: true
 
 # Per mesh segment: which virtual exit profile to prefer
 segment_routing:
@@ -91,3 +127,23 @@ segment_routing:
     default_profile: cloud-eu
   researcher:
     default_profile: cloud-eu
+
+# Cloud persistence backends for fractal mainframe state
+cloud_backends:
+  supabase:
+    project_ref: swmmoxhdzarmoupyssqe
+    url: https://swmmoxhdzarmoupyssqe.supabase.co
+    schema_migration: 03_Code/Dashboard/supabase/schema_migration_v5_fractal_mesh.sql
+    tables:
+      - fusion_mesh_fractal_manifests
+      - fusion_mesh_exit_state
+  google_drive:
+    cold_root: FusionHero_Offload/mesh/fractal
+    policy: google_drive_cold_default
+  google_server:
+    hostname: fusion-mesh-exit
+    gce_project: project-bbf0e6db-52e1-462b-8e3
+    gce_zone: europe-west3-a
+    gce_external_ip: 34.40.58.207
+    role: fractal_replica_host
+    legacy: cs-724978827604-default

@@ -2,43 +2,51 @@
 # Prinzip: Jeder Konnektor ist ein eigenständiges Mesh-Segment.
 # Kein Monolith — jede Verbindung hat eigene Identität, Health-Probe und Routing.
 
-mesh_version: "1.0"
-tailnet: example.ts.net
+mesh_version: "1.1"
+tailnet: tail391adb.ts.net
+updated: "2026-07-15"
+live_inventory: mesh_live_inventory.json
 principle: "Jeder Konnektor = ein einzelnes Teil des Mesh (eigene ID, Host, Health, Tag)"
 
-# Physische Mesh-Knoten (Tailscale Devices)
+# Physische Mesh-Knoten (Tailscale Devices) — Live 2026-07-15
+# Kanon: Windows-Desktop = Mainframe (siehe mesh_roles.yaml)
 nodes:
   mainframe:
     role: orchestrator
-    hostname: mainframe
-    magicdns: mainframe-host.example.ts.net
-    platform: linux
-    tailscale_tag: tag:fusion-node-mainframe
-    services:
-      - hero-docs-server
-      - tailscale-control
-
-  desktop:
-    # Doppelrolle: weiterhin Grok-Workstation UND vollwertige Enduser-Stelle
-    # auf einer Stufe mit dem Handy (siehe enduser-Block).
-    role: grok-workstation
     hostname: desktop-kpki9e4
     magicdns: desktop-kpki9e4.tail391adb.ts.net
+    tailscale_ip: 100.64.104.58
     platform: windows
+    status: online
+    aliases: [desktop]
+    tailscale_tag: tag:fusion-node-mainframe
+    services:
+      - fusion-dashboard
+      - hero-docs-server
+      - tailscale-control
+      - grok-cli
+      - mcp-bridges
+
+  desktop:
+    # Doppelrolle: Grok-Workstation UND Enduser-Stelle (peer_of phone).
+    # same_as mainframe — physisch identisch mit dem Windows-Orchestrator.
+    role: grok-workstation
+    same_as: mainframe
+    hostname: desktop-kpki9e4
+    magicdns: desktop-kpki9e4.tail391adb.ts.net
+    tailscale_ip: 100.64.104.58
+    platform: windows
+    status: online
     tailscale_tag: tag:fusion-node-desktop
     services:
       - grok-cli
       - mcp-bridges
-    # Enduser-Stelle mit zusaetzlicher Sicherheitsschicht.
-    # Initial laeuft NUR das klassische Enduser-Protokoll (fail-closed):
-    # erweiterte Protokolle sind vorhanden, aber standardmaessig deaktiviert
-    # und muessen bewusst freigeschaltet werden.
     enduser:
-      peer_of: phone            # gleiche Enduser-Stufe wie das Handy
+      peer_of: phone
       security_layer: enabled
       active_protocol: classic-enduser-only
       elevated_protocols_enabled: false
-      elevated_protocols:       # vorhanden, aber initial gesperrt
+      elevated_protocols:
         - orchestrator-access
         - connector-admin
       note: >
@@ -48,18 +56,38 @@ nodes:
   phone:
     role: mobile-client
     hostname: redmi-note-13-pro-5g
-    hostname_aliases: [phone-node, redmi-note-13-pro-5g, redmi]
+    hostname_aliases: [phone-node, redmi-note-13-pro-5g, redmi, "Redmi Note 13 Pro 5G"]
     magicdns: redmi-note-13-pro-5g.tail391adb.ts.net
+    tailscale_ip: 100.108.67.116
     platform: android
+    status: online
     tailscale_tag: tag:fusion-node-phone
     services:
       - tailscale-app
       - phone-link-bridge
       - mesh-files-portal
     enduser:
-      peer_of: desktop          # gleiche Enduser-Stufe wie der Windows-PC
-      security_layer: standard  # Handy: klassisches Enduser-Protokoll ohne Zusatzschicht
+      peer_of: desktop
+      security_layer: standard
       active_protocol: classic-enduser-only
+
+  fusion-mesh-exit:
+    role: mesh-exit
+    hostname: fusion-mesh-exit
+    magicdns: fusion-mesh-exit.tail391adb.ts.net
+    tailscale_ip: 100.103.188.54
+    platform: linux
+    status: online
+    tailscale_tag: tag:fusion-node-exit
+
+  wsl:
+    role: dev-leaf
+    hostname: desktop-kpki9e4-wsl
+    magicdns: desktop-kpki9e4-wsl.tail391adb.ts.net
+    tailscale_ip: 100.125.58.100
+    platform: linux
+    status: offline
+    tailscale_tag: tag:fusion-node-wsl
 
 # Logische Agenten-Instanzen — eigene Mesh-Identitaet, aber kein physisches
 # Tailscale-Geraet. Bewusst von 'nodes' getrennt, damit sichtbar bleibt, was

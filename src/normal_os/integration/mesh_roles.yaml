@@ -1,19 +1,22 @@
 # Fusion Hero OS — Kanonische Tailscale-Mesh-Rollen (Single Source of Truth)
 # Der Windows-Desktop ist der Mainframe (Orchestrator). Linux-Knoten ist archiviert.
 
-mesh_roles_version: "1.1"
-updated: "2026-07-12"
-tailnet: example.ts.net
+mesh_roles_version: "1.2"
+updated: "2026-07-15"
+tailnet: tail391adb.ts.net
 principle: "Windows-Desktop = Mainframe — zentraler Orchestrator im Tailscale-Mesh"
+live_inventory: mesh_live_inventory.json
 
-# Rolle → physischer Knoten (kanonisch)
+# Rolle → physischer Knoten (kanonisch) — IPs/Status aus tailscale status 2026-07-15
 role_assignments:
   mainframe:
     node_id: mainframe
     role: orchestrator
     hostname: desktop-kpki9e4
-    magicdns: device.example.ts.net
+    magicdns: desktop-kpki9e4.tail391adb.ts.net
+    tailscale_ip: 100.64.104.58
     platform: windows
+    status: online
     tailscale_tag: tag:fusion-node-mainframe
     canonical: true
     aliases: [desktop]
@@ -32,21 +35,35 @@ role_assignments:
     role: grok-workstation
     same_as: mainframe
     hostname: desktop-kpki9e4
-    magicdns: device.example.ts.net
+    magicdns: desktop-kpki9e4.tail391adb.ts.net
+    tailscale_ip: 100.64.104.58
     platform: windows
+    status: online
     tailscale_tag: tag:fusion-node-desktop
 
   mobile:
     node_id: phone
     role: mobile-client
     hostname: redmi-note-13-pro-5g
-    hostname_aliases: [phone-node, redmi-note-13-pro-5g, redmi]
+    hostname_aliases: [phone-node, redmi-note-13-pro-5g, redmi, "Redmi Note 13 Pro 5G"]
     magicdns: redmi-note-13-pro-5g.tail391adb.ts.net
+    tailscale_ip: 100.108.67.116
     platform: android
+    status: online
     tailscale_tag: tag:fusion-node-phone
-    login_required: user@example.com
     login_warning: "Nicht GitHub — gleicher Login wie Desktop (Google)"
     file_mirror_client: true
+
+  cloud_exit:
+    node_id: fusion-mesh-exit
+    role: mesh-exit
+    hostname: fusion-mesh-exit
+    magicdns: fusion-mesh-exit.tail391adb.ts.net
+    tailscale_ip: 100.103.188.54
+    platform: linux
+    status: online
+    offers_exit: false
+    note: "GCE mesh exit + fractal replica anchor"
 
   legacy:
     node_id: legacy-linux
@@ -55,9 +72,20 @@ role_assignments:
     magicdns: mainframe-host.example.ts.net
     platform: linux
     status: offline
-    tailscale_status: "offline >2d — nicht mehr im aktiven Mesh"
+    tailscale_status: "nicht mehr im aktiven Mesh"
     note: "Frueherer Linux-Knoten — Mainframe-Rolle auf Windows-Desktop uebertragen (2026-07-12)"
     action: none
+
+  legacy_gcp:
+    node_id: cs-724978827604-default
+    role: legacy-exit
+    hostname: cs-724978827604-default
+    magicdns: cs-724978827604-default.tail391adb.ts.net
+    tailscale_ip: 100.127.145.106
+    platform: linux
+    status: offline
+    offers_exit: true
+    note: "Old GCP project — replaced by fusion-mesh-exit"
 
   wsl:
     node_id: wsl-ubuntu
@@ -66,12 +94,12 @@ role_assignments:
     hostname: desktop-kpki9e4-wsl
     magicdns: desktop-kpki9e4-wsl.tail391adb.ts.net
     tailscale_ip: 100.125.58.100
-    status: online
+    status: offline
     tailscale_tag: tag:fusion-node-wsl
     setup_script: workstation/tailscale_wsl_setup.sh
     mesh_setup_script: workstation/mainframe_mesh_setup.sh
     virtual_exit_default: wsl-dev
-    note: "WSL dev leaf — fractal replica target; optional EU egress via cloud-eu profile"
+    note: "WSL dev leaf — offline at last inventory; enable via workstation/tailscale_wsl_setup.sh"
 
 # Speicher — Google Drive als Standard fuer nicht-operative Daten
 storage:

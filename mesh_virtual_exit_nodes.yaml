@@ -20,12 +20,13 @@ physical_candidates:
     gce_zone: europe-west3-a
     gce_external_ip: 34.40.58.207
     platform: google_compute_engine
-    offers_exit: true
+    status: online
+    offers_exit: false
     region: europe-west3
     cloud_provider: google
     fractal_replica_url: http://fusion-mesh-exit.tail391adb.ts.net:8088/mesh/fractal/replica
     supabase_role: cloud_anchor
-    note: "Active GCE VM in My First Project — mesh exit + fractal replica"
+    note: "Online GCE VM — mesh anchor + fractal replica (ExitNodeOption false at last inventory)"
 
   cs-724978827604-default:
     hostname: cs-724978827604-default
@@ -34,24 +35,35 @@ physical_candidates:
     platform: google_compute_engine
     offers_exit: true
     region: eu-central
-    status: legacy_offline
-    note: "Old deleted GCP project — replaced by fusion-mesh-exit"
+    status: offline
+    note: "Old deleted GCP project — offline ~4d; replaced by fusion-mesh-exit"
 
   desktop-kpki9e4-wsl:
     hostname: desktop-kpki9e4-wsl
     tailscale_ip: 100.125.58.100
     platform: linux
+    status: offline
     offers_exit: false
     region: local-wsl
-    note: "WSL dev leaf — enable with tailscale up --advertise-exit-node"
+    note: "WSL dev leaf — offline at 2026-07-15 inventory; enable with tailscale up --advertise-exit-node"
 
   desktop-kpki9e4:
     hostname: desktop-kpki9e4
     tailscale_ip: 100.64.104.58
     platform: windows
+    status: online
     offers_exit: false
     region: local-desktop
-    note: "Windows mainframe — optional egress after ACL tagOwners"
+    note: "Windows mainframe — online 2026-07-15; optional egress after ACL tagOwners"
+
+  redmi-note-13-pro-5g:
+    hostname: redmi-note-13-pro-5g
+    tailscale_ip: 100.108.67.116
+    platform: android
+    status: online
+    offers_exit: false
+    region: mobile
+    note: "Phone peer — not an exit candidate"
 
 # Virtual profiles (select with: fractal_mainframe_mesh.py apply-exit <id>)
 virtual_profiles:

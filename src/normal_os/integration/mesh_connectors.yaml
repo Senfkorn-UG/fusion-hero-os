@@ -3,57 +3,107 @@
 # Kein Monolith — jede Verbindung hat eigene Identität, Health-Probe und Routing.
 
 mesh_version: "1.1"
-tailnet: example.ts.net
+tailnet: tail391adb.ts.net
+updated: "2026-07-15"
+live_inventory: mesh_live_inventory.json
 principle: "Jeder Konnektor = ein einzelnes Teil des Mesh (eigene ID, Host, Health, Tag)"
 
-# Physische Mesh-Knoten (Tailscale Devices)
-# Kanonisch: mesh_roles.yaml — Windows-Desktop = Mainframe
+# Physische Mesh-Knoten (Tailscale Devices) — Live 2026-07-15
+# Kanon: Windows-Desktop = Mainframe (siehe mesh_roles.yaml)
 nodes:
   mainframe:
     role: orchestrator
     hostname: desktop-kpki9e4
-    magicdns: device.example.ts.net
+    magicdns: desktop-kpki9e4.tail391adb.ts.net
+    tailscale_ip: 100.64.104.58
     platform: windows
-    canonical: true
+    status: online
     aliases: [desktop]
     tailscale_tag: tag:fusion-node-mainframe
     services:
       - fusion-dashboard
       - hero-docs-server
-      - normalos-bridge
       - tailscale-control
-      - fusion-integration-hub
       - grok-cli
       - mcp-bridges
 
   desktop:
+    # Doppelrolle: Grok-Workstation UND Enduser-Stelle (peer_of phone).
+    # same_as mainframe — physisch identisch mit dem Windows-Orchestrator.
     role: grok-workstation
-    alias_of: mainframe
+    same_as: mainframe
     hostname: desktop-kpki9e4
-    magicdns: device.example.ts.net
+    magicdns: desktop-kpki9e4.tail391adb.ts.net
+    tailscale_ip: 100.64.104.58
     platform: windows
+    status: online
     tailscale_tag: tag:fusion-node-desktop
     services:
       - grok-cli
       - mcp-bridges
+    enduser:
+      peer_of: phone
+      security_layer: enabled
+      active_protocol: classic-enduser-only
+      elevated_protocols_enabled: false
+      elevated_protocols:
+        - orchestrator-access
+        - connector-admin
+      note: >
+        Erweiterte Protokolle erst nach bewusster Freischaltung durch den Owner.
+        Bis dahin verhaelt sich desktop als Enduser wie das phone.
 
   phone:
     role: mobile-client
-    hostname: phone-node
-    magicdns: mobile-node.example.ts.net
+    hostname: redmi-note-13-pro-5g
+    hostname_aliases: [phone-node, redmi-note-13-pro-5g, redmi, "Redmi Note 13 Pro 5G"]
+    magicdns: redmi-note-13-pro-5g.tail391adb.ts.net
+    tailscale_ip: 100.108.67.116
     platform: android
+    status: online
     tailscale_tag: tag:fusion-node-phone
     services:
       - tailscale-app
       - phone-link-bridge
+      - mesh-files-portal
+    enduser:
+      peer_of: desktop
+      security_layer: standard
+      active_protocol: classic-enduser-only
 
-  legacy-linux:
-    role: archived
-    hostname: mainframe
-    magicdns: mainframe-host.example.ts.net
+  fusion-mesh-exit:
+    role: mesh-exit
+    hostname: fusion-mesh-exit
+    magicdns: fusion-mesh-exit.tail391adb.ts.net
+    tailscale_ip: 100.103.188.54
+    platform: linux
+    status: online
+    tailscale_tag: tag:fusion-node-exit
+
+  wsl:
+    role: dev-leaf
+    hostname: desktop-kpki9e4-wsl
+    magicdns: desktop-kpki9e4-wsl.tail391adb.ts.net
+    tailscale_ip: 100.125.58.100
     platform: linux
     status: offline
-    note: "Früherer Linux-Knoten — Mainframe auf Windows-Desktop (2026-07-12)"
+    tailscale_tag: tag:fusion-node-wsl
+
+# Logische Agenten-Instanzen — eigene Mesh-Identitaet, aber kein physisches
+# Tailscale-Geraet. Bewusst von 'nodes' getrennt, damit sichtbar bleibt, was
+# Hardware ist und was ein laufender Agent.
+agents:
+  researcher:
+    mesh_id: mesh-agent-researcher
+    role: research
+    runs_on: mainframe          # ausgefuehrt auf dem Orchestrator-Knoten
+    health_path: /mesh/agent/researcher/status
+    tailscale_tag: tag:fusion-agent-researcher
+    capabilities:
+      - literatur-recherche
+      - quellen-erhebung
+      - evidenz-auswertung
+    description: "Researcher — eigene Mesh-Instanz fuer Recherche/Evidenz"
 
 # MCP-Konnektoren — jeweils eigenes Mesh-Segment (logisch isoliert)
 connectors:
@@ -139,26 +189,26 @@ connectors:
 
 # Routing-Schema (Funnel + MagicDNS)
 routing:
-  base_url: "https://device.example.ts.net"
-  mainframe_hostname: desktop-kpki9e4
-  roles_config: mesh_roles.yaml
+  base_url: "https://desktop-kpki9e4.tail391adb.ts.net"
   unified: "/fusion/status"
   fusion_graph: "/fusion/graph"
   mesh_overview: "/mesh/status"
+  fractal_status: "/mesh/fractal/status"
+  fractal_replica: "/mesh/fractal/replica"
+  exit_nodes: "/mesh/exit-nodes"
   per_connector: "/mesh/{connector_id}/status"
+  per_agent: "/mesh/agent/{agent_id}/status"
+  enduser_overview: "/mesh/enduser/status"
   llm_overview: "/llm/status"
   per_llm: "/llm/{provider}/status"
   tailscale_overview: "/tailscale/status"
 
+# Fractal mainframe persistence + virtual exit routing
+fractal_mesh:
+  module: fractal_mainframe_mesh.py
+  exit_config: mesh_virtual_exit_nodes.yaml
+  storage: "~/.fusion/mesh/fractal/manifest.json"
+
 # Verknüpfung mit LLM-Frameworks (siehe fusion_unified.yaml)
 integration_hub: fusion_integration_hub.py
 unified_config: fusion_unified.yaml
-
-# Google OAuth (Gmail, Drive, Calendar) — include_granted_scopes
-google_oauth:
-  module: connectors/google_oauth.py
-  setup_script: workstation/setup-google-oauth.ps1
-  credentials: "{USERPROFILE}/.fusion/google-oauth/credentials.json"
-  token: "{USERPROFILE}/.fusion/google-oauth/token.json"
-  include_granted_scopes: true
-  connectors: [gmail, google_drive, google_calendar]
