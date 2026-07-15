@@ -15,7 +15,6 @@
   <img src="https://capsule-render.vercel.app/api?type=soft&color=gradient&customColorList=11,20,24&height=70&section=header&text=Release%20Overview&fontSize=28&fontColor=fff&fontAlignY=65&animation=fadeIn" width="100%" />
 </div>
 
-```typescript
 {const release_v10 = {
   version: "v10.0.0",
   active_core: "Heroic_Core_v1.0",
@@ -26,4 +25,4 @@
     "📊 Enhanced real-time system telemetry",
     "🧠 Refined local AI model workflows"
   ]
-};```
+};
