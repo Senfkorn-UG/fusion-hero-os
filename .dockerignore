@@ -1,6 +1,5 @@
 .git
 .github
-**/.git
 **/__pycache__
 **/*.pyc
 **/.pytest_cache
@@ -14,15 +13,7 @@ archiv
 site
 *.bundle
 **/*.zip
-**/*.mp4
-**/*.png
-**/*.jpg
 03_VR_Assets
-C:\Users\Admin
-.fusion
-*.md
-!docs/business/**
-!README.md
 .env
 **/.env
 **/token.json
@@ -30,3 +21,4 @@ C:\Users\Admin
 workstation/inbox_export
 data
 *.log
+.pytest_cache
