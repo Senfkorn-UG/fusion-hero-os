@@ -1,8 +1,11 @@
 {
   "activated": true,
-  "google_one_plan_active": true,
-  "capacity_tb": 5,
-  "drive_folder": "https://drive.google.com/drive/folders/1a_jWLVX7p5Zw4UCOCbpZjGoAOaj3qUpO",
-  "local_root": "C:\\Users\\Admin\\.fusion\\sicherung",
-  "confirmed_at": "2026-07-15T15:03:15.667547+00:00"
+  "activated_at": "2026-07-15T15:06:07.826262+00:00",
+  "provider": "google_one",
+  "landing_url": "https://one.google.com/?g1_landing_page=1",
+  "storage_url": "https://one.google.com/storage",
+  "drive_folder_name": "Fusion_Hero_OS_Sicherung",
+  "drive_web_view_link": "https://drive.google.com/drive/folders/1a_jWLVX7p5Zw4UCOCbpZjGoAOaj3qUpO",
+  "secrets_excluded": true,
+  "local_root": "C:\\Users\\Admin\\.fusion\\sicherung"
 }

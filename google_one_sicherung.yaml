@@ -26,7 +26,12 @@ drive:
   folder_name: Fusion_Hero_OS_Sicherung
   folder_id: "1a_jWLVX7p5Zw4UCOCbpZjGoAOaj3qUpO"
   web_view_link: "https://drive.google.com/drive/folders/1a_jWLVX7p5Zw4UCOCbpZjGoAOaj3qUpO"
-  # set after first create; operator may refresh via --activate
+  subfolders:
+    snapshots_id: "1EzcmnGejSqzk_o2yUPr9FK7iIVa7k-mf"
+    phone_uploads_id: "1-4vzNZWS3IzBBHRXkaqVG8E-UHmU5ON_"
+    manifests_id: "1BxuKlXGZ2fOLEi4LFcqzHaN1zAx85JP9"
+    dissertation_public_safe_id: "1T-Ye_MamdSSupv76yCl8-1gZY1XjweQy"
+    control_summaries_id: "18g6CRX3Mi8oCLUh-idLfRXwmpDOK7_kS"
 
 desktop:
   app: google_drive_for_desktop

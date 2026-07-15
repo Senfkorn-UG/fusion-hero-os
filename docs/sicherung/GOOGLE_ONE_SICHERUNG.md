@@ -1,31 +1,23 @@
 # Google One Sicherung — aktiv
 
-**Status:** ACTIVATED  
-**Provider:** Google One + Drive  
-**Plan:** **aktiv · 5 TB** (Operator-bestätigt)  
-**Landing:** https://one.google.com/?g1_landing_page=1  
-**Storage:** https://one.google.com/storage  
-**Drive-Ordner:** [Fusion_Hero_OS_Sicherung](https://drive.google.com/drive/folders/1a_jWLVX7p5Zw4UCOCbpZjGoAOaj3qUpO)  
+**Status:** ACTIVATED (`2026-07-15T15:06:07.826262+00:00`)
+**Provider:** Google One + Drive
+**Landing:** https://one.google.com/?g1_landing_page=1
+**Storage:** https://one.google.com/storage
+**Drive-Ordner:** [Fusion_Hero_OS_Sicherung](https://drive.google.com/drive/folders/1a_jWLVX7p5Zw4UCOCbpZjGoAOaj3qUpO)
 **Lokal:** `C:\Users\Admin\.fusion\sicherung`
 
-## Stand
+## Operator (Browser)
 
-| Punkt | Status |
-|-------|--------|
-| Google One Plan | **aktiv · 5 TB** |
-| Lokale Sicherung | aktiv (`ACTIVATED.json`) |
-| Public-safe Snapshots | `~/.fusion/sicherung/snapshots/` |
-| Drive-Zielordner | `Fusion_Hero_OS_Sicherung` |
-| Secrets in Backup | **ausgeschlossen** |
+1. https://one.google.com/?g1_landing_page=1 — Plan / Geräte-Backup prüfen
+2. https://one.google.com/storage — Speicherplatz prüfen
+3. Drive-Ordner `Fusion_Hero_OS_Sicherung` für public-safe Snapshots
+4. Google Drive for Desktop: optional Ordner spiegeln
 
-## Operator
-
-1. ~~Plan prüfen~~ → erledigt (5 TB)
-2. Storage-Auslastung gelegentlich prüfen: https://one.google.com/storage
-3. Optional: Google Drive for Desktop — Snapshot-Ordner in den Drive-Ordner spiegeln
-4. CLI-Snapshot bei Bedarf:
+## CLI
 
 ```powershell
+python -m fusion_hero_os.core.google_one_sicherung --activate
 python -m fusion_hero_os.core.google_one_sicherung --snapshot
 python -m fusion_hero_os.core.google_one_sicherung --status
 ```

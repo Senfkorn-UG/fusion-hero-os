@@ -30,3 +30,16 @@ def test_snapshot_public_safe():
         rel = (f.get("rel") or "").lower()
         assert "secret" not in rel
         assert not rel.endswith(".env")
+
+
+def test_desktop_and_phone_setup():
+    from fusion_hero_os.core.google_one_sicherung import setup_desktop, setup_phone
+
+    d = setup_desktop(open_browser=False, start_app=False)
+    assert d.get("ok")
+    assert "drivefs_exe" in d or d.get("drivefs_running") is not None
+    p = setup_phone(open_browser=False)
+    assert p.get("ok")
+    assert p.get("links", {}).get("drive_android")
+    st = status()
+    assert "desktop" in st
