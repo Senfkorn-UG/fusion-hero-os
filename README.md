@@ -126,11 +126,11 @@ Public surface policy: no personal identity, no private location, no live mesh i
 
 | Domain | Stack |
 |--------|--------|
-| Runtime | Python 3.11+ | FastAPI | Uvicorn | Numba |
+| Runtime | Python 3.11+ / FastAPI / Uvicorn / Numba |
 | Performance | Rust crates (`pms_rust_kernel_crate`, `rust_engine_crate`) |
-| Mesh | Tailscale | per-connector registry |
-| AI | Local model hooks | Integration Hub (external connectors dry-run by default) |
-| CI | pytest Stage-A/B | proof-registry | version gate |
+| Mesh | Tailscale / per-connector registry |
+| AI | Local model hooks / Integration Hub (external connectors dry-run by default) |
+| CI | pytest Stage-A/B / proof-registry / version gate |
 
 ---
 
