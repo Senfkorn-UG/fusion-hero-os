@@ -47,6 +47,36 @@ intent:
     - "perf:"
     - "security:"
 
+# --- Wanted push via secrets (operator identity) ---
+# Presence of a non-empty known secret env proves operator (not freemium).
+# Values are NEVER written to git / logs. Optional local hash pin file.
+secret_intent:
+  enabled: true
+  load_dotenv: true
+  dotenv_paths:
+    - .env
+    - .env.local
+  # Any one non-empty unlocks wanted push (still fails on hard deny_globs)
+  env_keys_any:
+    - FUSION_PUSH_SECRET
+    - GITHUB_TOKEN
+    - GH_TOKEN
+    - GH_PAT
+    - XAI_API_KEY
+    - GROK_API_KEY
+    - OPENROUTER_API_KEY
+    - GROQ_API_KEY
+    - ANTHROPIC_API_KEY
+    - OPENAI_API_KEY
+  # Optional: require min N of the above (default 1)
+  min_present: 1
+  # Optional local pin: file contains sha256(secret) hex; env FUSION_PUSH_SECRET must match
+  # Path is operator-local only (never commit)
+  local_hash_pin: ~/.fusion/secrets/push_secret.sha256
+  require_hash_pin: false
+  # When secrets unlock intent, also set internal flag for audit (name only)
+  audit_key: secret_identity
+
 # Auto-save identification (known) — push only with intent or allowlisted
 auto_save:
   message_prefixes:

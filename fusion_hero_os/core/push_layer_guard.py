@@ -51,6 +51,9 @@ class PushDecision:
     commit_subjects: List[str] = field(default_factory=list)
     platform_ok: bool = True
     advice: str = ""
+    secret_intent: bool = False
+    secret_keys_present: List[str] = field(default_factory=list)  # names only
+    dotenv_loaded: List[str] = field(default_factory=list)
 
     def to_dict(self) -> Dict[str, Any]:
         return asdict(self)
@@ -127,6 +130,88 @@ def _layers_for_paths(paths: List[str], cfg: Dict[str, Any]) -> List[str]:
     return touched
 
 
+def _load_dotenv_files(cfg: Dict[str, Any]) -> List[str]:
+    """Load .env into process env without logging values. Returns loaded path names."""
+    si = cfg.get("secret_intent") or {}
+    if not si.get("enabled", True) or not si.get("load_dotenv", True):
+        return []
+    loaded: List[str] = []
+    for rel in si.get("dotenv_paths") or [".env", ".env.local"]:
+        path = ROOT / rel if not str(rel).startswith("~") else Path(os.path.expanduser(rel))
+        if not path.is_file():
+            continue
+        try:
+            for line in path.read_text(encoding="utf-8", errors="replace").splitlines():
+                line = line.strip()
+                if not line or line.startswith("#") or "=" not in line:
+                    continue
+                if line.startswith("export "):
+                    line = line[7:].strip()
+                key, _, val = line.partition("=")
+                key = key.strip()
+                val = val.strip().strip('"').strip("'")
+                if not key:
+                    continue
+                # do not override already-set env
+                if key not in os.environ or not (os.environ.get(key) or "").strip():
+                    os.environ[key] = val
+            loaded.append(str(path.name))
+        except Exception:
+            continue
+    return loaded
+
+
+def _secret_intent(cfg: Dict[str, Any]) -> Tuple[bool, List[str]]:
+    """Wanted unlock via known secrets (names only returned, never values)."""
+    si = cfg.get("secret_intent") or {}
+    if not si.get("enabled", True):
+        return False, []
+    keys = si.get("env_keys_any") or []
+    min_present = int(si.get("min_present") or 1)
+    present: List[str] = []
+    for k in keys:
+        val = (os.environ.get(k) or "").strip()
+        if val:
+            present.append(k)
+
+    # Optional local hash pin for FUSION_PUSH_SECRET
+    pin_path = Path(os.path.expanduser(si.get("local_hash_pin") or "~/.fusion/secrets/push_secret.sha256"))
+    if si.get("require_hash_pin") and pin_path.is_file():
+        secret = (os.environ.get("FUSION_PUSH_SECRET") or "").strip()
+        if not secret:
+            return False, present
+        import hashlib
+
+        digest = hashlib.sha256(secret.encode("utf-8")).hexdigest().strip().lower()
+        try:
+            expected = pin_path.read_text(encoding="utf-8").strip().lower().split()[0]
+        except Exception:
+            return False, present
+        if digest != expected:
+            return False, present
+        return True, present + ["hash_pin_ok"]
+
+    if len(present) >= min_present:
+        # If pin file exists and FUSION_PUSH_SECRET set, verify when present (optional soft)
+        if pin_path.is_file() and (os.environ.get("FUSION_PUSH_SECRET") or "").strip():
+            import hashlib
+
+            secret = (os.environ.get("FUSION_PUSH_SECRET") or "").strip()
+            digest = hashlib.sha256(secret.encode("utf-8")).hexdigest().strip().lower()
+            try:
+                expected = pin_path.read_text(encoding="utf-8").strip().lower().split()[0]
+                if digest == expected:
+                    return True, present + ["hash_pin_ok"]
+                # wrong pin — do not grant via this secret alone
+                present = [p for p in present if p != "FUSION_PUSH_SECRET"]
+                if len(present) < min_present:
+                    return False, present
+            except Exception:
+                pass
+        return True, present
+    return False, present
+
+
 def _intent_present(cfg: Dict[str, Any], subjects: List[str]) -> bool:
     intent = cfg.get("intent") or {}
     true_vals = {v.lower() for v in (intent.get("env_true_values") or ["1", "true"])}
@@ -134,6 +219,10 @@ def _intent_present(cfg: Dict[str, Any], subjects: List[str]) -> bool:
         val = (os.environ.get(key) or "").strip().lower()
         if val in true_vals:
             return True
+    # Secrets-based wanted unlock (operator identity)
+    ok_sec, _names = _secret_intent(cfg)
+    if ok_sec:
+        return True
     markers = intent.get("commit_markers") or []
     prefixes = intent.get("conventional_prefixes") or []
     for sub in subjects:
@@ -232,6 +321,8 @@ def evaluate_push(
     files = [f.replace("\\", "/") for f in (files or [])]
     subjects = list(subjects or [])
 
+    dotenv_loaded = _load_dotenv_files(cfg)
+    secret_ok, secret_keys = _secret_intent(cfg)
     intent = _intent_present(cfg, subjects)
     auto_save = _is_auto_save(subjects, cfg)
     remote_ok = _remote_ok(remote_url or "", cfg)
@@ -266,7 +357,10 @@ def evaluate_push(
             files=files,
             commit_subjects=subjects,
             platform_ok=platform_ok,
-            advice="Set FUSION_PUSH_INTENT=1 for wanted push; never commit live inventory/secrets.",
+            advice="Set FUSION_PUSH_INTENT=1 or load operator secrets (.env) for wanted push; never commit live inventory.",
+            secret_intent=secret_ok,
+            secret_keys_present=secret_keys,
+            dotenv_loaded=dotenv_loaded,
         )
 
     if deny_hits:
@@ -287,6 +381,9 @@ def evaluate_push(
             commit_subjects=subjects,
             platform_ok=platform_ok,
             advice="Remove deny_globs matches from the push set.",
+            secret_intent=secret_ok,
+            secret_keys_present=secret_keys,
+            dotenv_loaded=dotenv_loaded,
         )
 
     if soft_hits and not intent:
@@ -306,8 +403,17 @@ def evaluate_push(
             files=files,
             commit_subjects=subjects,
             platform_ok=platform_ok,
-            advice="Set FUSION_PUSH_INTENT=1 if this binary push is wanted.",
+            advice="Load operator secrets or set FUSION_PUSH_INTENT=1 if this binary push is wanted.",
+            secret_intent=secret_ok,
+            secret_keys_present=secret_keys,
+            dotenv_loaded=dotenv_loaded,
         )
+
+    _sec = dict(
+        secret_intent=secret_ok,
+        secret_keys_present=secret_keys,
+        dotenv_loaded=dotenv_loaded,
+    )
 
     branch_rules = (cfg.get("branches") or {}).get(branch) or (cfg.get("branches") or {}).get("*") or {}
     if force and branch_rules.get("block_force", True):
@@ -326,7 +432,8 @@ def evaluate_push(
                 files=files,
                 commit_subjects=subjects,
                 platform_ok=platform_ok,
-                advice="Refusing force-push. Set FUSION_PUSH_INTENT=1 only if truly wanted.",
+                advice="Refusing force-push. Use operator secrets or FUSION_PUSH_INTENT only if truly wanted.",
+                **_sec,
             )
 
     if branch_rules.get("require_identity_remote", True) and not remote_ok:
@@ -345,6 +452,7 @@ def evaluate_push(
             commit_subjects=subjects,
             platform_ok=platform_ok,
             advice="Push only to known remote github.com/95guknow/fusion-hero-os",
+            **_sec,
         )
 
     if not platform_ok:
@@ -364,10 +472,11 @@ def evaluate_push(
                 files=files,
                 commit_subjects=subjects,
                 platform_ok=False,
-                advice="Align VERSION to 10.0.0 or set FUSION_PUSH_INTENT=1 for intentional version drift push.",
+                advice="Align VERSION to 10.0.0 or unlock with operator secrets / FUSION_PUSH_INTENT.",
+                **_sec,
             )
 
-    # auto-save only commits → unwanted on main unless intent
+    # auto-save only commits → unwanted on main unless intent (incl. secrets)
     auto_need = bool((cfg.get("auto_save") or {}).get("require_intent_for_push", True))
     if auto_save and auto_need and not intent:
         return PushDecision(
@@ -385,10 +494,11 @@ def evaluate_push(
             commit_subjects=subjects,
             platform_ok=platform_ok,
             advice=(
-                "Wanted: $env:FUSION_PUSH_INTENT='1'; git push "
-                "OR commit with conventional prefix (feat:/fix:/docs:) "
-                "OR message marker [push-ok]."
+                "Wanted via secrets: ensure .env has GITHUB_TOKEN / FUSION_PUSH_SECRET / API keys "
+                "then: python scripts/wanted_push_via_secrets.py "
+                "OR FUSION_PUSH_INTENT=1 OR feat:/[push-ok] commit."
             ),
+            **_sec,
         )
 
     # empty push
@@ -405,17 +515,18 @@ def evaluate_push(
             remote=remote,
             platform_ok=platform_ok,
             advice="",
+            **_sec,
         )
 
     # wanted path
+    why = "Wanted push allowed"
+    if secret_ok:
+        why = "Wanted push allowed via operator secrets (names only; values never logged)"
+    elif intent:
+        why = "Wanted push allowed (intent/conventional; known remote; no hard deny)"
     return PushDecision(
         allow=True,
-        reason=(
-            "Wanted push allowed (intent or conventional commit; known remote; "
-            "layers classified; no hard deny)"
-            if intent or not auto_save
-            else "Allowed"
-        ),
+        reason=why,
         wanted=True,
         unwanted=False,
         intent=intent,
@@ -430,6 +541,7 @@ def evaluate_push(
         commit_subjects=subjects,
         platform_ok=platform_ok,
         advice="",
+        **_sec,
     )
 
 

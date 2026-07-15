@@ -33,18 +33,25 @@ python scripts/install_push_guard_hooks.py
 ## Wanted push examples
 
 ```powershell
-# A) intent env
+# A) via operator secrets (.env loaded automatically — values never logged)
+#    any of: FUSION_PUSH_SECRET, GITHUB_TOKEN, GROQ_API_KEY, OPENROUTER_API_KEY, …
+python scripts/wanted_push_via_secrets.py
+python scripts/wanted_push_via_secrets.py --dry   # evaluate only
+
+# B) intent env
 $env:FUSION_PUSH_INTENT = "1"
 git push origin main
 
-# B) conventional commit (not pure auto-save)
+# C) conventional commit (not pure auto-save)
 git commit -m "feat: add dual timeline training"
 git push origin main
 
-# C) marker
+# D) marker
 git commit -m "docs: update mesh [push-ok]"
 git push origin main
 ```
+
+Secrets unlock **wanted** identity only. They do **not** allow pushing `.env` / keys (hard denylist).
 
 ## Unwanted (blocked)
 

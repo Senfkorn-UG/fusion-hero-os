@@ -84,3 +84,18 @@ def test_status():
     st = status()
     assert st.get("ok") is True
     assert "L0_foundation" in (st.get("layers") or []) or st.get("layers")
+
+
+def test_wanted_via_secret_env(monkeypatch):
+    monkeypatch.delenv("FUSION_PUSH_INTENT", raising=False)
+    monkeypatch.setenv("GROQ_API_KEY", "test-not-a-real-key-but-nonempty")
+    d = evaluate_push(
+        remote="origin",
+        branch="main",
+        remote_url="https://github.com/95guknow/fusion-hero-os.git",
+        files=["docs/mesh/README.md"],
+        subjects=["auto-save [x] main - M docs"],
+    )
+    assert d.allow is True
+    assert d.secret_intent is True
+    assert "GROQ_API_KEY" in d.secret_keys_present
