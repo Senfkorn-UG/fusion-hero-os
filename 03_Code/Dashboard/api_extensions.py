@@ -206,9 +206,24 @@ async def api_mod_validate(payload: ValidatePayload):
 
 @router.get("/api/grok/status")
 async def api_grok_status():
-    from core.local_llama import get_local_llama, default_model_pool
     from core.claude_science import status as science_status
-    llama = get_local_llama().status()
+
+    llama = {"active": False, "error": "unavailable"}
+    model_pool = []
+    try:
+        from core.local_llama import get_local_llama, default_model_pool
+
+        try:
+            llama = get_local_llama().status()
+        except Exception as exc:  # noqa: BLE001
+            llama = {"active": False, "error": str(exc)[:200]}
+        try:
+            model_pool = default_model_pool()
+        except Exception as exc:  # noqa: BLE001
+            model_pool = {"error": str(exc)[:120]}
+    except Exception as exc:  # noqa: BLE001
+        llama = {"active": False, "error": f"import: {exc}"[:200]}
+
     interconnect = {}
     try:
         import sys
@@ -219,7 +234,7 @@ async def api_grok_status():
             sys.path.insert(0, str(root))
         from fusion_hero_os.core.grok_interconnect import get_graph
 
-        interconnect = await asyncio.to_thread(get_graph, True)
+        interconnect = await asyncio.to_thread(get_graph, False)
     except Exception as exc:  # noqa: BLE001
         interconnect = {"error": str(exc)}
     try:
@@ -233,7 +248,7 @@ async def api_grok_status():
         "skill": "fusion-hero-os",
         "llama_local": llama,
         "claude_science": science_status(),
-        "default_model_pool": default_model_pool(),
+        "default_model_pool": model_pool,
         "grok_bridge": bridge_st,
         "interconnect": {
             "health_score": interconnect.get("health_score"),
