@@ -1,0 +1,63 @@
+# Fusion DNS stack — Clearnet + Tailscale MagicDNS + Tor (.onion / DNSPort)
+# Policy: pseudo_inhouse_only · freemium=false · operator-local
+# Geltung: Spezifikation (local resolver) · Tor = optional privacy organ
+
+version: "1.0"
+platform_version: "10.0.0"
+principle: >
+  One DNS plane that understands (1) Tailscale MagicDNS, (2) clearnet
+  resolvers, and (3) Tor protocol for .onion via Tor DNSPort/SOCKS.
+  Not a crime tool — privacy + mesh + onion service reachability.
+
+tailscale:
+  magicdns_suffix: tail391adb.ts.net
+  accept_dns: true
+  # health fix: explicit clearnet resolvers when override is off
+  note: MagicDNS for *.ts.net; system upstream for the rest
+
+clearnet_upstream:
+  # privacy-friendly, DNSSEC-capable
+  - 9.9.9.9          # Quad9
+  - 149.112.112.112  # Quad9 secondary
+  - 1.1.1.1          # Cloudflare
+  doh_optional:
+    - https://dns.quad9.net/dns-query
+    - https://cloudflare-dns.com/dns-query
+
+tor:
+  enabled: true
+  # system tor (not Tor Browser UI) — operator data dir under ~/.fusion/tor
+  socks_host: 127.0.0.1
+  socks_port: 9050
+  dns_host: 127.0.0.1
+  dns_port: 5354          # Tor DNSPort (onion + tor-routed A/AAAA)
+  control_port: 9051
+  automap_hosts_on_resolve: true
+  # .onion answers map into 10.192.0.0/10 when AutomapHostsOnResolve=1
+
+local_proxy:
+  # Fusion dual-stack DNS (Python)
+  listen_host: 127.0.0.1
+  listen_port: 5353
+  # rules order:
+  #  1) *.onion / onion-mapped → Tor DNSPort
+  #  2) *.ts.net / MagicDNS search → Tailscale / system
+  #  3) else → clearnet_upstream
+
+windows:
+  # optional: point a NIC DNS to local proxy (needs elevation)
+  prefer_set_interface_dns: false
+  interfaces_hint:
+    - WLAN
+    - Tailscale
+  fallback_if_no_admin: "use 127.0.0.1:5353 as explicit stub or browser SOCKS"
+
+routing_table:
+  - match: "*.onion"
+    via: tor_dnsport
+  - match: "*.ts.net"
+    via: system_or_tailscale
+  - match: "*.tail391adb.ts.net"
+    via: system_or_tailscale
+  - match: "*"
+    via: clearnet_upstream
