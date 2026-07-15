@@ -4,7 +4,7 @@
 
 - Project: project-bbf0e6db-52e1-462b-8e3
 - Zone: europe-west3-a
-- External: 34.40.58.207
+- External: YOUR_GCE_EXTERNAL_IP
 - Tailscale: 100.103.188.54
 - Service: hero-docs-server.py :8088
 - Publish: /home/Admin/fusion-hero-core/docs/publish/v10

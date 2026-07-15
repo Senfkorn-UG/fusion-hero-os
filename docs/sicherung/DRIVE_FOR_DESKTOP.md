@@ -1,7 +1,7 @@
 # Google Drive for Desktop
 
 **DriveFS running:** True
-**Exe:** `C:\Program Files\Google\Drive File Stream\128.0.0.0\GoogleDriveFS.exe`
+**Exe:** `C:\Program Files\Google\Drive File Stream\<version>\GoogleDriveFS.exe`
 **My Drive paths:** (noch nicht gemountet — anmelden)
 **Cloud folder:** `C:\Users\Admin\Documents\Fusion_Hero_OS_Sicherung`
 **Local mirror:** `C:\Users\Admin\.fusion\sicherung\drive_mirror\latest_snapshot`

@@ -39,11 +39,11 @@ cost_limits:
 
 # ---------------------------------------------------------------------------
 # Poly-mesh peers (Tailscale humans + nodes)
-# Third human joins via invite; until then only operator stephan95g.
+# Third human joins via invite; until then only operator.
 # ---------------------------------------------------------------------------
 poly_mesh_peers:
   operator:
-    login: stephan95g@googlemail.com
+    login: operator@example.com
     role: owner_operator
     nodes: [desktop-kpki9e4, fusion-mesh-exit, redmi-note-13-pro-5g]
   peer_second:

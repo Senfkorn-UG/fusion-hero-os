@@ -16,6 +16,13 @@ allow_literals:
   - "user@example.com"
   - "you@example.com"
   - "admin@example.com"
+  - "operator@example.com"
+  - "operator-alt@example.com"
+  # Public recursive DNS resolvers (not personal infrastructure).
+  - "9.9.9.9"
+  - "149.112.112.112"
+  - "ipv4_address:9.9.9.9"
+  - "ipv4_address:149.112.112.112"
   # Documentation-reserved / neutral hostnames + placeholders used after scrub.
   - "device.example.ts.net"
   - "mainframe-host.example.ts.net"

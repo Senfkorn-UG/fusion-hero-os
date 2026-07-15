@@ -41,14 +41,14 @@ profiles:
     kind: shell
     role: comaedchen_nummer_2
   chrome_personal:
-    label: "Chrome Default — Google account organ (stephan95g / 5TB One)"
+    label: "Chrome Default — Google account organ (operator / 5TB One)"
     kind: chrome
     role: google_account_organ
     exe: "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe"
     user_data_dir: "%LOCALAPPDATA%\\Google\\Chrome\\User Data"
     profile_directory: "Default"
   chrome_work:
-    label: "Chrome Profile 1 — stephan95v@gmail.com"
+    label: "Chrome Profile 1 — operator-alt@example.com"
     kind: chrome
     role: google_account_organ_alt
     exe: "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe"
