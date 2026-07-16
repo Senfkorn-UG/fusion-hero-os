@@ -1413,6 +1413,12 @@ except Exception as _bp_err:
 try:
     from api_plane_routes import router as _plane_router
     app.include_router(_plane_router)
+    try:
+        from mesh_ops_routes import router as _mesh_ops_router
+        app.include_router(_mesh_ops_router)
+    except Exception as _mesh_ops_exc:  # noqa: BLE001
+        import logging as _log
+        _log.getLogger("fusion.dashboard").warning("mesh_ops_routes not loaded: %s", _mesh_ops_exc)
 except Exception as _plane_err:
     print(f"[API] API plane routes note: {_plane_err}")
 

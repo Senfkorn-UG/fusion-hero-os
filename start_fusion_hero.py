@@ -10,6 +10,8 @@ Usage:
     python start_fusion_hero.py
     python start_fusion_hero.py --bridge-only
     python start_fusion_hero.py --with-dashboard
+    python start_fusion_hero.py --with-mcp
+    python start_fusion_hero.py --with-dashboard --with-mcp
     python start_fusion_hero.py --list-versions
 """
 
@@ -183,6 +185,59 @@ def start_dashboard(manager: ProcessManager) -> Optional[subprocess.Popen]:
         return None
 
 
+def start_mcp_server(manager: ProcessManager) -> Optional[subprocess.Popen]:
+    """Opt-in MCP stdio server (Layer-0 tools). Runs as background process.
+
+    Clients attach via stdio; for agent wiring use:
+      python -m fusion_hero_os.mcp.fhero_mcp_server
+    """
+    logger.info("Starting Fusion Hero MCP server (stdio JSON-RPC)...")
+    env = os.environ.copy()
+    env["PYTHONPATH"] = str(PROJECT_ROOT) + (
+        os.pathsep + env["PYTHONPATH"] if env.get("PYTHONPATH") else ""
+    )
+    try:
+        # MCP is stdio — keep stdin open; log stdout/err to pipes for diagnostics
+        proc = subprocess.Popen(
+            [sys.executable, "-m", "fusion_hero_os.mcp.fhero_mcp_server"],
+            cwd=PROJECT_ROOT,
+            env=env,
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+        )
+        manager.add(proc)
+        time.sleep(0.4)
+        if proc.poll() is not None:
+            err = ""
+            try:
+                err = (proc.stderr.read() or "")[:300] if proc.stderr else ""
+            except Exception:
+                pass
+            logger.warning("MCP server exited early (exit=%s) %s", proc.returncode, err)
+            return None
+        logger.info("MCP server active (PID: %s) — tools/list via stdio", proc.pid)
+        return proc
+    except Exception as e:
+        logger.error("Failed to start MCP server: %s", e)
+        return None
+
+
+def run_mainframe_laden_boot() -> dict:
+    """P1: non-fatal package registry auto-load at launch."""
+    try:
+        from fusion_hero_os.modules.mainframe_laden import load_all
+
+        report = load_all(include_code_registry=False)
+        loaded = report.get("package_loaded", 0)
+        logger.info("mainframe_laden: package_loaded=%s ok=%s", loaded, report.get("ok"))
+        return report
+    except Exception as exc:  # noqa: BLE001
+        logger.warning("mainframe_laden boot skipped: %s", exc)
+        return {"ok": False, "error": str(exc)}
+
+
 def run_connector_health() -> dict:
     """Run safe, read-only health probes for all external connectors.
 
@@ -227,6 +282,16 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Fusion Hero OS Unified Launcher v8")
     parser.add_argument("--bridge-only", action="store_true")
     parser.add_argument("--with-dashboard", action="store_true")
+    parser.add_argument(
+        "--with-mcp",
+        action="store_true",
+        help="Start fusion_hero_os MCP server (stdio JSON-RPC, opt-in)",
+    )
+    parser.add_argument(
+        "--mainframe-laden",
+        action="store_true",
+        help="Run package registry load_all at boot (P1 wiring)",
+    )
     parser.add_argument("--list-versions", action="store_true")
     parser.add_argument("--connectors-health", action="store_true",
                         help="Run safe read-only health probes for all connectors and exit")
@@ -259,6 +324,12 @@ def main() -> None:
         logger.critical("Bridge server failed to start.")
         manager.shutdown_all()
         sys.exit(1)
+
+    if args.mainframe_laden or args.with_dashboard:
+        run_mainframe_laden_boot()
+
+    if args.with_mcp:
+        start_mcp_server(manager)
 
     if args.with_dashboard:
         start_dashboard(manager)
