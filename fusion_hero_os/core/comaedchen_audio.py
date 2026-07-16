@@ -100,6 +100,10 @@ def _ensure_audiorelay() -> Dict[str, Any]:
     if st["running"]:
         return {"ok": True, "already": True, "processes": st["processes"]}
     candidates = [
+        Path(r"C:\Program Files (x86)\AudioRelay\AudioRelay.exe"),
+        Path(os.environ.get("ProgramFiles(x86)", r"C:\Program Files (x86)"))
+        / "AudioRelay"
+        / "AudioRelay.exe",
         Path(os.environ.get("LOCALAPPDATA", "")) / "Programs" / "AudioRelay" / "AudioRelay.exe",
         Path(os.environ.get("LOCALAPPDATA", "")) / "AudioRelay" / "AudioRelay.exe",
         Path(r"C:\Program Files\AudioRelay\AudioRelay.exe"),
@@ -248,13 +252,19 @@ def activate(
 
     report["steps"]["comet"] = _ensure_comet()
     if mode == "phone":
+        # Full auto repair (start + default device + port) when available
+        fix_ps1 = ROOT / "workstation" / "fix-headset-relay.ps1"
+        if fix_ps1.is_file() and route_audio:
+            report["steps"]["fix_headset_relay"] = _ps(
+                f'& "{fix_ps1}"',
+                timeout=90,
+            )
         report["steps"]["audiorelay"] = _ensure_audiorelay()
         if route_audio:
-            # Playback → phone headset path
+            # Playback → phone headset path (SVV); fix script already prefers this
             report["steps"]["route_speakers"] = _set_default_endpoint(
                 "Virtual Speakers for AudioRelay"
             )
-            # Capture: leave system default mic unless Virtual Mic preferred
             report["steps"]["route_mic_note"] = {
                 "ok": True,
                 "note": "Optional: set input to 'Virtual Mic for AudioRelay' if phone mic is uplink",

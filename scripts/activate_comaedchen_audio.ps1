@@ -14,18 +14,24 @@ $Python = if (Test-Path "C:\Users\Admin\venv\Scripts\python.exe") {
 Write-Host "=== Comädchen Audio Channel ===" -ForegroundColor Magenta
 Write-Host "Mode: $Mode" -ForegroundColor Cyan
 
-# 1) AudioRelay health (informational)
-$check = Join-Path $Repo "workstation\check-audio-relay.ps1"
-if (Test-Path $check) {
-    Write-Host "`n[1] AudioRelay status" -ForegroundColor Yellow
-    & powershell -NoProfile -ExecutionPolicy Bypass -File $check
+# 1) FULL AUTO headset relay repair (no operator action)
+$fix = Join-Path $Repo "workstation\fix-headset-relay.ps1"
+if ((Test-Path $fix) -and -not $NoRoute -and $Mode -ne "local") {
+    Write-Host "`n[1] Fix headset relay (auto)" -ForegroundColor Yellow
+    & powershell -NoProfile -ExecutionPolicy Bypass -File $fix
+} else {
+    $check = Join-Path $Repo "workstation\check-audio-relay.ps1"
+    if (Test-Path $check) {
+        Write-Host "`n[1] AudioRelay status" -ForegroundColor Yellow
+        & powershell -NoProfile -ExecutionPolicy Bypass -File $check
+    }
 }
 
-# 2) Phone path: force route if requested
-if ($Mode -eq "phone") {
+# 2) Phone path: force route if requested (delegates to fix script)
+if ($Mode -eq "phone" -and -not $NoRoute) {
     Write-Host "`n[2] Route audio to phone (AudioRelay)" -ForegroundColor Yellow
     $route = Join-Path $Repo "workstation\route-audio-to-phone.ps1"
-    if ((Test-Path $route) -and -not $NoRoute) {
+    if (Test-Path $route) {
         & powershell -NoProfile -ExecutionPolicy Bypass -File $route
     }
 }
