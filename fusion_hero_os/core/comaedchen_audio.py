@@ -252,17 +252,32 @@ def activate(
     }
 
     report["steps"]["comet"] = _ensure_comet()
-    if mode == "phone":
-        # Full auto repair (start + default device + port) when available
-        fix_ps1 = ROOT / "workstation" / "fix-headset-relay.ps1"
-        if fix_ps1.is_file() and route_audio:
-            report["steps"]["fix_headset_relay"] = _ps(
-                f'& "{fix_ps1}"',
-                timeout=90,
-            )
-        report["steps"]["audiorelay"] = _ensure_audiorelay()
+    # Multi-layer headset: map mode -> clear ACTIVE level (other layers stay armed)
+    try:
+        from fusion_hero_os.core.headset_layers import set_active, banner
+
+        layer = "L3_comaedchen" if mode == "phone" else "L1_local"
         if route_audio:
-            # Playback → phone headset path (SVV); fix script already prefers this
+            report["steps"]["headset_layer"] = set_active(layer, apply_route=True)
+        else:
+            report["steps"]["headset_layer"] = set_active(layer, apply_route=False)
+        report["headset_active_level"] = layer
+        report["headset_banner"] = banner()
+    except Exception as exc:  # noqa: BLE001
+        report["steps"]["headset_layer"] = {"ok": False, "error": str(exc)[:200]}
+        report["headset_banner"] = ""
+
+    if mode == "phone":
+        # Full auto repair if layer apply did not already
+        if route_audio and not (report["steps"].get("headset_layer") or {}).get("ok"):
+            fix_ps1 = ROOT / "workstation" / "fix-headset-relay.ps1"
+            if fix_ps1.is_file():
+                report["steps"]["fix_headset_relay"] = _ps(
+                    f'& "{fix_ps1}"',
+                    timeout=90,
+                )
+        report["steps"]["audiorelay"] = _ensure_audiorelay()
+        if route_audio and "route_speakers" not in (report["steps"].get("headset_layer") or {}).get("apply", {}):
             report["steps"]["route_speakers"] = _set_default_endpoint(
                 "Virtual Speakers for AudioRelay"
             )
@@ -274,14 +289,14 @@ def activate(
         report["steps"]["audiorelay"] = {
             "ok": True,
             "skipped": True,
-            "reason": "local mode — PC speakers/mic",
+            "reason": "local mode — PC speakers/mic (L1_local active)",
         }
         if route_audio:
-            # Prefer Realtek / default host speakers; do not force AudioRelay
             report["steps"]["route_speakers"] = {
                 "ok": True,
                 "mode": "local",
-                "note": "Using Windows default (non-AudioRelay) for PC conversation",
+                "layer": "L1_local",
+                "note": "Using Windows host speakers; phone relay not default",
             }
 
     if open_surface:

@@ -179,6 +179,8 @@ async def hyperraum_root() -> Dict[str, Any]:
         "endpoints": {
             "status": "/api/hyperraum/status",
             "operator": "/api/hyperraum/operator",
+            "headset": "/api/hyperraum/headset",
+            "headset_active": "POST /api/hyperraum/headset/active",
             "classify": "/api/planes/classify?path=/api/grok/interconnect",
         },
         "related_legacy": {
@@ -243,6 +245,20 @@ async def hyperraum_status() -> Dict[str, Any]:
     except Exception as exc:  # noqa: BLE001
         out["organs"]["gke"] = {"ok": False, "error": str(exc)[:120]}
 
+    # headset multi-layer (active level always explicit)
+    try:
+        from fusion_hero_os.core.headset_layers import status as hs_status
+
+        hs = hs_status(apply_probe=False)
+        out["organs"]["headset"] = {
+            "active": hs.get("active"),
+            "active_label": hs.get("active_label"),
+            "banner_one_line": hs.get("banner_one_line"),
+            "enabled": hs.get("enabled"),
+        }
+    except Exception as exc:  # noqa: BLE001
+        out["organs"]["headset"] = {"ok": False, "error": str(exc)[:120]}
+
     return out
 
 
@@ -261,6 +277,46 @@ async def hyperraum_operator() -> Dict[str, Any]:
             "operator": public_operator_view(),
             "membrane": extract_status().get("membrane"),
             "rule": extract_status().get("rule"),
+        }
+    except Exception as exc:  # noqa: BLE001
+        return {"plane": "hyperraum", "ok": False, "error": str(exc)[:200]}
+
+
+@router.get("/api/hyperraum/headset")
+async def hyperraum_headset() -> Dict[str, Any]:
+    """Multi-layer headset status — active level is always explicit."""
+    try:
+        from fusion_hero_os.core.headset_layers import status as hs_status
+
+        st = await asyncio.to_thread(lambda: hs_status(apply_probe=True))
+        return {
+            "plane": "hyperraum",
+            "ok": True,
+            "headset": st,
+            "active_level": st.get("active"),
+            "banner_one_line": st.get("banner_one_line"),
+        }
+    except Exception as exc:  # noqa: BLE001
+        return {"plane": "hyperraum", "ok": False, "error": str(exc)[:200]}
+
+
+@router.post("/api/hyperraum/headset/active")
+async def hyperraum_headset_set_active(
+    level: str = Query(..., description="L1_local|L2_phone|L3_comaedchen|L4_hyperraum or alias"),
+    apply_route: bool = Query(True),
+) -> Dict[str, Any]:
+    """Switch ACTIVE headset layer (multi-layer may stay armed)."""
+    try:
+        from fusion_hero_os.core.headset_layers import set_active
+
+        st = await asyncio.to_thread(set_active, level, apply_route=apply_route)
+        return {
+            "plane": "hyperraum",
+            "ok": bool(st.get("ok", True)),
+            "active_level": st.get("active"),
+            "banner_one_line": st.get("banner_one_line"),
+            "banner": st.get("banner"),
+            "headset": st,
         }
     except Exception as exc:  # noqa: BLE001
         return {"plane": "hyperraum", "ok": False, "error": str(exc)[:200]}

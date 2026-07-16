@@ -56,6 +56,28 @@ curl http://127.0.0.1:8000/api/v1/business
 curl http://127.0.0.1:8000/api/hyperraum/status
 ```
 
+## Headset multi-layer (Hyperraum organ)
+
+Multi-layer headset is **allowed**; exactly **one** level is **ACTIVE** (loud banner).
+
+| Level | Label | Route |
+|-------|--------|--------|
+| L1_local | LOCAL PC | host speakers |
+| L2_phone | PHONE RELAY | AudioRelay headset |
+| L3_comaedchen | COMAEDCHEN | phone + Comet voice |
+| L4_hyperraum | HYPERRAUM | phone + control membrane |
+
+```powershell
+python -m fusion_hero_os.core.headset_layers --status
+python -m fusion_hero_os.core.headset_layers --stack          # arm all
+python -m fusion_hero_os.core.headset_layers --active L2      # ACTIVE = phone
+python -m fusion_hero_os.core.headset_layers --active L3      # ACTIVE = Comaedchen
+powershell -File workstation\headset-layer.ps1 -Active L2
+# HTTP: GET /api/hyperraum/headset  POST /api/hyperraum/headset/active?level=L2
+```
+
+State: `~/.fusion/headset_layers.json` · Module: `fusion_hero_os.core.headset_layers`
+
 ## Roadmap (nicht alles jetzt)
 
 | Stufe | Inhalt |
