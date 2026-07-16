@@ -1,0 +1,63 @@
+# Public MasterSeed presentation vs private local code
+# Policy: public display UNIQUE; private code GPG+QUBO obfuscated; split by module/function
+
+version: "1.0"
+platform_version: "10.0.0"
+policy: pseudo_inhouse_only
+freemium: false
+
+principle: >
+  Public MasterSeeds are unambiguous in presentation (unique display ID + fingerprint).
+  Private implementation material is never shown publicly: stored locally, separated
+  by module and function, QUBO-permuted, then GPG-encrypted.
+
+public:
+  # What may appear in UI / docs / releases
+  fields:
+    - display_id          # unique short human form
+    - public_fingerprint  # full hex fingerprint of public view
+    - platform_version
+    - criticality_target_display  # rounded / labeled only
+    - integrity_ok        # boolean only
+  format: "MS-PUB-v{major}-{short8}-{check4}"
+  # short8 = crockford of first 5 bytes of public fingerprint
+  never_publish:
+    - raw genesis private material beyond public frozen fields
+    - gpg ciphertext
+    - qubo permutation keys
+    - local vault paths with private shards
+
+private:
+  root: ~/.fusion/masterseed/private
+  public_mirror: ~/.fusion/masterseed/public/display.json
+  layout: modules/{module_id}/functions/{function_id}.shard
+  obfuscation:
+    - qubo_permute   # QUBO-derived byte permutation (local key)
+    - gpg_encrypt    # GPG symmetric or recipient encrypt
+  gpg:
+    mode: symmetric   # default: --symmetric (passphrase from env FUSION_MASTERSEED_GPG_PASSPHRASE)
+    # or recipient: set FUSION_MASTERSEED_GPG_RECIPIENT
+    cipher: AES256
+  qubo:
+    n: 16             # permutation block size related
+    steps: 200
+    seed_from: public_fingerprint
+
+modules_split:
+  # known module/function separation for local vault
+  - module: core.orchestrator
+    functions: [MasterSeed.state_hash, MasterSeed.verify_integrity, bootstrap]
+  - module: core.masterseed_sync
+    functions: [mutual_sync, sync_evolutions, identity_preservation_score]
+  - module: core.cec
+    functions: [step, coherence]
+  - module: engine.mainframe
+    functions: [simulated_annealing, parallel_anneal]
+  - module: core.pseudo_inhouse
+    functions: [complete, create]
+
+anti_patterns:
+  - publishing_private_shards
+  - single_monolithic_private_blob_without_module_split
+  - freemium_public_secret_leak
+  - display_id_collision_without_checksum

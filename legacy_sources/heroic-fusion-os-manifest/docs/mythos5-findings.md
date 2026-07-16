@@ -54,7 +54,7 @@ Anfragen an **Claude Opus 4.8** umleiten:
 Weitere öffentlich genannte Punkte:
 
 - Safeguards greifen „in weniger als 5 % der Sessions" (Durchschnitt).
-- Externes Bug-Bounty über 1.000+ Stunden ohne „universellen Contributor" (Stand Launch).
+- Externes Bug-Bounty über 1.000+ Stunden ohne „universellen Jailbreak" (Stand Launch).
 - **30-Tage-Datenaufbewahrung** für Mythos-class-Modelle, um neuartige Angriffe
   zu erkennen.
 - Mythos 5 = genau diese Safeguards in bestimmten Bereichen entfernt, deshalb
@@ -101,7 +101,7 @@ Kurze, gut belegte Chronologie um Export-Kontrollen und Wiederfreigabe:
 Weitere öffentlich genannte Punkte zur Wiederfreigabe:
 
 - Anthropic argumentierte, auch schwächere Modelle könnten ähnliche
-  Schwachstellen-Identifikation leisten – was die Schwere des Contributors relativiere.
+  Schwachstellen-Identifikation leisten – was die Schwere des Jailbreaks relativiere.
 - Ein verbesserter Safety-Klassifikator blockiere die gemeldete Umgehung „in
   über 99 % der Fälle".
 - Fable 5 biete „keine solchen einzigartigen offensiven Fähigkeiten" – im

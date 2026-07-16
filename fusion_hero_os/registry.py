@@ -81,6 +81,11 @@ DEFAULT_MODULES: List[ModuleSpec] = [
     ModuleSpec(
         "core.cec", "fusion_hero_os.core.cec", "CoEvolutionaryClosure"),
     ModuleSpec(
+        "core.pure_core_coevolution",
+        "fusion_hero_os.core.pure_core_coevolution",
+        "Pure-Core Langzeit-Coevolution (formale Math + Algorithmen = Core; Rest = fremde Stärken)",
+    ),
+    ModuleSpec(
         "core.rhe", "fusion_hero_os.core.rhe", "RustHybridEmbodiment"),
     ModuleSpec(
         "core.psycholysis_trigger", "fusion_hero_os.core.psycholysis_trigger", "PsycholysisTrigger"),
@@ -95,7 +100,7 @@ DEFAULT_MODULES: List[ModuleSpec] = [
     ModuleSpec(
         "methodology.knowledge", "fusion_hero_os.methodology.knowledge", "Wissensbasis-Zugriff"),
     ModuleSpec(
-        "modules.alte_frau_95g", "fusion_hero_os.modules.alte_frau_95g", "Heroic Core Foundation", stub=True),
+        "modules.builder_profile", "fusion_hero_os.modules.builder_profile", "Heroic Core Foundation", stub=True),
     ModuleSpec(
         "modules.mainframe_laden", "fusion_hero_os.modules.mainframe_laden", "Permanent Auto-Load", stub=True),
     ModuleSpec(

@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-    Diagnose fuer den Bluetooth-Audio-Relay-Link desktop-kpki9e4 <-> phone-node
+    Diagnose fuer den Bluetooth-Audio-Relay-Link mainframe <-> phone-node
     (siehe ascension_os/config/access_policy.json, service "bluetooth-audio-relay").
 
 .DESCRIPTION

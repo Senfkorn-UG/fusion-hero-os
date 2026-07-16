@@ -80,6 +80,16 @@ class MasterSeed:
             and current_state_hash.strip().lower() == self.state_hash()
         )
 
+    def public_display(self, platform_version: str = "10.0.0"):
+        """Eindeutige oeffentliche Darstellung (kein Private-Vault-Material).
+
+        Siehe fusion_hero_os.core.masterseed_public / masterseed_vault:
+        public = unique display_id; private = GPG+QUBO, modul/funktionsweise getrennt.
+        """
+        from fusion_hero_os.core.masterseed_public import public_view
+
+        return public_view(self, platform_version=platform_version)
+
 
 # =====================================================================
 # LAYER 4: PMS EVIDENCE SPINE (Fail-Closed Bruecke zum Rust-Kernel)

@@ -172,7 +172,7 @@ def _build_registry() -> None:
               "Windows Meta-Layer + Cyber Layer")
     _register("supabase", 2, "storage",
               lambda: _load_supabase(),
-              "Supabase Persistenz swmmoxhdzarmoupyssqe")
+              "Supabase Persistenz YOUR_SUPABASE_PROJECT_REF")
     _register("resource_workflow", 1, "performance",
               lambda: _try_import("resource_workflow", "status")(),
               "RAM/CPU-bewusste Worker-Empfehlung für Subagents")

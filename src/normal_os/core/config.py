@@ -224,7 +224,7 @@ class MeshConnectorConfig(BaseModel):
 class TailscaleMeshConfig(BaseModel):
     """Tailscale Mesh Registry & Control"""
     enabled: bool = True
-    mainframe_hostname: str = "desktop-kpki9e4"
+    mainframe_hostname: str = "mainframe"
     mainframe_role: str = "orchestrator"
     mainframe_node_id: str = "mainframe"
     tailnet: str = "example.ts.net"
@@ -243,7 +243,7 @@ class VRConfig(BaseModel):
     generate_script: str = "./vr/generate_missing_assets.py"
     asset_manifest: str = "./vr/asset_manifest.yaml"
     expected_assets: List[str] = Field(default_factory=lambda: [
-        "vr_mister_Contributor_hero_equirectangular.jpg",
+        "vr_builder_hero_equirectangular.jpg",
         "heroic_evolution_fractal.jpg",
     ])
     viewer_path: str = "/vr/viewer"

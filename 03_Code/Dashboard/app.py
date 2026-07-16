@@ -208,7 +208,7 @@ class AutoLoader:
         except Exception:
             pass
 
-        # Supabase (swmmoxhdzarmoupyssqe)
+        # Supabase (YOUR_SUPABASE_PROJECT_REF)
         if supa:
             self.register("supabase", lambda: supa.get_client() or supa.status(probe=True), "storage")
 
@@ -491,6 +491,17 @@ async def startup_event():
     except Exception as _settings_err:
         print(f"[Startup] Settings note: {_settings_err}")
     await _start_supabase_background()
+    try:
+        from mainframe_background import start_mainframe_daemons
+        info = start_mainframe_daemons()
+        if info.get("started"):
+            print(
+                f"[MainframeOps] Daemons aktiv: Kosten alle {info['cost_interval_sec']}s, "
+                f"Repo-Spiegel alle {info['mirror_interval_sec']}s "
+                f"(auto_correct={info.get('mirror_auto_correct')})"
+            )
+    except Exception as exc:
+        print(f"[MainframeOps] Daemon note: {exc}")
     if launcher_fast_boot:
         os.environ["FUSION_AUTO_LOAD"] = "0"
     fast_boot = os.getenv("FUSION_AUTO_LOAD", "1") == "0"
@@ -1334,6 +1345,76 @@ try:
     app.include_router(_arch_router)
 except Exception as _arch_err:
     print(f"[API] Architecture routes note: {_arch_err}")
+
+# === Mainframe Ops (Kostenanalyse + Repo-Spiegelung) ===
+try:
+    from mainframe_ops_routes import router as _ops_router
+    app.include_router(_ops_router)
+except Exception as _ops_err:
+    print(f"[API] Mainframe ops routes note: {_ops_err}")
+
+# === Mainframe Website (Dauer-VR + IDE + hyperlinked worktree) ===
+try:
+    from mainframe_site_routes import router as _site_router
+    app.include_router(_site_router)
+except Exception as _site_err:
+    print(f"[API] Mainframe site routes note: {_site_err}")
+
+# === Grok Interconnect (capture + evolve graph) ===
+try:
+    from grok_interconnect_routes import router as _gix_router
+    app.include_router(_gix_router)
+except Exception as _gix_err:
+    print(f"[API] Grok interconnect routes note: {_gix_err}")
+
+# === Pseudo-Inhouse AI (LLM membranes behind local facade; no freemium SKU) ===
+try:
+    from pseudo_inhouse_routes import router as _pih_router
+    app.include_router(_pih_router)
+except Exception as _pih_err:
+    print(f"[API] Pseudo-inhouse AI routes note: {_pih_err}")
+
+# === Pseudo-Inhouse Creative (image/video/PDF/graphics — local-first, freemium=false) ===
+try:
+    from pseudo_inhouse_creative_routes import router as _pic_router
+    app.include_router(_pic_router)
+except Exception as _pic_err:
+    print(f"[API] Pseudo-inhouse creative routes note: {_pic_err}")
+
+# === Dual-Timeline Auto-Training (real t ∥ imaginary τ) ===
+try:
+    from dual_timeline_routes import router as _dt_router
+    app.include_router(_dt_router)
+except Exception as _dt_err:
+    print(f"[API] Dual-timeline training routes note: {_dt_err}")
+
+# === Multi-model control instances (max accuracy) ===
+try:
+    from control_instances_routes import router as _ctrl_router
+    app.include_router(_ctrl_router)
+except Exception as _ctrl_err:
+    print(f"[API] Control instances routes note: {_ctrl_err}")
+
+# === x402 security stack (audit + sandbox + media) ===
+try:
+    from x402_routes import router as _x402_router
+    app.include_router(_x402_router)
+except Exception as _x402_err:
+    print(f"[API] x402 security routes note: {_x402_err}")
+
+# === Businessplan + Energie/Subunternehmer-Preise ===
+try:
+    from business_plan_routes import router as _bp_router
+    app.include_router(_bp_router)
+except Exception as _bp_err:
+    print(f"[API] Business plan routes note: {_bp_err}")
+
+# === API Planes: Hyperraum (half-private) vs Business (classical product API) ===
+try:
+    from api_plane_routes import router as _plane_router
+    app.include_router(_plane_router)
+except Exception as _plane_err:
+    print(f"[API] API plane routes note: {_plane_err}")
 
 # === Alle Module + fehlende Endpunkte freigeben ===
 try:

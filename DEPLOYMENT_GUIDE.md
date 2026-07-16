@@ -1,6 +1,8 @@
 # Fusion Hero OS - Deployment Guide
 
-> **Stand:** v8.3.0 · 2026-07-11 · Dashboard + VR + Dependency Atlas
+> **Stand:** v10.0.0 · 2026-07-15 · Operativer Kanon + Dashboard + VR + Dependency Atlas  
+> **Plattform-Version:** Root-`VERSION` / Tag `v10.0.0` (siehe `BEST_VERSION.md`)  
+> **Dissertation-as-OS:** Deployed runtime *is* the dissertation in operation; text under `docs/dissertation/` is one expression. See `docs/dissertation/ONTOLOGIE_DISSERTATION_IST_DAS_OS.md`.
 
 ## Quick Start
 

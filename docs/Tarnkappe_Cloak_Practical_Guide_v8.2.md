@@ -9,7 +9,7 @@ Du hast auf dem Handy die letzten 3 Stunden Seiten von tarnkappe.info angeschaut
 - Eigene Musik-Server bauen statt Spotify (Navidrome + Tailscale).
 - Was der Internetanbieter wirklich sieht und wie man das minimiert.
 - DNS-Änderungen für mehr Freiheit.
-- KI-Tests und Contributors zum Ausprobieren von Grenzen.
+- KI-Tests und Jailbreaks zum Ausprobieren von Grenzen.
 
 Diese Dinge bauen wir jetzt einfach in das System ein.
 

@@ -16,7 +16,7 @@ Write-Host "[Disk] C: frei: $freeGb GB" -ForegroundColor $(if ($freeGb -lt 20) {
 
 # Tailscale + Mesh-Peers
 Write-Host "[Tailscale Mesh]" -ForegroundColor Cyan
-$mainframeHost = "desktop-kpki9e4"
+$mainframeHost = "mainframe"
 $rolesScript = Join-Path $FusionRoot "src\normal_os\integration\mesh_roles.py"
 if (Test-Path $rolesScript) {
     try {

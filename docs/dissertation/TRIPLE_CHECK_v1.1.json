@@ -1,0 +1,72 @@
+{
+  "ok": true,
+  "checked_at": "2026-07-15T14:38:57.316535+00:00",
+  "author": "Stephan Hagen Urban",
+  "title_de": "Autopoiesis und Autopolitik des Fusion Hero OS. Eine systemtheoretische, existenzphilosophische und softwarearchitektonische Grundlegung heroischer Eudaimonia",
+  "title_en": "Autopoiesis and Autopolitics of Fusion Hero OS. A systems-theoretic, existential-philosophical and software-architectural foundation of heroic eudaimonia",
+  "field_de": "Autopoietische Autopolitik",
+  "field_en": "Autopoietic Autopolitics",
+  "platform": "Fusion Hero OS v10.0.0",
+  "version_text": "1.1",
+  "file_stem": "Dissertation_Stephan_Hagen_Urban_Autopoiesis_Autopolitik_Fusion_Hero_OS_v1.1",
+  "tag": "dissertation-v1.1",
+  "checks": [
+    {
+      "pass": 1,
+      "name": "author_full",
+      "ok": true,
+      "value": "Stephan Hagen Urban"
+    },
+    {
+      "pass": 1,
+      "name": "title_de_has_autopoiesis_and_autopolitik",
+      "ok": true,
+      "value": "Autopoiesis und Autopolitik des Fusion Hero OS"
+    },
+    {
+      "pass": 1,
+      "name": "title_en_has_autopolitics",
+      "ok": true,
+      "value": "Autopoiesis and Autopolitics of Fusion Hero OS"
+    },
+    {
+      "pass": 2,
+      "name": "no_language_mix",
+      "ok": true,
+      "value": "clean"
+    },
+    {
+      "pass": 2,
+      "name": "field_names",
+      "ok": true,
+      "value": {
+        "de": "Autopoietische Autopolitik",
+        "en": "Autopoietic Autopolitics"
+      }
+    },
+    {
+      "pass": 2,
+      "name": "platform_version",
+      "ok": true,
+      "value": "Fusion Hero OS v10.0.0"
+    },
+    {
+      "pass": 3,
+      "name": "file_stem",
+      "ok": true,
+      "value": "Dissertation_Stephan_Hagen_Urban_Autopoiesis_Autopolitik_Fusion_Hero_OS_v1.1"
+    },
+    {
+      "pass": 3,
+      "name": "design_v33",
+      "ok": true,
+      "value": "Kompendium der Heroik V3.3"
+    },
+    {
+      "pass": 3,
+      "name": "masterseed_public_display",
+      "ok": true,
+      "value": "MS-PUB-v10-THC01H70-BB5A"
+    }
+  ]
+}

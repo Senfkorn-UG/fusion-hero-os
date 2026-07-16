@@ -36,7 +36,7 @@ erreichen — gleiches WLAN reicht; unterwegs am einfachsten via
 Tailscale-IP des PCs als Server-Adresse nutzen). Windows-Firewall: Port 8787
 fuer eingehende Verbindungen freigeben (privates Netz).
 
-Test vom Handy-Browser: `http://<pc-ip>:8787/journal/health`
+Test vom Handy-Browser: `http://<pc-tailscale-dns>:8787/journal/health`
 
 ## 2. Handy-Optionen (aufsteigend nach Aufwand)
 
@@ -82,7 +82,31 @@ oder manuell), eine Zeile pro Notiz:
 Dann auf dem PC: `python -m journal.pipeline` — arbeitet alles ein und
 verschiebt die Dateien nach `inbox/processed/`.
 
-## 3. Ergebnis
+## 3. Mesh-Dateien, Archive & Filedrops (Tailscale + Google Drive)
+
+Nach `./workstation/mesh_phone_mirror.sh` auf dem Mainframe:
+
+| Was | URL (MagicDNS) |
+|-----|----------------|
+| Portal | `http://mainframe.example.ts.net:8088/mesh/files/phone` |
+| Manifest | `.../mesh/files/manifest` |
+| Filedrop POST | `.../mesh/files/drop` + Header `X-Mesh-Drop-Token` |
+
+**Android Filedrop (Termux/curl):**
+
+```bash
+curl -X POST "http://mainframe.example.ts.net:8088/mesh/files/drop" \
+  -H "Content-Type: application/json" \
+  -H "X-Mesh-Drop-Token: $JOURNAL_TOKEN" \
+  -d '{"filename":"notiz.txt","content_b64":"'$(echo -n "Hallo Mesh" | base64)'","source":"android"}'
+```
+
+**Google Drive:** Kopien unter `FusionHero_Offload/mesh/mirror`, `mesh/archives` und
+`mesh/filedrops` — in der Drive-App auf dem Handy sichtbar.
+
+**Offline Journal-Drop:** JSONL nach `journal/inbox/` — wird beim Sync automatisch eingearbeitet.
+
+## 4. Ergebnis
 
 Pro Tag entsteht `journal/tagebuch/YYYY-MM-DD.md` mit Themen-Abschnitten
 (Gesundheit, Projekt & Code, Ideen & Erkenntnisse, …) und Zeitstempel +

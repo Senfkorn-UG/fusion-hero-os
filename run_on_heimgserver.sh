@@ -5,7 +5,7 @@
 
 set -e
 
-SERVER="host.example.ts.net"
+SERVER="mainframe-host.example.ts.net"
 USER="admin"          # <-- Hier deinen SSH-User auf dem Heimserver eintragen
 REMOTE_DIR="/home/workdir/artifacts/tools/tailscale"
 

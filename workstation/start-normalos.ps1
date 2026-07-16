@@ -27,8 +27,8 @@ function Start-BackgroundJob([string]$Name, [string]$Dir, [string]$Command) {
 Write-Host "=== normalOS Workstation Start ===" -ForegroundColor Cyan
 
 if (-not $BridgeOnly -and -not $DocsOnly) {
-    Write-Host "[Fusion Hero OS] start_all.ps1 ..." -ForegroundColor Cyan
-    & (Join-Path $FusionRoot "start_all.ps1")
+    Write-Host "[Fusion Hero OS] start_core.ps1 (ohne GUI) ..." -ForegroundColor Cyan
+    & (Join-Path $FusionRoot "workstation\start_core.ps1")
 }
 
 if (-not $FusionOnly -and -not $DocsOnly) {

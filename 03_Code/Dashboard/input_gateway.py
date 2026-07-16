@@ -17,10 +17,16 @@ ALLOWED_KINDS = frozenset({
     "agent", "peer_review", "foundation", "profile", "meta_layer", "pipeline",
     "layer4", "hyperthreading", "orchestrate", "resources", "autoload",
     "substrate_tune", "windows_substrate", "hero_guide",
+    # re-routed interconnect kinds
+    "interconnect", "dauer_vr", "ide", "worktree", "ops", "mesh", "publish",
+    "race_guard", "architecture", "dashboard",
 })
 
 # Nur diese Intents bleiben synchron (Pulse/Status — keine Worker-Last)
-SYNC_INTENTS = frozenset({"health", "signal_network"})
+SYNC_INTENTS = frozenset({
+    "health", "signal_network", "interconnect", "mainframe", "dauer_vr",
+    "ide", "worktree", "ops", "mesh",
+})
 
 
 @dataclass
@@ -57,7 +63,25 @@ def validate_input(kind: str, message: str = "", code: str = "", payload: Option
 
 def classify_message(message: str) -> List[str]:
     bridge = get_grok_bridge()
-    return bridge._detect_intents(message)
+    intents = bridge._detect_intents(message)
+    # normalize aliases via route table
+    try:
+        from fusion_hero_os.core.grok_route_table import resolve
+
+        normalized = []
+        for i in intents:
+            rt = resolve(i)
+            normalized.append(rt.intent if rt else i)
+        # preserve order, unique
+        seen = set()
+        out = []
+        for i in normalized:
+            if i not in seen:
+                seen.add(i)
+                out.append(i)
+        return out or intents
+    except Exception:  # noqa: BLE001
+        return intents
 
 
 def accept_input(

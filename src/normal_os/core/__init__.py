@@ -1,4 +1,4 @@
-﻿"""
+"""
 Core module exports - lazy imports to avoid dependency issues.
 """
 

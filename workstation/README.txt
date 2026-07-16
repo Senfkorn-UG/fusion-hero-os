@@ -33,11 +33,11 @@ DESKTOP-STRUKTUR (nach Restore 2026-07-09)
   Desktop\Apps\ (Shortcuts) | Desktop\normalOS\ (Start/Status)
 
 TAILSCALE MESH
-  Mainframe (= dieser Windows-PC): host.example.ts.net
+  Mainframe (= dieser Windows-PC): device.example.ts.net
   Rolle: orchestrator (kanonisch, siehe mesh_roles.yaml)
-  Phone:   host.example.ts.net (Android)
-  Legacy-Linux: host.example.ts.net (archiviert/offline)
-  Vom Handy: http://host.example.ts.net:8000 / :8088 / :8765
+  Phone:   mobile-node.example.ts.net (Android)
+  Legacy-Linux: mainframe-host.example.ts.net (archiviert/offline)
+  Vom Handy: http://device.example.ts.net:8000 / :8088 / :8765
 
 VERALTETE ORDNER (nicht mehr nutzen)
   fusion-hero-os-llm-push, hero-os, fusion-hero-core

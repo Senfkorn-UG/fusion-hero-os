@@ -15,7 +15,7 @@
 > Pseudocode in Dokumentationsdateien ist explizit als "Heroic Pseudocode (Diskussionsebene)" gekennzeichnet.
 >
 > **GitHub Pipeline Policy (v2-beta Phase, ab sofort verankert):**
-> - Nur ich (95guknow) committe direkt von lokalem PC auf `main` (für Releases/Hotfixes nach interner Review).
+> - Nur ich (Stephan/95guknow) committe direkt von lokalem PC auf `main` (für Releases/Hotfixes nach interner Review).
 > - Alle anderen Commits/Änderungen/Erkenntnisse aus Chats/Theorie/Praxis: **ausschließlich** auf Branch `v2-beta`.
 > - Nach Fertigstellung auf `v2-beta`: Pull Request nach `main` erstellen.
 > - Dies + alle prior Erkenntnisse (unified ALTE_Frau_95g Heroic Core v7.4+ MasterSeed anchoring, Layer 0-6, Eudaimonismus-Theorie / Rekonstruktivistischer Eudaimonismus, Sisyphos-Zyklus, Psycholyse-Breakthrough, fusion-hero-os Hyperthreading Response Style, QUBO, PeerReview 5/6 Dimensions, etc.) sind hiermit auf GitHub (v2-beta) und hier (local artifacts) dauerhaft verankert und gepusht.

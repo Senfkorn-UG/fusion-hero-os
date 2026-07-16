@@ -1,8 +1,11 @@
-# Fusion Hero OS v8 — Unified Integration Graph
-# Alles mit allem verknüpft: Mesh ↔ LLM ↔ Tailscale ↔ Orchestration
+# Fusion Hero OS v10 — Unified Integration Graph
+# Mesh <-> LLM <-> Tailscale <-> Orchestration
+# Public placeholders only (example.ts.net). Live topology is operator-local.
 
-version: "1.0"
-principle: "Jedes Segment ist eigenständig UND über den Integration Hub mit allem anderen verbunden"
+version: "1.1"
+platform_version: "10.0.0"
+principle: "Jedes Segment ist eigenstaendig UND ueber den Integration Hub verbunden"
+tailnet: example.ts.net
 
 layers:
   network:
@@ -29,6 +32,7 @@ layers:
     module: normal_os.workstation
     config: workstation/paths.json
     health: workstation/status.ps1
+    remote: true
   normalos:
     module: normal_os.bridge.grok_pc_bridge
     port: 8765
@@ -38,50 +42,126 @@ layers:
     config: 03_VR_Assets/
     health: /api/vr/status
     viewer: /vr/viewer
+  kernel:
+    module: kernel/bridge
+    config: kernel/
+    health: ipc-bridge (TCP 19753 / AF_UNIX)
+    launcher: start_fusion_hero.py
+  ascension:
+    module: ascension_os
+    config: ascension_os/
+    health: /layers/status
+    track: roadmap-v9x
+  tarnkappe:
+    module: docs-only
+    config:
+      - docs/Tarnkappe_Cloak_Practical_Guide_v8.2.md
+      - docs/Tails_as_Ultimate_Tarnkappe_v8.2.md
+    health: /layers/status
+  android:
+    module: heroic-extension-node
+    config: docs/android/Heroic-Extension-Node-NonRoot-v1.0.md
+    health: /layers/status
+    node: phone
+    decision: non-root
+  file_share:
+    module: mesh_file_share
+    config: src/normal_os/integration/mesh_roles.yaml
+    health: /mesh/files/status
+    phone_portal: /mesh/files/phone
+  knowledge:
+    module: fusion_hero_os.core.layer_registry
+    config:
+      - proof_registry.yaml
+      - hero-guide_geltungsstand.json
+      - docs/v8/erkenntnisse_index.yaml
+    health: /erkenntnisse/status
+  business:
+    module: mainframe_energy_pricing_daemon
+    config: docs/business/senfkorn_businessplan.yaml
+    health: /api/mainframe/energy
 
-# Physische Knoten — Windows-Desktop = Mainframe (orchestrator)
+# Physical nodes — Windows desktop = mainframe (canonical)
 nodes:
   mainframe:
     role: orchestrator
-    hostname: desktop-kpki9e4
-    hosts: [fusion-dashboard, hero-docs-server, normalos-bridge, tailscale-control, fusion-integration-hub, grok-cli, mcp-bridges]
-    magicdns: host.example.ts.net
+    hostname: mainframe
     platform: windows
     canonical: true
+    aliases: [desktop]
+    hosts:
+      - fusion-dashboard
+      - hero-docs-server
+      - normalos-bridge
+      - tailscale-control
+      - fusion-integration-hub
+      - grok-cli
+      - mcp-bridges
+    magicdns: mainframe.example.ts.net
   desktop:
     role: grok-workstation
-    alias_of: mainframe
+    same_as: mainframe
+    hostname: mainframe
+    platform: windows
     hosts: [grok-cli, mcp-bridges, llm-frameworks]
-    magicdns: host.example.ts.net
+    magicdns: mainframe.example.ts.net
   phone:
     role: mobile-client
-    hosts: [tailscale-app]
-    magicdns: host.example.ts.net
-    reachable_from: [mainframe, desktop]
+    hostname: phone
+    hostname_aliases: [phone-node]
+    platform: android
+    hosts: [tailscale-app, mesh-files-portal]
+    magicdns: phone.example.ts.net
+    reachable_from: [desktop, mainframe]
     can_reach:
-      - desktop-kpki9e4:8000
-      - desktop-kpki9e4:8088
-      - desktop-kpki9e4:8765
-    login_hint: "Gleicher Login wie Desktop (Google user@example.com), nicht GitHub"
-
+      - mainframe:8088/mesh/files/phone
+      - mainframe:8088/mesh/files/manifest
+      - mainframe:8088/fusion/status
+      - mainframe:8000
+      - mainframe:8765
+    login_hint: "Same Google account as desktop (not GitHub)"
+    file_mirror:
+      portal: /mesh/files/phone
+      manifest: /mesh/files/manifest
+      sync: /mesh/files/sync
+  mesh-exit:
+    role: mesh-exit
+    hostname: mesh-exit
+    platform: linux
+    magicdns: mesh-exit.example.ts.net
   legacy-linux:
     role: archived
-    hostname: mainframe
-    magicdns: host.example.ts.net
+    hostname: legacy-mainframe
     platform: linux
     status: offline
+    magicdns: legacy-mainframe.example.ts.net
 
-# Knoten-zu-Knoten Verknüpfungen (Mesh-Topologie)
 node_edges:
-  - {from: phone, to: mainframe, relation: tailscale_peer, services: [8000, 8088, 8765]}
-  - {from: phone, to: desktop, relation: alias, same_as: mainframe}
-  - {from: mainframe, to: phone, relation: notify, via: tailscale-funnel}
-  - {from: mainframe, to: normalos_bridge, relation: local, port: 8765}
-  - {from: mainframe, to: fusion_dashboard, relation: local, port: 8000}
+  - {from: phone, to: desktop, relation: tailscale_peer, services: [8000, 8088, 8765]}
+  - {from: phone, to: surface, relation: file_mirror, via: /mesh/files/phone}
+  - {from: desktop, to: mainframe, relation: same_host}
+  - {from: desktop, to: phone, relation: notify, via: tailscale-funnel}
+  - {from: desktop, to: normalos_bridge, relation: local, port: 8765}
+  - {from: desktop, to: fusion_dashboard, relation: local, port: 8000}
+  - {from: mainframe, to: mesh-exit, relation: tailscale_peer, optional: true}
 
-# Workstation-Pfade (normalOS)
+layer_edges:
+  - {from: kernel, to: intelligence, relation: ipc_bridge, via: kernel/bridge}
+  - {from: ascension, to: orchestration, relation: quad_core_bridge, via: fusion_hero_os.core.heroic_core_orchestrator}
+  - {from: ascension, to: intelligence, relation: ascension_llm_path}
+  - {from: tarnkappe, to: network, relation: privacy_hardening}
+  - {from: android, to: network, relation: tailscale_peer, node: phone}
+  - {from: android, to: surface, relation: client, services: [8000, 8088]}
+  - {from: knowledge, to: kernel, relation: validates}
+  - {from: knowledge, to: ascension, relation: validates}
+  - {from: knowledge, to: intelligence, relation: validates}
+  - {from: knowledge, to: connectors, relation: validates}
+  - {from: knowledge, to: vr, relation: validates}
+  - {from: business, to: orchestration, relation: energy_pricing}
+
 workstation:
-  root: C:\Users\Admin\normalOS\workstation
+  # Override locally via workstation/paths.json — do not commit private absolute paths
+  root: ${FUSION_WORKSTATION_ROOT:-./workstation}
   paths_config: workstation/paths.json
   desktop_structure:
     - normalOS
@@ -96,7 +176,6 @@ workstation:
     - System-Tools
     - Sonstiges
 
-# Verknüpfungen: MCP-Konnektor → bevorzugtes LLM-Framework
 connector_llm_links:
   github: grok
   gmail: claude
@@ -109,14 +188,29 @@ connector_llm_links:
   hyperframes: gemini
   tasks: claude
 
-# TRINITY-Orchestrierung (Rollen → LLM)
 trinity_roles:
   thinker: claude
   worker: gpt
   verifier: grok
 
-# API-Endpunkte (hero-docs-server)
+# Dissertation-as-OS: endpoints are surfaces of the living dissertation
+# (see docs/dissertation/ONTOLOGIE_DISSERTATION_IST_DAS_OS.md)
+ontology: dissertation_as_os
+
 endpoints:
+  # Control plane (Grok interconnect — canonical re-routes)
+  control_plane: /mainframe/grok
+  interconnect: /api/grok/interconnect
+  grok_route: /api/grok/route
+  grok_routes_table: /api/grok/routes
+  grok_chat: /api/grok/chat
+  grok_status: /api/grok/status
+  mainframe_hub: /mainframe
+  dauer_vr: /mainframe/vr
+  ide: /mainframe/ide
+  worktree: /mainframe/worktree
+  ops: /mainframe/ops
+  # Legacy surfaces (still live; prefer control_plane)
   unified: /fusion/status
   graph: /fusion/graph
   mesh: /mesh/status
@@ -128,4 +222,13 @@ endpoints:
   masterseed: /status
   vr_status: /api/vr/status
   vr_viewer: /vr/viewer
+  vr_persistent: /mainframe/vr
   highest_layer_vr: /highest-layer-vr
+  layers: /layers/status
+  erkenntnisse: /erkenntnisse/status
+  mesh_files: /mesh/files/status
+  mesh_files_phone: /mesh/files/phone
+  mesh_files_manifest: /mesh/files/manifest
+  energy: /api/mainframe/energy
+  dashboard: /
+  architecture: /architecture

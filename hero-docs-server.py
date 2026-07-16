@@ -31,8 +31,11 @@ import datetime
 import subprocess
 import json
 import sys
+import base64
+import mimetypes
+from pathlib import Path
 
-PORT = 8088
+PORT = int(os.environ.get("FUSION_HERO_DOCS_PORT", "8088"))
 DIRECTORY = "."
 
 # Mesh registry import (same directory)
@@ -51,6 +54,37 @@ except ImportError:
     get_llm_segment = None
     get_llm_status_all = None
 
+try:
+    from fractal_mainframe_mesh import get_fractal_status, load_fractal_manifest, FRACTAL_ROOT, REPLICAS_DIR
+except ImportError:
+    get_fractal_status = None
+    load_fractal_manifest = None
+    FRACTAL_ROOT = None
+    REPLICAS_DIR = None
+
+try:
+    from mesh_file_share import (
+        get_mirror_status,
+        load_file_manifest,
+        render_phone_portal_html,
+        resolve_safe_path,
+        resolve_gdrive_path,
+        receive_filedrop,
+        sync_phone_mirror,
+        sync_mesh_all,
+        _check_drop_token,
+    )
+except ImportError:
+    get_mirror_status = None
+    load_file_manifest = None
+    render_phone_portal_html = None
+    resolve_safe_path = None
+    resolve_gdrive_path = None
+    receive_filedrop = None
+    sync_phone_mirror = None
+    sync_mesh_all = None
+    _check_drop_token = None
+
 
 class HeroicDocsHandler(http.server.SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
@@ -63,6 +97,20 @@ class HeroicDocsHandler(http.server.SimpleHTTPRequestHandler):
             self.send_tailscale_status()
         elif self.path == "/mesh/status" or self.path == "/mesh":
             self.send_mesh_status()
+        elif self.path == "/mesh/fractal/status":
+            self.send_fractal_status()
+        elif self.path == "/mesh/files/status":
+            self.send_files_status()
+        elif self.path == "/mesh/files/manifest":
+            self.send_files_manifest()
+        elif self.path == "/mesh/files/phone":
+            self.send_files_phone_portal()
+        elif self.path.startswith("/mesh/files/get/"):
+            self.send_files_get()
+        elif self.path.startswith("/mesh/files/gdrive/"):
+            self.send_files_gdrive()
+        elif self.path == "/mesh/exit-nodes":
+            self.send_exit_nodes_status()
         elif self.path.startswith("/mesh/") and self.path.endswith("/status"):
             connector_id = self.path.split("/")[2]
             self.send_connector_status(connector_id)
@@ -79,8 +127,26 @@ class HeroicDocsHandler(http.server.SimpleHTTPRequestHandler):
             self.send_layers_status()
         elif self.path == "/erkenntnisse/status" or self.path == "/erkenntnisse":
             self.send_erkenntnisse_status()
+        elif self.path in ("/mainframe/ops/status", "/mainframe/cost/status"):
+            self.send_mainframe_ops_status()
+        elif self.path in ("/mainframe/energy/status", "/mainframe/energy/pricing"):
+            self.send_mainframe_energy_status()
+        elif self.path == "/businessplan":
+            self.send_businessplan_status()
         else:
             super().do_GET()
+
+    def do_POST(self):
+        if self.path == "/mesh/fractal/replica":
+            self.receive_fractal_replica()
+        elif self.path == "/mesh/files/sync":
+            self.sync_files_mirror()
+        elif self.path == "/mesh/sync/run":
+            self.run_mesh_sync()
+        elif self.path == "/mesh/files/drop":
+            self.receive_files_drop()
+        else:
+            self.send_error(404, "Not Found")
 
     def _send_json(self, data: dict, status_code: int = 200):
         self.send_response(status_code)
@@ -230,6 +296,207 @@ class HeroicDocsHandler(http.server.SimpleHTTPRequestHandler):
         except Exception as e:
             self._send_json({"error": str(e)}, 503)
 
+    def send_fractal_status(self):
+        if get_fractal_status is None:
+            self._send_json({"error": "fractal_mainframe_mesh.py not available"}, 503)
+            return
+        self._send_json(get_fractal_status())
+
+    def send_files_status(self):
+        if get_mirror_status is None:
+            self._send_json({"error": "mesh_file_share.py not available"}, 503)
+            return
+        self._send_json(get_mirror_status())
+
+    def send_files_manifest(self):
+        if load_file_manifest is None:
+            self._send_json({"error": "mesh_file_share.py not available"}, 503)
+            return
+        self._send_json(load_file_manifest())
+
+    def send_files_phone_portal(self):
+        if render_phone_portal_html is None or load_file_manifest is None:
+            self.send_error(503, "mesh_file_share not available")
+            return
+        manifest = load_file_manifest()
+        html = render_phone_portal_html(manifest)
+        self.send_response(200)
+        self.send_header("Content-type", "text/html; charset=utf-8")
+        self.end_headers()
+        self.wfile.write(html.encode("utf-8"))
+
+    def send_files_get(self):
+        if resolve_safe_path is None:
+            self.send_error(503, "mesh_file_share not available")
+            return
+        parts = self.path.split("/")
+        # /mesh/files/get/{zone}/{relpath...}
+        if len(parts) < 6:
+            self.send_error(400, "bad path")
+            return
+        zone_id = parts[4]
+        relpath = "/".join(parts[5:])
+        from urllib.parse import unquote
+        relpath = unquote(relpath)
+        target, err = resolve_safe_path(zone_id, relpath)
+        if err or target is None:
+            self.send_error(404, err or "not found")
+            return
+        try:
+            data = target.read_bytes()
+            mime = "application/octet-stream"
+            import mimetypes
+            guessed = mimetypes.guess_type(target.name)[0]
+            if guessed:
+                mime = guessed
+            self.send_response(200)
+            self.send_header("Content-type", mime)
+            self.send_header("Content-Length", str(len(data)))
+            self.send_header("Cache-Control", "public, max-age=300")
+            self.end_headers()
+            self.wfile.write(data)
+        except Exception as e:
+            self.send_error(500, str(e))
+
+    def sync_files_mirror(self):
+        if sync_phone_mirror is None:
+            self._send_json({"error": "mesh_file_share.py not available"}, 503)
+            return
+        self._send_json(sync_phone_mirror())
+
+    def run_mesh_sync(self):
+        if sync_mesh_all is None:
+            self._send_json({"error": "mesh_file_share.py not available"}, 503)
+            return
+        self._send_json(sync_mesh_all())
+
+    def receive_files_drop(self):
+        if receive_filedrop is None:
+            self._send_json({"error": "mesh_file_share.py not available"}, 503)
+            return
+        token = self.headers.get("X-Mesh-Drop-Token") or self.headers.get("X-Journal-Token")
+        ctype = self.headers.get("Content-Type", "")
+        try:
+            length = int(self.headers.get("Content-Length", 0))
+            raw = self.rfile.read(length) if length else b""
+            if "application/json" in ctype:
+                payload = json.loads(raw.decode("utf-8") or "{}")
+                fname = payload.get("filename", "drop.bin")
+                if payload.get("content_b64"):
+                    data = base64.b64decode(payload["content_b64"])
+                else:
+                    data = payload.get("content", "").encode("utf-8")
+                source = payload.get("source", "android")
+            else:
+                fname = self.headers.get("X-Filename", "drop.bin")
+                data = raw
+                source = self.headers.get("X-Source", "android")
+            self._send_json(receive_filedrop(fname, data, source=source, token=token))
+        except Exception as e:
+            self._send_json({"ok": False, "error": str(e)}, 400)
+
+    def send_files_gdrive(self):
+        if resolve_gdrive_path is None:
+            self.send_error(503, "mesh_file_share not available")
+            return
+        rel = self.path.split("/mesh/files/gdrive/", 1)[-1]
+        from urllib.parse import unquote
+        rel = unquote(rel)
+        target, err = resolve_gdrive_path(rel)
+        if err or target is None:
+            self.send_error(404, err or "not found")
+            return
+        try:
+            data = target.read_bytes()
+            mime = mimetypes.guess_type(target.name)[0] or "application/octet-stream"
+            self.send_response(200)
+            self.send_header("Content-type", mime)
+            self.send_header("Content-Length", str(len(data)))
+            self.end_headers()
+            self.wfile.write(data)
+        except Exception as e:
+            self.send_error(500, str(e))
+
+    def send_exit_nodes_status(self):
+        if get_fractal_status is None:
+            self._send_json({"error": "fractal_mainframe_mesh.py not available"}, 503)
+            return
+        status = get_fractal_status()
+        self._send_json(status.get("virtual_exit", status))
+
+    def receive_fractal_replica(self):
+        """Accept fractal manifest replica from a mesh peer."""
+        if REPLICAS_DIR is None:
+            self._send_json({"error": "fractal_mainframe_mesh.py not available"}, 503)
+            return
+        try:
+            length = int(self.headers.get("Content-Length", 0))
+            raw = self.rfile.read(length).decode("utf-8") if length else "{}"
+            payload = json.loads(raw)
+            manifest = payload.get("manifest") or payload
+            REPLICAS_DIR.mkdir(parents=True, exist_ok=True)
+            tree_hash = manifest.get("tree_hash", "unknown")
+            peer = self.headers.get("X-Mesh-Peer", "unknown")
+            out_path = REPLICAS_DIR / f"{peer}_{tree_hash[:12]}.json"
+            out_path.write_text(json.dumps(manifest, indent=2, ensure_ascii=False), encoding="utf-8")
+            self._send_json({
+                "ok": True,
+                "stored": str(out_path),
+                "tree_hash": tree_hash,
+                "peer": peer,
+            })
+        except Exception as e:
+            self._send_json({"ok": False, "error": str(e)}, 400)
+
+    def send_mainframe_ops_status(self):
+        """Kostenanalyse + Energie + Repo-Spiegelung (JSON für Mesh-Peers)."""
+        try:
+            code_root = Path(__file__).resolve().parent / "03_Code"
+            if str(code_root) not in sys.path:
+                sys.path.insert(0, str(code_root))
+            from core.mainframe_cost_analysis_daemon import get_cost_daemon
+            from core.mainframe_energy_pricing_daemon import get_energy_daemon
+            from core.repo_mirror_correction_daemon import get_mirror_daemon
+            energy = get_energy_daemon().status()
+            self._send_json({
+                "cost": get_cost_daemon().status(),
+                "energy": energy,
+                "subcontractor_pricing": energy.get("subcontractor_pricing"),
+                "repo_mirror": get_mirror_daemon().status(),
+                "mode": "mirror_and_os_daemon_correction",
+            })
+        except Exception as e:
+            self._send_json({"ok": False, "error": str(e)}, 500)
+
+    def send_mainframe_energy_status(self):
+        """Energie/FEU + Subunternehmer-Token-Preise."""
+        try:
+            code_root = Path(__file__).resolve().parent / "03_Code"
+            if str(code_root) not in sys.path:
+                sys.path.insert(0, str(code_root))
+            from core.mainframe_energy_pricing_daemon import get_energy_daemon
+            status = get_energy_daemon().status()
+            if self.path.endswith("/pricing"):
+                self._send_json({
+                    "subcontractor_pricing": status.get("subcontractor_pricing"),
+                    "snapshot": status.get("snapshot"),
+                })
+            else:
+                self._send_json(status)
+        except Exception as e:
+            self._send_json({"ok": False, "error": str(e)}, 500)
+
+    def send_businessplan_status(self):
+        """Businessplan-Anker (YAML-Inhalt maschinenlesbar)."""
+        try:
+            code_root = Path(__file__).resolve().parent / "03_Code"
+            if str(code_root) not in sys.path:
+                sys.path.insert(0, str(code_root))
+            from core.mainframe_energy_pricing_daemon import load_businessplan
+            self._send_json(load_businessplan())
+        except Exception as e:
+            self._send_json({"ok": False, "error": str(e)}, 500)
+
 
 def get_lan_ip():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -261,6 +528,7 @@ if __name__ == "__main__":
         print(f"           Fusion Unified:     http://{lan_ip}:{PORT}/fusion/status")
         print(f"           Fusion Graph:       http://{lan_ip}:{PORT}/fusion/graph")
         print(f"           Mesh Overview:      http://{lan_ip}:{PORT}/mesh/status")
+        print(f"           Mesh Files (Phone): http://{lan_ip}:{PORT}/mesh/files/phone")
         print(f"           LLM Overview:       http://{lan_ip}:{PORT}/llm/status")
         print("\n[INFO]     Alles verknüpft via fusion_integration_hub.py + fusion_unified.yaml")
         print("[INFO]     Drücke STRG+C zum Beenden.")

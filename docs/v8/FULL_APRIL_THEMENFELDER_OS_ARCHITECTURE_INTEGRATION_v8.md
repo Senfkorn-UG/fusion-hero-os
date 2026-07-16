@@ -75,4 +75,4 @@
 
 **Vermerk**: Alle April-Themenfelder sind jetzt systemweit (Layer 0–6, alle Module) in das Fusion Hero OS v8 integriert. Dies ist die verbindliche Referenz für alle zukünftigen Entwicklungen, Commits und Interaktionen. Quellenqualität und High-Intellect Protocol bleiben nicht verhandelbar.
 
-*Generated & committed via Grok v8/main Fusion Hero OS Protocol | Alle April-Themenfelder systemweit | User: 95guknow / der Maintainer95g | 2026-07-05*
+*Generated & committed via Grok v8/main Fusion Hero OS Protocol | Alle April-Themenfelder systemweit | User: 95guknow / fusionheroos | 2026-07-05*

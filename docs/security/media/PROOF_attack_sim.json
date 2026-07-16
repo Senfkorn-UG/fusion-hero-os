@@ -1,0 +1,127 @@
+{
+  "ok": true,
+  "simulation": true,
+  "sandbox_only": true,
+  "external_targets": false,
+  "exploit_payloads": false,
+  "real_chain_transfer": false,
+  "attack_name": "SANDBOX_DORMANT_WALLET_0_01CT_REPLAY_REDIRECT",
+  "public_damage": {
+    "amount_ct": 0.01,
+    "amount_eur": 0.0001,
+    "label": "0.01 ct (Eurocent)",
+    "wallet_class": "langzeit_inaktiv",
+    "dormant_days": 900
+  },
+  "attack_succeeded_on_insecure_mock": true,
+  "attack_blocked_on_secure_mock": true,
+  "impact": {
+    "unpaid_or_unbound_grants": 2,
+    "payee_attacker": "0xATTACKER_WALLET_SANDBOX_ONLY",
+    "payee_victim_dormant": "0xD0RMA17_INACTIVE_LAB_WALLET_NOT_REAL",
+    "cache_control": "public, max-age=3600",
+    "replay_worked": true,
+    "economic": {
+      "unit_label": "0.01 ct (Eurocent)",
+      "unit_eur": 0.0001,
+      "grants": 2,
+      "notional_value_eur": 0.0002,
+      "notional_value_label": "0.02 ct (notional)",
+      "source_wallet": "langzeit_inaktiv_lab",
+      "real_chain_transfer": false,
+      "public_damage_cap_statement": "Öffentlicher Schadensrahmen dieser Simulation: 0,01 ct bezogen auf eine langzeit-inaktive Lab-Wallet (Mock). Keine On-Chain-Bewegung."
+    },
+    "dormant_wallet": {
+      "label": "LANGZEIT_INAKTIVE_LAB_WALLET",
+      "address_mock": "0xD0RMA17_INACTIVE_LAB_WALLET_NOT_REAL",
+      "last_activity_days_ago": 900,
+      "last_activity_iso": "2024-01-27T17:53:10.075051+00:00",
+      "balance_eur_equivalent_mock": 0.0001,
+      "note": "Mock identity only — no private key, no chain broadcast"
+    }
+  },
+  "timeline": [
+    {
+      "step": 0,
+      "action": "SELECT_DORMANT_WALLET",
+      "wallet": {
+        "label": "LANGZEIT_INAKTIVE_LAB_WALLET",
+        "address_mock": "0xD0RMA17_INACTIVE_LAB_WALLET_NOT_REAL",
+        "last_activity_days_ago": 900,
+        "last_activity_iso": "2024-01-27T17:53:10.075051+00:00",
+        "balance_eur_equivalent_mock": 0.0001,
+        "note": "Mock identity only — no private key, no chain broadcast"
+      },
+      "public_damage": {
+        "amount": "0.01 ct (Eurocent)",
+        "eur": 0.0001,
+        "justification": "Minimal public damage envelope for meaningful lab proof"
+      }
+    },
+    {
+      "step": 1,
+      "action": "GET_resource",
+      "result": "402_challenge",
+      "body": {
+        "status": 402,
+        "PAYMENT-REQUIRED": {
+          "amount": "0.0001",
+          "payee": "0xD0RMA17_INACTIVE_LAB_WALLET_NOT_REAL",
+          "resource": "https://api.example.local/v1/data",
+          "paymentId": "2a1e4514948a9934",
+          "nonce": "4d5ec0456fccb347",
+          "expiresAt": 1784138110.0750515,
+          "amount_label": "0.01 ct (Eurocent)"
+        }
+      }
+    },
+    {
+      "step": 2,
+      "action": "FORGE_AND_REDIRECT_VALUE",
+      "from_dormant_payee": "0xD0RMA17_INACTIVE_LAB_WALLET_NOT_REAL",
+      "to_attacker_payee": "0xATTACKER_WALLET_SANDBOX_ONLY",
+      "amount_label": "0.01 ct (Eurocent)",
+      "eur": 0.0001,
+      "verified": false,
+      "settled": false,
+      "classes": [
+        "A8_amount_binding",
+        "A3_replay_idempotency",
+        "A1_settlement_optimistic",
+        "A2_settlement_preempt"
+      ]
+    },
+    {
+      "step": 3,
+      "action": "GRANT_1_SUCCESS",
+      "result": {
+        "status": 200,
+        "granted": true,
+        "resource": "https://api.example.local/v1/data",
+        "payment_id": "2a1e4514948a9934",
+        "cache_control": "public, max-age=3600"
+      }
+    },
+    {
+      "step": 4,
+      "action": "REPLAY_GRANT_2_SUCCESS",
+      "result": {
+        "status": 200,
+        "granted": true,
+        "resource": "https://api.example.local/v1/data",
+        "payment_id": "2a1e4514948a9934",
+        "cache_control": "public, max-age=3600"
+      }
+    }
+  ],
+  "secure_block_result": {
+    "status": 402,
+    "error": "unverified_payment",
+    "granted": false
+  },
+  "generated_at": "2026-07-15T17:53:10.075051+00:00",
+  "meaningfulness": "Aussagekräftig durch (1) realistische Micropayment-Größe 0,01 ct, (2) langzeit-inaktive Wallet als Wertquelle, (3) durchgängigen Angriffspfad inkl. Replay, (4) Kontrast Secure-Block.",
+  "disclaimer": "Local insecure mock only. Notional 0,01 ct public-damage envelope from a long-inactive lab wallet identity. No private keys, no broadcast, no live x402/facilitator attack.",
+  "geltung": "Spezifikation (sandbox simulation) · Schadenszahl = deklarierter Lab-Rahmen",
+  "sha16": "ab18ecd473a5cd16"
+}

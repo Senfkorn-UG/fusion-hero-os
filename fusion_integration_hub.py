@@ -88,7 +88,7 @@ def _get_vr_status() -> dict:
     root = Path(os.environ.get("FUSION_HERO_ROOT", str(ROOT)))
     vr_root = Path(os.environ.get("FUSION_VR_ASSETS_ROOT", str(root / "03_VR_Assets")))
     expected = [
-        "vr_mister_Contributor_hero_equirectangular.jpg",
+        "vr_builder_hero_equirectangular.jpg",
         "heroic_evolution_fractal.jpg",
     ]
     assets = []
@@ -142,8 +142,14 @@ def _get_workstation() -> dict:
     if not ws:
         return {"configured": False}
     try:
-        with open(ws, encoding="utf-8") as f:
-            return {"configured": True, "paths": json.load(f)}
+        import sys
+
+        ws_dir = ws.parent
+        if str(ws_dir) not in sys.path:
+            sys.path.insert(0, str(ws_dir))
+        from resolve_paths import resolve_paths  # type: ignore[import-not-found]
+
+        return {"configured": True, "paths": resolve_paths(ws_dir), "source": str(ws)}
     except Exception as e:
         return {"configured": False, "error": str(e)}
 
@@ -152,21 +158,37 @@ def _check_phone_visibility(unified: dict, tailscale: dict) -> dict:
     """Warnung wenn Phone in Config aber nicht in Tailscale-Peers."""
     phone_cfg = (unified.get("nodes") or {}).get("phone", {})
     expected = phone_cfg.get("hostname", "phone-node")
+    aliases = [expected.lower()]
+    aliases.extend(a.lower() for a in phone_cfg.get("hostname_aliases", []))
+    aliases.extend(["redmi", "android"])
     peer_list = tailscale.get("peer_list") or []
-    found = any(
-        expected.lower() in (p.get("hostname") or "").lower()
-        or expected.lower() in (p.get("magicdns") or "").lower()
-        for p in peer_list
-    )
+    found_peer = None
+    for p in peer_list:
+        hn = (p.get("hostname") or "").lower()
+        dns = (p.get("magicdns") or "").lower()
+        os_name = (p.get("os") or "").lower()
+        if os_name == "android" or any(a in hn or a in dns for a in aliases):
+            found_peer = p
+            break
+    found = found_peer is not None
     hint = phone_cfg.get("login_hint") or (
         "Handy und PC muessen im gleichen Tailnet sein (gleicher Login: Google, nicht GitHub)"
     )
+    file_mirror = {}
+    try:
+        from mesh_file_share import get_mirror_status
+        file_mirror = get_mirror_status()
+    except Exception as e:
+        file_mirror = {"error": str(e)}
     return {
         "expected_hostname": expected,
+        "resolved_hostname": (found_peer or {}).get("hostname"),
         "visible": found,
+        "online": (found_peer or {}).get("online", False),
         "peer_count": tailscale.get("peers", 0),
         "account_login": tailscale.get("login"),
         "fix_hint": None if found else hint,
+        "file_mirror": file_mirror,
     }
 
 
@@ -186,6 +208,21 @@ def _get_erkenntnisse_status() -> dict:
         return erkenntnisse_summary()
     except Exception as e:
         return {"ok": False, "error": str(e)}
+
+
+def _get_fractal_mesh_status() -> dict:
+    """Fractal mainframe persistence + virtual exit node catalog."""
+    try:
+        from fractal_mainframe_mesh import get_fractal_status
+        status = get_fractal_status()
+        try:
+            from mesh_cloud_backends import cloud_backends_status
+            status["cloud_backends"] = cloud_backends_status()
+        except Exception as exc:
+            status["cloud_backends"] = {"error": str(exc)}
+        return status
+    except Exception as e:
+        return {"ok": False, "error": str(e), "layer": "fractal_mesh"}
 
 
 def _build_graph(unified: dict, mesh: dict, llm: dict) -> dict:
@@ -276,6 +313,7 @@ def get_unified_status() -> dict:
     graph = _build_graph(unified, mesh, llm)
     layer_registry = _get_layer_registry_status()
     erkenntnisse = _get_erkenntnisse_status()
+    fractal_mesh = _get_fractal_mesh_status()
 
     mesh_ok = mesh.get("connectors_registered", 0) > 0 or not mesh.get("error")
     llm_ok = llm.get("any_live", False)
@@ -295,6 +333,7 @@ def get_unified_status() -> dict:
             "vr": vr_status.get("status", "unknown"),
             "layers": f"{layer_registry.get('layers_ok', 0)}/{layer_registry.get('layer_count', 0)}",
             "erkenntnisse": "indexed" if erkenntnisse.get("ok") else "pending",
+            "fractal_mesh": "saved" if fractal_mesh.get("fractal_manifest", {}).get("ok") else "pending",
             "overall": "healthy" if (mesh_ok or llm_ok) else "degraded",
         },
         "vr": vr_status,
@@ -314,6 +353,7 @@ def get_unified_status() -> dict:
         "endpoints": unified.get("endpoints", {}),
         "workstation": workstation,
         "phone_mesh": phone_check,
+        "fractal_mesh": fractal_mesh,
         "graph": graph,
     }
 

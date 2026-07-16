@@ -1,7 +1,7 @@
 # Fusion-Hero-OS Core - v8
 
 """
-ALTE_Frau_95g Heroic Core
+Builder Profile Heroic Core
 
 Enthält die zentralen Core-Module:
 - CoEvolutionaryClosure (CEC)

@@ -1,0 +1,160 @@
+# Fusion Hero OS — Dual API Plane Catalog (v10.0.0+)
+# Clean separation (prospective + additive / BCG):
+#   hyperraum  = half-private operator hyperspace (consent, mesh, identity, dissertation organs)
+#   business   = classical commercial / product API (pricing, health, subcontractor quotes)
+#
+# Runtime classifier: fusion_hero_os.core.api_plane
+# HTTP surfaces:     /api/planes · /api/v1/business/* · /api/hyperraum/*
+
+version: "1.0"
+platform_version: "10.0.0"
+updated: "2026-07-16"
+principle: >
+  One Dashboard process may host both planes, but paths, auth posture, logging
+  and placement must never mix. Hyperraum is operator-local by default;
+  Business is product-facing and must not expose operator vault or consent bodies.
+
+planes:
+  hyperraum:
+    id: hyperraum
+    label: "Halbprivater Hyperraum"
+    privacy: half_private
+    audience: operator
+    default_placement: L1_mainframe
+    auth_posture: operator_local_or_mesh
+    consent: fail_closed_for_personal
+    path_prefixes:
+      - /api/hyperraum
+      - /api/grok
+      - /api/mainframe
+      - /api/autoload
+      - /api/agents
+      - /api/vr
+      - /api/architecture
+      - /api/control
+      - /api/x402
+      - /api/creative/inhouse
+      - /api/ai/inhouse
+      - /mainframe
+    surfaces:
+      - /mainframe
+      - /mainframe/grok
+      - /mainframe/vr
+      - /mainframe/ide
+      - /mainframe/worktree
+      - /mainframe/ops
+    capabilities:
+      - operator_identity_membrane
+      - grok_interconnect
+      - mesh_coordination
+      - ascension_consent
+      - comaedchen_channel
+      - headset_relay
+      - dissertation_as_os
+      - dual_timeline
+      - qubo_research
+      - layer_registry
+    anti_patterns:
+      - expose_operator_vault_on_business_paths
+      - public_masterseed_private_shards
+      - saas_as_source_of_truth
+    notes: >
+      Half-private: not public internet product API. Reachable on L1 and optionally
+      Tailscale mesh. Personal/author data only via operator_identity vault bind.
+
+  business:
+    id: business
+    label: "Klassische Business-API"
+    privacy: product
+    audience: subcontractors_customers_ops
+    default_placement: L1_or_L2_edge
+    auth_posture: api_token_or_public_read
+    consent: n_a_no_personal_bodies
+    path_prefixes:
+      - /api/v1/business
+      - /api/businessplan
+      - /api/health
+      - /api/metrics
+      - /api/gui/status
+    capabilities:
+      - businessplan_read
+      - energy_cost_snapshot
+      - subcontractor_token_pricing
+      - health_light
+      - product_metrics
+      - qubo_product_quote  # future SKU, not research control plane
+    anti_patterns:
+      - leak_hyperraum_session_ids
+      - leak_tailscale_peer_maps
+      - leak_operator_legal_name
+      - require_ascension_consent_for_price_quote
+    notes: >
+      Classical API for Senfkorn UG product surfaces: price lists, energy-backed
+      quotes, light health. No Hyperraum control plane, no Comädchen, no vault.
+
+bridge:
+  # Shared process OK; shared semantics not OK
+  shared_process_allowed: true
+  shared_logging_fields: [request_id, plane, path, status_code]
+  never_share:
+    - operator_identity.author.legal_name
+    - consent_gate_bodies
+    - conversation_archive_bodies
+    - mesh_peer_legal_handles
+  migration:
+    strategy: additive_dual_prefix
+    legacy_paths_remain: true
+    target: >
+      New clients use /api/v1/business/* and /api/hyperraum/*.
+      Legacy /api/* stays until Stage plane-cutover; classifier tags every path.
+
+classification_rules:
+  # First match wins (order matters)
+  - plane: hyperraum
+    match_prefix: /api/hyperraum
+  - plane: business
+    match_prefix: /api/v1/business
+  - plane: business
+    match_prefix: /api/businessplan
+  - plane: business
+    match_prefix: /api/health
+  - plane: business
+    match_prefix: /api/metrics
+  - plane: business
+    match_prefix: /api/gui/status
+  - plane: hyperraum
+    match_prefix: /api/grok
+  - plane: hyperraum
+    match_prefix: /api/mainframe
+  - plane: hyperraum
+    match_prefix: /api/autoload
+  - plane: hyperraum
+    match_prefix: /api/agents
+  - plane: hyperraum
+    match_prefix: /api/vr
+  - plane: hyperraum
+    match_prefix: /api/architecture
+  - plane: hyperraum
+    match_prefix: /api/control
+  - plane: hyperraum
+    match_prefix: /api/x402
+  - plane: hyperraum
+    match_prefix: /api/creative
+  - plane: hyperraum
+    match_prefix: /api/ai
+  - plane: hyperraum
+    match_prefix: /mainframe
+  - plane: hyperraum
+    match_prefix: /api/input
+  - plane: hyperraum
+    match_prefix: /api/jobs
+  - plane: hyperraum
+    match_prefix: /api/modules
+  - plane: hyperraum
+    match_prefix: /api/load-all
+  - plane: business
+    match_prefix: /api/wallet
+  - plane: hyperraum
+    match_prefix: /api/
+  - plane: hyperraum
+    match_prefix: /

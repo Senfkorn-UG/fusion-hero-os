@@ -139,7 +139,7 @@ Operatoren müssen entweder präzise (Operanden + Struktur + Eigenschaften) defi
 
 ### V3.3StructureCoreModule
 
-Gliederungsschema für längere Texte (Manuskripte, Kompendien, Essays):
+Gliederungsschema für längere Texte (Manuskripte, Kompendien, Essays) — **Designvorlage V3.3 ist für Langtext und heroischen Duktus zwingend** (siehe `docs/kompendium/V3.3_DESIGNVORLAGE_VERBINDLICH.md`, Original `legacy_sources/heroic-fusion-os-manifest/Kompendium_der_Heroik_V3.3.pdf`). Additive Docs (v10, Dissertation-as-OS) **dürfen Arbeitsqualität nicht hinter V3.3 zurückfallen**.
 
 ```
 Synthese (Überblick + Kernthesen)
@@ -152,7 +152,7 @@ Synthese (Überblick + Kernthesen)
 Anhang (Quellen, Begriffe, Hilfsmaterial)
 ```
 
-Begleitend: sorgfältig ausbalancierter Duktus, ruhige Satzführung, präzise Begrifflichkeit. Nicht zwingend für kurze Outputs.
+Begleitend: sorgfältig ausbalancierter Duktus, ruhige Satzführung, präzise Begrifflichkeit; Geltung Satz/Bedingt/Modell/Fragment; Register Spezifikation / Heroischer Exkurs / Herleitung aus dem Nichts trennen. Kurze Ops-Notizen dürfen knapp sein, aber die Vorlage **nicht verletzen**.
 
 ### AutomaticArchivingCoreModule & AllesZuEinemZusammenfuehrenCoreModule
 

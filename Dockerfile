@@ -1,32 +1,41 @@
-# Fusion Hero OS - Heroic Core Docker Image
-# Based on Python 3.11 slim for minimal size
-
+# Senfkorn UG — Fusion Hero OS production image (europe-west3)
+# FastAPI dashboard + Numba/NumPy + Qdrant client + energy/cost daemons
 FROM python:3.11-slim
 
-LABEL maintainer="ALTE_Frau_95g Heroic Core"
-LABEL version="v8"
+LABEL org.opencontainers.image.title="Fusion Hero OS"
+LABEL org.opencontainers.image.version="10.0.0"
+LABEL org.opencontainers.image.vendor="Senfkorn UG (haftungsbeschraenkt)"
+LABEL org.opencontainers.image.description="Mainframe dashboard + energy pricing (europe-west3)"
 
-# Set working directory
-WORKDIR /app
-
-# Install system dependencies
+# GCC toolchain for numba/numpy wheels that need compile fallbacks
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    git \
+    build-essential \
+    curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy core modules
-COPY fusion_hero_os/ ./fusion_hero_os/
-COPY pyproject.toml ./
-COPY docs/99_archive/MIGRATION_KONZEPT_v7.12_HardFork.md ./docs/99_archive/MIGRATION_KONZEPT_v7.12_HardFork.md
+WORKDIR /app
 
-# Create non-root user for security
-RUN useradd -m -u 1000 hero && chown -R hero:hero /app
-USER hero
+# Persistent daemon state (audit trail under FUSION_STATE_DIR)
+RUN mkdir -p /root/.fusion-hero-os/mainframe_energy_pricing \
+    && mkdir -p /root/.fusion-hero-os/mainframe_cost_analysis
 
-# Default command: validate core structure
-CMD ["python3", "-c", "\
-import os; \
-print('=== Fusion Hero OS v8 Docker Container ==='); \
-print('fusion_hero_os directory:', 'present' if os.path.exists('fusion_hero_os') else 'MISSING'); \
-print('Migration Concept:', 'present' if os.path.exists('docs/99_archive/MIGRATION_KONZEPT_v7.12_HardFork.md') else 'MISSING'); \
-print('Container ready.'); \""]
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Full repo context (Dashboard imports core via PYTHONPATH=/app/03_Code)
+COPY . .
+
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONPATH=/app/03_Code:/app \
+    FUSION_STATE_DIR=/root/.fusion-hero-os \
+    FUSION_BUSINESSPLAN_PATH=/app/docs/business/senfkorn_businessplan.yaml \
+    FUSION_ENERGY_PRICING_INTERVAL_SEC=60 \
+    FUSION_AUTO_LOAD=0 \
+    FUSION_PROFILE=docker
+
+EXPOSE 8000
+
+# Module path: 03_Code/Dashboard/app.py with PYTHONPATH including 03_Code
+WORKDIR /app/03_Code/Dashboard
+CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000", "--log-level", "info"]

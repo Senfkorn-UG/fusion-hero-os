@@ -1,0 +1,223 @@
+# Control instances — each model forces highest accuracy
+# Policy: pseudo_inhouse_only · freemium=false · multi-model control
+# Gemini + further providers: multi-slots analog (temp=0, verifier JSON)
+
+version: "1.2"
+platform_version: "10.0.0"
+principle: >
+  Independent control instances run on different models. Each instance is forced
+  to maximum accuracy (temperature=0, verifier protocol, structured JSON score).
+  Consensus / disagreement is recorded; no single model is source-of-truth alone.
+  Gemini and all listed providers share the same accuracy-force contract with
+  multi-slot model_override variants (analog pattern).
+
+accuracy_force:
+  temperature: 0.0
+  top_p: 1.0
+  role: verifier
+  require_json_score: true
+  max_tokens: 2048
+  timeout_sec: 120
+
+# dotenv: load operator keys without logging values
+secret_load:
+  enabled: true
+  dotenv_paths:
+    - .env
+    - .env.local
+    - ~/.fusion/secrets/push.env
+
+# Control instances (order = report order). Only live/configured providers run.
+# Multi-slots: same provider + different model_override (Gemini pattern, analog).
+instances:
+  # --- Google Gemini (multi-slot) ---
+  - id: control_gemini
+    provider: gemini
+    label: "Gemini control (default / FUSION_GEMINI_MODEL)"
+    accuracy: max
+    model_env: FUSION_GEMINI_MODEL
+  - id: control_gemini_flash
+    provider: gemini
+    label: "Gemini 2.0 Flash control"
+    accuracy: max
+    model_override: gemini-2.0-flash
+  - id: control_gemini_flash_lite
+    provider: gemini
+    label: "Gemini 2.0 Flash-Lite control"
+    accuracy: max
+    model_override: gemini-2.0-flash-lite
+  - id: control_gemini_15_pro
+    provider: gemini
+    label: "Gemini 1.5 Pro control"
+    accuracy: max
+    model_override: gemini-1.5-pro
+  - id: control_gemini_15_flash
+    provider: gemini
+    label: "Gemini 1.5 Flash control"
+    accuracy: max
+    model_override: gemini-1.5-flash
+  - id: control_gemini_25_flash
+    provider: gemini
+    label: "Gemini 2.5 Flash control"
+    accuracy: max
+    model_override: gemini-2.5-flash
+  - id: control_gemini_25_pro
+    provider: gemini
+    label: "Gemini 2.5 Pro control"
+    accuracy: max
+    model_override: gemini-2.5-pro
+
+  # --- Grok / xAI (multi-slot, analog) ---
+  - id: control_grok
+    provider: grok
+    label: "Grok control (default / FUSION_GROK_MODEL)"
+    accuracy: max
+    model_env: FUSION_GROK_MODEL
+  - id: control_grok_2
+    provider: grok
+    label: "Grok 2 control"
+    accuracy: max
+    model_override: grok-2-latest
+  - id: control_grok_3
+    provider: grok
+    label: "Grok 3 control"
+    accuracy: max
+    model_override: grok-3
+
+  # --- Claude / Anthropic (multi-slot, analog) ---
+  - id: control_claude
+    provider: claude
+    label: "Claude control (default / FUSION_CLAUDE_MODEL)"
+    accuracy: max
+    model_env: FUSION_CLAUDE_MODEL
+  - id: control_claude_sonnet
+    provider: claude
+    label: "Claude 3.5 Sonnet control"
+    accuracy: max
+    model_override: claude-3-5-sonnet-20241022
+  - id: control_claude_haiku
+    provider: claude
+    label: "Claude 3.5 Haiku control"
+    accuracy: max
+    model_override: claude-3-5-haiku-20241022
+  - id: control_claude_opus
+    provider: claude
+    label: "Claude 3 Opus control"
+    accuracy: max
+    model_override: claude-3-opus-20240229
+
+  # --- GPT / OpenAI (multi-slot, analog) ---
+  - id: control_gpt
+    provider: gpt
+    label: "GPT control (default / FUSION_GPT_MODEL)"
+    accuracy: max
+    model_env: FUSION_GPT_MODEL
+  - id: control_gpt_4o
+    provider: gpt
+    label: "GPT-4o control"
+    accuracy: max
+    model_override: gpt-4o
+  - id: control_gpt_4o_mini
+    provider: gpt
+    label: "GPT-4o-mini control"
+    accuracy: max
+    model_override: gpt-4o-mini
+  - id: control_gpt_4_1
+    provider: gpt
+    label: "GPT-4.1 control"
+    accuracy: max
+    model_override: gpt-4.1
+
+  # --- Groq (multi-slot, analog) ---
+  - id: control_groq
+    provider: groq
+    label: "Groq control (default)"
+    accuracy: max
+    model_env: FUSION_GROQ_MODEL
+  - id: control_groq_llama70
+    provider: groq
+    label: "Groq Llama 3.3 70B control"
+    accuracy: max
+    model_override: llama-3.3-70b-versatile
+  - id: control_groq_mixtral
+    provider: groq
+    label: "Groq Mixtral control"
+    accuracy: max
+    model_override: mixtral-8x7b-32768
+
+  # --- OpenRouter gateways ---
+  - id: control_openrouter
+    provider: openrouter
+    label: "OpenRouter control (default)"
+    accuracy: max
+    model_env: FUSION_OPENROUTER_MODEL
+  - id: control_openrouter_free
+    provider: openrouter_free
+    label: "OpenRouter free-pool control (default)"
+    accuracy: max
+    model_env: FUSION_OPENROUTER_FREE_MODEL
+  - id: control_or_free_gemma
+    provider: openrouter_free
+    label: "OpenRouter free Gemma control"
+    accuracy: max
+    model_override: google/gemma-2-9b-it:free
+  - id: control_or_free_llama
+    provider: openrouter_free
+    label: "OpenRouter free Llama control"
+    accuracy: max
+    model_override: meta-llama/llama-3.2-3b-instruct:free
+  - id: control_or_free_qwen
+    provider: openrouter_free
+    label: "OpenRouter free Qwen control"
+    accuracy: max
+    model_override: qwen/qwen-2.5-7b-instruct:free
+
+  # --- Additional SOTA membranes (single default + env override) ---
+  - id: control_huggingface
+    provider: huggingface
+    label: "Hugging Face control"
+    accuracy: max
+    model_env: FUSION_HUGGINGFACE_MODEL
+  - id: control_nvidia
+    provider: nvidia
+    label: "NVIDIA NIM control"
+    accuracy: max
+    model_env: FUSION_NVIDIA_MODEL
+  - id: control_github_models
+    provider: github_models
+    label: "GitHub Models control"
+    accuracy: max
+    model_env: FUSION_GITHUB_MODELS_MODEL
+  - id: control_cloudflare_ai
+    provider: cloudflare_ai
+    label: "Cloudflare Workers AI control"
+    accuracy: max
+    model_env: FUSION_CLOUDFLARE_AI_MODEL
+
+  # --- Local ---
+  - id: control_ollama
+    provider: ollama
+    label: "Ollama local control (default)"
+    accuracy: max
+    model_env: FUSION_OLLAMA_MODEL
+  - id: control_ollama_llama32
+    provider: ollama
+    label: "Ollama llama3.2 control"
+    accuracy: max
+    model_override: llama3.2
+  - id: control_ollama_mistral
+    provider: ollama
+    label: "Ollama mistral control"
+    accuracy: max
+    model_override: mistral
+
+  # --- Always-on honesty ---
+  - id: control_internal
+    provider: internal
+    label: "Internal heroic control (always)"
+    accuracy: max
+    always: true
+
+consensus:
+  min_instances: 1
+  score_band: 15

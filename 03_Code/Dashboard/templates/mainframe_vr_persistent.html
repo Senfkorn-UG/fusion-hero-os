@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Mainframe Dauer-VR · Fusion Hero OS</title>
+  <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+  <link rel="stylesheet" href="/static/mainframe_site.css">
+  <style>
+    html, body { margin:0; height:100%; overflow:hidden; background:#000; }
+    .vr-hud {
+      position: fixed; z-index: 20; left: 12px; right: 12px; top: 12px;
+      display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
+      pointer-events: none;
+    }
+    .vr-hud a, .vr-hud button, .vr-hud select {
+      pointer-events: auto;
+    }
+    .vr-hud .pill {
+      background: rgba(10,12,20,.72); border: 1px solid #40e0d044;
+      color: #e2e8f0; padding: 6px 10px; border-radius: 999px;
+      font: 12px/1.2 ui-sans-serif, system-ui; backdrop-filter: blur(6px);
+    }
+    .vr-hud a.pill { text-decoration: none; color: #40e0d0; }
+    .vr-hud button.pill, .vr-hud select.pill {
+      background: rgba(16,24,40,.85); cursor: pointer; border-color: #00d4aa66;
+    }
+    #vr-status-text { max-width: 42vw; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .vr-bottom {
+      position: fixed; z-index: 20; left: 12px; right: 12px; bottom: 12px;
+      display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap;
+      pointer-events: none;
+    }
+    .vr-bottom .pill { pointer-events: auto; }
+  </style>
+</head>
+<body>
+  <div class="vr-hud">
+    <a class="pill" href="/mainframe">◈ Mainframe</a>
+    <a class="pill" href="/mainframe/ide">IDE</a>
+    <a class="pill" href="/mainframe/worktree">Worktree</a>
+    <a class="pill" href="/">Dashboard</a>
+    <span class="pill" id="vr-status-text">Dauer-VR starting…</span>
+    <select class="pill" id="vr-scene-select" title="Scene"></select>
+    <button class="pill" type="button" id="vr-refresh">↻ Refresh</button>
+    <button class="pill" type="button" id="vr-fs">⛶ Fullscreen</button>
+  </div>
+  <div class="vr-bottom">
+    <span class="pill" id="vr-clock">--:--:--</span>
+    <span class="pill" id="vr-layer">layer: …</span>
+    <a class="pill" href="/highest-layer-vr">Highest Layer VR</a>
+    <a class="pill" href="/vr/viewer">Classic 360°</a>
+  </div>
+
+  <a-scene
+    id="dauer-vr-scene"
+    embedded
+    style="height:100vh;width:100vw"
+    vr-mode-ui="enabled: true"
+    loading-screen="enabled:false"
+    background="color: #05060a"
+    renderer="antialias: true; colorManagement: true">
+    <a-assets>
+      <img id="pano" crossorigin="anonymous" src="">
+    </a-assets>
+    <a-sky id="sky" src="#pano" rotation="0 -90 0"></a-sky>
+    <a-entity id="hud-panel" position="0 1.5 -2.2" geometry="primitive: plane; width: 1.8; height: 0.55"
+      material="color: #0a0f18; opacity: 0.72; side: double"
+      text="value: FUSION HERO OS\nDAUER-VR MAINFRAME; align: center; color: #40e0d0; width: 1.6; wrapCount: 28">
+    </a-entity>
+    <a-entity id="rig" position="0 1.6 0">
+      <a-camera look-controls wasd-controls></a-camera>
+    </a-entity>
+    <a-light type="ambient" color="#445" intensity="0.7"></a-light>
+    <a-light type="directional" position="1 2 1" intensity="0.4"></a-light>
+  </a-scene>
+
+  <script src="/static/mainframe_site.js"></script>
+  <script>MainframeSite.bootDauerVR();</script>
+</body>
+</html>

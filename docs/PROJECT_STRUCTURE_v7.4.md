@@ -33,7 +33,7 @@ fusion-hero-os/
 │   ├── alte_frau_95g/                          # Heroic Core Foundation
 │   ├── mainframe_laden/                        # Permanent Auto-Load
 │   ├── deep_research_5_stage/                  # 5-stufiger Prozess
-│   ├── mister_Contributor_image/                  # Cyberpunk-Campfire Visuals
+│   ├── mister_builder_image/                  # Cyberpunk-Campfire Visuals
 │   └── skill_creator/                          # Dynamic Skill Evolution
 ├── book/
 │   └── heroismus_v33/                          # ← NEW Book Structure v33

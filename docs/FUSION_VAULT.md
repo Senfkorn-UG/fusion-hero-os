@@ -9,7 +9,7 @@ Kein Agent bekommt je ein rohes, dauerhaftes API-Secret in eine Konfigdatei
 oder Umgebungsvariable geschrieben. Stattdessen:
 
 1. Jeder Node (`claude-agent`, `grok-agent`, `kepler-agent`, `gemini-agent`,
-   `desktop-kpki9e4`, `phone-node`) hat eine **eigene Identität**
+   `mainframe`, `phone-node`) hat eine **eigene Identität**
    mit einem individuellen Token, hinterlegt in `~/.fusion_agent_credentials`
    (`chmod 600`, nur auf dem jeweiligen Node).
 2. Ein Connector fordert bei Bedarf über `vault_client.py` eine **kurzlebige
@@ -85,7 +85,7 @@ löschen.
 
 ## Was NICHT im Vault liegt
 
-- `03_Code/Dashboard`s eigene Supabase-Anbindung (`SUPABASE_PROJECT_REF=swmmoxhdzarmoupyssqe`)
+- `03_Code/Dashboard`s eigene Supabase-Anbindung (`SUPABASE_PROJECT_REF=YOUR_SUPABASE_PROJECT_REF`)
   ist ein separates Projekt (App-Backend, keine Secrets-Verwaltung) — Status
   bei Konsolidierung 2026-07-12 nicht verifizierbar, da `list_projects` für
   die verbundene Org keine Projekte zeigte. Vor Nutzung prüfen.

@@ -1,0 +1,19 @@
+{
+  "generated_at": "2026-07-15T18:12:45.687897+00:00",
+  "proved_count": 6,
+  "case_count": 6,
+  "sandbox": true,
+  "external_targets": false,
+  "budget_eur_cap": 500.0,
+  "threat_level": "critical",
+  "threat_score": 100.0,
+  "case_ids": [
+    "E_REPLAY",
+    "E_FINALITY",
+    "E_BINDING",
+    "E_UNVERIFIED",
+    "E_CACHE",
+    "E_ALLOWLIST"
+  ],
+  "sha16": "2b4f92580265cc5b"
+}
