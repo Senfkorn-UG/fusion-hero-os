@@ -275,7 +275,7 @@ $Report.ok = $fwOk -and $noLan
 $Report.self_ip = $selfIp
 $Report.phone_ip = $phoneIp
 $Report.connect_hint = if ($selfIp) {
-    "On phone AudioRelay: connect to MESH IP $selfIp (or MagicDNS $selfHost) port $Port — NOT LAN 192.168.x"
+    "On phone AudioRelay: connect to MESH IP $selfIp (or MagicDNS $selfHost) port $Port - NOT LAN 192.168.x"
 } else {
     "On phone AudioRelay: connect via Tailscale IP of PC, not LAN"
 }
@@ -286,7 +286,7 @@ Write-Host ""
 if ($Report.ok -and $meshEstab.Count -gt 0) {
     Write-Host "=== RESULT: MESH-ONLY ACTIVE (session on 100.x) ===" -ForegroundColor Green
 } elseif ($Report.ok -and $meshEstab.Count -eq 0) {
-    Write-Host "=== RESULT: LAN BLOCKED — reconnect phone via mesh ===" -ForegroundColor Yellow
+    Write-Host "=== RESULT: LAN BLOCKED - reconnect phone via mesh ===" -ForegroundColor Yellow
     Write-Host $Report.connect_hint -ForegroundColor Yellow
 } else {
     Write-Host "=== RESULT: PARTIAL ===" -ForegroundColor Yellow

@@ -37,6 +37,8 @@ __all__ = [
     "set_active",
     "apply_active_route",
     "activate_stack",
+    "set_mesh_only",
+    "is_mesh_only",
 ]
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -106,6 +108,9 @@ def _default_state() -> Dict[str, Any]:
         "membrane": "headset_layers_v1",
         "enabled": ["L1_local", "L2_phone", "L3_comaedchen", "L4_hyperraum"],
         "active": "L1_local",
+        # Phone layers (L2+) must use Tailscale 100.x only — never LAN
+        "mesh_only": os.environ.get("FUSION_HEADSET_MESH_ONLY", "1").strip()
+        in ("1", "true", "yes", ""),
         "updated_at": None,
         "last_apply": None,
         "history": [],
@@ -119,10 +124,19 @@ def load_state() -> Dict[str, Any]:
             raw = json.loads(STATE_PATH.read_text(encoding="utf-8"))
             if isinstance(raw, dict):
                 st.update({k: v for k, v in raw.items() if k in st or k in (
-                    "enabled", "active", "updated_at", "last_apply", "history", "note"
+                    "enabled", "active", "updated_at", "last_apply", "history",
+                    "note", "mesh_only",
                 )})
         except (OSError, json.JSONDecodeError):
             st["load_error"] = "corrupt_state_reset"
+    # env overrides file when explicitly set
+    env_mo = os.environ.get("FUSION_HEADSET_MESH_ONLY", "").strip().lower()
+    if env_mo in ("1", "true", "yes"):
+        st["mesh_only"] = True
+    elif env_mo in ("0", "false", "no"):
+        st["mesh_only"] = False
+    else:
+        st["mesh_only"] = bool(st.get("mesh_only", True))
     # sanitize
     enabled = [x for x in (st.get("enabled") or []) if x in LAYERS]
     if not enabled:
@@ -239,7 +253,24 @@ def _phone_link_snapshot() -> Dict[str, Any]:
         out["link_detail"] = "no phone relay session"
 
     out["connected_to_phone"] = bool(out["port_59100_established"])
+    # mesh-only policy evaluation
+    out["mesh_link_ok"] = bool(
+        out["port_59100_established"] and out.get("link") == "tailscale"
+    )
+    out["lan_link"] = bool(out.get("link") == "lan")
     return out
+
+
+def set_mesh_only(enabled: bool = True) -> Dict[str, Any]:
+    """Persist mesh-only policy (phone path must use Tailscale 100.x)."""
+    st = load_state()
+    st["mesh_only"] = bool(enabled)
+    save_state(st)
+    return status(apply_probe=False)
+
+
+def is_mesh_only() -> bool:
+    return bool(load_state().get("mesh_only", True))
 
 
 def banner(
@@ -278,6 +309,9 @@ def banner(
             link = None
 
     phone_line = "#  phone_link: (n/a for local route)"
+    mesh_line = "#  transport: n/a"
+    st_mo = load_state()
+    mesh_only = bool(st_mo.get("mesh_only", True))
     if link:
         conn = "YES" if link.get("connected_to_phone") else "NO"
         host = link.get("phone_host") or "?"
@@ -285,6 +319,24 @@ def banner(
             f"#  phone_link: CONNECTED={conn}  host={host}  "
             f"{link.get('link_detail') or link.get('link')}"
         )
+        transport = (link.get("link") or "none").upper()
+        if route == "phone" and mesh_only:
+            if link.get("mesh_link_ok"):
+                mesh_line = "#  transport: MESH-ONLY OK (Tailscale 100.x)"
+            elif link.get("lan_link"):
+                mesh_line = (
+                    "#  transport: !! VIOLATION LAN — policy=mesh_only "
+                    "(run force-headset-mesh-only.ps1)"
+                )
+            elif link.get("connected_to_phone"):
+                mesh_line = f"#  transport: {transport} (mesh_only policy on)"
+            else:
+                mesh_line = (
+                    "#  transport: WAITING mesh reconnect "
+                    "(connect phone to PC Tailscale IP 100.x)"
+                )
+        else:
+            mesh_line = f"#  transport: {transport}  mesh_only={mesh_only}"
 
     lines = [
         "",
@@ -294,6 +346,7 @@ def banner(
         f"#  device: {device}",
         f"#  {desc}",
         phone_line,
+        mesh_line,
         f"#  stack: {'  '.join(marks)}",
         "################################################################",
         "",
@@ -328,18 +381,26 @@ def status(*, apply_probe: bool = False) -> Dict[str, Any]:
         "layers": layers_view,
         "phone_link": link,
         "connected_to_phone": bool(link.get("connected_to_phone")),
+        "mesh_only": bool(st.get("mesh_only", True)),
+        "mesh_link_ok": bool(link.get("mesh_link_ok")),
+        "lan_violation": bool(
+            st.get("mesh_only", True)
+            and meta.get("route") == "phone"
+            and link.get("lan_link")
+        ),
         "banner": banner(act, st["enabled"], link=link),
         "banner_one_line": (
             f"HEADSET ACTIVE LEVEL >>> {meta.get('short')}={meta.get('label')} "
             f"(route={meta.get('route')}) "
-            f"phone_connected={'YES' if link.get('connected_to_phone') else 'NO'} <<<"
+            f"phone_connected={'YES' if link.get('connected_to_phone') else 'NO'} "
+            f"mesh={'OK' if link.get('mesh_link_ok') else ('LAN_VIOLATION' if link.get('lan_link') else 'WAIT')} <<<"
         ),
         "state_path": str(STATE_PATH),
         "updated_at": st.get("updated_at"),
         "clarity_rule": (
             "Multi-layer allowed: many layers may be armed; "
-            "exactly ONE is ACTIVE. Phone path shows CONNECTED=YES when AudioRelay "
-            "has an Established session to the handset. Always read banner."
+            "exactly ONE is ACTIVE. mesh_only=True requires Tailscale 100.x "
+            "(never LAN 192.168). Always read banner."
         ),
     }
 
@@ -505,6 +566,38 @@ def apply_active_route() -> Dict[str, Any]:
     }
 
     if route == "phone":
+        st_pol = load_state()
+        if st_pol.get("mesh_only", True):
+            # Enforce mesh-only firewall + drop LAN sessions when applying phone route
+            mesh_ps1 = ROOT / "workstation" / "force-headset-mesh-only.ps1"
+            if mesh_ps1.is_file():
+                try:
+                    r = subprocess.run(
+                        [
+                            "powershell",
+                            "-NoProfile",
+                            "-ExecutionPolicy",
+                            "Bypass",
+                            "-File",
+                            str(mesh_ps1),
+                            "-SkipRoute",  # avoid recursion
+                        ],
+                        capture_output=True,
+                        text=True,
+                        timeout=180,
+                        cwd=str(ROOT),
+                        env={**os.environ, "FUSION_HEADSET_MESH_ONLY": "1"},
+                    )
+                    report["steps"]["mesh_only_enforce"] = {
+                        "ok": r.returncode in (0, 2),
+                        "rc": r.returncode,
+                        "stdout_tail": (r.stdout or "")[-500:],
+                    }
+                except Exception as exc:  # noqa: BLE001
+                    report["steps"]["mesh_only_enforce"] = {
+                        "ok": False,
+                        "error": str(exc)[:200],
+                    }
         fix = ROOT / "workstation" / "fix-headset-relay.ps1"
         if fix.is_file():
             try:
@@ -517,6 +610,7 @@ def apply_active_route() -> Dict[str, Any]:
                         "-File",
                         str(fix),
                         "-NoRestartAudioRelay",
+                        "-SkipFirewall",
                     ],
                     capture_output=True,
                     text=True,
@@ -532,6 +626,12 @@ def apply_active_route() -> Dict[str, Any]:
                 report["steps"]["fix_headset_relay"] = {"ok": False, "error": str(exc)[:200]}
         # ensure default Virtual Speakers
         report["steps"]["set_default"] = _svv_set_default("Virtual Speakers for AudioRelay")
+        link = _phone_link_snapshot()
+        report["phone_link"] = link
+        report["mesh_only"] = bool(st_pol.get("mesh_only", True))
+        if st_pol.get("mesh_only", True):
+            report["mesh_link_ok"] = bool(link.get("mesh_link_ok"))
+            report["lan_violation"] = bool(link.get("lan_link"))
     else:
         # local — try common host speaker names
         for name in (
@@ -618,10 +718,32 @@ def main() -> int:
     ap.add_argument("--disable", default="", help="disarm a layer")
     ap.add_argument("--apply", action="store_true", help="re-apply route for current active")
     ap.add_argument("--stack", action="store_true", help="enable all layers")
+    ap.add_argument("--mesh-only", action="store_true", help="force mesh-only policy + enforce")
+    ap.add_argument("--allow-lan", action="store_true", help="disable mesh-only policy")
     ap.add_argument("--json", action="store_true")
     args = ap.parse_args()
 
-    if args.enable:
+    if args.allow_lan:
+        set_mesh_only(False)
+        out = status(apply_probe=True)
+    elif args.mesh_only:
+        set_mesh_only(True)
+        mesh_ps1 = ROOT / "workstation" / "force-headset-mesh-only.ps1"
+        if mesh_ps1.is_file():
+            subprocess.run(
+                [
+                    "powershell",
+                    "-NoProfile",
+                    "-ExecutionPolicy",
+                    "Bypass",
+                    "-File",
+                    str(mesh_ps1),
+                ],
+                cwd=str(ROOT),
+                timeout=180,
+            )
+        out = status(apply_probe=True)
+    elif args.enable:
         out = enable(args.enable)
     elif args.disable:
         out = disable(args.disable)
@@ -631,6 +753,7 @@ def main() -> int:
         apply_active_route()
         out = status(apply_probe=True)
     elif args.stack:
+        set_mesh_only(True)
         out = activate_stack(active="L2_phone", enable_all=True)
     else:
         out = status(apply_probe=True)

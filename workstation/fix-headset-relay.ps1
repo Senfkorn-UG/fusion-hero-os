@@ -4,7 +4,8 @@
 
 param(
     [switch]$SkipFirewall,
-    [switch]$NoRestartAudioRelay
+    [switch]$NoRestartAudioRelay,
+    [switch]$MeshOnly
 )
 
 $ErrorActionPreference = "Continue"
@@ -30,6 +31,16 @@ function Write-Step($name, $obj) {
 }
 
 Write-Host "=== FIX HEADSET RELAY (auto) ===" -ForegroundColor Cyan
+
+# Optional: mesh-only enforcement first (Tailscale 100.x, never LAN)
+if ($MeshOnly) {
+    $meshScript = Join-Path $ScriptDir "force-headset-mesh-only.ps1"
+    if (Test-Path $meshScript) {
+        Write-Host "  [..] MeshOnly: delegating to force-headset-mesh-only.ps1" -ForegroundColor Magenta
+        & powershell -NoProfile -ExecutionPolicy Bypass -File $meshScript -NoRestartAudioRelay:$NoRestartAudioRelay
+        exit $LASTEXITCODE
+    }
+}
 
 # 1) Locate AudioRelay.exe
 $candidates = @(
