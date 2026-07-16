@@ -157,7 +157,7 @@ def compute_feu(
     grid_eur_per_kwh: float = 0.35,
     pue: float = 1.25,
     feu_per_eur: float = 100.0,
-) -> Dict[str, float]:
+) -> Dict[str, Any]:
     """Energy + FEU from EUR burn."""
     grid = max(grid_eur_per_kwh, 0.01)
     energy_kwh_h = (eur_h / grid) * pue if eur_h > 0 else 0.0
