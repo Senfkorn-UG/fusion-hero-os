@@ -53,6 +53,7 @@ RATES_EUR: Dict[str, float] = {
     "cpu_light_job_hour": 0.03,  # coordination / L3 light task
     "l4_gpu_hour": 0.70,
     "a100_gpu_hour": 3.90,
+    "h100_gpu_hour": 12.00,  # order-of-magnitude; confirm Billing
     "l1_desk_power_hour": 0.08,  # local mainframe electricity EWMA floor
     "l4_saas_api_est_hour": 0.02,  # soft estimate when MCP active
 }
