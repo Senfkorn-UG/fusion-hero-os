@@ -242,9 +242,10 @@ def activate(
         "mode": mode,
         "policy": {
             "rank": "nummer_2",
-            "reports_only_to": "operator",
+            "reports_only_to": "operator",  # abstract role — person extracted
             "input_only_from": "operator",
             "audio_is_operator_membrane": True,
+            "identity_membrane": "operator_identity_v1",
         },
         "phone": phone,
         "steps": {},

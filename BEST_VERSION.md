@@ -65,6 +65,13 @@ Guarantee). Es ersetzt den v8-Funktionskern nicht; es härtet und vereinheitlich
 - Depersonalisierung im aktiven `fusion_hero_os`-Paket
 - Persona-Token-Regressionsscanner (CI-Gate)
 
+### Operator-Person-Extraktion (2026-07-16)
+
+- Rolle **`operator`** ist abstrakt; Legal/academic Person (**Urban**) aus dem Runtime-Kernel **herausgelöst**
+- Membrane: `fusion_hero_os.core.operator_identity` · Vault: `~/.fusion/operator/identity.local.json`
+- Scan/Report: `python scripts/extract_operator_urban.py` · Doc: `docs/security/OPERATOR_IDENTITY_MEMBRANE.md`
+- Dissertation/Academia behalten Autorennamen (Publication-Surface); operatives Paket person-clean
+
 ### Ererbter v8.3-Funktionskern (weiterhin operativ)
 
 - QUBO-Engine (`fusion_hero_os/engine/mainframe.py`, Numba + optionales Rust-Backend)
