@@ -41,7 +41,7 @@ metadata:
     fusion-hero-os/platform-version: "10.0.0"
     fusion-hero-os/operative-kanon: v10.0.0
     tier: L3_cluster
-    server-class: a100-2x-best-of-best
+    server-class: a100-80gb-best-of-best
     algo-class: force_cluster_compute
     workload: crosspollination-weights
     sole-authority: poly_mesh_router
@@ -55,7 +55,7 @@ spec:
       labels:
         app: crosspoll-qubo
         tier: L3_cluster
-        server-class: a100-2x-best-of-best
+        server-class: a100-80gb-best-of-best
         sole-authority: poly_mesh_router
     spec:
       serviceAccountName: fusion-training-ksa
@@ -122,7 +122,7 @@ spec:
             - name: FUSION_HYPERTHREADING
               value: "1"
             - name: FUSION_SERVER_CLASS
-              value: "a100-2x-80gb-best-of-best"
+              value: "a100-80gb-best-of-best"
             - name: FUSION_PLATFORM_VERSION
               value: "10.0.0"
             - name: FUSION_NO_LOCAL_DUAL_START
@@ -130,16 +130,19 @@ spec:
             - name: FUSION_POLY_MESH_TIER
               value: "L3_cluster"
           resources:
+            # Autopilot A100-80GB shape (1 GPU first = reliable scale-up; still best class)
+            # Cost ~3.90 EUR/h GPU + Autopilot overhead ≈ 5-7 EUR/h total
             requests:
-              cpu: "22"
-              memory: 85Gi
-              ephemeral-storage: 50Gi
-              nvidia.com/gpu: "2"
+              # Autopilot cap for nvidia-a100-80gb-1 shape: max 11 CPU
+              cpu: "11"
+              memory: 80Gi
+              ephemeral-storage: 40Gi
+              nvidia.com/gpu: "1"
             limits:
-              cpu: "22"
-              memory: 85Gi
-              ephemeral-storage: 50Gi
-              nvidia.com/gpu: "2"
+              cpu: "11"
+              memory: 80Gi
+              ephemeral-storage: 40Gi
+              nvidia.com/gpu: "1"
           volumeMounts:
             - name: workspace
               mountPath: /workspace
@@ -155,8 +158,11 @@ spec:
               bucketName: fusion-ai-data-project-bbf0e6db-52e1-462b-8e3
               mountOptions: "implicit-dirs"
       nodeSelector:
-        cloud.google.com/gke-accelerator: nvidia-tesla-a100
+        # GKE Autopilot A100 80GB (europe-west3)
+        cloud.google.com/gke-accelerator: nvidia-a100-80gb
+        cloud.google.com/gke-gpu-driver-version: latest
       tolerations:
         - key: nvidia.com/gpu
           operator: Exists
           effect: NoSchedule
+
