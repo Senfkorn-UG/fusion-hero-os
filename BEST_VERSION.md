@@ -78,6 +78,13 @@ Guarantee). Es ersetzt den v8-Funktionskern nicht; es härtet und vereinheitlich
 - Katalog `api_planes.yaml` · Classifier `fusion_hero_os.core.api_plane` · Routes `/api/planes`, `/api/v1/business/*`, `/api/hyperraum/*`
 - Doc: `docs/architecture/API_PLANE_SEPARATION.md` · Legacy-Pfade bleiben (additive BCG)
 
+### OS → Poly-Mesh Port (2026-07-16)
+
+- OS-Organe auf L0–L3 gemappt (`mesh_os_port.yaml`)
+- Runtime `fusion_hero_os.core.poly_mesh_os_port` · CLI `python scripts/port_os_poly_mesh.py`
+- Registry: `~/.fusion/mesh/os_port/latest.json` · Doc: `docs/mesh/OS_POLY_MESH_PORT.md`
+- Secrets bleiben L1; AudioRelay mesh-only; Tailscale Apps-UI ≠ OS-Port
+
 ### Ererbter v8.3-Funktionskern (weiterhin operativ)
 
 - QUBO-Engine (`fusion_hero_os/engine/mainframe.py`, Numba + optionales Rust-Backend)

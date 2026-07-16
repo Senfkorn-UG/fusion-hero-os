@@ -26,6 +26,20 @@ gke_propagation:
     schedule: "*/30 * * * *"
     verified_at: "2026-07-16T00:08:45Z"
     deploy_script: scripts/deploy_coordination_gke.ps1
+
+# OS ported into poly-mesh as organ set (not Tailscale SaaS Apps UI)
+os_poly_mesh_port:
+  status: operative
+  manifest: mesh_os_port.yaml
+  runtime: fusion_hero_os.core.poly_mesh_os_port
+  script: scripts/port_os_poly_mesh.py
+  registry: ~/.fusion/mesh/os_port/latest.json
+  doc: docs/mesh/OS_POLY_MESH_PORT.md
+  planes: [hyperraum, business]
+  mesh_only_audio: true
+  note: >
+    Port binds OS organs to Tailscale L0-L3 + GKE. Secrets stay L1.
+    Tailscale Admin "Apps" is unrelated SaaS routing.
 catalog_id: fusion-service-coordination
 
 # ---------------------------------------------------------------------------

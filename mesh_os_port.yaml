@@ -1,0 +1,115 @@
+# Fusion Hero OS — Poly-Mesh Port Manifest (v10.0.0+)
+# Maps OS organs to mesh tiers. Runtime: fusion_hero_os.core.poly_mesh_os_port
+# Port script: python scripts/port_os_poly_mesh.py
+
+version: "1.0"
+platform_version: "10.0.0"
+updated: "2026-07-16"
+ontology: dissertation_as_os
+principle: >
+  The OS is ported into the poly-mesh as a set of organs with placement,
+  mesh addresses, and anti-patterns. Secrets stay L1. SaaS is never source of truth.
+
+transport:
+  fabric: tailscale
+  mesh_only_audio: true
+  mesh_cidr: "100.64.0.0/10"
+  forbidden_for_os_control: ["lan_192", "public_internet_without_funnel"]
+
+# Live host aliases (updated by port script from tailscale status)
+live_hosts:
+  L0_edge:
+    role: phone_enduser
+    hostname_match: [redmi, phone]
+  L1_mainframe:
+    role: operator_orchestrator
+    hostname_match: [desktop-kpki9e4, mainframe, desktop]
+    services: [dashboard, grok_interconnect, mcp, operator_identity, headset_layers]
+  L2_mesh_anchor:
+    role: always_on_exit
+    hostname_match: [fusion-mesh-exit, mesh-exit]
+    services: [publish_mirror, fractal_replica]
+  L3_cluster:
+    role: hightech_compute
+    cluster: senfkorn-gke-cluster
+    region: europe-west3
+    services: [coordination_cron, training_jobs]
+  L4_saas:
+    role: external_membrane
+    services: [github, gdrive, gmail]
+    note: never source of truth
+
+organs:
+  dashboard:
+    plane: hyperraum
+    placement: L1_mainframe
+    mesh_serve: true
+    local_url: "http://127.0.0.1:8000"
+    mesh_path: /
+    health: /api/health?light=true
+    description: Mainframe control GUI + API
+  api_hyperraum:
+    plane: hyperraum
+    placement: L1_mainframe
+    mesh_serve: true
+    local_url: "http://127.0.0.1:8000"
+    mesh_path: /api/hyperraum
+    description: Half-private hyperspace API
+  api_business:
+    plane: business
+    placement: L1_mainframe
+    mesh_serve: true
+    local_url: "http://127.0.0.1:8000"
+    mesh_path: /api/v1/business
+    description: Classical product API (no vault/consent bodies)
+  grok_control:
+    plane: hyperraum
+    placement: L1_mainframe
+    mesh_path: /mainframe/grok
+    description: Grok interconnect control plane
+  operator_identity:
+    plane: hyperraum
+    placement: L1_mainframe
+    local_only: true
+    description: Role=operator membrane; person extracted
+  headset_layers:
+    plane: hyperraum
+    placement: L1_mainframe
+    mesh_only_required: true
+    description: Multi-layer headset; phone path via Tailscale 100.x only
+  coordination:
+    plane: hyperraum
+    placement: L3_cluster
+    gke_cron: fusion-service-coordination
+    gcs_prefix: "gs://fusion-ai-data-project-bbf0e6db-52e1-462b-8e3/coordination"
+    description: Cluster coordination cycles
+  training:
+    plane: hyperraum
+    placement: L3_cluster
+    description: Heavy QUBO / durability training jobs
+  mesh_exit:
+    plane: hyperraum
+    placement: L2_mesh_anchor
+    description: Always-on fractal / publish exit
+  phone_edge:
+    plane: hyperraum
+    placement: L0_edge
+    description: Capture + AudioRelay client (mesh IP of L1)
+
+placement_rules:
+  - id: secrets_l1
+    rule: "OAuth, MCP sessions, operator vault stay L1"
+  - id: heavy_l3
+    rule: "Training / large QUBO / atlas refresh prefer L3 when GKE live"
+  - id: always_on_l2
+    rule: "Publish mirror and exit health on L2 when desktop sleeps"
+  - id: audio_mesh_only
+    rule: "Headset phone path only Tailscale 100.x (never LAN)"
+  - id: business_no_vault
+    rule: "Business plane never exposes operator legal name or consent bodies"
+
+anti_patterns:
+  - port_os_to_public_without_funnel_consent
+  - saas_as_source_of_truth
+  - dual_start_force_cluster_on_l1_when_l3_live
+  - audiorelay_over_lan_when_mesh_only
