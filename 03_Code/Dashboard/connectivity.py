@@ -10,11 +10,18 @@ from typing import Any, Dict, List, Optional, Tuple
 
 
 def dashboard_port() -> int:
-    raw = os.getenv("FUSION_DASHBOARD_PORT") or os.getenv("PORT") or "8000"
+    """Canonical default **42069** (FUSION_PORT_BASE / FUSION_BACKEND_PORT)."""
+    raw = (
+        os.getenv("FUSION_DASHBOARD_PORT")
+        or os.getenv("FUSION_BACKEND_PORT")
+        or os.getenv("FUSION_PORT_BASE")
+        or os.getenv("PORT")
+        or "42069"
+    )
     try:
         return int(raw)
     except ValueError:
-        return 8000
+        return 42069
 
 
 def _score_ip(ip: str) -> int:

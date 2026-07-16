@@ -37,9 +37,19 @@ DASHBOARD_DIR = PROJECT_ROOT / "03_Code" / "Dashboard"
 DASHBOARD_SCRIPT = DASHBOARD_DIR / "app.py"
 ARCHIVE_DIR = PROJECT_ROOT / "06_Master_Archive"
 SOCKET_PATH = "/tmp/fusion_hero_ipc.sock"
-TCP_PORT = 19753
+# Canonical HTTP base: 42069 (override via FUSION_BACKEND_PORT / FUSION_PORT_BASE)
+try:
+    from fusion_hero_os.ports import get_ports, PORT_BASE
+
+    _ports = get_ports()
+    TCP_PORT = _ports.ipc_bridge
+    DASHBOARD_PORT = _ports.dashboard
+    PORT_BASE = PORT_BASE
+except Exception:  # noqa: BLE001 — early boot without package path
+    TCP_PORT = int(os.getenv("FUSION_IPC_PORT", "19753"))
+    DASHBOARD_PORT = int(os.getenv("FUSION_BACKEND_PORT", os.getenv("FUSION_PORT_BASE", "42069")))
+    PORT_BASE = 42069
 DASHBOARD_HOST = os.getenv("FUSION_BACKEND_HOST", "0.0.0.0")
-DASHBOARD_PORT = int(os.getenv("FUSION_BACKEND_PORT", "8000"))
 
 logging.basicConfig(
     level=logging.INFO,
