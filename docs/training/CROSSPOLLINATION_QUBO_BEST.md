@@ -15,7 +15,7 @@
 | SA-Steps | **12 000** | 4 000 |
 | Restarts | **16** (parallel) | 4 |
 | Cardinality \(k\) | **64** (soft) | optional |
-| Sources | mesh, dissertation, qubo, operator, ascension, heroic | subset |
+| Sources | **pure-core first:** formal_math, diverse_algorithms, pure_core, mesh, cluster, llm, saas, ascension, operator | subset / `FUSION_CROSS_SOURCES` |
 | vCPU | **22** | 4–8 |
 | RAM | **85 Gi** | 16 Gi |
 | GPU | **2× NVIDIA A100 80GB** | 1× L4 |
