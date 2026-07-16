@@ -137,6 +137,11 @@ DEFAULT_MODULES: List[ModuleSpec] = [
         "mugen-tsuky.chan protocol facade (clear propagation; obfuscated body)",
     ),
     ModuleSpec(
+        "core.schwerkraftserver",
+        "fusion_hero_os.core.schwerkraftserver",
+        "Schwerkraftserver dual multi-model control + git history poly-mesh ingest",
+    ),
+    ModuleSpec(
         "engine.mining_qubo", "fusion_hero_os.engine.mining_qubo", "Profit-Switching-QUBO"),
     ModuleSpec(
         "engine.rust_backend", "fusion_hero_os.engine.rust_backend", "PyO3-Rust-Backend"),

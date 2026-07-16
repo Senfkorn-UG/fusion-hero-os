@@ -273,6 +273,24 @@ async def mesh_ops_dns_encrypt(
     return await asyncio.to_thread(_run)
 
 
+@router.get("/api/mesh/ops/schwerkraft")
+@router.post("/api/mesh/ops/schwerkraft/execute")
+async def mesh_ops_schwerkraft(
+    force: bool = Query(False),
+    control_only: bool = Query(False),
+) -> Dict[str, Any]:
+    """Schwerkraftserver: dual multi-model lossless gate + git→poly-mesh ingest."""
+
+    def _run():
+        from fusion_hero_os.core.schwerkraftserver import dual_multi_model_control, execute
+
+        if control_only:
+            return dual_multi_model_control()
+        return execute(force=force)
+
+    return await asyncio.to_thread(_run)
+
+
 @router.get("/api/mesh/ops/mtc")
 @router.get("/api/mesh/ops/mtc/status")
 async def mesh_ops_mtc_status() -> Dict[str, Any]:
