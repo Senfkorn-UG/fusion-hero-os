@@ -153,7 +153,7 @@ def operator_id() -> str:
     return str(load_identity().get("operator_id") or "OP_LOCAL")
 
 
-def author_for_publication() -> Dict[str, str]:
+def author_for_publication() -> Dict[str, Any]:
     """Author fields for *publication* tooling only.
 
     Returns empty names unless vault binds them **and**
