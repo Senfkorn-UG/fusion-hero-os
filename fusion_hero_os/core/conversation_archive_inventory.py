@@ -207,7 +207,10 @@ def scan_conversation_archives(
         "totals": dict(totals),
         "instances": instances,
         "canonical_names": {
-            "author": "Stephan Hagen Urban",
+            # Author legal name is extracted from Operator role (membrane).
+            # Runtime uses role=operator; publication name only if vault binds.
+            "author": _author_display(),
+            "operator_role": "operator",
             "platform": "Fusion Hero OS v10.0.0",
             "field": "Autopoietische Autopolitik / Autopoietic Autopolitics",
         },
