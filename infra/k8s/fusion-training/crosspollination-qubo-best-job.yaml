@@ -1,0 +1,162 @@
+# Crosspollination QUBO — BEST OF THE BEST (2x NVIDIA A100 80GB)
+# Purpose: Wichtungen / Assoziationsgewichte (cross-pollination) on L3 only
+# Policy: force_cluster · sole_authority=poly_mesh_router · no local dual-start
+#
+# Server class: g2 not used — A100 80GB tier (Autopilot accelerator)
+# Machine equivalent: a2-ultragpu / Autopilot nvidia-tesla-a100 x2
+#
+# COSTS (cost function v2.0, europe-west3 rates):
+#   a100_gpu_hour = 3.90 EUR  →  2x A100 ≈ 7.80 EUR/h GPU only
+#   + ~22 vCPU / 85 Gi ≈ included in Autopilot bill (order 8–10 EUR/h total realistic)
+#   Recommended budgets:
+#     short  (2h):  ~16–20 EUR
+#     standard (6h): ~48–60 EUR
+#     deep (24h):   ~190–240 EUR  (exceeds 200 EUR/month if combined with always-on mesh)
+#   One-shot training budget in businessplan: 700 EUR
+#
+# PRECISE APPLY:
+#   export GCP_PROJECT_ID=project-bbf0e6db-52e1-462b-8e3
+#   # 1) Upload code to GCS
+#   gsutil -m cp scripts/crosspollination_qubo_optimize.py \
+#     qb_qubo.py 03_Code/training/fusion_stability_train.py \
+#     gs://${GCP_PROJECT_ID:+fusion-ai-data-$GCP_PROJECT_ID}/training/
+#   # actually bucket name:
+#   gsutil -m cp scripts/crosspollination_qubo_optimize.py qb_qubo.py \
+#     gs://fusion-ai-data-project-bbf0e6db-52e1-462b-8e3/training/
+#   # 2) Substitute project id and apply
+#   sed "s/\${GCP_PROJECT_ID}/project-bbf0e6db-52e1-462b-8e3/g" \
+#     infra/k8s/fusion-training/crosspollination-qubo-best-job.yaml | kubectl apply -f -
+#   # 3) Logs
+#   kubectl logs -n fusion-training -l app=crosspoll-qubo -f
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  generateName: crosspoll-qubo-best-
+  namespace: fusion-training
+  labels:
+    app: crosspoll-qubo
+    app.kubernetes.io/part-of: fusion-hero-os
+    app.kubernetes.io/version: "10.0.0"
+    fusion-hero-os/platform-version: "10.0.0"
+    fusion-hero-os/operative-kanon: v10.0.0
+    tier: L3_cluster
+    server-class: a100-2x-best-of-best
+    algo-class: force_cluster_compute
+    workload: crosspollination-weights
+    sole-authority: poly_mesh_router
+    plane: hyperraum
+spec:
+  backoffLimit: 2
+  ttlSecondsAfterFinished: 172800
+  activeDeadlineSeconds: 86400
+  template:
+    metadata:
+      labels:
+        app: crosspoll-qubo
+        tier: L3_cluster
+        server-class: a100-2x-best-of-best
+        sole-authority: poly_mesh_router
+    spec:
+      serviceAccountName: fusion-training-ksa
+      restartPolicy: OnFailure
+      terminationGracePeriodSeconds: 120
+      initContainers:
+        - name: fetch-code
+          image: google/cloud-sdk:alpine
+          command:
+            - /bin/sh
+            - -c
+            - |
+              set -euo pipefail
+              mkdir -p /workspace/training
+              gsutil -m cp -r "gs://${GCS_BUCKET}/training/*" /workspace/training/ || true
+              ls -la /workspace/training
+          env:
+            - name: GCS_BUCKET
+              value: fusion-ai-data-project-bbf0e6db-52e1-462b-8e3
+          volumeMounts:
+            - name: workspace
+              mountPath: /workspace
+      containers:
+        - name: crosspoll-optimizer
+          image: nvcr.io/nvidia/pytorch:24.06-py3
+          imagePullPolicy: IfNotPresent
+          command:
+            - /bin/bash
+            - -c
+            - |
+              set -euo pipefail
+              pip install -q numpy numba
+              export PYTHONPATH="/workspace/training:/workspace/training/repo:${PYTHONPATH:-}"
+              # Prefer script from GCS training folder
+              if [[ -f /workspace/training/crosspollination_qubo_optimize.py ]]; then
+                cd /workspace/training
+                python3 crosspollination_qubo_optimize.py
+              else
+                echo "crosspollination_qubo_optimize.py missing in GCS training/ — abort"
+                exit 2
+              fi
+              # push results
+              gsutil -m cp -r /quantum-data/crosspollination/* \
+                "gs://${GCS_BUCKET}/crosspollination/" || true
+          env:
+            - name: GCS_BUCKET
+              value: fusion-ai-data-project-bbf0e6db-52e1-462b-8e3
+            - name: FUSION_DATA_ROOT
+              value: /quantum-data
+            - name: FUSION_QUBO_N
+              value: "512"
+            - name: FUSION_ANNEAL_STEPS
+              value: "12000"
+            - name: FUSION_N_RESTARTS
+              value: "16"
+            - name: FUSION_WEIGHT_SEED
+              value: "42"
+            - name: FUSION_CROSS_SOURCES
+              value: "mesh,dissertation,qubo,operator,ascension,heroic"
+            - name: FUSION_CARDINALITY_K
+              value: "64"
+            - name: FUSION_CARDINALITY_PENALTY
+              value: "5.0"
+            - name: FUSION_HYPERTHREADING
+              value: "1"
+            - name: FUSION_SERVER_CLASS
+              value: "a100-2x-80gb-best-of-best"
+            - name: FUSION_PLATFORM_VERSION
+              value: "10.0.0"
+            - name: FUSION_NO_LOCAL_DUAL_START
+              value: "1"
+            - name: FUSION_POLY_MESH_TIER
+              value: "L3_cluster"
+          resources:
+            requests:
+              cpu: "22"
+              memory: 85Gi
+              ephemeral-storage: 50Gi
+              nvidia.com/gpu: "2"
+            limits:
+              cpu: "22"
+              memory: 85Gi
+              ephemeral-storage: 50Gi
+              nvidia.com/gpu: "2"
+          volumeMounts:
+            - name: workspace
+              mountPath: /workspace
+            - name: gcs-fuse
+              mountPath: /quantum-data
+      volumes:
+        - name: workspace
+          emptyDir: {}
+        - name: gcs-fuse
+          csi:
+            driver: gcsfuse.csi.storage.gke.io
+            volumeAttributes:
+              bucketName: fusion-ai-data-project-bbf0e6db-52e1-462b-8e3
+              mountOptions: "implicit-dirs"
+      nodeSelector:
+        cloud.google.com/gke-accelerator: nvidia-tesla-a100
+      tolerations:
+        - key: nvidia.com/gpu
+          operator: Exists
+          effect: NoSchedule
