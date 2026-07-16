@@ -328,10 +328,49 @@ def write_local(report: Dict[str, Any], name: str) -> Path:
 
 
 def upload_gcs(local_path: Path, prefix: str = DEFAULT_GCS_PREFIX) -> Dict[str, Any]:
-    """Best-effort gsutil upload; never fails the whole run hard if offline."""
+    """Best-effort GCS upload via google-cloud-storage (WI) or gsutil fallback.
+
+    On GKE Autopilot the image uses Workload Identity → ADC; gsutil is optional.
+    Never fails the whole run hard if offline.
+    """
     if not prefix.startswith("gs://"):
         return {"ok": False, "error": "invalid gcs prefix"}
-    dest = f"{prefix.rstrip('/')}/{local_path.name}"
+    raw = prefix[len("gs://") :].rstrip("/")
+    if "/" in raw:
+        bucket_name, blob_prefix = raw.split("/", 1)
+    else:
+        bucket_name, blob_prefix = raw, ""
+    object_name = f"{blob_prefix.rstrip('/')}/{local_path.name}".lstrip("/")
+    dest = f"gs://{bucket_name}/{object_name}"
+    latest_name = f"{blob_prefix.rstrip('/')}/latest.json".lstrip("/")
+    client_err: Optional[str] = None
+
+    # Prefer official client (ADC / Workload Identity on GKE)
+    try:
+        from google.cloud import storage  # type: ignore
+
+        client = storage.Client()
+        bucket = client.bucket(bucket_name)
+        bucket.blob(object_name).upload_from_filename(
+            str(local_path),
+            content_type="application/json",
+        )
+        if latest_name and latest_name != object_name:
+            bucket.blob(latest_name).upload_from_filename(
+                str(local_path),
+                content_type="application/json",
+            )
+        return {
+            "ok": True,
+            "dest": dest,
+            "backend": "google-cloud-storage",
+            "latest": f"gs://{bucket_name}/{latest_name}" if latest_name else None,
+        }
+    except ImportError:
+        client_err = "google-cloud-storage not installed"
+    except Exception as exc:  # noqa: BLE001
+        client_err = str(exc)[:400]
+
     try:
         proc = subprocess.run(
             ["gsutil", "cp", str(local_path), dest],
@@ -343,12 +382,18 @@ def upload_gcs(local_path: Path, prefix: str = DEFAULT_GCS_PREFIX) -> Dict[str, 
         return {
             "ok": proc.returncode == 0,
             "dest": dest,
+            "backend": "gsutil",
             "stderr": (proc.stderr or "")[:500],
+            "client_error": client_err,
         }
     except FileNotFoundError:
-        return {"ok": False, "error": "gsutil not on PATH"}
+        return {
+            "ok": False,
+            "error": "neither google-cloud-storage nor gsutil available",
+            "client_error": client_err,
+        }
     except subprocess.TimeoutExpired:
-        return {"ok": False, "error": "gsutil timeout"}
+        return {"ok": False, "error": "gsutil timeout", "client_error": client_err}
 
 
 def main(argv: Optional[List[str]] = None) -> int:
