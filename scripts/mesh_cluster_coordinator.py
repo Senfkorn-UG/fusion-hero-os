@@ -308,22 +308,44 @@ def atlas(catalog: Dict[str, Any]) -> Dict[str, Any]:
     }
 
 
+def _simple_write_json(path: Path, payload: Dict[str, Any]) -> None:
+    """Fallback atomic-ish write without race_guard (slim GKE image)."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    tmp = path.with_suffix(path.suffix + f".tmp.{os.getpid()}")
+    data = json.dumps(payload, indent=2, ensure_ascii=False)
+    tmp.write_text(data, encoding="utf-8")
+    os.replace(tmp, path)
+
+
 def write_local(report: Dict[str, Any], name: str) -> Path:
     """Race-safe write: exclusive lock + atomic replace (desktop + GCE cron)."""
     LOCAL_OUT.mkdir(parents=True, exist_ok=True)
     path = LOCAL_OUT / f"{name}.json"
     latest = LOCAL_OUT / "latest.json"
-    try:
-        from fusion_hero_os.core.race_guard import locked_atomic_write_json
-    except ImportError:
-        # GCE / thin checkout: load sibling package path
-        sys.path.insert(0, str(ROOT))
-        from fusion_hero_os.core.race_guard import locked_atomic_write_json  # type: ignore
-
     payload = dict(report)
     payload.setdefault("race_guard", True)
-    locked_atomic_write_json(path, payload)
-    locked_atomic_write_json(latest, payload)
+
+    try:
+        # Import module file directly to avoid heavy fusion_hero_os.core package side-effects
+        import importlib.util
+
+        rg_path = ROOT / "fusion_hero_os" / "core" / "race_guard.py"
+        if rg_path.is_file():
+            spec = importlib.util.spec_from_file_location(
+                "fusion_race_guard_standalone", rg_path
+            )
+            if spec and spec.loader:
+                mod = importlib.util.module_from_spec(spec)
+                spec.loader.exec_module(mod)
+                mod.locked_atomic_write_json(path, payload)
+                mod.locked_atomic_write_json(latest, payload)
+                return path
+    except Exception:  # noqa: BLE001
+        pass
+
+    payload["race_guard"] = False
+    _simple_write_json(path, payload)
+    _simple_write_json(latest, payload)
     return path
 
 

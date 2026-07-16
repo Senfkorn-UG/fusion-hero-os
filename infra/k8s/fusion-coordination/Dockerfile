@@ -35,8 +35,10 @@ RUN pip install --no-cache-dir -r /tmp/requirements.txt \
 COPY scripts/mesh_cluster_coordinator.py /app/scripts/mesh_cluster_coordinator.py
 COPY mesh_service_coordination.yaml /app/mesh_service_coordination.yaml
 COPY mesh_connectors.yaml /app/mesh_connectors.yaml
-COPY fusion_hero_os/__init__.py /app/fusion_hero_os/__init__.py
-COPY fusion_hero_os/core/__init__.py /app/fusion_hero_os/core/__init__.py
+# Empty package markers only — full core/__init__.py pulls registry (not in slim image)
+RUN mkdir -p /app/fusion_hero_os/core \
+    && printf '# slim coordination package\n' > /app/fusion_hero_os/__init__.py \
+    && printf '# slim coordination core package\n' > /app/fusion_hero_os/core/__init__.py
 COPY fusion_hero_os/core/race_guard.py /app/fusion_hero_os/core/race_guard.py
 COPY fusion_hero_os/core/poly_mesh_router.py /app/fusion_hero_os/core/poly_mesh_router.py
 
