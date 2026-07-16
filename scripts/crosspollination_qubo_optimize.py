@@ -124,25 +124,34 @@ def solve(Q: np.ndarray) -> dict:
             res = parallel_anneal(
                 Q, steps=STEPS, T0=2.0, n_restarts=n_restarts, n_samples=80
             )
-            # parallel_anneal returns dict with best
+            # parallel_anneal returns dict: solution, energy, ...
             if isinstance(res, dict):
-                x = np.asarray(res.get("x") or res.get("best_x"), dtype=np.float64)
-                e = float(res.get("energy") or res.get("best_energy") or energy(Q, x))
+                x = np.asarray(
+                    res.get("solution")
+                    if res.get("solution") is not None
+                    else res.get("x", res.get("best_x")),
+                    dtype=np.float64,
+                ).reshape(-1)
+                e = float(res.get("energy", energy(Q, x)))
                 backend = "qb_qubo.parallel_anneal"
+                n_restarts = int(res.get("n_restarts") or n_restarts or 1)
             else:
                 x, e = res if isinstance(res, tuple) else (res, energy(Q, res))
+                x = np.asarray(x, dtype=np.float64).reshape(-1)
                 backend = "qb_qubo.parallel_anneal"
         else:
             x, e = simulated_annealing(Q, steps=STEPS, T0=2.0)
+            x = np.asarray(x, dtype=np.float64).reshape(-1)
             backend = "qb_qubo.simulated_annealing"
+        x_int = np.clip(np.rint(x), 0, 1).astype(int)
         return {
             "ok": True,
             "backend": backend,
             "energy": float(e),
-            "x": np.asarray(x).astype(int).tolist(),
-            "ones": int(np.sum(np.asarray(x) > 0.5)),
+            "x": x_int.tolist(),
+            "ones": int(x_int.sum()),
             "seconds": round(time.time() - t0, 3),
-            "n_restarts": n_restarts,
+            "n_restarts": n_restarts or 1,
             "steps": STEPS,
         }
     except Exception as exc:
