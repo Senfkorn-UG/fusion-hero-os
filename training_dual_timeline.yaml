@@ -1,0 +1,121 @@
+# Dual-Timeline Auto-Training — Fusion Hero OS v10
+# Real time t (chronology) ∥ Imaginary time τ (structural / Wick-parallel)
+# Policy: pseudo_inhouse_only · freemium=false
+
+version: "1.0"
+platform_version: "10.0.0"
+policy: pseudo_inhouse_only
+freemium: false
+
+principle: >
+  Auto-training ingests all available textual knowledge files and places each
+  sample on two parallel timelines: real time t (filesystem/git chronology)
+  and imaginary time τ (layer/structural depth). Consistency means the same
+  corpus can be traversed as history and as architecture without contradiction.
+
+scan:
+  roots:
+    - fusion_hero_os
+    - ascension_os
+    - docs
+    - 03_Code
+    - scripts
+    - core
+    - tests
+    - docs/dissertation
+    - docs/kompendium
+    - docs/Heroismus
+    - docs/training
+    - docs/mesh
+  extensions:
+    - .md
+    - .py
+    - .yaml
+    - .yml
+    - .txt
+    - .json
+    - .toml
+  exclude_dir_names:
+    - .git
+    - __pycache__
+    - node_modules
+    - .venv
+    - venv
+    - target
+    - dist
+    - build
+    - legacy_sources
+    - 06_Master_Archive
+    - 99_archive
+    - .svelte-kit
+  max_file_bytes: 800000
+  max_files: 8000
+
+timelines:
+  real:
+    id: t
+    name: real_chronology
+    source: mtime_utc
+    unit: unix_seconds
+  imaginary:
+    id: tau
+    name: imaginary_structural
+    # τ ∈ [0,1] — parallel to t, not a freemium product metric
+    formula: >
+      tau = 0.35*layer_norm + 0.25*path_depth_norm + 0.20*modality_weight
+            + 0.15*geltung_weight + 0.05*hash_phase
+    note: Model — Wick-parallel structural time, not physical imaginary time proof
+
+layers:
+  # path prefix → layer rank 0..6 (ω ≈ 6)
+  "fusion_hero_os/core": 0
+  "fusion_hero_os/engine": 1
+  "fusion_hero_os/methodology": 1
+  "fusion_hero_os/modules": 2
+  "fusion_hero_os": 2
+  "ascension_os": 5
+  "docs/Heroismus": 4
+  "docs/dissertation": 4
+  "docs/kompendium": 3
+  "docs/mesh": 3
+  "docs/training": 3
+  "docs": 3
+  "03_Code/Dashboard": 2
+  "03_Code": 2
+  "scripts": 2
+  "tests": 1
+
+modality_weights:
+  .md: 0.85
+  .py: 0.75
+  .yaml: 0.55
+  .yml: 0.55
+  .txt: 0.70
+  .json: 0.40
+  .toml: 0.35
+
+geltung_boost:
+  # if markers appear in file text
+  Satz: 0.15
+  Bedingt: 0.10
+  Modell: 0.05
+  Fragment: 0.02
+  BEWIESEN: 0.12
+  OFFEN: 0.04
+
+training:
+  chunk_chars: 1000
+  max_response: 800
+  samples_per_file_cap: 12
+  min_chunk_chars: 80
+  output_dir: ~/.fusion/training/dual_timeline
+  jsonl_name: samples_dual_timeline.jsonl
+  timeline_name: timeline_dual.json
+  manifest_name: auto_train_manifest.json
+  consistency_name: consistency_report.json
+
+consistency:
+  # Dual-timeline consistency checks (model heuristics)
+  require_both_axes: true
+  max_tau_jump_same_day: 0.45
+  min_coverage_roots: 3

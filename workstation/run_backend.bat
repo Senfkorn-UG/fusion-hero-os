@@ -111,9 +111,9 @@ set FUSION_VERIFY_RECOVERY_MAX_ITERS=2
 set FUSION_VERIFY_STAKES=medium
 set FUSION_VERIFY_LATENCY_MS=900
 
-REM Supabase Persistenz (swmmoxhdzarmoupyssqe)
+REM Supabase Persistenz (YOUR_SUPABASE_PROJECT_REF)
 set FUSION_SUPABASE_SYNC=1
-set PUBLIC_SUPABASE_PROJECT_REF=swmmoxhdzarmoupyssqe
+set PUBLIC_SUPABASE_PROJECT_REF=YOUR_SUPABASE_PROJECT_REF
 
 REM Virtual Hyper-Threading via GPU VRAM caches (über virtuelle Caches in der GPU)
 set FUSION_VIRTUAL_HT_GPU=1

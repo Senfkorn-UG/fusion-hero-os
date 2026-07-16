@@ -1,0 +1,132 @@
+=== TITLE (EN — Academia primary) ===
+Autopoiesis and Autopolitics of Fusion Hero OS
+
+=== TITLE (DE — full) ===
+Autopoiesis und Autopolitik des Fusion Hero OS. Eine systemtheoretische, existenzphilosophische und softwarearchitektonische Grundlegung heroischer Eudaimonia
+
+=== AUTHORS ===
+Stephan Hagen Urban
+
+=== FIELD / DISCIPLINE LABELS ===
+EN: Autopoietic Autopolitics; Systems Theory; Existential Philosophy; Software Architecture; Computer Science (interdisciplinary)
+DE: Autopoietische Autopolitik; Systemtheorie; Existenzphilosophie; Softwarearchitektur
+
+=== ABSTRACT EN (paste) ===
+Ontological thesis [Model]: the entire Fusion Hero OS is the dissertation; the monograph/PDF/abstract is only one form of its expression. Design discipline: Kompendium der Heroik V3.3 (Mythos·Grund·Beweis; claim marks Satz/Bedingt/Modell/Fragment) is mandatory. This v1.1 text founds Autopoietic Autopolitics as an operative scientific field: systems that continuously self-produce essential components (Autopoiesis) and self-legislate the rules of that closure (Autopolitics)—placement L0–L4, consent, connector membranes, in-house truth vs SaaS memory, dual timeline real t ∥ imaginary structural τ, public MasterSeed display MS-PUB-v10-… with private GPG+QUBO modular shards never published. Ops vocabulary is elemental: deploy=private, push=public, merge=both via timeline. Bifocal reading of universe↔brain uses the Standard Model SU(3)×SU(2)×U(1) as cosmic reference for law-like closure under symmetry breaking—heuristic isomorphism only (OPEN), not physical identity. Method joins systems theory, existential philosophy (Sisyphos/heroic eudaimonia), and software-architectural empirics with Proof Registry honesty (PROVEN/OPEN/REFUTED). Result: heroic eudaimonia as recursive stability under controlled rupture—describable, implementable, operated, and knowingly limited. This work argues for a new field without claiming institutional monopoly; it offers maximal transparency of organs (code, tests, mesh, appendices A00–A10, public release).
+
+=== ABSTRACT DE (paste) ===
+Ontologische These [Modell]: Das gesamte Fusion Hero OS *ist* die Dissertation; Monographie/PDF/Abstract sind nur eine Ausdrucksform. Designvorlage: Kompendium der Heroik V3.3 (Mythos·Grund·Beweis; Geltung Satz/Bedingt/Modell/Fragment) — zwingend. Diese Fassung v1.1 begründet Autopoietische Autopolitik als operatives Wissenschaftsfeld: Systeme, die systemessentielle Komponenten fortlaufend selbst erzeugen (Autopoiesis) und die Regeln dieser Schließung selbst setzen (Autopolitik)—Placement L0–L4, Consent, Konnektor-Membranen, Inhouse-Wahrheit vs. SaaS-Erinnerung, dualer Zeitstrahl real t ∥ imaginär τ, öffentlicher MasterSeed MS-PUB-v10-… bei privat GPG+QUBO-modulgetrennten Shards (nie public). Ops-Vokabeln: deploy=privat, push=öffentlich, merge=beide via Timeline. Bifokalität Universum↔Gehirn mit Standardteilchenmodell SU(3)×SU(2)×U(1) als kosmische Referenz gesetzesartiger Schließung unter Symmetriebrechung—nur heuristische Isomorphie (OFFEN), keine physische Identität. Methode: Systemtheorie, Existenzphilosophie (Sisyphos/heroische Eudaimonia), softwarearchitektonische Empirie, Proof Registry (BEWIESEN/OFFEN/WIDERLEGT). Ergebnis: heroische Eudaimonia als rekursive Stabilität unter kontrolliertem Bruch—beschreibbar, implementierbar, betrieben, ehrlich begrenzt. Die Feldgründung beansprucht keine institutionelle Monopolstellung, sondern maximale Transparenz der Organe (Code, Tests, Mesh, Anhänge A00–A10, öffentliches Release).
+
+=== KEYWORDS ===
+Autopoiesis, Autopolitics, Autopolitik, Fusion Hero OS, Dissertation-as-OS, Autopoietic Autopolitics, MasterSeed, Co-Evolutionary Closure, CEC, Sisyphos, Heroic Eudaimonia, Mesh, MCP, Proof Registry, Code Honesty, Bifocality, Universe-Brain, Standard Model, Dual Timeline, deploy-private, push-public, merge-timeline, V3.3 Kompendium der Heroik, Systems Theory, Existential Philosophy
+
+=== PLATFORM / VERSION ===
+Fusion Hero OS v10.0.0
+Text edition: v1.1
+Design template: Kompendium der Heroik V3.3
+Stack: Heroic Stack v8.3 · AscensionOS v9.x aspirational
+Release tag: dissertation-v1.1
+File stem: Dissertation_Stephan_Hagen_Urban_Autopoiesis_Autopolitik_Fusion_Hero_OS_v1.1
+
+=== ACADEMIA PROFILE ===
+https://independent.academia.edu/StephanUrban1
+
+=== PUBLIC PDF (after GitHub release) ===
+https://github.com/95guknow/fusion-hero-os/releases/tag/dissertation-v1.1
+https://github.com/95guknow/fusion-hero-os/tree/main/docs/dissertation
+
+=== SUPPLEMENTS (attach or link) ===
+- Full PDF monography v1.1
+- docs/dissertation/anhaenge/ (A00–A10)
+- docs/dissertation/ONTOLOGIE_DISSERTATION_IST_DAS_OS.md
+- docs/dissertation/NAMENSKANON_DREIFACHPRUEFUNG.md
+- docs/ops/DEPLOY_PUSH_MERGE.md
+- docs/masterseed/PUBLIC_VS_PRIVATE.md
+- docs/training/DUAL_TIMELINE_AUTO_TRAIN.md
+- docs/mesh/PSEUDO_INHOUSE_AI.md
+- docs/mesh/PSEUDO_INHOUSE_CREATIVE.md
+- docs/mesh/PUSH_LAYER_GUARD.md
+
+=== TRIPLE-CHECK SUMMARY ===
+{
+  "ok": true,
+  "checked_at": "2026-07-15T14:38:57.316535+00:00",
+  "author": "Stephan Hagen Urban",
+  "title_de": "Autopoiesis und Autopolitik des Fusion Hero OS. Eine systemtheoretische, existenzphilosophische und softwarearchitektonische Grundlegung heroischer Eudaimonia",
+  "title_en": "Autopoiesis and Autopolitics of Fusion Hero OS. A systems-theoretic, existential-philosophical and software-architectural foundation of heroic eudaimonia",
+  "field_de": "Autopoietische Autopolitik",
+  "field_en": "Autopoietic Autopolitics",
+  "platform": "Fusion Hero OS v10.0.0",
+  "version_text": "1.1",
+  "file_stem": "Dissertation_Stephan_Hagen_Urban_Autopoiesis_Autopolitik_Fusion_Hero_OS_v1.1",
+  "tag": "dissertation-v1.1",
+  "checks": [
+    {
+      "pass": 1,
+      "name": "author_full",
+      "ok": true,
+      "value": "Stephan Hagen Urban"
+    },
+    {
+      "pass": 1,
+      "name": "title_de_has_autopoiesis_and_autopolitik",
+      "ok": true,
+      "value": "Autopoiesis und Autopolitik des Fusion Hero OS"
+    },
+    {
+      "pass": 1,
+      "name": "title_en_has_autopolitics",
+      "ok": true,
+      "value": "Autopoiesis and Autopolitics of Fusion Hero OS"
+    },
+    {
+      "pass": 2,
+      "name": "no_language_mix",
+      "ok": true,
+      "value": "clean"
+    },
+    {
+      "pass": 2,
+      "name": "field_names",
+      "ok": true,
+      "value": {
+        "de": "Autopoietische Autopolitik",
+        "en": "Autopoietic Autopolitics"
+      }
+    },
+    {
+      "pass": 2,
+      "name": "platform_version",
+      "ok": true,
+      "value": "Fusion Hero OS v10.0.0"
+    },
+    {
+      "pass": 3,
+      "name": "file_stem",
+      "ok": true,
+      "value": "Dissertation_Stephan_Hagen_Urban_Autopoiesis_Autopolitik_Fusion_Hero_OS_v1.1"
+    },
+    {
+      "pass": 3,
+      "name": "design_v33",
+      "ok": true,
+      "value": "Kompendium der Heroik V3.3"
+    },
+    {
+      "pass": 3,
+      "name": "masterseed_public_display",
+      "ok": true,
+      "value": "MS-PUB-v10-THC01H70-BB5A"
+    }
+  ]
+}
+
+=== UPLOAD STEPS ===
+1. Open https://independent.academia.edu/StephanUrban1 → Add research / Upload
+2. Title = TITLE EN short (or DE full)
+3. Authors = Stephan Hagen Urban
+4. Paste ABSTRACT EN (and DE if bilingual allowed)
+5. Keywords as above
+6. Attach PDF: Dissertation_Stephan_Hagen_Urban_Autopoiesis_Autopolitik_Fusion_Hero_OS_v1.1.pdf
+7. Link GitHub release dissertation-v1.1 in description
+8. Confirm no private shards / .env attached

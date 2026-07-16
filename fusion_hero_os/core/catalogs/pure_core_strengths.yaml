@@ -1,0 +1,145 @@
+# Pure-Core Strength Catalog — long-term mutual coevolution
+# Operator: pure core (source of truth). Never replaced by SaaS/LLM.
+# Stand: 2026-07-16 · Fusion Hero OS v10.0.0
+#
+# CORE  = operator strengths (formal math innovations + diverse algorithms)
+# FOREIGN = all other capabilities (co-evolve mutually, peripheral authority only)
+
+version: "1.0.0"
+membrane: pure_core_coevolution_v1
+platform: "10.0.0"
+policy:
+  identity: pure_core
+  source_of_truth: core
+  mutual: true
+  core_never_replaced_by:
+    - saas
+    - llm
+    - external_vendor
+    - foreign_strength
+  transfer:
+    core_to_foreign: radiate   # Inside-Out
+    foreign_to_core: gated     # only weights/periphery, not theorems/MasterSeed
+
+core_strengths:
+  - id: formal_math_innovations
+    label: Formale mathematische Neuerungen
+    kind: core
+    authority: source_of_truth
+    domains:
+      - reciprocity_transpose
+      - orthogonal_projection
+      - banach_fixpoint_contraction
+      - fusion_monotonicity_conditional
+      - masterseed_strict_contraction
+      - qubo_energy_landscapes
+      - timespace_manifold_hints
+    evidence_paths:
+      - fusion_hero_os/core/heroic_math_engine.py
+      - 02_Mathematik/
+      - proof_registry.yaml
+    crosspoll_weight: 1.0
+
+  - id: diverse_algorithms
+    label: Diverse Algorithmen
+    kind: core
+    authority: source_of_truth
+    domains:
+      - simulated_annealing
+      - parallel_anneal_ht
+      - qubo_construction
+      - poly_mesh_routing
+      - poly_mesh_orchestration
+      - cost_function_c_h
+      - generational_evolution
+      - crosspollination_association
+    evidence_paths:
+      - 02_Mathematik/qb_qubo.py
+      - 03_Code/tools/qb_qubo.py
+      - fusion_hero_os/core/poly_mesh_router.py
+      - fusion_hero_os/core/poly_mesh_orchestrator.py
+      - fusion_hero_os/core/poly_mesh_cost_function.py
+      - scripts/crosspollination_qubo_optimize.py
+    crosspoll_weight: 1.0
+
+  - id: pure_core_identity
+    label: Reiner Core (Operator-Identität)
+    kind: core
+    authority: immutable_role
+    domains:
+      - operator_role_abstract
+      - masterseed_anchor
+      - dissertation_as_os
+      - inside_out_radiation
+    evidence_paths:
+      - fusion_hero_os/core/operator_identity.py
+      - fusion_hero_os/core/cec.py
+      - BEST_VERSION.md
+    crosspoll_weight: 0.95
+
+foreign_strengths:
+  - id: llm_inference
+    label: LLM / Foundation Models
+    kind: foreign
+    authority: peripheral
+    domains: [chat, completion, routing, prompt]
+    coevolve_with: [diverse_algorithms, formal_math_innovations]
+    note: Assist; never redefine core theorems or MasterSeed
+    crosspoll_weight: 0.55
+
+  - id: mesh_infra
+    label: Mesh / Tailscale / Headset
+    kind: foreign
+    authority: peripheral
+    domains: [tailscale, audio_relay, edge, l1_control]
+    coevolve_with: [diverse_algorithms]
+    note: Topology & reach; placement still under poly_mesh_router (core algo)
+    crosspoll_weight: 0.65
+
+  - id: gke_cluster
+    label: GKE / Cloud Compute
+    kind: foreign
+    authority: peripheral
+    domains: [l3_jobs, gpu, artifact_registry, workload_identity]
+    coevolve_with: [diverse_algorithms]
+    note: Execution substrate for force_cluster algos; not source of truth
+    crosspoll_weight: 0.60
+
+  - id: saas_connectors
+    label: SaaS Connectors
+    kind: foreign
+    authority: peripheral
+    domains: [github, gdrive, calendar, notion, vercel]
+    coevolve_with: [diverse_algorithms]
+    note: I/O only; dry-run default; no core authority
+    crosspoll_weight: 0.40
+
+  - id: ui_dashboard
+    label: Dashboard / UI
+    kind: foreign
+    authority: peripheral
+    domains: [fastapi, nicegui, visualization]
+    coevolve_with: [diverse_algorithms, formal_math_innovations]
+    note: Presentation surface for core metrics
+    crosspoll_weight: 0.45
+
+  - id: ascension_aspirational
+    label: AscensionOS aspirational track
+    kind: foreign
+    authority: peripheral_roadmap
+    domains: [cec_v9, sisyphos, generational_engine]
+    coevolve_with: [pure_core_identity, formal_math_innovations]
+    note: Loadable roadmap; not operative kanon replacement
+    crosspoll_weight: 0.50
+
+crosspoll_sources_default:
+  # Order: core first (higher affinity), then foreign
+  - formal_math
+  - diverse_algorithms
+  - pure_core
+  - mesh
+  - cluster
+  - llm
+  - saas
+  - ascension
+  - operator

@@ -75,4 +75,4 @@
 
 **Vermerk**: Diese Erkenntnisse sind permanent in v8/main des fusion-hero-os repo integriert und bilden die immutable Foundation für alle zukünftigen Interaktionen und Entwicklungen. Top-down enforced.
 
-*Generated & pushed via Grok v8/main Fusion Hero OS Protocol | User: 95guknow / der Maintainer95g | 2026-07-05*
+*Generated & pushed via Grok v8/main Fusion Hero OS Protocol | User: 95guknow / fusionheroos | 2026-07-05*

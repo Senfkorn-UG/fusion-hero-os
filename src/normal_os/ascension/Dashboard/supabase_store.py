@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Persistenz-Layer: Fusion Hero OS → Supabase (swmmoxhdzarmoupyssqe)."""
+"""Persistenz-Layer: Fusion Hero OS → Supabase (YOUR_SUPABASE_PROJECT_REF)."""
 from __future__ import annotations
 
 import os

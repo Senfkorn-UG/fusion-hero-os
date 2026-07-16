@@ -4,7 +4,8 @@
 
 param(
     [switch]$Force,
-    [switch]$NiceGUI
+    [switch]$NiceGUI,
+    [switch]$NoGui
 )
 $ErrorActionPreference = "Stop"
 $Root = Split-Path -Parent $MyInvocation.MyCommand.Path
@@ -91,9 +92,11 @@ if (-not (Wait-HttpReady "$GuiUrl/api/health?light=true")) {
     Write-Host " FEHLER" -ForegroundColor Red
     exit 1
 }
-if (-not (Wait-HttpReady $GuiUrl)) {
-    Write-Host " FEHLER (GUI /)" -ForegroundColor Red
-    exit 1
+if (-not $NoGui) {
+    if (-not (Wait-HttpReady $GuiUrl)) {
+        Write-Host " FEHLER (GUI /)" -ForegroundColor Red
+        exit 1
+    }
 }
 Write-Host " OK" -ForegroundColor Green
 
@@ -132,7 +135,7 @@ try {
     Write-Host " FALLBACK" -ForegroundColor Yellow
 }
 
-Write-Host "[Supabase] Projekt swmmoxhdzarmoupyssqe..." -NoNewline
+Write-Host "[Supabase] Projekt YOUR_SUPABASE_PROJECT_REF..." -NoNewline
 try {
     $sb = Invoke-RestMethod -Uri "$GuiUrl/api/supabase/health?probe=true" -TimeoutSec 10
     if ($sb.probe.key_accepted) {
@@ -209,11 +212,18 @@ if ($NiceGUI) {
     }
 }
 
-Start-Process $GuiUrl
+if (-not $NoGui) {
+    Start-Process $GuiUrl
+}
 Write-Host ""
 Write-Host "Bereit:" -ForegroundColor Cyan
-Write-Host "  GUI:       $GuiUrl  (Dashboard templates/index.html + WebSocket /ws)"
-Write-Host "  API:       $GuiUrl/api/health"
+if ($NoGui) {
+    Write-Host "  Modus:     Core only (kein Browser, kein GUI-Wait)" -ForegroundColor DarkGray
+    Write-Host "  API:       $GuiUrl/api/health"
+} else {
+    Write-Host "  GUI:       $GuiUrl  (Dashboard templates/index.html + WebSocket /ws)"
+    Write-Host "  API:       $GuiUrl/api/health"
+}
 Write-Host "  AutoLoad:  $GuiUrl/api/autoload/status"
 Write-Host "  API Docs:  $GuiUrl/docs"
 if ($NiceGUI) {
@@ -237,3 +247,4 @@ try {
 Write-Host ""
 Write-Host "Zum finalen Push:  powershell -File end_session.ps1" -ForegroundColor DarkCyan
 Write-Host "NiceGUI nur bei Bedarf:  start_all.ps1 -NiceGUI" -ForegroundColor DarkGray
+Write-Host "Nur Backend/Core:        workstation\start_core.ps1  oder  start_all.ps1 -NoGui" -ForegroundColor DarkGray

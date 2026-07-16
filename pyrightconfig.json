@@ -1,0 +1,26 @@
+{
+  "include": [
+    "fusion_hero_os/core",
+    "fusion_hero_os/engine",
+    "fusion_hero_os/registry.py",
+    "workstation/resolve_paths.py"
+  ],
+  "exclude": [
+    "**/node_modules",
+    "**/__pycache__",
+    "legacy_sources",
+    "tests"
+  ],
+  "typeCheckingMode": "basic",
+  "reportMissingImports": "none",
+  "reportOptionalMemberAccess": "none",
+  "reportAttributeAccessIssue": "none",
+  "reportArgumentType": "none",
+  "reportOperatorIssue": "none",
+  "reportGeneralTypeIssues": "none",
+  "reportPrivateImportUsage": "none",
+  "reportOptionalCall": "none",
+  "reportOptionalSubscript": "none",
+  "reportInvalidTypeForm": "none",
+  "reportOptionalOperand": "none"
+}

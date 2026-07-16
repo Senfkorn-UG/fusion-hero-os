@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mainframe IDE · Fusion Hero OS</title>
+  <link rel="stylesheet" href="/static/mainframe_site.css">
+</head>
+<body class="mf-body ide-body">
+  <header class="mf-header compact">
+    <div class="mf-brand">
+      <span class="mf-logo">⌘</span>
+      <div>
+        <h1>MAINFRAME IDE</h1>
+        <p class="mf-sub">Operational browser IDE · worktree-backed</p>
+      </div>
+    </div>
+    <nav class="mf-nav">
+      <a href="/mainframe">Hub</a>
+      <a href="/mainframe/vr">Dauer-VR</a>
+      <a href="/mainframe/worktree">Worktree</a>
+      <a href="/mainframe/ops">Ops</a>
+      <a href="/">Dashboard</a>
+    </nav>
+  </header>
+
+  <div class="ide-layout">
+    <aside class="ide-sidebar">
+      <div class="ide-side-head">
+        <strong>Tree</strong>
+        <button type="button" id="ide-refresh" class="btn-mini">↻</button>
+      </div>
+      <div id="ide-crumbs" class="ide-crumbs"></div>
+      <div id="ide-tree" class="ide-tree">loading…</div>
+    </aside>
+    <section class="ide-main">
+      <div class="ide-toolbar">
+        <span id="ide-path" class="mono">—</span>
+        <a id="ide-open-view" class="btn-mini" href="#">view</a>
+        <a id="ide-open-raw" class="btn-mini" href="#">raw</a>
+      </div>
+      <pre id="ide-editor" class="ide-editor">Select a file from the tree…</pre>
+    </section>
+    <aside class="ide-status">
+      <h3>Live APIs</h3>
+      <pre id="ide-status-pre" class="mf-pre small">…</pre>
+      <h3>Kernel IDE</h3>
+      <pre id="ide-kernel-pre" class="mf-pre small">…</pre>
+      <h3>Quick links</h3>
+      <ul class="mf-links">
+        <li><a href="/api/docs" target="_blank">OpenAPI /docs</a></li>
+        <li><a href="/api/bridge/ipc/status">IPC Bridge</a></li>
+        <li><a href="/api/hyperthreading">Hyperthreading</a></li>
+        <li><a href="/api/vr/status">VR status</a></li>
+      </ul>
+    </aside>
+  </div>
+  <script src="/static/mainframe_site.js"></script>
+  <script>
+    const params = new URLSearchParams(location.search);
+    MainframeSite.bootIDE(params.get('path') || '');
+  </script>
+</body>
+</html>

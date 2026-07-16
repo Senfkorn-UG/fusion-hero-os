@@ -1,20 +1,28 @@
-# Branching Strategy — Fusion Hero OS → AscensionOS (Final v8.8+)
+# Branching Strategy — Fusion Hero OS → AscensionOS
 
-> **Stand:** v8.3.0 · 2026-07-13
+> **Dissertation-as-OS:** Tags/releases are **publication events of the living dissertation**
+> (the OS *is* the work). Text under `docs/dissertation/` is one expression.
+> See `docs/dissertation/ONTOLOGIE_DISSERTATION_IST_DAS_OS.md`.
 
-## Versionierung (kanonisch ab v8.3.0)
+> **Stand:** v10.0.0 · 2026-07-15
+
+## Versionierung (kanonisch ab v8.3.0, aktueller Kanon v10.0.0)
 
 **Quelle der Wahrheit ist der annotierte Git-Tag `vMAJOR.MINOR.PATCH` auf
 `main` dieses Repos** (`95guknow/fusion-hero-os`), gespiegelt in der Datei
 `VERSION` im Root. Jeder Tag bekommt ein GitHub-Release. Alles andere ist
 abgeleitet — kein Dokument, Branch oder Manifest führt eine eigene Zählung.
 
-- **MAJOR** = Ära. 8 = operativer FuHOS-Kanon. 9 wird erst vergeben, wenn der
-  Ascension-Track tatsächlich Kanon wird — bis dahin ist „v9.x" reines
-  Roadmap-Label und nie ein Release.
+- **MAJOR** = Ära.
+  - **8** = FuHOS-Konsolidierungsära (letzter Release-Tag der Ära: `v8.3.0`).
+  - **9** = nie als alleiniges Platform-Release vergeben; „v9.x“ bleibt
+    **Roadmap-Label** für den Ascension-Track in `ascension_os/` (loadable).
+  - **10** = aktuelle operative Plattform-Ära (Privacy/PII Stage-A/B,
+    Consent-Gate, einheitliche Manifest-Version, Archive scrypt-KDF) —
+    **additiv** über den v8.3-Funktionskern (BCG). Aktuell: **`10.0.0`**.
 - **MINOR** = Feature-/Konsolidierungsstand (neue Layer, Mesh-Ausbau, …).
 - **PATCH** = Fixes.
-- Vorab-Stände aus `develop`/`ascension`: `v8.4.0-rc.1` usw.
+- Vorab-Stände: `v10.1.0-rc.1` usw.
 
 **Mechanik:**
 
@@ -33,10 +41,10 @@ abgeleitet — kein Dokument, Branch oder Manifest führt eine eigene Zählung.
 **Ökosystem:** Vorgänger-Repos (`fusion-hero-os-v1`, `Fusion_Hero_OS_v1.1`,
 `fusion-hero-core`, `alte-frau-95g-heroic-core`, `AscensionOS`, `FuHOS_pub`)
 sind auf GitHub archiviert. Aktive Satelliten-Repos (`normalOS`,
-`fusion-hero-vault`, `mister-Contributor-gui`, `dashboard`,
+`fusion-hero-vault`, `mister-builder-gui`, `dashboard`,
 `fusion-hero-os-daily-plans`) versionieren unabhängig nach demselben Schema
 und deklarieren ihre Plattform-Kompatibilität in `fuhos_compat.yaml`
-(z. B. `fuhos_compat: ">=8.3 <9"`).
+(z. B. `fuhos_compat: ">=10.0 <11"` bzw. legacy `">=8.3 <11"`).
 
 ## Aktuelles Modell (Hyperthreading + Archive)
 

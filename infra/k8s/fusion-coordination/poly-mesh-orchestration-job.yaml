@@ -1,0 +1,210 @@
+# Poly-Mesh Orchestration Task (L3) — angemessen: CPU only, no GPU
+# Sole authority: poly_mesh_router · force_cluster class without dual-start on L1
+#
+# What it does:
+#   1) mesh_cluster_coordinator --mode all --upload-gcs  (inventory/plan/atlas on cluster)
+#   2) light pure-Python QUBO-class anneal proof (N=32, steps=200) + upload JSON
+#   3) writes orchestration receipt (tier=L3, no_local_dual_start)
+#
+# Apply:
+#   kubectl apply -f infra/k8s/fusion-coordination/poly-mesh-orchestration-job.yaml
+#   kubectl logs -n fusion-coordination -l app=poly-mesh-orchestration -f
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: poly-mesh-orchestration-task
+  namespace: fusion-coordination
+  labels:
+    app: poly-mesh-orchestration
+    app.kubernetes.io/part-of: fusion-hero-os
+    app.kubernetes.io/version: "10.0.0"
+    fusion-hero-os/platform-version: "10.0.0"
+    fusion-hero-os/operative-kanon: v10.0.0
+    tier: L3_cluster
+    routing: cluster-only
+    sole-authority: poly_mesh_router
+    algo-class: force_cluster_compute
+    plane: hyperraum
+spec:
+  backoffLimit: 1
+  ttlSecondsAfterFinished: 86400
+  activeDeadlineSeconds: 900
+  template:
+    metadata:
+      labels:
+        app: poly-mesh-orchestration
+        tier: L3_cluster
+        sole-authority: poly_mesh_router
+        fusion-hero-os/platform-version: "10.0.0"
+    spec:
+      serviceAccountName: fusion-coordination-ksa
+      restartPolicy: Never
+      containers:
+        - name: orchestrate
+          image: europe-west3-docker.pkg.dev/project-bbf0e6db-52e1-462b-8e3/fusion-hero/coordination:v10.0.0
+          imagePullPolicy: Always
+          # Override entrypoint: coordination image defaults to coordinator args
+          command: ["python", "-u"]
+          args:
+            - -c
+            - |
+              import json, math, os, random, time, subprocess, sys
+              from datetime import datetime, timezone
+              from pathlib import Path
+
+              def utc():
+                  return datetime.now(timezone.utc).isoformat()
+
+              receipt = {
+                  "task": "poly-mesh-orchestration-task",
+                  "platform_version": "10.0.0",
+                  "tier": "L3_cluster",
+                  "sole_authority": "poly_mesh_router",
+                  "algo_class": "force_cluster_compute",
+                  "no_local_dual_start": True,
+                  "plane": "hyperraum",
+                  "host": os.uname().nodename if hasattr(os, "uname") else "gke",
+                  "started_at": utc(),
+                  "steps": {},
+              }
+              print("=== POLY-MESH ORCHESTRATION TASK (L3) ===", flush=True)
+              print(json.dumps({k: receipt[k] for k in ("task","tier","sole_authority","algo_class")}, indent=2), flush=True)
+
+              # --- 1) Coordinator cycle ---
+              gcs = os.environ.get(
+                  "FUSION_COORD_GCS_PREFIX",
+                  "gs://fusion-ai-data-project-bbf0e6db-52e1-462b-8e3/coordination",
+              )
+              catalog = "/app/mesh_service_coordination.yaml"
+              script = "/app/scripts/mesh_cluster_coordinator.py"
+              cmd = [
+                  sys.executable, script,
+                  "--mode", "all",
+                  "--upload-gcs",
+                  "--catalog", catalog,
+                  "--gcs-prefix", gcs,
+              ]
+              print("RUN:", " ".join(cmd), flush=True)
+              t0 = time.time()
+              try:
+                  p = subprocess.run(cmd, capture_output=True, text=True, timeout=300)
+                  receipt["steps"]["coordinator"] = {
+                      "ok": p.returncode == 0,
+                      "rc": p.returncode,
+                      "seconds": round(time.time() - t0, 2),
+                      "stdout_tail": (p.stdout or "")[-800:],
+                      "stderr_tail": (p.stderr or "")[-400:],
+                  }
+                  print(p.stdout or "", flush=True)
+                  if p.stderr:
+                      print("STDERR:", p.stderr[:500], flush=True)
+              except Exception as e:
+                  receipt["steps"]["coordinator"] = {"ok": False, "error": str(e)[:300]}
+
+              # --- 2) Light QUBO-class anneal proof (CPU, small N) ---
+              # Ising 1D chain energy; simulated annealing — proves force_cluster work on L3
+              N, STEPS = 32, 200
+              random.seed(42)
+              spins = [1 if random.random() > 0.5 else -1 for _ in range(N)]
+              J = 1.0
+
+              def energy(s):
+                  e = 0.0
+                  for i in range(N):
+                      e -= J * s[i] * s[(i + 1) % N]
+                  return e
+
+              e = energy(spins)
+              T0, T1 = 2.0, 0.05
+              best_e, best_s = e, list(spins)
+              for step in range(STEPS):
+                  T = T0 * (T1 / T0) ** (step / max(STEPS - 1, 1))
+                  i = random.randrange(N)
+                  # delta for flip i on ring
+                  left, right = spins[(i - 1) % N], spins[(i + 1) % N]
+                  dE = 2.0 * J * spins[i] * (left + right)
+                  if dE <= 0 or random.random() < math.exp(-dE / max(T, 1e-9)):
+                      spins[i] = -spins[i]
+                      e += dE
+                      if e < best_e:
+                          best_e, best_s = e, list(spins)
+              anneal = {
+                  "ok": True,
+                  "n": N,
+                  "steps": STEPS,
+                  "energy_final": best_e,
+                  "ground_target": -N * J,  # all aligned
+                  "gap_to_ground": best_e - (-N * J),
+                  "seconds": round(time.time() - t0, 2),
+              }
+              receipt["steps"]["qubo_class_anneal"] = anneal
+              print("ANNEAL:", json.dumps(anneal), flush=True)
+
+              # --- 3) Receipt + GCS upload ---
+              receipt["finished_at"] = utc()
+              receipt["ok"] = bool(
+                  (receipt["steps"].get("coordinator") or {}).get("ok")
+                  and (receipt["steps"].get("qubo_class_anneal") or {}).get("ok")
+              )
+              out_dir = Path(os.environ.get("HOME", "/var/fusion")) / ".fusion" / "mesh" / "orchestration"
+              out_dir.mkdir(parents=True, exist_ok=True)
+              local = out_dir / f"l3_task_{datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%SZ')}.json"
+              local.write_text(json.dumps(receipt, indent=2), encoding="utf-8")
+              print("LOCAL:", local, flush=True)
+
+              # upload via google-cloud-storage (WI)
+              try:
+                  from google.cloud import storage
+                  raw = gcs[len("gs://"):]
+                  bucket_name, prefix = raw.split("/", 1) if "/" in raw else (raw, "coordination")
+                  client = storage.Client()
+                  bucket = client.bucket(bucket_name)
+                  obj = f"{prefix.rstrip('/')}/l3_orchestration/{local.name}"
+                  bucket.blob(obj).upload_from_filename(str(local), content_type="application/json")
+                  latest = f"{prefix.rstrip('/')}/l3_orchestration/latest.json"
+                  bucket.blob(latest).upload_from_filename(str(local), content_type="application/json")
+                  receipt["gcs"] = {"ok": True, "dest": f"gs://{bucket_name}/{obj}", "latest": f"gs://{bucket_name}/{latest}"}
+                  print("GCS:", receipt["gcs"], flush=True)
+              except Exception as e:
+                  receipt["gcs"] = {"ok": False, "error": str(e)[:300]}
+                  print("GCS_FAIL:", e, flush=True)
+
+              print("=== RECEIPT ===", flush=True)
+              print(json.dumps(receipt, indent=2), flush=True)
+              print(
+                  f"BANNER: L3 ORCHESTRATION TASK ok={receipt['ok']} "
+                  f"coordinator={receipt['steps'].get('coordinator',{}).get('ok')} "
+                  f"anneal_E={anneal['energy_final']} "
+                  f"no_local_dual_start=1",
+                  flush=True,
+              )
+              sys.exit(0 if receipt["ok"] else 1)
+          env:
+            - name: FUSION_PLATFORM_VERSION
+              value: "10.0.0"
+            - name: FUSION_OPERATIVE_KANON
+              value: "v10.0.0"
+            - name: FUSION_COORD_GCS_PREFIX
+              value: gs://fusion-ai-data-project-bbf0e6db-52e1-462b-8e3/coordination
+            - name: GOOGLE_CLOUD_PROJECT
+              value: project-bbf0e6db-52e1-462b-8e3
+            - name: HOME
+              value: /var/fusion
+            - name: FUSION_POLY_MESH_TIER
+              value: L3_cluster
+            - name: FUSION_NO_LOCAL_DUAL_START
+              value: "1"
+          resources:
+            requests:
+              cpu: "250m"
+              memory: 512Mi
+            limits:
+              cpu: "1"
+              memory: 1Gi
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            runAsUser: 10001
+            capabilities:
+              drop: ["ALL"]

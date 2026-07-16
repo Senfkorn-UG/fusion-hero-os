@@ -21,7 +21,7 @@ const key = process.env.SUPABASE_PUBLISHABLE_KEY || process.env.PUBLIC_SUPABASE_
 const projectRef =
   process.env.SUPABASE_PROJECT_REF ||
   process.env.PUBLIC_SUPABASE_PROJECT_REF ||
-  "swmmoxhdzarmoupyssqe";
+  "YOUR_SUPABASE_PROJECT_REF";
 
 if (!url || !key) {
   console.log(JSON.stringify({ configured: false, error: "missing env" }));

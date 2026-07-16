@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Persistenz-Layer: Fusion Hero OS → Supabase (swmmoxhdzarmoupyssqe)."""
+"""Persistenz-Layer: Fusion Hero OS → Supabase (YOUR_SUPABASE_PROJECT_REF)."""
 from __future__ import annotations
 
 import os
@@ -149,6 +149,8 @@ TARGET_TABLES = [
     "fusion_agent_audit",
     "phone_link_snapshots",
     "fusion_faden_threads",
+    "fusion_mesh_fractal_manifests",
+    "fusion_mesh_exit_state",
 ]
 
 
@@ -366,6 +368,71 @@ def load_faden_threads(
         return resp.data or []
     except Exception:
         return []
+
+
+def save_fractal_manifest(manifest: Dict[str, Any]) -> Dict[str, Any]:
+    """Fractal mainframe mesh manifest nach Supabase (upsert by tree_hash)."""
+    if not cloud_sync_enabled():
+        return {"ok": False, "skipped": True}
+    tree_hash = manifest.get("tree_hash")
+    if not tree_hash:
+        return {"ok": False, "error": "manifest missing tree_hash"}
+    row = {
+        "tree_hash": tree_hash,
+        "device_id": device_id(),
+        "anchor_hash": manifest.get("anchor_hash", ""),
+        "slice_count": int(manifest.get("slice_count") or 0),
+        "layers": manifest.get("layers") or {},
+        "mesh_snapshot": manifest.get("mesh_snapshot") or {},
+        "slice_hashes": manifest.get("slice_hashes") or [],
+        "manifest": manifest,
+        "ts": float(manifest.get("ts_epoch") or time.time()),
+        "updated_at": time.time(),
+    }
+    return _upsert("fusion_mesh_fractal_manifests", row, on_conflict="tree_hash")
+
+
+def load_latest_fractal_manifest(target_device: Optional[str] = None) -> Optional[Dict[str, Any]]:
+    if not cloud_sync_enabled():
+        return None
+    client = get_client()
+    if not client:
+        return None
+    did = target_device or device_id()
+    try:
+        resp = (
+            client.table("fusion_mesh_fractal_manifests")
+            .select("*")
+            .eq("device_id", did)
+            .order("ts", desc=True)
+            .limit(1)
+            .execute()
+        )
+        rows = resp.data or []
+        if not rows:
+            return None
+        row = rows[0]
+        return row.get("manifest") or row
+    except Exception:
+        return None
+
+
+def save_mesh_exit_state(
+    profile_id: str,
+    resolution: Dict[str, Any],
+    peers: Optional[List[Dict[str, Any]]] = None,
+) -> Dict[str, Any]:
+    if not cloud_sync_enabled():
+        return {"ok": False, "skipped": True}
+    row = {
+        "device_id": device_id(),
+        "active_profile": profile_id,
+        "resolution": resolution,
+        "peers": peers or [],
+        "ts": time.time(),
+        "updated_at": time.time(),
+    }
+    return _upsert("fusion_mesh_exit_state", row, on_conflict="device_id")
 
 
 def list_recent_agent_audit(limit: int = 20) -> List[Dict[str, Any]]:

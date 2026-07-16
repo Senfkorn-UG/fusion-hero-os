@@ -1,0 +1,165 @@
+{
+  "generated_at": "2026-07-15T14:56:46.837626+00:00",
+  "ok": true,
+  "version": "1.0",
+  "direction": "bottom_up",
+  "generations": 32,
+  "best_fitness": 1.0,
+  "initial_fitness": 1.0,
+  "fitness_delta": 0.0,
+  "fusion_score": 1.0,
+  "mesh_score": 1.0,
+  "power_score": 1.0,
+  "dissertation_score": 1.0,
+  "tau_final": 0.3779,
+  "strata": [
+    {
+      "id": "S0",
+      "name": "leaf_fragments",
+      "tau": 0.08,
+      "coverage": 1.0,
+      "evidence_hit": 4,
+      "evidence_total": 4,
+      "missing_count": 0
+    },
+    {
+      "id": "S1",
+      "name": "core_modules",
+      "tau": 0.22,
+      "coverage": 1.0,
+      "evidence_hit": 7,
+      "evidence_total": 7,
+      "missing_count": 0
+    },
+    {
+      "id": "S2",
+      "name": "mesh_nerves",
+      "tau": 0.38,
+      "coverage": 1.0,
+      "evidence_hit": 6,
+      "evidence_total": 6,
+      "missing_count": 0
+    },
+    {
+      "id": "S3",
+      "name": "fusion_organs",
+      "tau": 0.52,
+      "coverage": 1.0,
+      "evidence_hit": 5,
+      "evidence_total": 5,
+      "missing_count": 0
+    },
+    {
+      "id": "S4",
+      "name": "power_governance",
+      "tau": 0.68,
+      "coverage": 1.0,
+      "evidence_hit": 5,
+      "evidence_total": 5,
+      "missing_count": 0
+    },
+    {
+      "id": "S5",
+      "name": "dissertation_text",
+      "tau": 0.84,
+      "coverage": 1.0,
+      "evidence_hit": 7,
+      "evidence_total": 7,
+      "missing_count": 0
+    },
+    {
+      "id": "S6",
+      "name": "public_merge",
+      "tau": 1.0,
+      "coverage": 1.0,
+      "evidence_hit": 4,
+      "evidence_total": 4,
+      "missing_count": 0
+    }
+  ],
+  "trajectory_tail": [
+    {
+      "generation": 27,
+      "best_fitness": 1.0,
+      "mean_fitness": 1.0,
+      "best_genome": {
+        "S0": 0.25,
+        "S1": 0.21428571428571427,
+        "S2": 0.17857142857142858,
+        "S3": 0.14285714285714285,
+        "S4": 0.10714285714285714,
+        "S5": 0.07142857142857142,
+        "S6": 0.03571428571428571
+      },
+      "tau_peak": 0.3779,
+      "notes": ""
+    },
+    {
+      "generation": 28,
+      "best_fitness": 1.0,
+      "mean_fitness": 1.0,
+      "best_genome": {
+        "S0": 0.25,
+        "S1": 0.21428571428571427,
+        "S2": 0.17857142857142858,
+        "S3": 0.14285714285714285,
+        "S4": 0.10714285714285714,
+        "S5": 0.07142857142857142,
+        "S6": 0.03571428571428571
+      },
+      "tau_peak": 0.3779,
+      "notes": ""
+    },
+    {
+      "generation": 29,
+      "best_fitness": 1.0,
+      "mean_fitness": 1.0,
+      "best_genome": {
+        "S0": 0.25,
+        "S1": 0.21428571428571427,
+        "S2": 0.17857142857142858,
+        "S3": 0.14285714285714285,
+        "S4": 0.10714285714285714,
+        "S5": 0.07142857142857142,
+        "S6": 0.03571428571428571
+      },
+      "tau_peak": 0.3779,
+      "notes": ""
+    },
+    {
+      "generation": 30,
+      "best_fitness": 1.0,
+      "mean_fitness": 1.0,
+      "best_genome": {
+        "S0": 0.25,
+        "S1": 0.21428571428571427,
+        "S2": 0.17857142857142858,
+        "S3": 0.14285714285714285,
+        "S4": 0.10714285714285714,
+        "S5": 0.07142857142857142,
+        "S6": 0.03571428571428571
+      },
+      "tau_peak": 0.3779,
+      "notes": ""
+    },
+    {
+      "generation": 31,
+      "best_fitness": 1.0,
+      "mean_fitness": 1.0,
+      "best_genome": {
+        "S0": 0.25,
+        "S1": 0.21428571428571427,
+        "S2": 0.17857142857142858,
+        "S3": 0.14285714285714285,
+        "S4": 0.10714285714285714,
+        "S5": 0.07142857142857142,
+        "S6": 0.03571428571428571
+      },
+      "tau_peak": 0.3779,
+      "notes": ""
+    }
+  ],
+  "geltung": "Spezifikation+Modell",
+  "ontology": "dissertation_as_os",
+  "sha16": "92b16f0d023368a8"
+}

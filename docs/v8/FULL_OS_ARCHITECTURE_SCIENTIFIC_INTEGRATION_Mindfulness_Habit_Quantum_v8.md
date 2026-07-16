@@ -104,4 +104,4 @@ Bisherige Erweiterungen (Achtsamkeit-Neuroplastizität, Habit Formation, vorheri
 
 **Vermerk für alle zukünftigen Commits & Sessions**: Wissenschaftliche Arbeit höchster Qualität wird systemweit (nicht nur theoretisch) in die Architektur des gesamten Fusion Hero OS integriert. Layer 0 enforced. High-Intellect Protocol (Präzision, Quellen, Limitationen) gilt uneingeschränkt.
 
-*Generated & committed via Grok v8/main Fusion Hero OS Protocol | Full OS Scope | User: 95guknow / der Maintainer95g | 2026-07-05*
+*Generated & committed via Grok v8/main Fusion Hero OS Protocol | Full OS Scope | User: 95guknow / fusionheroos | 2026-07-05*

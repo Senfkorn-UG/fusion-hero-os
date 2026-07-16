@@ -13,14 +13,16 @@ from typing import Any, Dict, Optional
 ROLES_PATH = Path(__file__).parent / "mesh_roles.yaml"
 
 _FALLBACK = {
-    "mesh_roles_version": "1.1",
+    "mesh_roles_version": "1.3",
+    "platform_version": "10.0.0",
     "tailnet": "example.ts.net",
+    "live_inventory": False,
     "role_assignments": {
         "mainframe": {
             "node_id": "mainframe",
             "role": "orchestrator",
-            "hostname": "desktop-kpki9e4",
-            "magicdns": "host.example.ts.net",
+            "hostname": "mainframe",
+            "magicdns": "mainframe.example.ts.net",
             "platform": "windows",
             "canonical": True,
             "aliases": ["desktop"],
@@ -29,29 +31,29 @@ _FALLBACK = {
             "node_id": "desktop",
             "role": "grok-workstation",
             "same_as": "mainframe",
-            "hostname": "desktop-kpki9e4",
-            "magicdns": "host.example.ts.net",
+            "hostname": "mainframe",
+            "magicdns": "mainframe.example.ts.net",
             "platform": "windows",
         },
         "mobile": {
             "node_id": "phone",
             "role": "mobile-client",
-            "hostname": "phone-node",
-            "magicdns": "host.example.ts.net",
+            "hostname": "phone",
+            "magicdns": "phone.example.ts.net",
             "platform": "android",
         },
         "legacy": {
             "node_id": "legacy-linux",
             "role": "archived",
-            "hostname": "mainframe",
-            "magicdns": "host.example.ts.net",
+            "hostname": "legacy-mainframe",
+            "magicdns": "legacy-mainframe.example.ts.net",
             "platform": "linux",
             "status": "offline",
         },
     },
     "routing": {
-        "base_url": "https://host.example.ts.net",
-        "mainframe_hostname": "desktop-kpki9e4",
+        "base_url": "https://mainframe.example.ts.net",
+        "mainframe_hostname": "mainframe",
         "funnel_port": 8088,
     },
 }
@@ -96,7 +98,7 @@ def get_mainframe() -> dict:
 
 
 def get_mainframe_hostname() -> str:
-    return get_mainframe().get("hostname", "desktop-kpki9e4")
+    return get_mainframe().get("hostname", "mainframe")
 
 
 def get_mainframe_magicdns() -> str:

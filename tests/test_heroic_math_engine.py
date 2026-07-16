@@ -9,7 +9,12 @@ Edit nicht stillschweigend wieder in eine Überclaim-Behauptung zurückfällt.
 import numpy as np
 import pytest
 
-from fusion_hero_os.core.heroic_math_engine import HeroicMatrixEngine, RepairedStructureIP
+from fusion_hero_os.core.heroic_math_engine import (
+    HeroicMatrixEngine,
+    RepairedStructureIP,
+    OrthogonalProjector,
+    BanachContractionSeed,
+)
 
 
 def test_commutator_is_antisymmetric():
@@ -75,16 +80,46 @@ def test_monotonicity_is_not_a_universal_law():
     )
 
 
-def test_module_docstring_does_not_reclaim_all_four_nodes():
-    """Wächter gegen Rückfall in die Überclaim-Formulierung.
+def test_k17_orthogonal_projector_properties():
+    """Knoten 17 — SATZ: Orthogonalprojektor idempotent/symmetrisch/Spektrum/nicht-expansiv."""
+    rng = np.random.default_rng(17)
+    for _ in range(80):
+        n = int(rng.integers(2, 7))
+        k = int(rng.integers(1, n + 1))
+        proj = OrthogonalProjector(rng.normal(0, 1, (n, k)))
+        v = rng.normal(0, 1, n)
+        assert proj.is_idempotent()
+        assert proj.is_symmetric()
+        assert proj.spectrum_in_01()
+        assert proj.is_nonexpansive_for(v)
 
-    Die frühere Docstring-Zeile 'Repariert zentrale mathematische Schwächen
-    (Knoten 16, 17, 19, 20)' behauptete alle vier als erledigt, obwohl nur
-    Knoten 1/16/19 überhaupt Code haben (und davon nur mit Einschränkungen).
-    Dieser Test schlägt fehl, falls diese Formulierung unbemerkt zurückkehrt.
-    """
+
+def test_k20_banach_contraction_fixed_point():
+    """Knoten 20 — SATZ: Banach-Kontraktion hat Fixpunkt und geometrische Konvergenz."""
+    rng = np.random.default_rng(20)
+    for _ in range(40):
+        n = int(rng.integers(2, 6))
+        M = rng.normal(0, 1, (n, n))
+        q = float(rng.uniform(0.1, 0.9))
+        # scale to spectral radius < q < 1
+        svals = np.linalg.svd(M, compute_uv=False)
+        scale = (q * 0.99) / (svals[0] + 1e-12)
+        A = M * scale
+        c = rng.normal(0, 1, n)
+        banach = BanachContractionSeed(A, c)
+        x0 = rng.normal(0, 1, n)
+        assert banach.verify_contraction_bound(x0, n_steps=30)
+        x_star = banach.fixpoint()
+        x, _ = banach.iterate(x0, max_steps=200)
+        assert np.linalg.norm(x - x_star) < 1e-6
+
+
+def test_module_docstring_does_not_use_blanket_repair_claim():
+    """Wächter: keine pauschale 'Repariert alle Knoten'-Phrase ohne Geltung."""
     import fusion_hero_os.core.heroic_math_engine as mod
 
     doc = (mod.__doc__ or "").lower()
     assert "repariert zentrale mathematische schwächen (knoten 16, 17, 19, 20)" not in doc
-    assert "nicht implementiert" in doc, "Docstring sollte Knoten 17/20 explizit als offen kennzeichnen"
+    # K17/K20 are implemented as SATZ — must not claim "nicht implementiert" anymore
+    assert "knoten 17" in doc and "satz" in doc
+    assert "knoten 20" in doc

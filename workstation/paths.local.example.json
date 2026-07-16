@@ -1,0 +1,18 @@
+{
+  "_comment": "Kopiere nach paths.local.json (gitignored). Nur echte Mesh-Werte — nie committen.",
+  "tailscale": {
+    "tailnet": "DEIN-TAILNET.ts.net",
+    "nodes": {
+      "mainframe": {
+        "hostname": "DEIN-WINDOWS-HOST",
+        "magicdns": "DEIN-WINDOWS-HOST.DEIN-TAILNET.ts.net"
+      },
+      "phone": {
+        "hostname": "DEIN-ANDROID-HOST",
+        "magicdns": "DEIN-ANDROID-HOST.DEIN-TAILNET.ts.net",
+        "login_required": "deine-email@example.com"
+      }
+    },
+    "file_mirror_base": "http://DEIN-WINDOWS-HOST.DEIN-TAILNET.ts.net:8088/mesh/files/phone"
+  }
+}

@@ -562,7 +562,7 @@ class CriticalMetaAnalysisCoreModule:
 # =====================================================================
 
 class ExecutableAuditAgent:
-    """Implementierung des AuditAgent-Gatekeepers nach ALTE_FRAU_95g-Spezifikation."""
+    """Implementierung des AuditAgent-Gatekeepers nach BuilderProfile-Spezifikation."""
     def __init__(self):
         self.execute_hook = None
 
@@ -701,7 +701,7 @@ class QUBOIntegrationCoreModule:
 
 if __name__ == "__main__":
     print("=" * 80)
-    print("INITIALISIERE HEROIC CORE MAINFRAME (ALTE_FRAU_95g) MIT INTEGRALEM SOLVER")
+    print("INITIALISIERE HEROIC CORE MAINFRAME (BuilderProfile) MIT INTEGRALEM SOLVER")
     print("=" * 80)
 
     # 1. Mainframe initialisieren (Booting und Hook-Interlocking)

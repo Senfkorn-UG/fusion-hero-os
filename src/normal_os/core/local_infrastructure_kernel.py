@@ -47,11 +47,17 @@ def _thresholds_file() -> Path:
 
 
 def _paths_config() -> Dict[str, Any]:
-    paths_file = _repo_root() / "workstation" / "paths.json"
-    if not paths_file.exists():
+    ws_dir = _repo_root() / "workstation"
+    if not (ws_dir / "paths.json").exists():
         return {}
     try:
-        return json.loads(paths_file.read_text(encoding="utf-8"))
+        import sys
+
+        if str(ws_dir) not in sys.path:
+            sys.path.insert(0, str(ws_dir))
+        from resolve_paths import resolve_paths  # type: ignore[import-not-found]
+
+        return resolve_paths(ws_dir)
     except Exception:
         return {}
 

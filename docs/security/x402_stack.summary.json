@@ -1,0 +1,11 @@
+{
+  "generated_at": "2026-07-15T18:12:45.690898+00:00",
+  "threat_level": "critical",
+  "threat_score": 100.0,
+  "sandbox_proved": "6/6",
+  "attack_insecure": true,
+  "attack_secure_block": true,
+  "attack_sha16": "84b60590436c1a3a",
+  "instagram": "https://www.instagram.com/95guknow/",
+  "github": "https://github.com/95guknow/fusion-hero-os"
+}

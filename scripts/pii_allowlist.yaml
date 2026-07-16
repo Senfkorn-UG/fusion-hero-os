@@ -1,0 +1,58 @@
+# PII / secret scanner allowlist.
+#
+# Two sections:
+#   allow_literals: exact strings (or "rule:match") that are documentation
+#                   examples or neutral placeholders and are safe to keep.
+#   allow_paths:    exact file paths (NOT broad tree globs) whose contents are
+#                   deliberately example-shaped (e.g. the scanner's own test
+#                   fixtures). Blanket tree allowlists are forbidden: real PII
+#                   must be scrubbed, not hidden.
+#
+# Keep this list minimal and justified. Prefer replacing real PII with neutral
+# placeholders over allowlisting it.
+
+allow_literals:
+  # Documentation / neutral placeholder emails.
+  - "user@example.com"
+  - "you@example.com"
+  - "admin@example.com"
+  - "operator@example.com"
+  - "operator-alt@example.com"
+  # Public recursive DNS resolvers (not personal infrastructure).
+  - "9.9.9.9"
+  - "149.112.112.112"
+  - "ipv4_address:9.9.9.9"
+  - "ipv4_address:149.112.112.112"
+  # Documentation-reserved / neutral hostnames + placeholders used after scrub.
+  - "device.example.ts.net"
+  - "mainframe-host.example.ts.net"
+  - "mobile-node.example.ts.net"
+  - "mainframe.example.ts.net"
+  - "phone.example.ts.net"
+  - "mesh-exit.example.ts.net"
+  - "mainframe-wsl.example.ts.net"
+  - "legacy-exit.example.ts.net"
+  - "legacy-mainframe.example.ts.net"
+  - "Hostname.example.ts.net"
+  - "DEIN-WINDOWS-HOST.DEIN-TAILNET.ts.net"
+  - "DEIN-ANDROID-HOST.DEIN-TAILNET.ts.net"
+  - "https://project-ref.supabase.co"
+  - "project-ref.supabase.co"
+  - "YOUR_SUPABASE_PROJECT_REF"
+  - "YOUR_GCE_PROJECT"
+
+# Suffix / regex patterns for neutral public placeholders (not real topology).
+allow_match_suffixes:
+  - ".example.ts.net"
+
+allow_match_prefixes:
+  - "YOUR_"
+
+allow_paths:
+  # The PII scanner's own unit-test file contains PLANTED SYNTHETIC secrets
+  # (deliberately example-shaped email/host/IP/token strings) used to prove the
+  # detector fires. These are test fixtures, not real PII; the file is exempted
+  # by exact path so the fixtures cannot be mistaken for a real leak.
+  - "tests/test_pii_scanner.py"
+  - "tests/test_resolve_paths.py"
+  - "workstation/paths.local.example.json"

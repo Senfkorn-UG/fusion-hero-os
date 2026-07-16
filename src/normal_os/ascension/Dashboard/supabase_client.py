@@ -6,7 +6,7 @@ lazy-initialisierten Supabase-Client bereit. Alle Fehler werden defensiv
 behandelt, damit das Dashboard auch ohne erreichbares Supabase startet
 (konsistent mit den optionalen Imports in app.py).
 
-Projekt: https://supabase.com/dashboard/project/swmmoxhdzarmoupyssqe
+Projekt: https://supabase.com/dashboard/project/YOUR_SUPABASE_PROJECT_REF
 
 Status-Reporting ist bewusst ehrlich gehalten und unterscheidet:
   - configured         : .env-Variablen vorhanden?
@@ -48,7 +48,7 @@ SUPABASE_URL = _env("SUPABASE_URL", "PUBLIC_SUPABASE_URL")
 SUPABASE_KEY = _env("SUPABASE_PUBLISHABLE_KEY", "PUBLIC_SUPABASE_PUBLISHABLE_KEY")
 SUPABASE_SECRET_KEY = _env("SUPABASE_SECRET_KEY")
 SUPABASE_JWKS_URL = _env("SUPABASE_JWKS_URL")
-SUPABASE_PROJECT_REF = _env("SUPABASE_PROJECT_REF", "PUBLIC_SUPABASE_PROJECT_REF", default="swmmoxhdzarmoupyssqe")
+SUPABASE_PROJECT_REF = _env("SUPABASE_PROJECT_REF", "PUBLIC_SUPABASE_PROJECT_REF", default="YOUR_SUPABASE_PROJECT_REF")
 
 try:
     from supabase import Client, create_client  # type: ignore

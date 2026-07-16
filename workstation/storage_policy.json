@@ -33,7 +33,8 @@
     "archives": "Archives",
     "sd_models": "SD_models",
     "llm_models": "LLM_models",
-    "photos_dcim": "ALTE_Frau_95g_Photo_Ingestion/DCIM_PC"
+    "photos_dcim": "ALTE_Frau_95g_Photo_Ingestion/DCIM_PC",
+    "mathematik": "mesh/mathematik"
   },
   "offload_folders": [
     {"src": "stable-diffusion-webui/models", "dst": "SD_models"},

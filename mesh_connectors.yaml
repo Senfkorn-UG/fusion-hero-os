@@ -1,81 +1,92 @@
-# Fusion Hero OS — Mesh Connector Registry
-# Prinzip: Jeder Konnektor ist ein eigenständiges Mesh-Segment.
-# Kein Monolith — jede Verbindung hat eigene Identität, Health-Probe und Routing.
-
-mesh_version: "1.0"
+mesh_version: '1.2'
 tailnet: example.ts.net
-principle: "Jeder Konnektor = ein einzelnes Teil des Mesh (eigene ID, Host, Health, Tag)"
-
-# Physische Mesh-Knoten (Tailscale Devices)
+updated: '2026-07-15'
+live_inventory: false
+# Dissertation-as-OS: mesh registry is an organ of the dissertation
+# (OS = work; text = one expression). docs/dissertation/ONTOLOGIE_DISSERTATION_IST_DAS_OS.md
+ontology: dissertation_as_os
+principle: Jeder Konnektor = ein einzelnes Teil des Mesh (eigene ID, Host, Health, Tag)
 nodes:
   mainframe:
     role: orchestrator
     hostname: mainframe
-    magicdns: host.example.ts.net
-    platform: linux
+    magicdns: mainframe.example.ts.net
+    platform: windows
+    status: configured
+    aliases:
+    - desktop
     tailscale_tag: tag:fusion-node-mainframe
     services:
-      - hero-docs-server
-      - tailscale-control
-
+    - fusion-dashboard
+    - hero-docs-server
+    - tailscale-control
+    - grok-cli
+    - mcp-bridges
   desktop:
-    # Doppelrolle: weiterhin Grok-Workstation UND vollwertige Enduser-Stelle
-    # auf einer Stufe mit dem Handy (siehe enduser-Block).
     role: grok-workstation
-    hostname: desktop-kpki9e4
-    magicdns: host.example.ts.net
+    same_as: mainframe
+    hostname: mainframe
+    magicdns: mainframe.example.ts.net
     platform: windows
+    status: configured
     tailscale_tag: tag:fusion-node-desktop
     services:
-      - grok-cli
-      - mcp-bridges
-    # Enduser-Stelle mit zusaetzlicher Sicherheitsschicht.
-    # Initial laeuft NUR das klassische Enduser-Protokoll (fail-closed):
-    # erweiterte Protokolle sind vorhanden, aber standardmaessig deaktiviert
-    # und muessen bewusst freigeschaltet werden.
+    - grok-cli
+    - mcp-bridges
     enduser:
-      peer_of: phone            # gleiche Enduser-Stufe wie das Handy
+      peer_of: phone
       security_layer: enabled
       active_protocol: classic-enduser-only
       elevated_protocols_enabled: false
-      elevated_protocols:       # vorhanden, aber initial gesperrt
-        - orchestrator-access
-        - connector-admin
-      note: >
-        Erweiterte Protokolle erst nach bewusster Freischaltung durch den Owner.
-        Bis dahin verhaelt sich desktop als Enduser wie das phone.
+      elevated_protocols:
+      - orchestrator-access
+      - connector-admin
+      note: 'Erweiterte Protokolle erst nach bewusster Freischaltung durch den Owner.
 
+        '
   phone:
     role: mobile-client
-    hostname: phone-node
-    magicdns: host.example.ts.net
+    hostname: phone
+    hostname_aliases:
+    - phone-node
+    magicdns: phone.example.ts.net
     platform: android
+    status: configured
     tailscale_tag: tag:fusion-node-phone
     services:
-      - tailscale-app
-      - phone-link-bridge
+    - tailscale-app
+    - phone-link-bridge
+    - mesh-files-portal
     enduser:
-      peer_of: desktop          # gleiche Enduser-Stufe wie der Windows-PC
-      security_layer: standard  # Handy: klassisches Enduser-Protokoll ohne Zusatzschicht
+      peer_of: desktop
+      security_layer: standard
       active_protocol: classic-enduser-only
-
-# Logische Agenten-Instanzen — eigene Mesh-Identitaet, aber kein physisches
-# Tailscale-Geraet. Bewusst von 'nodes' getrennt, damit sichtbar bleibt, was
-# Hardware ist und was ein laufender Agent.
+  mesh-exit:
+    role: mesh-exit
+    hostname: mesh-exit
+    magicdns: mesh-exit.example.ts.net
+    platform: linux
+    status: configured
+    tailscale_tag: tag:fusion-node-exit
+  wsl:
+    role: dev-leaf
+    hostname: mainframe-wsl
+    magicdns: mainframe-wsl.example.ts.net
+    platform: linux
+    status: optional
+    tailscale_tag: tag:fusion-node-wsl
 agents:
   researcher:
     mesh_id: mesh-agent-researcher
     role: research
-    runs_on: mainframe          # ausgefuehrt auf dem Orchestrator-Knoten
+    runs_on: mainframe
     health_path: /mesh/agent/researcher/status
     tailscale_tag: tag:fusion-agent-researcher
     capabilities:
-      - literatur-recherche
-      - quellen-erhebung
-      - evidenz-auswertung
-    description: "Researcher — eigene Mesh-Instanz fuer Recherche/Evidenz"
-
-# MCP-Konnektoren — jeweils eigenes Mesh-Segment (logisch isoliert)
+    - literatur-recherche
+    - quellen-erhebung
+    - evidenz-auswertung
+    description: Researcher — Mesh-Instanz fuer Recherche/Evidenz
 connectors:
   github:
     mesh_id: mesh-connector-github
@@ -83,93 +94,114 @@ connectors:
     host_node: desktop
     health_path: /mesh/github/status
     tailscale_tag: tag:fusion-connector-github
-    description: "GitHub MCP — Repos, PRs, Issues"
-
+    description: GitHub MCP
   gmail:
     mesh_id: mesh-connector-gmail
     type: mcp
     host_node: desktop
     health_path: /mesh/gmail/status
     tailscale_tag: tag:fusion-connector-gmail
-    description: "Gmail MCP — E-Mail Bridge"
-
+    description: Gmail MCP
   google_drive:
     mesh_id: mesh-connector-google-drive
     type: mcp
     host_node: desktop
     health_path: /mesh/google_drive/status
     tailscale_tag: tag:fusion-connector-google-drive
-    description: "Google Drive MCP — Datei-Sync"
-
+    description: Google Drive MCP
   google_calendar:
     mesh_id: mesh-connector-google-calendar
     type: mcp
     host_node: desktop
     health_path: /mesh/google_calendar/status
     tailscale_tag: tag:fusion-connector-google-calendar
-    description: "Google Calendar MCP — Termine"
-
+    description: Google Calendar MCP
   canva:
     mesh_id: mesh-connector-canva
     type: mcp
     host_node: desktop
     health_path: /mesh/canva/status
     tailscale_tag: tag:fusion-connector-canva
-    description: "Canva MCP — Design-Assets"
-
+    description: Canva MCP
   gamma:
     mesh_id: mesh-connector-gamma
     type: mcp
     host_node: desktop
     health_path: /mesh/gamma/status
     tailscale_tag: tag:fusion-connector-gamma
-    description: "Gamma MCP — Präsentationen"
-
+    description: Gamma MCP
   notion:
     mesh_id: mesh-connector-notion
     type: mcp
     host_node: desktop
     health_path: /mesh/notion/status
     tailscale_tag: tag:fusion-connector-notion
-    description: "Notion MCP — Wissensbasis"
-
+    description: Notion MCP
   vercel:
     mesh_id: mesh-connector-vercel
     type: mcp
     host_node: desktop
     health_path: /mesh/vercel/status
     tailscale_tag: tag:fusion-connector-vercel
-    description: "Vercel MCP — Deployments"
-
+    description: Vercel MCP
   hyperframes:
     mesh_id: mesh-connector-hyperframes
     type: mcp
     host_node: desktop
     health_path: /mesh/hyperframes/status
     tailscale_tag: tag:fusion-connector-hyperframes
-    description: "HyperFrames by HeyGen MCP — Video"
-
+    description: HyperFrames MCP
   tasks:
     mesh_id: mesh-connector-tasks
     type: mcp
     host_node: desktop
     health_path: /mesh/tasks/status
     tailscale_tag: tag:fusion-connector-tasks
-    description: "Tasks MCP — Aufgabenverwaltung"
-
-# Routing-Schema (Funnel + MagicDNS)
+    description: Tasks MCP
 routing:
-  base_url: "https://host.example.ts.net"
-  unified: "/fusion/status"
-  fusion_graph: "/fusion/graph"
-  mesh_overview: "/mesh/status"
-  per_connector: "/mesh/{connector_id}/status"
-  per_agent: "/mesh/agent/{agent_id}/status"
-  enduser_overview: "/mesh/enduser/status"
-  llm_overview: "/llm/status"
-  per_llm: "/llm/{provider}/status"
-  tailscale_overview: "/tailscale/status"
-
-# Verknüpfung mit LLM-Frameworks (siehe fusion_unified.yaml)
+  # Grok interconnect control plane (canonical re-routes)
+  control_plane: /mainframe/grok
+  interconnect: /api/grok/interconnect
+  grok_route: /api/grok/route
+  grok_routes_table: /api/grok/routes
+  grok_chat: /api/grok/chat
+  grok_status: /api/grok/status
+  ai_inhouse_status: /api/ai/inhouse/status
+  ai_inhouse_chat: /api/ai/inhouse/chat
+  creative_inhouse_status: /api/creative/inhouse/status
+  creative_inhouse_create: /api/creative/inhouse/create
+  openai_compatible: /v1/chat/completions
+  openai_images: /v1/images/generations
+  mainframe_hub: /mainframe
+  dauer_vr: /mainframe/vr
+  ide: /mainframe/ide
+  worktree: /mainframe/worktree
+  ops: /mainframe/ops
+  legacy_redirects:
+    /grok: /mainframe/grok
+    /ide: /mainframe/ide
+    /worktree: /mainframe/worktree
+    /portal: /mainframe
+    /interconnect: /mainframe/grok
+    /vr/persistent: /mainframe/vr
+    /api/interconnect: /api/grok/interconnect
+  base_url: https://mainframe.example.ts.net
+  unified: /fusion/status
+  fusion_graph: /fusion/graph
+  mesh_overview: /mesh/status
+  fractal_status: /mesh/fractal/status
+  fractal_replica: /mesh/fractal/replica
+  exit_nodes: /mesh/exit-nodes
+  per_connector: /mesh/{connector_id}/status
+  per_agent: /mesh/agent/{agent_id}/status
+  enduser_overview: /mesh/enduser/status
+  llm_overview: /llm/status
+  per_llm: /llm/{provider}/status
+  tailscale_overview: /tailscale/status
+fractal_mesh:
+  module: fractal_mainframe_mesh.py
+  exit_config: mesh_virtual_exit_nodes.yaml
+  storage: ~/.fusion/mesh/fractal/manifest.json
 integration_hub: fusion_integration_hub.py
 unified_config: fusion_unified.yaml
+platform_version: 10.0.0

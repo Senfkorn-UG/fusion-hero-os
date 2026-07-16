@@ -38,7 +38,7 @@ This activates:
 Typical structure:
 ```
 03_VR_Assets/
-├── vr_mister_Contributor_hero_equirectangular.jpg
+├── vr_builder_hero_equirectangular.jpg
 ├── heroic_evolution_360/
 └── roadmap_visual_vr/
 ```

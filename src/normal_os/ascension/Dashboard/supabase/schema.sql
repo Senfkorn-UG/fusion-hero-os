@@ -1,6 +1,6 @@
 -- Fusion Hero OS — Supabase Schema
--- Projekt: swmmoxhdzarmoupyssqe
--- Dashboard: https://supabase.com/dashboard/project/swmmoxhdzarmoupyssqe
+-- Projekt: YOUR_SUPABASE_PROJECT_REF
+-- Dashboard: https://supabase.com/dashboard/project/YOUR_SUPABASE_PROJECT_REF
 -- SQL Editor → New query → Run
 
 create table if not exists public.fusion_events (

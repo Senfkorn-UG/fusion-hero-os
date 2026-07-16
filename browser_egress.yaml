@@ -1,0 +1,80 @@
+# Browser egress — how Fusion Hero OS opens URLs
+#
+# Comädchen (Comet) = Operator's direct Nummer 2:
+#   - reports ONLY to the operator
+#   - receives input ONLY from the operator
+# Opening via OS default (CometHTM) is the Nummer-2 membrane (feature).
+# Google One / Drive need Chrome account profile (separate organ), not
+# "orders to Comädchen" — that was the confusion, not a rank error.
+
+version: "1.1"
+platform_version: "10.0.0"
+
+comaedchen:
+  codename: Comädchen
+  surface: Perplexity Comet
+  rank: nummer_2
+  reports_only_to: operator
+  input_only_from: operator
+  progid: CometHTM
+  exe: "C:\\Program Files\\Perplexity\\Comet\\Application\\comet.exe"
+  note: >
+    Direct second-in-command instance. Not a general multi-agent bus.
+    Sibling organs (Chrome Google One, Grok, Dashboard) do not command her.
+
+principle: >
+  Comädchen/Comet is the operator's exclusive Nummer-2 channel (input from you,
+  report to you). OS default URL open = that membrane. Chrome profiles are the
+  Google account organ for 5TB One/Drive/Play — parallel, not her superiors.
+
+default_progid: CometHTM
+default_exe: "C:\\Program Files\\Perplexity\\Comet\\Application\\comet.exe"
+default_label: "Comädchen / Comet — Nummer 2 tunnel (operator-exclusive)"
+
+# default open policy for agent helpers
+# google routes override to chrome_personal (account organ)
+active: chrome_personal
+
+profiles:
+  default:
+    label: "Comädchen tunnel (OS default / Nummer 2 membrane)"
+    kind: shell
+    role: comaedchen_nummer_2
+  chrome_personal:
+    label: "Chrome Default — Google account organ (operator / 5TB One)"
+    kind: chrome
+    role: google_account_organ
+    exe: "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe"
+    user_data_dir: "%LOCALAPPDATA%\\Google\\Chrome\\User Data"
+    profile_directory: "Default"
+  chrome_work:
+    label: "Chrome Profile 1 — operator-alt@example.com"
+    kind: chrome
+    role: google_account_organ_alt
+    exe: "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe"
+    user_data_dir: "%LOCALAPPDATA%\\Google\\Chrome\\User Data"
+    profile_directory: "Profile 1"
+  edge:
+    label: "Microsoft Edge"
+    kind: exe
+    role: other_browser
+    exe: "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe"
+  comet:
+    label: "Force Comädchen (explicit Nummer-2 tunnel)"
+    kind: exe
+    role: comaedchen_nummer_2
+    exe: "C:\\Program Files\\Perplexity\\Comet\\Application\\comet.exe"
+  none:
+    label: "Do not open browser"
+    kind: none
+    role: silent
+
+# URL classes → organ (not chain-of-command to Comädchen)
+routes:
+  google_one: chrome_personal      # account organ, not Nummer-2 orders
+  google_drive: chrome_personal
+  play_store: chrome_personal
+  app_store: chrome_personal
+  local_dashboard: default         # may surface via Nummer-2 membrane
+  github: default
+  operator_private: comet          # explicit exclusive channel

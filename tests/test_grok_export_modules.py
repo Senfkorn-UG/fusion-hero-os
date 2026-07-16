@@ -129,7 +129,7 @@ def test_image_job_status_and_list():
 
 
 def test_prompt_builder_and_validation():
-    identity = {"name": "ALTE_Frau_95g", "style_tags": ["cyberpunk"], "primary_seed": "seed1"}
+    identity = {"name": "BuilderProfile", "style_tags": ["cyberpunk"], "primary_seed": "seed1"}
     built = build_prompt("campfire", identity)
     assert "cyberpunk" in built
     assert validate_identity(identity)["valid"] is True

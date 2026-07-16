@@ -206,17 +206,63 @@ async def api_mod_validate(payload: ValidatePayload):
 
 @router.get("/api/grok/status")
 async def api_grok_status():
-    from core.local_llama import get_local_llama, default_model_pool
     from core.claude_science import status as science_status
-    llama = get_local_llama().status()
+
+    llama = {"active": False, "error": "unavailable"}
+    model_pool = []
+    try:
+        from core.local_llama import get_local_llama, default_model_pool
+
+        try:
+            llama = get_local_llama().status()
+        except Exception as exc:  # noqa: BLE001
+            llama = {"active": False, "error": str(exc)[:200]}
+        try:
+            model_pool = default_model_pool()
+        except Exception as exc:  # noqa: BLE001
+            model_pool = {"error": str(exc)[:120]}
+    except Exception as exc:  # noqa: BLE001
+        llama = {"active": False, "error": f"import: {exc}"[:200]}
+
+    interconnect = {}
+    try:
+        import sys
+        from pathlib import Path
+
+        root = Path(__file__).resolve().parents[2]
+        if str(root) not in sys.path:
+            sys.path.insert(0, str(root))
+        from fusion_hero_os.core.grok_interconnect import get_graph
+
+        interconnect = await asyncio.to_thread(get_graph, False)
+    except Exception as exc:  # noqa: BLE001
+        interconnect = {"error": str(exc)}
+    try:
+        from grok_bridge import get_grok_bridge
+
+        bridge_st = get_grok_bridge().status()
+    except Exception as exc:  # noqa: BLE001
+        bridge_st = {"error": str(exc)}
     return {
         "bridge": "grok-intern",
         "skill": "fusion-hero-os",
         "llama_local": llama,
         "claude_science": science_status(),
-        "default_model_pool": default_model_pool(),
+        "default_model_pool": model_pool,
+        "grok_bridge": bridge_st,
+        "interconnect": {
+            "health_score": interconnect.get("health_score"),
+            "summary": interconnect.get("summary"),
+            "recommendations": interconnect.get("recommendations"),
+            "evolved": interconnect.get("evolved"),
+            "full": "/api/grok/interconnect",
+            "ui": "/mainframe/grok",
+        },
         "endpoints": [
             "/api/grok/chat",
+            "/api/grok/status",
+            "/api/grok/interconnect",
+            "/mainframe/grok",
             "/api/v12/orchestrate",
             "/api/claude-science/analyze",
             "/api/input",
@@ -359,6 +405,24 @@ async def api_grok_chat(payload: ChatPayload):
     msg = (payload.message or "").strip()
     if not msg:
         return {"status": "error", "error": "empty message"}
+    # Pre-route every chat message through interconnect route table
+    route_plan = {}
+    try:
+        import sys
+        from pathlib import Path
+
+        _root = Path(__file__).resolve().parents[2]
+        if str(_root) not in sys.path:
+            sys.path.insert(0, str(_root))
+        from fusion_hero_os.core.grok_route_table import route_message
+        from grok_bridge import get_grok_bridge
+
+        _intents = get_grok_bridge()._detect_intents(msg)
+        route_plan = route_message(msg, _intents)
+        route_plan["intents"] = _intents
+    except Exception as _route_exc:  # noqa: BLE001
+        route_plan = {"ok": False, "error": str(_route_exc)[:160]}
+
     from core.heroic_orchestration import classify_and_normalize
     from core.local_llama import get_local_llama, default_model_pool
     from core.provider_switcher import select_provider_for_query
@@ -417,6 +481,10 @@ async def api_grok_chat(payload: ChatPayload):
         "dom": dom,
         "model_pool": default_model_pool(normalized),
         "provider_auto": os.getenv("FUSION_PROVIDER_AUTO", "1") == "1",
+        # re-routed interconnect plan (primary surface for UI)
+        "route_plan": route_plan,
+        "redirect_hint": route_plan.get("redirect_hint") if isinstance(route_plan, dict) else "/mainframe/grok",
+        "control_plane": "/mainframe/grok",
     }
 
 

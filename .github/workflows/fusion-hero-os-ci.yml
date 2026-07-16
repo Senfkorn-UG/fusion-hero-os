@@ -1,4 +1,4 @@
-name: Fusion Hero OS CI (consolidated v8)
+name: Fusion Hero OS CI (consolidated v10)
 
 # Konsolidiert aus 4 zuvor parallel existierenden, ueberlappenden Workflows
 # (ci.yml, fusion-hero-os-ci-v8.yml, Fusion-Hero-OS_CI_v8_FUsion_branch_resolved.yml,

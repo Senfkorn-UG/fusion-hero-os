@@ -5,25 +5,20 @@ Mathematische Kernkomponenten des Fusion-Hero-OS.
 Orientiert an der Strenge von Kompendium V3.3 & V4.0.
 
 Behandelt die Knoten-Aussagen ehrlich nach tatsaechlichem Stand — mit
-Einschraenkungen statt pauschaler Reparatur-Behauptung. Nur Knoten 1/16/19
-haben ueberhaupt Code, und davon nur eingeschraenkt (Fragment- bzw. Modell-
-Status). Knoten 17 und 20 sind NICHT IMPLEMENTIERT (kein Code, kein Test) —
-bewusst offen statt behauptet. Verifiziert wird genau der tatsaechliche Stand
-in tests/test_heroic_math_engine.py.
+Einschraenkungen statt pauschaler Ueberclaim-Behauptung. Verifiziert in
+run_sandbox_verification() und tests/test_heroic_math_engine.py.
 
   - Knoten 16 (Reziprozitaet): Die naive Gleichung Q1B1B2Q2 = Q2B2B1Q1 ist
     FALSCH (Gegenbeispiele existieren fuer fast alle Q1 != Q2). Der korrekte
     universelle Satz ist die Transpositions-Reziprozitaet:
         Q1B1B2Q2 = (Q2^T B2^T B1^T Q1^T)^T   fuer ALLE reellen Matrizen.
-  - Knoten 17 (Projektion): Orthogonalprojektoren P = U U^T sind idempotent,
-    symmetrisch, haben Spektrum in {0,1} und sind nicht-expansiv.
+  - Knoten 17 (Projektion): Orthogonalprojektoren P = U U^T sind SATZ —
+    idempotent, symmetrisch, Spektrum in {0,1}, nicht-expansiv (Code + pytest).
   - Knoten 19 (Monotonie der Fusion): S(fused) >= max(S(psi), S(phi)) gilt
     BEDINGT — bewiesen unter Realteil-Kompatibilitaet + Imaginaer-Kontraktion
-    und eta = 0. Der frueher voreingestellte eta-Asymmetrieterm ZERSTOERT die
-    Monotonie (numerisch ~9-15 % Verletzungen) und ist daher per Default 0.
+    und eta = 0. Der eta-Asymmetrieterm ZERSTOERT die Monotonie und ist Default 0.
   - Knoten 20 (Fixpunkt): Banach-Kontraktion T(x) = Ax + c mit ||A||_2 < 1
-    hat einen eindeutigen Fixpunkt; die Iteration konvergiert geometrisch.
-    Das ist die mathematische Grundlage des MasterSeed-Layer-0-Modells.
+    hat eindeutigen Fixpunkt und geometrische Konvergenz (SATZ, Code + pytest).
 
 Teil der 02_architecture Schicht.
 """

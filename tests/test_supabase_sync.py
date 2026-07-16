@@ -16,7 +16,8 @@ if str(_DASHBOARD) not in sys.path:
 from watch_party import WatchPartyManager, WatchRoom
 
 
-def test_watch_room_persist_called():
+def test_watch_room_persist_called(monkeypatch):
+    monkeypatch.setenv("FUSION_PROCESS_EXCLUSIVITY", "0")
     mgr = WatchPartyManager()
     room = mgr.create_room("https://youtu.be/dQw4w9WgXcQ")
     with patch("supabase_store.save_watch_room") as mock_save:

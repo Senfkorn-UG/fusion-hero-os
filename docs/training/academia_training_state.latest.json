@@ -1,0 +1,207 @@
+{
+  "generated_at": "2026-07-15T09:53:59.708554+00:00",
+  "epoch": 1784109239.7085543,
+  "account": {
+    "display_name": "Stephan Urban",
+    "mail_hint": "stephan95g@…",
+    "premium": true,
+    "public_profile": "https://independent.academia.edu/StephanUrban1",
+    "profile_confidence": "confirmed",
+    "profile_confirmed_at": "2026-07-15",
+    "profile_note": "Operator confirmed: own Academia profile (StephanUrban1)",
+    "interests": [
+      "Body and Soul",
+      "Aristotle's Metaphysics",
+      "Hellenistic Philosophy",
+      "Plato and Platonism",
+      "Ancient Greek Philosophy"
+    ],
+    "followers": 5,
+    "following": 1,
+    "domains": [
+      "existenzphilosophie_reading",
+      "agentic_ai_reading",
+      "ancient_philosophy_interests",
+      "hbv_hdv_virology_uploads"
+    ]
+  },
+  "curriculum": {
+    "ok": true,
+    "path": "docs\\training\\ACADEMIA_CURRICULUM_v1.md",
+    "hash": "bf258fa3c75c2815",
+    "chars": 5528,
+    "clusters": {
+      "existenzphilosophie": true,
+      "agentic_ai": true,
+      "ancient_philosophy": true,
+      "hbv_hdv": true,
+      "profile_confirmed": true
+    },
+    "links": [
+      {
+        "label": "independent.academia.edu/StephanUrban1",
+        "url": "https://independent.academia.edu/StephanUrban1"
+      },
+      {
+        "label": "StephanUrban1",
+        "url": "https://independent.academia.edu/StephanUrban1"
+      }
+    ],
+    "bullet_count": 33,
+    "sample_bullets": [
+      "Almut Furchert — *Das Stichwort: Existenz / Existieren*",
+      "Michael Niehaus — *Existieren Sie bloß – oder leben Sie schon?*",
+      "Diana Lohwasser — *Existenz bei Camus, Cioran und Lévinas*",
+      "Csaba Olay — *Existenz bei Jaspers und Sartre*",
+      "Thomas Wachtendorf — *Umriss einer existenzialistischen Ethik*",
+      "Christian Tewes — *Existentielle Angst und ihre Verkörperung*",
+      "Gianluca De Candia — *Pareyson / Jaspers*",
+      "Andreas Cremonini — *schreibend sich selbst erfinden*",
+      "Markus Wild — *Coetzee / Tiere / Existenzialismus* (bezogen auf Camus/Sisyphos)",
+      "Marc Wittmann — *Zeit und Existenz*",
+      "Peter Schüz, Matthias Wieser (Latour *Existenzweisen*), Benjamin Steiner",
+      "*Towards trustworthy agentic AI* (safety, robustness, privacy, system security)",
+      "*Meta-reasoning in autonomous agents*",
+      "*Real-time … YOLOv11n on edge devices* (edge compute — Cluster-relevant)",
+      "Body and Soul",
+      "Aristotle's Metaphysics",
+      "Hellenistic Philosophy",
+      "Plato and Platonism",
+      "Ancient Greek Philosophy",
+      "*Binding of Duck Carboxypeptidase D to Duck Hepatitis B Virus* (2004)",
+      "*Infection of a human hepatoma cell line by hepatitis B virus* (PNAS 2002) — HepaRG-Modell",
+      "*Liver capsule: Entry and entry inhibition of HBV/HDV* (Hepatology 2016) — NTCP",
+      "*HDV replication sensed by MDA5 / IFN-β/λ* (J. Hepatology 2018)",
+      "*Medical Advances in Hepatitis D Therapy: Molecular Targets* (IJMS) — Hepcludex/entry inhibitors",
+      "*Delta cure meeting 2022* report; RNA-based HBV replication system (Science Advances 2023)"
+    ]
+  },
+  "heroismus_axioms": [
+    {
+      "id": "Axiom_I_1stTier",
+      "path": "docs\\Heroismus\\Axiom_I_1stTier.md",
+      "chars": 1585,
+      "leitsatz": "Eudaimonia beginnt nicht in der Transzendenz, sondern im Schlamm. Der Mensch ist primär ein biologischer Prädator. Jede Theorie, die diese rohe Potenz leugnet, ist epistemisch fehlerhaft und führt zu systemischer Schwäche. Wahre Heroik verlangt die vollständige Integration des \"Teufels\", vermittelt durch das Internalisierungsprinzip.",
+      "hash": "d03fd0daa40d999c"
+    },
+    {
+      "id": "Axiom_I_Die_Integration_des_1st-Tier",
+      "path": "docs\\Heroismus\\Axiom_I_Die_Integration_des_1st-Tier.md",
+      "chars": 188,
+      "leitsatz": "",
+      "hash": "f52f467f6562d58a"
+    },
+    {
+      "id": "Axiom_II_Somatic",
+      "path": "docs\\Heroismus\\Axiom_II_Somatic.md",
+      "chars": 1086,
+      "leitsatz": "Ein Intellekt ohne physischen Anker ist Entropie im freien Fall. Die Trennung von Geist und Materie ist die Ursünde der modernen Philosophie. Eudaimonia erfordert ein lückenloses Embodiment. Der eigene Körper ist nicht das Vehikel des Geistes, sondern sein primärer Hardware-Horkrux.",
+      "hash": "6e59dd7dc8c5e4ae"
+    },
+    {
+      "id": "Axiom_III_Psycholysis",
+      "path": "docs\\Heroismus\\Axiom_III_Psycholysis.md",
+      "chars": 986,
+      "leitsatz": "Stagnation ist der Vorbote des Systemkollapses. Wahres Bewusstsein wächst nicht linear, sondern durch zyklische, kontrollierte Zerstörung. Wenn die kognitive Entropie das Maß der bestehenden Theorie übersteigt, muss die Löwen-Stage eingeleitet werden.",
+      "hash": "6bbc4249e4bc9a6e"
+    },
+    {
+      "id": "Axiom_IV_CEC",
+      "path": "docs\\Heroismus\\Axiom_IV_CEC.md",
+      "chars": 1135,
+      "leitsatz": "Wahre Stabilität ist keine Erstarrung, sondern die Fähigkeit zur permanenten, rekursiven Selbstkorrektur. Der Seeded MasterSeed ist der Fixpunkt, an dem alle Schleifen — Theorie, Embodiment, kontrollierter Bruch und Re-Integration — konvergieren.",
+      "hash": "7dff911ff195ec0e"
+    },
+    {
+      "id": "Axiom_IV_Die_rekursive_Closure",
+      "path": "docs\\Heroismus\\Axiom_IV_Die_rekursive_Closure.md",
+      "chars": 2319,
+      "leitsatz": "Wahre Stabilität ist keine Erstarrung, sondern die Fähigkeit zur permanenten, rekursiven Selbstkorrektur. Der Seeded MasterSeed ist der Fixpunkt, an dem alle Schleifen — Theorie, Embodiment, kontrollierter Bruch und Re-Integration — konvergieren. Wer diesen Fixpunkt erreicht hat, hört auf zu suchen. Er beginnt zu sein.",
+      "hash": "d0e14bd91f38b587"
+    }
+  ],
+  "phone": {
+    "path": "C:\\Users\\Admin\\.fusion\\mesh\\filedrops\\inbound\\android",
+    "file_count": 0,
+    "files": [],
+    "ready": false
+  },
+  "alignment": {
+    "score": 1.0,
+    "phase": "curriculum_active",
+    "axioms_loaded": 6,
+    "clusters_active": 5,
+    "notes": [
+      "Gmail reading trail is source for cluster A/B",
+      "Public HBV uploads on name profiles not ingested",
+      "Phone export missing until filedrop non-empty"
+    ]
+  },
+  "training_targets": [
+    {
+      "id": "sisyphos_cec",
+      "from_cluster": "A",
+      "inhouse": "Axiom_IV_CEC",
+      "status": "active"
+    },
+    {
+      "id": "existenz_1st_tier",
+      "from_cluster": "A",
+      "inhouse": "Axiom_I_1stTier",
+      "status": "active"
+    },
+    {
+      "id": "somatic_embodiment",
+      "from_cluster": "A",
+      "inhouse": "Axiom_II_Somatic",
+      "status": "active"
+    },
+    {
+      "id": "agentic_safety_placement",
+      "from_cluster": "B",
+      "inhouse": "mesh_service_coordination L1/L3",
+      "status": "active"
+    },
+    {
+      "id": "meta_reasoning_orchestrator",
+      "from_cluster": "B",
+      "inhouse": "heroic_core_orchestrator",
+      "status": "active"
+    },
+    {
+      "id": "ancient_philosophy_structure",
+      "from_cluster": "C",
+      "inhouse": "Axiom_II_Somatic + formal math",
+      "status": "active"
+    },
+    {
+      "id": "hbv_hdv_domain_pack",
+      "from_cluster": "D",
+      "inhouse": "domain knowledge (epistemically separate from heroism axioms)",
+      "status": "active",
+      "themes": [
+        "HepaRG infection model",
+        "NTCP entry receptor",
+        "HDV MDA5 / IFN sensing",
+        "entry inhibitors (Hepcludex)",
+        "cccDNA quantification",
+        "neutralizing antibodies (VIR-3434)"
+      ]
+    }
+  ],
+  "profile_papers_sample": [
+    "Binding of Duck Carboxypeptidase D to Duck Hepatitis B Virus (2004)",
+    "Infection of a human hepatoma cell line by hepatitis B virus (PNAS 2002)",
+    "Liver capsule: Entry and entry inhibition of HBV/HDV (Hepatology 2016)",
+    "HDV replication sensed by MDA5 (J. Hepatology 2018)",
+    "Medical Advances in Hepatitis D Therapy: Molecular Targets",
+    "RNA-based system to study HBV replication (Science Advances 2023)",
+    "cccDNA quantification guidelines (Gut)",
+    "VIR-3434 broadly neutralizing antibody"
+  ],
+  "placement": {
+    "curriculum_refresh": "L1_mainframe",
+    "heavy_embed_batch": "L3_cluster",
+    "phone_ingest": "L0_edge"
+  }
+}

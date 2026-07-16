@@ -1,0 +1,133 @@
+# x402 Foundation protocol — defensive hackability audit (Fusion Hero OS)
+# Geltung: MODELL (threat model) · Spezifikation (scanner/warn path)
+# Sources: x402.org · Linux Foundation x402 · arXiv:2605.11781 (Five Attacks)
+# Policy: NO exploit payloads · warn-only · fail-closed for Fusion integration
+
+version: "1.0"
+platform_version: "10.0.0"
+protocol: x402
+foundation: "x402 Foundation (Linux Foundation)"
+http_status: 402  # Payment Required
+
+principle: >
+  x402 reactivates HTTP 402 as an internet-native payment handshake for agents.
+  Heroic-math audit maps protocol stages to projectors, contraction/finality,
+  and binding integrity. Emergency warnings fire when risk exceeds thresholds.
+  We do NOT ship attack code — only detection and warn paths.
+
+references:
+  - https://x402.org/
+  - https://github.com/x402-foundation/x402
+  - https://blog.cloudflare.com/x402/
+  - https://arxiv.org/html/2605.11781v1   # Five Attacks on x402 (2026)
+  - https://www.halborn.com/blog/post/x402-explained-security-risks-and-controls-for-http-402-micropayments
+
+# Protocol stages (handshake)
+stages:
+  - id: S0_request
+    name: client_request
+  - id: S1_402_challenge
+    name: payment_required_response
+  - id: S2_client_auth
+    name: payment_authorization_signed
+  - id: S3_facilitator_verify
+    name: facilitator_verify_settle
+  - id: S4_grant
+    name: resource_grant
+  - id: S5_receipt
+    name: payment_response_header
+
+# Attack classes (defensive catalog — from public research, not PoC)
+attack_classes:
+  - id: A1_settlement_optimistic
+    name: Optimistic grant before finality / revert-grant window
+    class: settlement_path
+    severity: high
+    heroic_math: contraction_incomplete
+    note: Grant before settlement finality breaks Banach-style "only after fixed point"
+  - id: A2_settlement_preempt
+    name: Unauthorized settlement preemption (L2 race)
+    class: settlement_path
+    severity: high
+    heroic_math: binding_broken
+  - id: A3_replay_idempotency
+    name: Replay / missing single-use payment proof
+    class: replay
+    severity: critical
+    heroic_math: projector_not_idempotent_use
+    note: One payment → many HTTP grants if pre-grant idempotency missing
+  - id: A4_header_proxy_cache
+    name: Header/proxy/cache confusion (paid response cached unpaid)
+    class: web_boundary
+    severity: high
+    heroic_math: boundary_leak
+  - id: A5_agent_server_sybil
+    name: Agent server-selection / malicious endpoint listing
+    class: agent_surface
+    severity: medium
+    heroic_math: attractor_manipulation
+  - id: A6_facilitator_trust
+    name: Facilitator compromise or monoculture
+    class: trust_root
+    severity: critical
+    heroic_math: single_fixpoint_fragile
+  - id: A7_prompt_injection_wallet
+    name: Agent prompt-injection → wrong wallet / fraudulent 402
+    class: agent_surface
+    severity: high
+    heroic_math: input_not_projected
+  - id: A8_amount_binding
+    name: Amount/resource binding mismatch (swap payee or URL)
+    class: binding
+    severity: critical
+    heroic_math: commutator_non_zero
+
+# Risk scoring (0..100)
+scoring:
+  weights:
+    critical: 22
+    high: 14
+    medium: 8
+    low: 3
+  # emergency warn when score >= warn_threshold
+  warn_threshold: 45
+  critical_threshold: 70
+  max_score: 100
+
+# Fusion Hero OS stance
+fusion_policy:
+  default: monitor_warn_only
+  allow_x402_as_source_of_truth: false
+  secrets_on_l1_only: true
+  integrate_payments: false_until_audit_green
+  emergency_channels:
+    - local_file: ~/.fusion/alerts/x402_emergency.json
+    - docs_summary: docs/security/x402_hackability.summary.json
+    - stdout: true
+
+# Checklist gates (implementation controls — boolean audit)
+control_gates:
+  - id: G_nonce_single_use
+    attack: A3_replay_idempotency
+    description: Payment nonce/paymentId single-use before grant
+  - id: G_finality_before_grant
+    attack: A1_settlement_optimistic
+    description: Wait for settlement finality (or cryptographically binding receipt) before 200
+  - id: G_bind_amount_resource
+    attack: A8_amount_binding
+    description: Server re-binds amount+resource+payee server-side; never trust client alone
+  - id: G_no_cache_paid_body
+    attack: A4_header_proxy_cache
+    description: Cache-Control private/no-store on paid responses; vary on payment headers
+  - id: G_facilitator_diversity
+    attack: A6_facilitator_trust
+    description: Do not hardcode single facilitator; verify signature chain
+  - id: G_agent_allowlist
+    attack: A5_agent_server_sybil
+    description: Agent only pays allowlisted hosts / pinned endpoints
+  - id: G_prompt_isolation
+    attack: A7_prompt_injection_wallet
+    description: Wallet ops outside untrusted prompt context; human confirm high value
+  - id: G_reject_unverified_header
+    attack: A2_settlement_preempt
+    description: Reject payment headers without facilitator verify response

@@ -2,7 +2,7 @@
   "id": "geisteskrankheiten_4d_v2",
   "version": "2.0",
   "source": "claude_science_review",
-  "updated_ts": 1783568998.6922638,
+  "updated_ts": 1784122866.0300622,
   "domains": [
     "psychiatry",
     "mer",
@@ -23,5 +23,5 @@
     "G-primär",
     "K-primär"
   ],
-  "path": "C:\\Users\\Admin\\Desktop\\best-FuHOS\\03_Code\\core\\knowledge\\Geisteskrankheiten_4D_Matrix_v2_claude_science.md"
+  "path": "C:\\Users\\Admin\\fusion-hero-os\\03_Code\\core\\knowledge\\Geisteskrankheiten_4D_Matrix_v2_claude_science.md"
 }
