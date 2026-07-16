@@ -1,32 +1,23 @@
-# Crosspollination QUBO — BEST OF THE BEST (2x NVIDIA A100 80GB)
-# Purpose: Wichtungen / Assoziationsgewichte (cross-pollination) on L3 only
-# Policy: force_cluster · sole_authority=poly_mesh_router · no local dual-start
+# Crosspollination QUBO — BEST IN REGION europe-west3
+# ============================================================================: Wichtungen / Assoziationsgewichte (cross-pollination) on L3 only
 #
-# Server class: g2 not used — A100 80GB tier (Autopilot accelerator)
-# Machine equivalent: a2-ultragpu / Autopilot nvidia-tesla-a100 x2
+# BEST GPU in europe-west3 (gcloud accelerator-types): nvidia-h100-80gb
+#   (A100 is NOT listed in europe-west3 — do not use nvidia-tesla-a100 here)
 #
-# COSTS (cost function v2.0, europe-west3 rates):
-#   a100_gpu_hour = 3.90 EUR  →  2x A100 ≈ 7.80 EUR/h GPU only
-#   + ~22 vCPU / 85 Gi ≈ included in Autopilot bill (order 8–10 EUR/h total realistic)
-#   Recommended budgets:
-#     short  (2h):  ~16–20 EUR
-#     standard (6h): ~48–60 EUR
-#     deep (24h):   ~190–240 EUR  (exceeds 200 EUR/month if combined with always-on mesh)
-#   One-shot training budget in businessplan: 700 EUR
+# COST (order of magnitude, Autopilot on-demand H100 ~ very high):
+#   H100 class: often ~10-15+ EUR/h GPU — confirm in Cloud Billing
+#   Our cost-function model a100_gpu_hour=3.90 is a lower bound; H100 is higher.
+#   Budget guidance:
+#     short 2h:  ~25-40 EUR
+#     standard 6h: ~75-120 EUR
+#     Use one-shot training budget (700 EUR), NOT the 200 EUR/month ops envelope.
 #
-# PRECISE APPLY:
-#   export GCP_PROJECT_ID=project-bbf0e6db-52e1-462b-8e3
-#   # 1) Upload code to GCS
-#   gsutil -m cp scripts/crosspollination_qubo_optimize.py \
-#     qb_qubo.py 03_Code/training/fusion_stability_train.py \
-#     gs://${GCP_PROJECT_ID:+fusion-ai-data-$GCP_PROJECT_ID}/training/
-#   # actually bucket name:
-#   gsutil -m cp scripts/crosspollination_qubo_optimize.py qb_qubo.py \
+# ALTERNATIVE "good" (budget month): 1x nvidia-l4 @ ~0.70 EUR/h model rate
+#
+# APPLY:
+#   gsutil cp scripts/crosspollination_qubo_optimize.py qb_qubo.py \
 #     gs://fusion-ai-data-project-bbf0e6db-52e1-462b-8e3/training/
-#   # 2) Substitute project id and apply
-#   sed "s/\${GCP_PROJECT_ID}/project-bbf0e6db-52e1-462b-8e3/g" \
-#     infra/k8s/fusion-training/crosspollination-qubo-best-job.yaml | kubectl apply -f -
-#   # 3) Logs
+#   kubectl create -f infra/k8s/fusion-training/crosspollination-qubo-best-job.yaml
 #   kubectl logs -n fusion-training -l app=crosspoll-qubo -f
 ---
 apiVersion: batch/v1
@@ -41,7 +32,7 @@ metadata:
     fusion-hero-os/platform-version: "10.0.0"
     fusion-hero-os/operative-kanon: v10.0.0
     tier: L3_cluster
-    server-class: a100-80gb-best-of-best
+    server-class: h100-80gb-best-in-region
     algo-class: force_cluster_compute
     workload: crosspollination-weights
     sole-authority: poly_mesh_router
@@ -55,7 +46,7 @@ spec:
       labels:
         app: crosspoll-qubo
         tier: L3_cluster
-        server-class: a100-80gb-best-of-best
+        server-class: h100-80gb-best-in-region
         sole-authority: poly_mesh_router
     spec:
       serviceAccountName: fusion-training-ksa
@@ -72,6 +63,7 @@ spec:
               mkdir -p /workspace/training
               gsutil -m cp -r "gs://${GCS_BUCKET}/training/*" /workspace/training/ || true
               ls -la /workspace/training
+              test -f /workspace/training/crosspollination_qubo_optimize.py
           env:
             - name: GCS_BUCKET
               value: fusion-ai-data-project-bbf0e6db-52e1-462b-8e3
@@ -88,16 +80,9 @@ spec:
             - |
               set -euo pipefail
               pip install -q numpy numba
-              export PYTHONPATH="/workspace/training:/workspace/training/repo:${PYTHONPATH:-}"
-              # Prefer script from GCS training folder
-              if [[ -f /workspace/training/crosspollination_qubo_optimize.py ]]; then
-                cd /workspace/training
-                python3 crosspollination_qubo_optimize.py
-              else
-                echo "crosspollination_qubo_optimize.py missing in GCS training/ — abort"
-                exit 2
-              fi
-              # push results
+              export PYTHONPATH="/workspace/training:${PYTHONPATH:-}"
+              cd /workspace/training
+              python3 crosspollination_qubo_optimize.py
               gsutil -m cp -r /quantum-data/crosspollination/* \
                 "gs://${GCS_BUCKET}/crosspollination/" || true
           env:
@@ -122,7 +107,7 @@ spec:
             - name: FUSION_HYPERTHREADING
               value: "1"
             - name: FUSION_SERVER_CLASS
-              value: "a100-80gb-best-of-best"
+              value: "h100-80gb-best-in-region-europe-west3"
             - name: FUSION_PLATFORM_VERSION
               value: "10.0.0"
             - name: FUSION_NO_LOCAL_DUAL_START
@@ -130,17 +115,14 @@ spec:
             - name: FUSION_POLY_MESH_TIER
               value: "L3_cluster"
           resources:
-            # Autopilot A100-80GB shape (1 GPU first = reliable scale-up; still best class)
-            # Cost ~3.90 EUR/h GPU + Autopilot overhead ≈ 5-7 EUR/h total
             requests:
-              # Autopilot cap for nvidia-a100-80gb-1 shape: max 11 CPU
-              cpu: "11"
-              memory: 80Gi
+              cpu: "8"
+              memory: 64Gi
               ephemeral-storage: 40Gi
               nvidia.com/gpu: "1"
             limits:
-              cpu: "11"
-              memory: 80Gi
+              cpu: "8"
+              memory: 64Gi
               ephemeral-storage: 40Gi
               nvidia.com/gpu: "1"
           volumeMounts:
@@ -158,11 +140,9 @@ spec:
               bucketName: fusion-ai-data-project-bbf0e6db-52e1-462b-8e3
               mountOptions: "implicit-dirs"
       nodeSelector:
-        # GKE Autopilot A100 80GB (europe-west3)
-        cloud.google.com/gke-accelerator: nvidia-a100-80gb
-        cloud.google.com/gke-gpu-driver-version: latest
+        # BEST available accelerator in europe-west3 (verified via gcloud)
+        cloud.google.com/gke-accelerator: nvidia-h100-80gb
       tolerations:
         - key: nvidia.com/gpu
           operator: Exists
           effect: NoSchedule
-
