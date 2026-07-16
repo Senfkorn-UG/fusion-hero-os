@@ -55,3 +55,17 @@ curl http://127.0.0.1:8000/api/v1/business/cost-function
 - \(C_h \approx 0.09\text{–}0.10\) EUR/h (L1 desk + L2 exit)
 - \(\mathrm{FEU}_h \approx 9\text{–}10\)
 - Headline floor price often hits \(P_{\min}=0.002\) EUR/1k when idle capacity high
+
+## GCP Billing (kanonisch)
+
+| Feld | Wert |
+|------|------|
+| Account | `01109F-F022BF-0FCD9A` (Mein Rechnungskonto 1) |
+| Project | `project-bbf0e6db-52e1-462b-8e3` |
+| **Budget** | **Senfkorn Ops 200 EUR/Monat** |
+| Betrag | **200 EUR** · calendar **month** |
+| Schwellen | 50 % / 90 % / 100 % CURRENT · 90 % FORECASTED |
+| Aligns | `financial_targets.monthly_infra_ceiling_eur: 200` |
+| Console | https://console.cloud.google.com/billing/01109F-F022BF-0FCD9A/budgets |
+
+Modell-Idle ~74 €/Monat liegt **unter** dem 200-€-Budget.

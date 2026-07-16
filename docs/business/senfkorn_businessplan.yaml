@@ -15,16 +15,23 @@ company:
     billing_account_name: "Mein Rechnungskonto 1"
     billing_enabled: true
     budgets_console: "https://console.cloud.google.com/billing/01109F-F022BF-0FCD9A/budgets"
-    # Live budget (API 2026-07-16): displayName Senfkorn, €10 custom period Jul 2026
+    # Live budget (API 2026-07-16, corrected): sole budget = Ops ceiling
     active_budget:
-      name: Senfkorn
+      name: "Senfkorn Ops 200 EUR/Monat"
       budget_id: 5a5d1c8c-9cae-42ab-96f2-222f209d4b5e
-      amount_eur: 10
-      period: custom_2026-07-01_to_2026-07-31
-      thresholds_pct: [50, 90, 100]
+      amount_eur: 200
+      period: calendar_month
+      projects: ["project-bbf0e6db-52e1-462b-8e3"]
+      thresholds:
+        - { percent: 0.50, basis: CURRENT_SPEND }   # 100 EUR
+        - { percent: 0.90, basis: CURRENT_SPEND }   # 180 EUR
+        - { percent: 1.00, basis: CURRENT_SPEND }   # 200 EUR
+        - { percent: 0.90, basis: FORECASTED_SPEND }
+      aligns_with: financial_targets.monthly_infra_ceiling_eur
       note: |
-        GCP budget alert envelope for July — NOT the same as financial_targets.monthly_infra_ceiling_eur (200).
-        Actual invoice spend requires Console Cost table or BigQuery billing export (not yet wired).
+        Single GCP budget = monthly ops envelope (€200). Recurring calendar month.
+        Credits included. Invoice actuals still via Console / optional BQ export.
+
 
 value_proposition: |
   KI-Optimierung und Mesh-Infrastruktur mit transparenten Realkosten.
