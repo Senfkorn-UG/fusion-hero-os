@@ -210,3 +210,118 @@ async def mesh_ops_mainframe_laden(
         return load_all(include_code_registry=include_code_registry)
 
     return await asyncio.to_thread(_run)
+
+
+# ---------------------------------------------------------------------------
+# Poly-Mesh DNS (encrypted mesh IP) + heroic once-URL
+# ---------------------------------------------------------------------------
+
+
+@router.post("/api/mesh/ops/once")
+@router.get("/api/mesh/ops/once/mint")
+async def mesh_ops_once_mint(
+    port: int = Query(42069, description="Target local/mesh service port"),
+    ttl_sec: int = Query(900, ge=60, le=86400),
+    name: Optional[str] = Query(None, description="Optional heroic name override"),
+    path: str = Query("/", description="Path after redeem"),
+) -> Dict[str, Any]:
+    """Mint single-use heroic URL + polymesh encrypted DNS label."""
+
+    def _run():
+        from fusion_hero_os.core.poly_mesh_once_url import mint_from_tailscale
+        from fusion_hero_os.ports import get_ports
+
+        p = get_ports().dashboard if port in (0, None) else port
+        try:
+            p = int(port) if port else get_ports().dashboard
+        except Exception:
+            p = 42069
+        return mint_from_tailscale(port=p, ttl_sec=ttl_sec, name=name, target_path=path)
+
+    return await asyncio.to_thread(_run)
+
+
+@router.get("/api/mesh/ops/dns/encrypt")
+async def mesh_ops_dns_encrypt(
+    ip: Optional[str] = Query(None, description="Mesh IP (default: self Tailscale)"),
+    port: int = Query(42069),
+    name: Optional[str] = Query(None),
+) -> Dict[str, Any]:
+    """Return encrypted mesh-IP token + heroic polymesh DNS label (not ICANN)."""
+
+    def _run():
+        from fusion_hero_os.core.poly_mesh_once_url import (
+            encrypt_mesh_ip,
+            heroic_dns_label,
+            pick_heroic_name,
+            mint_from_tailscale,
+        )
+
+        if ip:
+            enc = encrypt_mesh_ip(ip, port)
+            hero = name or pick_heroic_name()
+            return {
+                "ok": True,
+                "mesh_ip": ip,
+                "port": port,
+                "encrypted_mesh_ip": enc,
+                "heroic_name": hero,
+                "polymesh_dns": heroic_dns_label(hero, enc),
+                "note": "polymesh_dns = mesh-local encrypted label, not public DNS",
+            }
+        return mint_from_tailscale(port=port, name=name)
+
+    return await asyncio.to_thread(_run)
+
+
+@router.get("/once/{heroic_name}/{once_id}")
+async def mesh_once_redeem(heroic_name: str, once_id: str):
+    """Redeem single-use heroic URL → HTML handoff (one shot)."""
+    from fastapi.responses import HTMLResponse, JSONResponse
+
+    def _run():
+        from fusion_hero_os.core.poly_mesh_once_url import redeem_once
+
+        return redeem_once(once_id)
+
+    result = await asyncio.to_thread(_run)
+    if not result.get("ok"):
+        return JSONResponse(result, status_code=410)
+
+    # Prefer same-host relative dashboard path when target is local mesh service
+    target = result.get("target_path") or "/"
+    mesh_ip = result.get("mesh_ip")
+    port = result.get("port") or 42069
+    hero = result.get("heroic_name") or heroic_name
+    # Client-side: open mesh URL if on tailnet; else show encrypted handle
+    html = f"""<!DOCTYPE html>
+<html lang="de"><head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>ONCE · {hero}</title>
+<style>
+body{{margin:0;min-height:100vh;display:grid;place-items:center;font-family:system-ui,sans-serif;
+background:#0a0614;color:#f4f0ff}}
+.card{{max-width:28rem;padding:2rem;border:1px solid rgba(240,193,75,.35);border-radius:12px;
+background:rgba(12,8,24,.85)}}
+h1{{font-size:1.1rem;letter-spacing:.08em;text-transform:uppercase;color:#f0c14b}}
+code{{word-break:break-all;color:#5ce1e6}}
+a.btn{{display:inline-block;margin-top:1rem;padding:.6rem 1rem;background:linear-gradient(135deg,#3a2a10,#1a3040);
+border:1px solid #f0c14b;border-radius:8px;color:#fff;text-decoration:none}}
+.muted{{opacity:.7;font-size:.85rem}}
+</style></head><body>
+<div class="card">
+<h1>⚡ {hero}</h1>
+<p>Einmal-URL eingelöst. Token verbraucht.</p>
+<p class="muted">Mesh-Ziel (Tailscale):</p>
+<p><code>{mesh_ip}:{port}{target}</code></p>
+<p class="muted">Verschlüsselte Mesh-IP:</p>
+<p><code>{result.get("enc_ip","")}</code></p>
+<a class="btn" href="{target}">Weiter zum Dienst (lokal / Funnel)</a>
+<p class="muted">Wenn du im Poly-Mesh bist: <code>http://{mesh_ip}:{port}{target}</code></p>
+<script>
+// Auto-nav to local path when served from same funnel host
+setTimeout(function(){{ try {{ location.replace({json.dumps(target)}); }} catch(e){{}} }}, 1200);
+</script>
+</div></body></html>"""
+    return HTMLResponse(html)
