@@ -8,6 +8,23 @@ company:
   product: Fusion Hero OS — QUBO/QAOA Mesh + Mainframe API
   region: europe-west3
   currency: EUR
+  gcp:
+    project_id: project-bbf0e6db-52e1-462b-8e3
+    organization_id: "860382843512"
+    billing_account_id: "01109F-F022BF-0FCD9A"
+    billing_account_name: "Mein Rechnungskonto 1"
+    billing_enabled: true
+    budgets_console: "https://console.cloud.google.com/billing/01109F-F022BF-0FCD9A/budgets"
+    # Live budget (API 2026-07-16): displayName Senfkorn, €10 custom period Jul 2026
+    active_budget:
+      name: Senfkorn
+      budget_id: 5a5d1c8c-9cae-42ab-96f2-222f209d4b5e
+      amount_eur: 10
+      period: custom_2026-07-01_to_2026-07-31
+      thresholds_pct: [50, 90, 100]
+      note: |
+        GCP budget alert envelope for July — NOT the same as financial_targets.monthly_infra_ceiling_eur (200).
+        Actual invoice spend requires Console Cost table or BigQuery billing export (not yet wired).
 
 value_proposition: |
   KI-Optimierung und Mesh-Infrastruktur mit transparenten Realkosten.
