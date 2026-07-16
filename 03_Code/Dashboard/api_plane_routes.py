@@ -65,6 +65,7 @@ async def business_root() -> Dict[str, Any]:
             "pricing": "/api/v1/business/pricing",
             "businessplan": "/api/v1/business/businessplan",
             "energy": "/api/v1/business/energy",
+            "cost_function": "/api/v1/business/cost-function",
         },
         "legacy_aliases": {
             "businessplan": "/api/businessplan",
@@ -161,6 +162,22 @@ async def business_energy() -> Dict[str, Any]:
         }
     except Exception as exc:  # noqa: BLE001
         return {"plane": "business", "ok": False, "error": str(exc)[:200]}
+    return body
+
+
+@router.get("/api/v1/business/cost-function")
+async def business_cost_function() -> Dict[str, Any]:
+    """Updated poly-mesh cost function C (v2) — formal + live evaluation."""
+    try:
+        from fusion_hero_os.core.poly_mesh_cost_function import cost_function_status
+
+        cf = await asyncio.to_thread(cost_function_status)
+        body = {"plane": "business", "ok": True, **cf}
+    except Exception as exc:  # noqa: BLE001
+        return {"plane": "business", "ok": False, "error": str(exc)[:300]}
+    _, _, assert_safe, PLANE_BUSINESS, _ = _planes()
+    ok, issues = assert_safe(PLANE_BUSINESS, body)
+    body["plane_guard"] = {"ok": ok, "issues": issues}
     return body
 
 

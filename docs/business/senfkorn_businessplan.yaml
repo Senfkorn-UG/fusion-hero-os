@@ -1,5 +1,7 @@
 # Senfkorn UG — Businessplan-Anker (maschinenlesbar, an Energie-/Kosten-Daemons gekoppelt)
-businessplan_version: "1.1"
+# Cost function v2.0 — poly-mesh L0–L4 aware (2026-07-16)
+businessplan_version: "1.2"
+cost_function_version: "2.0.0"
 company:
   name: Senfkorn UG
   legal_form: UG (haftungsbeschränkt)
@@ -9,21 +11,76 @@ company:
 
 value_proposition: |
   KI-Optimierung und Mesh-Infrastruktur mit transparenten Realkosten.
-  Subunternehmer zahlen API-Token-Preise, die direkt aus gemessener Energie- und Cloud-Last abgeleitet werden.
+  Subunternehmer zahlen API-Token-Preise, die direkt aus gemessener Energie-
+  und Cloud-Last abgeleitet werden — poly-mesh-aware (L0–L4).
+
+# ---------------------------------------------------------------------------
+# Formal cost function C (v2.0)
+# ---------------------------------------------------------------------------
+cost_function:
+  version: "2.0.0"
+  formal: |
+    C_h  = C_L1 + C_L2 + C_L3 + C_L4_est          # EUR/h real burn
+    E_h  = (C_h / p_grid) * PUE                   # kWh-equivalent / h
+    FEU_h = C_h * λ_FEU                           # Fusion Energy Units / h
+
+    c_1k(t) = C_h / κ(t) * 1000
+    m*(t)   = competitive margin under market ceiling (floor 35%)
+    P_1k(t) = max(P_min, min(c_1k(t)*(1+m*(t)), ceiling_1k(t)))
+
+    Π(tier) = π_base[tier] * (1 + load[tier])     # soft placement only
+    # hard: force_cluster → L3; control plane → L1; audio mesh-only 100.x
+  layers:
+    L0_edge:
+      description: Phone capture / AudioRelay client
+      eur_h_model: 0
+      note: enduser device — not billed as infra burn
+    L1_mainframe:
+      description: Operator desktop / dashboard / MCP
+      rate_key: l1_desk_power_hour
+    L2_mesh_anchor:
+      description: GCE e2-micro exit + optional subnet router
+      rate_key: gce_e2_micro_hour
+    L3_cluster:
+      description: GKE Autopilot pods + GPU + light orchestration jobs
+      rate_keys: [cpu_pod_hour, cpu_light_job_hour, l4_gpu_hour, a100_gpu_hour]
+    L4_external_saas:
+      description: Soft SaaS API estimate when MCP active
+      rate_key: l4_saas_api_est_hour
+  implementation:
+    module: fusion_hero_os.core.poly_mesh_cost_function
+    cost_daemon: mainframe_cost_analysis_daemon
+    energy_daemon: mainframe_energy_pricing_daemon
+    cli: python -m fusion_hero_os.core.poly_mesh_cost_function --status
+    api: /api/v1/business/cost-function
 
 cost_anchors:
   source_daemon: mainframe_cost_analysis_daemon
   energy_daemon: mainframe_energy_pricing_daemon
+  poly_mesh_module: poly_mesh_cost_function
   refresh_sec: 60
-  real_cost_basis: measured  # nicht Schätzung aus Marketing-Slides
+  real_cost_basis: measured  # rate model fallback when metrics sparse
 
 energy_model:
   grid_eur_per_kwh: 0.35
   pue_cloud_factor: 1.25
   feu_per_eur_real: 100
   description: |
-    Fusion Energy Units (FEU) spiegeln Realkosten: EUR/h Cloud-Burn → kWh-Äquivalent (Netz + PUE) → FEU.
-    1 FEU ≈ 0.01 EUR Infrastrukturlast zum Messzeitpunkt.
+    Fusion Energy Units (FEU) spiegeln Realkosten: EUR/h Mesh+Cloud-Burn
+    → kWh-Äquivalent (Netz + PUE) → FEU. 1 FEU ≈ 0.01 EUR Infrastrukturlast.
+  formula: E_h = (C_h / p_grid) * PUE; FEU_h = C_h * 100
+
+rates_eur_europe_west3:
+  gce_e2_micro_month: 7.50
+  gcs_storage_gb_month: 0.023
+  gke_autopilot_mgmt_month: 0.0
+  cpu_pod_hour: 0.06
+  cpu_light_job_hour: 0.03
+  l4_gpu_hour: 0.70
+  a100_gpu_hour: 3.90
+  l1_desk_power_hour: 0.08
+  l4_saas_api_est_hour: 0.02
+  note: Defaults 2026-07; override via env later if needed
 
 subcontractor_api_pricing:
   margin_pct: 1.50
@@ -39,8 +96,10 @@ subcontractor_api_pricing:
       inference_gpu: 8.00
       qubo_enterprise: 60.00
       mesh_ops: 5.00
+      poly_mesh_orchestration: 4.00
   minimum_price_eur_per_1k_tokens: 0.002
   billing_unit: per_1000_tokens
+  formula: P_1k = max(P_min, min(c_1k*(1+m*), ceiling_1k))
   tiers:
     inference_standard:
       label: Standard-Inferenz (CPU/L4)
@@ -58,19 +117,26 @@ subcontractor_api_pricing:
       label: Mesh + Fractal Sync
       tokens_per_hour_capacity: 100000
       use_case: Replica, Exit-Node, Status
+    poly_mesh_orchestration:
+      label: Poly-Mesh L3 Orchestration (CPU light)
+      tokens_per_hour_capacity: 200000
+      use_case: Coordinator cycle, light anneal proof, GCS receipt
 
 revenue_model:
   streams:
     - api_tokens_subcontractors
     - managed_mesh_hosting
     - qubo_solve_packages
+    - poly_mesh_orchestration_cycles
   target_gross_margin_pct: 1.50
 
 financial_targets:
   monthly_infra_ceiling_eur: 150
   break_even_tokens_per_month_1k: 50000
   training_budget_one_shot_eur: 700
+  l3_light_task_budget_eur_per_day: 2.0
 
 compliance:
   pricing_transparency: Realkosten-gebunden, alle 60s neu berechnet
   audit_trail: ~/.fusion-hero-os/mainframe_energy_pricing/history.jsonl
+  poly_mesh_policy: force_cluster never dual-starts on L1; audio mesh-only 100.x

@@ -166,7 +166,12 @@ class MainframeEnergyPricingDaemon:
             "headline_price_eur_per_1k_tokens": default_tier.get("api_price_eur_per_1k_tokens"),
             "headline_price_eur_per_1m_tokens": default_tier.get("api_price_eur_per_1m_tokens"),
             "tiers": tiers_out,
-            "formula": "price_1k = max(min, cost_1k * (1 + margin)); margin=150% wenn kompetitiv, sonst bis Marktdecke/Floor",
+            "formula": (
+                "P_1k=max(P_min,min(c_1k*(1+m*),ceiling_1k)); "
+                "c_1k=C_h/κ*1000; C_h=C_L1+C_L2+C_L3+C_L4; "
+                "m*=150% competitive else floor 35% under market ceiling"
+            ),
+            "cost_function_version": str(bp.get("cost_function_version", "2.0.0")),
             "anchored_in": str(_BP_PATH),
         }
 
