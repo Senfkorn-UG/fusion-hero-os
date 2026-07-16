@@ -22,6 +22,19 @@ __all__ = ["scan_conversation_archives", "write_dissertation_appendix", "status"
 
 SESSIONS_ROOT = Path.home() / ".grok" / "sessions"
 
+
+def _author_display() -> str:
+    """Publication author or abstract Operator — person extracted from role."""
+    try:
+        from fusion_hero_os.core.operator_identity import author_for_publication
+
+        a = author_for_publication()
+        if a.get("bound") and a.get("display"):
+            return str(a["display"])
+    except Exception:  # noqa: BLE001
+        pass
+    return "Operator"
+
 # Known artifact filenames inside a session dir
 ARTIFACT_NAMES = {
     "chat_history.jsonl": "dialog_stream",
@@ -234,10 +247,14 @@ def write_dissertation_appendix(report: Optional[Dict[str, Any]] = None) -> Dict
     lines = [
         "# A11 — Konversationsarchive auf mehreren Instanzen",
         "",
-        "**Autor-Kontext:** Stephan Hagen Urban · **Plattform:** Fusion Hero OS v10.0.0  ",
+        f"**Operator-Rolle:** operator · **Autor-Kontext:** {_author_display()}  ",
+        "**Plattform:** Fusion Hero OS v10.0.0  ",
         "**Feld:** Autopoietische Autopolitik / Autopoietic Autopolitics  ",
         "**Geltung:** Spezifikation (Inventar) · Dialoginhalte bleiben **privat** (deploy)  ",
         f"**Erfasst:** {report.get('scanned_at')}",
+        "",
+        "> Person (legal name) is **extracted** from the Operator role via ",
+        "> `fusion_hero_os.core.operator_identity` — runtime never requires it.",
         "",
         "## Synthese",
         "",
