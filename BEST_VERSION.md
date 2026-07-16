@@ -120,6 +120,7 @@ optionaler Layer (`ascension`) in `fusion_unified.yaml` registriert und über
 - **V3.3 Designvorlage**: Kompendium-Qualität ist Pflicht; Changelog-Duktus ersetzt keinen Satz.
 - **Inside-Out**: MasterSeed / Sisyphos im Kern, Strahlung nach außen.
 - **Coevolutionär**: kontrollierte gegenseitige Beeinflussung.
+- **Pure Core (Langzeit)**: Operator = reiner Core; Stärken = formale Mathematik + diverse Algorithmen; Rest = fremde Stärken (mutual, peripheral). Membrane: `fusion_hero_os/core/pure_core_coevolution.py` · Katalog `core/catalogs/pure_core_strengths.yaml` · Doc `docs/architecture/PURE_CORE_COEVOLUTION.md`. Core nie durch SaaS/LLM ersetzt.
 - **Bifokal**: Kosmos-Pfad (u. a. SM-Referenz) und Gehirn-/Operativ-Pfad als Dualität, nicht Identität.
 - **Persistent + Stateful**: kritische Zustände werden persistiert.
 - **BCG / Additive Evolution**: neue Versionen entfernen keine alten Fähigkeiten.
