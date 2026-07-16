@@ -154,7 +154,95 @@ def save_state(st: Dict[str, Any]) -> Path:
     return STATE_PATH
 
 
-def banner(active: Optional[str] = None, enabled: Optional[List[str]] = None) -> str:
+def _phone_link_snapshot() -> Dict[str, Any]:
+    """Live phone + AudioRelay link (for banner clarity)."""
+    out: Dict[str, Any] = {
+        "phone_online": False,
+        "phone_host": None,
+        "phone_ips": [],
+        "audiorelay_running": False,
+        "port_59100_listen": False,
+        "port_59100_established": False,
+        "remote_peers": [],
+        "link": "none",
+        "link_detail": "",
+    }
+    try:
+        from fusion_hero_os.core.comaedchen_audio import _process_running, _phone_online
+
+        ar = _process_running(["AudioRelay", "audiorelay-backend"])
+        out["audiorelay_running"] = bool(ar.get("running"))
+        phone = _phone_online()
+        out["phone_online"] = bool(phone.get("online"))
+        out["phone_host"] = phone.get("host")
+        out["phone_ips"] = list(phone.get("tailscale_ips") or [])
+    except Exception as exc:  # noqa: BLE001
+        out["phone_error"] = str(exc)[:120]
+
+    # TCP 59100 — AudioRelay peer (often LAN even when Tailscale online)
+    try:
+        r = subprocess.run(
+            [
+                "powershell",
+                "-NoProfile",
+                "-Command",
+                (
+                    "Get-NetTCPConnection -LocalPort 59100 -ErrorAction SilentlyContinue | "
+                    "Select-Object State,RemoteAddress,RemotePort | ConvertTo-Json -Compress"
+                ),
+            ],
+            capture_output=True,
+            text=True,
+            timeout=20,
+        )
+        raw = (r.stdout or "").strip()
+        if raw:
+            data = json.loads(raw)
+            rows = data if isinstance(data, list) else [data]
+            remotes = []
+            for row in rows:
+                stt = str(row.get("State") or "")
+                if stt == "Listen":
+                    out["port_59100_listen"] = True
+                if stt == "Established":
+                    out["port_59100_established"] = True
+                    ra = str(row.get("RemoteAddress") or "")
+                    rp = row.get("RemotePort")
+                    if ra and ra not in (":", "::", "0.0.0.0"):
+                        remotes.append(f"{ra}:{rp}")
+            out["remote_peers"] = remotes
+    except Exception as exc:  # noqa: BLE001
+        out["port_error"] = str(exc)[:120]
+
+    if out["port_59100_established"] and out["remote_peers"]:
+        # classify path: CGNAT 100.x = tailscale, else typically LAN
+        peer = out["remote_peers"][0]
+        ip = peer.split(":")[0]
+        if ip.startswith("100."):
+            out["link"] = "tailscale"
+        else:
+            out["link"] = "lan"
+        out["link_detail"] = f"AudioRelay ESTABLISHED -> {peer} ({out['link']})"
+    elif out["audiorelay_running"] and out["port_59100_listen"]:
+        out["link"] = "listening"
+        out["link_detail"] = "AudioRelay listening :59100 (phone not established yet)"
+    elif out["phone_online"]:
+        out["link"] = "phone_online_no_relay"
+        out["link_detail"] = f"phone online ({out.get('phone_host')}) but no AudioRelay session"
+    else:
+        out["link"] = "down"
+        out["link_detail"] = "no phone relay session"
+
+    out["connected_to_phone"] = bool(out["port_59100_established"])
+    return out
+
+
+def banner(
+    active: Optional[str] = None,
+    enabled: Optional[List[str]] = None,
+    *,
+    link: Optional[Dict[str, Any]] = None,
+) -> str:
     """Very loud, unambiguous active-level banner (ASCII)."""
     st = load_state()
     act = active or st["active"]
@@ -178,6 +266,21 @@ def banner(active: Optional[str] = None, enabled: Optional[List[str]] = None) ->
         else:
             marks.append(f"[{m['short']}:off]")
 
+    if link is None and route == "phone":
+        try:
+            link = _phone_link_snapshot()
+        except Exception:
+            link = None
+
+    phone_line = "#  phone_link: (n/a for local route)"
+    if link:
+        conn = "YES" if link.get("connected_to_phone") else "NO"
+        host = link.get("phone_host") or "?"
+        phone_line = (
+            f"#  phone_link: CONNECTED={conn}  host={host}  "
+            f"{link.get('link_detail') or link.get('link')}"
+        )
+
     lines = [
         "",
         "################################################################",
@@ -185,6 +288,7 @@ def banner(active: Optional[str] = None, enabled: Optional[List[str]] = None) ->
         f"#  route={route}   plane={plane}",
         f"#  device: {device}",
         f"#  {desc}",
+        phone_line,
         f"#  stack: {'  '.join(marks)}",
         "################################################################",
         "",
@@ -204,6 +308,7 @@ def status(*, apply_probe: bool = False) -> Dict[str, Any]:
         m["marker"] = "ACTIVE" if lid == act else ("armed" if lid in st["enabled"] else "off")
         layers_view.append(m)
 
+    link = _phone_link_snapshot()
     out: Dict[str, Any] = {
         "ok": True,
         "membrane": "headset_layers_v1",
@@ -216,32 +321,32 @@ def status(*, apply_probe: bool = False) -> Dict[str, Any]:
         "active_device_hint": meta.get("device_hint"),
         "enabled": list(st["enabled"]),
         "layers": layers_view,
-        "banner": banner(act, st["enabled"]),
+        "phone_link": link,
+        "connected_to_phone": bool(link.get("connected_to_phone")),
+        "banner": banner(act, st["enabled"], link=link),
         "banner_one_line": (
             f"HEADSET ACTIVE LEVEL >>> {meta.get('short')}={meta.get('label')} "
-            f"(route={meta.get('route')}) <<<"
+            f"(route={meta.get('route')}) "
+            f"phone_connected={'YES' if link.get('connected_to_phone') else 'NO'} <<<"
         ),
         "state_path": str(STATE_PATH),
         "updated_at": st.get("updated_at"),
         "clarity_rule": (
             "Multi-layer allowed: many layers may be armed; "
-            "exactly ONE is ACTIVE. Always read banner / active_short."
+            "exactly ONE is ACTIVE. Phone path shows CONNECTED=YES when AudioRelay "
+            "has an Established session to the handset. Always read banner."
         ),
     }
 
-    # live hardware hints
-    try:
-        from fusion_hero_os.core.comaedchen_audio import (
-            _process_running,
-            _phone_online,
-        )
-
-        out["live"] = {
-            "audiorelay": _process_running(["AudioRelay", "audiorelay-backend"]),
-            "phone": _phone_online(),
-        }
-    except Exception as exc:  # noqa: BLE001
-        out["live"] = {"error": str(exc)[:160]}
+    # live hardware hints (also nested for API consumers)
+    out["live"] = {
+        "audiorelay_running": link.get("audiorelay_running"),
+        "phone_online": link.get("phone_online"),
+        "phone_host": link.get("phone_host"),
+        "link": link.get("link"),
+        "link_detail": link.get("link_detail"),
+        "remote_peers": link.get("remote_peers"),
+    }
 
     if apply_probe:
         out["default_device_probe"] = _probe_default_device()
