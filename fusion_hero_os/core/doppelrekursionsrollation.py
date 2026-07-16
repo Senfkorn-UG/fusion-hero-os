@@ -1,13 +1,11 @@
 # -*- coding: utf-8 -*-
-"""Doppelrekursionsrollation — dual recursive rotate-hash over Poly-Mesh day hash #1.
+"""Internal algorithm source for **mugen-tsuky.chan** (clear protocol elsewhere).
 
-Layer A  — SHA-256 recursive rollation (poly-mesh native stream)
-Layer B  — Alternate PRNG (PCG64-XSH-RR style) + GPG digest (SHA512/SHA384)
+Prefer public API: ``fusion_hero_os.core.mugen_tsuky_chan``.
+Obfuscated body: ``fusion_hero_os.core._mtc_obf``.
+Spec: ``protocols/mugen_tsuky_chan.yaml``.
 
-``polymesh_hash_nummer_1`` des Kalendertages = first (chronological) poly-mesh
-day-seed digest for that UTC day (index 1, not 0).
-
-Not a cryptocurrency; formal mesh integrity / day-chain tool.
+This module remains as readable source for audits; runtime path uses mtc facade.
 """
 from __future__ import annotations
 

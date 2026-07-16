@@ -74,8 +74,8 @@ def _L():
     return g
 _G = _L()
 # export selected callables under opaque aliases + stable names for facade
-polymesh_hash_number_1 = _G['polymesh_hash_nummer_1']
-run_day_rollation = _G['run_day_rollation']
-doppelrekursionsrollation = _G['doppelrekursionsrollation']
-gpg_hash_with_prng = _G['gpg_hash_with_prng']
+polymesh_hash_number_1 = _G["polymesh_hash_number_1"]
+run_day_rollation = _G["run_day_rollation"]
+doppelrekursionsrollation = _G["doppelrekursionsrollation"]
+gpg_hash_with_prng = _G["gpg_hash_with_prng"]
 PROTOCOL = _MTC

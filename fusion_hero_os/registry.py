@@ -132,6 +132,11 @@ DEFAULT_MODULES: List[ModuleSpec] = [
         "QUBO inference scheduler (MCP tools)",
     ),
     ModuleSpec(
+        "core.mugen_tsuky_chan",
+        "fusion_hero_os.core.mugen_tsuky_chan",
+        "mugen-tsuky.chan protocol facade (clear propagation; obfuscated body)",
+    ),
+    ModuleSpec(
         "engine.mining_qubo", "fusion_hero_os.engine.mining_qubo", "Profit-Switching-QUBO"),
     ModuleSpec(
         "engine.rust_backend", "fusion_hero_os.engine.rust_backend", "PyO3-Rust-Backend"),

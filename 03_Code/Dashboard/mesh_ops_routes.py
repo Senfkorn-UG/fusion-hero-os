@@ -222,21 +222,20 @@ async def mesh_ops_mainframe_laden(
 async def mesh_ops_once_mint(
     port: int = Query(42069, description="Target local/mesh service port"),
     ttl_sec: int = Query(900, ge=60, le=86400),
-    name: Optional[str] = Query(None, description="Optional heroic name override"),
+    name: Optional[str] = Query(None, description="Optional mugen-tsuky.chan name"),
     path: str = Query("/", description="Path after redeem"),
 ) -> Dict[str, Any]:
-    """Mint single-use heroic URL + polymesh encrypted DNS label."""
+    """Mint single-use mugen-tsuky.chan URL + polymesh encrypted DNS label."""
 
     def _run():
-        from fusion_hero_os.core.poly_mesh_once_url import mint_from_tailscale
+        from fusion_hero_os.core.mugen_tsuky_chan import mint_once
         from fusion_hero_os.ports import get_ports
 
-        p = get_ports().dashboard if port in (0, None) else port
         try:
             p = int(port) if port else get_ports().dashboard
         except Exception:
             p = 42069
-        return mint_from_tailscale(port=p, ttl_sec=ttl_sec, name=name, target_path=path)
+        return mint_once(port=p, ttl_sec=ttl_sec, name=name)
 
     return await asyncio.to_thread(_run)
 
@@ -274,18 +273,33 @@ async def mesh_ops_dns_encrypt(
     return await asyncio.to_thread(_run)
 
 
-@router.get("/api/mesh/ops/rollation")
+@router.get("/api/mesh/ops/mtc")
+@router.get("/api/mesh/ops/mtc/status")
+async def mesh_ops_mtc_status() -> Dict[str, Any]:
+    """mugen-tsuky.chan — central clear status (protocol propagation)."""
+
+    def _run():
+        from fusion_hero_os.core.mugen_tsuky_chan import propagate
+
+        return propagate()
+
+    return await asyncio.to_thread(_run)
+
+
+@router.get("/api/mesh/ops/mtc/roll")
+@router.post("/api/mesh/ops/mtc/roll")
+@router.get("/api/mesh/ops/rollation")  # legacy alias
 @router.post("/api/mesh/ops/rollation")
-async def mesh_ops_rollation(
+async def mesh_ops_mtc_roll(
     day: Optional[str] = Query(None, description="UTC day YYYY-MM-DD (default: yesterday)"),
     depth: int = Query(8, ge=1, le=64),
 ) -> Dict[str, Any]:
-    """Doppelrekursionsrollation over polymesh hash #1 of day + GPG/PRNG seal."""
+    """mugen-tsuky.chan day roll (clear fields; body obfuscated)."""
 
     def _run():
-        from fusion_hero_os.core.doppelrekursionsrollation import run_day_rollation
+        from fusion_hero_os.core.mugen_tsuky_chan import roll
 
-        return run_day_rollation(day, depth=depth)
+        return roll(day, depth=depth)
 
     return await asyncio.to_thread(_run)
 
