@@ -200,11 +200,16 @@ def _phone_link_snapshot() -> Dict[str, Any]:
             data = json.loads(raw)
             rows = data if isinstance(data, list) else [data]
             remotes = []
+            # Win32 / ConvertTo-Json may emit numeric State:
+            # 2=Listen, 5=Established (also accept name strings)
             for row in rows:
-                stt = str(row.get("State") or "")
-                if stt == "Listen":
+                stt = row.get("State")
+                stt_s = str(stt or "").lower()
+                is_listen = stt in (2, "2") or stt_s == "listen"
+                is_est = stt in (5, "5") or stt_s == "established"
+                if is_listen:
                     out["port_59100_listen"] = True
-                if stt == "Established":
+                if is_est:
                     out["port_59100_established"] = True
                     ra = str(row.get("RemoteAddress") or "")
                     rp = row.get("RemotePort")
