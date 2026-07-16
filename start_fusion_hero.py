@@ -183,6 +183,33 @@ def start_dashboard(manager: ProcessManager) -> Optional[subprocess.Popen]:
         return None
 
 
+def run_connector_health() -> dict:
+    """Run safe, read-only health probes for all external connectors.
+
+    Lazy and non-fatal: import errors or unavailable services never raise, so
+    this is safe to call during startup even if a connector is down.
+    """
+    import asyncio
+
+    src = PROJECT_ROOT / "src"
+    if src.exists() and str(src) not in sys.path:
+        sys.path.insert(0, str(src))
+    try:
+        from normal_os.connectors import get_registry
+    except Exception as exc:  # pragma: no cover - defensive
+        logger.warning("Connector layer unavailable: %s", exc)
+        return {}
+    try:
+        results = asyncio.run(get_registry().health_check_all())
+    except Exception as exc:  # pragma: no cover - defensive
+        logger.warning("Connector health check failed: %s", exc)
+        return {}
+    for name, res in results.items():
+        state = "ok" if res.get("ok") else f"down ({res.get('kind') or res.get('error')})"
+        logger.info("Connector %-10s : %s", name, state)
+    return results
+
+
 def list_archived_versions() -> None:
     print("\nAvailable Archived Beta Versions / Historical States:\n")
     if not ARCHIVE_DIR.exists():
@@ -201,10 +228,16 @@ def main() -> None:
     parser.add_argument("--bridge-only", action="store_true")
     parser.add_argument("--with-dashboard", action="store_true")
     parser.add_argument("--list-versions", action="store_true")
+    parser.add_argument("--connectors-health", action="store_true",
+                        help="Run safe read-only health probes for all connectors and exit")
     args = parser.parse_args()
 
     if args.list_versions:
         list_archived_versions()
+        return
+
+    if args.connectors_health:
+        run_connector_health()
         return
 
     print("\n" + "=" * 64)
@@ -229,6 +262,8 @@ def main() -> None:
 
     if args.with_dashboard:
         start_dashboard(manager)
+        logger.info("Probing external connectors (read-only)...")
+        run_connector_health()
 
     try:
         transport = "tcp" if is_windows() else "unix_or_tcp"
