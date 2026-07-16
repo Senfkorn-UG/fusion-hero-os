@@ -274,6 +274,22 @@ async def mesh_ops_dns_encrypt(
     return await asyncio.to_thread(_run)
 
 
+@router.get("/api/mesh/ops/rollation")
+@router.post("/api/mesh/ops/rollation")
+async def mesh_ops_rollation(
+    day: Optional[str] = Query(None, description="UTC day YYYY-MM-DD (default: yesterday)"),
+    depth: int = Query(8, ge=1, le=64),
+) -> Dict[str, Any]:
+    """Doppelrekursionsrollation over polymesh hash #1 of day + GPG/PRNG seal."""
+
+    def _run():
+        from fusion_hero_os.core.doppelrekursionsrollation import run_day_rollation
+
+        return run_day_rollation(day, depth=depth)
+
+    return await asyncio.to_thread(_run)
+
+
 @router.get("/once/{heroic_name}/{once_id}")
 async def mesh_once_redeem(heroic_name: str, once_id: str):
     """Redeem single-use heroic URL → HTML handoff (one shot)."""
