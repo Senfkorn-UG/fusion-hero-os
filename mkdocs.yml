@@ -30,4 +30,3 @@ nav:
   - Home: index.md
   - Monorepo Architektur: monorepo-structure.md
   - CI/CD Roadmap: workflow-roadmap.md
-  - Workflow Documentation: workflow-documentation.md
