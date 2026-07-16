@@ -41,7 +41,7 @@ docs/
 
 ## Ehrlicher Stand von `modules/` (Platzhalter)
 
-`modules/alte_frau_95g/`, `modules/mainframe_laden/` und `modules/skill_creator/` sind derzeit **leere `__init__.py`-Platzhalter ohne Funktionalität** (nur Docstrings, kein lauffähiger Code) — Status: **nicht gestartet**. Die im `modules/README.md` zusätzlich genannten Ordner `deep_research_5_stage/` und `mister_Contributor_image/` existieren aktuell gar nicht im Dateisystem.
+`modules/alte_frau_95g/`, `modules/mainframe_laden/` und `modules/skill_creator/` sind derzeit **leere `__init__.py`-Platzhalter ohne Funktionalität** (nur Docstrings, kein lauffähiger Code) — Status: **nicht gestartet**. Die im `modules/README.md` zusätzlich genannten Ordner `deep_research_5_stage/` und `mister_builder_image/` existieren aktuell gar nicht im Dateisystem.
 
 ## Gesamtstatus
 

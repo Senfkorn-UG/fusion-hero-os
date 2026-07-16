@@ -1,0 +1,3 @@
+# Coordination image only — keep lean for Autopilot cold-start
+PyYAML>=6.0
+google-cloud-storage>=2.14.0

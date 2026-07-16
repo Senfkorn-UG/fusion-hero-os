@@ -1,10 +1,64 @@
-version: '3.9'
+# Senfkorn UG — production compose (GCE europe-west3)
+# Dashboard + dedicated energy/pricing daemon, shared state volume.
+# Usage: docker compose up --build -d
+
 services:
-  normalos:
-    build: .
+  dashboard:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: fusion_hero_dashboard
     ports:
       - "8000:8000"
     volumes:
-      - ./data:/app/data
+      - fusion_state_data:/root/.fusion-hero-os
+      - ./docs/business:/app/docs/business:ro
     environment:
-      - ENVIRONMENT=production
+      FUSION_STATE_DIR: /root/.fusion-hero-os
+      FUSION_BUSINESSPLAN_PATH: /app/docs/business/senfkorn_businessplan.yaml
+      FUSION_ENERGY_PRICING_INTERVAL_SEC: "60"
+      FUSION_AUTO_LOAD: "0"
+      # Energy ticks run in energy-pricing-daemon; dashboard keeps cost/mirror loops
+      FUSION_ENERGY_PRICING_EXTERNAL: "1"
+      FUSION_MAINFRAME_DAEMONS: "1"
+      PYTHONPATH: /app/03_Code:/app
+    restart: always
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:8000/api/health?light=true"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 40s
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  energy-pricing-daemon:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: fusion_energy_pricing_daemon
+    working_dir: /app
+    entrypoint: ["python", "/app/scripts/run_energy_pricing_daemon.py"]
+    volumes:
+      - fusion_state_data:/root/.fusion-hero-os
+      - ./docs/business:/app/docs/business:ro
+    environment:
+      FUSION_STATE_DIR: /root/.fusion-hero-os
+      FUSION_BUSINESSPLAN_PATH: /app/docs/business/senfkorn_businessplan.yaml
+      FUSION_ENERGY_PRICING_INTERVAL_SEC: "60"
+      PYTHONPATH: /app/03_Code:/app
+    restart: always
+    depends_on:
+      - dashboard
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+volumes:
+  fusion_state_data:
+    name: fusion_state_data

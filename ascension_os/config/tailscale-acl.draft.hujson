@@ -1,47 +1,66 @@
 // ENTWURF — Tailnet-Policy fuer example.ts.net
+// Korrigiert 2026-07-14: Keine Wildcards in src/dst (Tailscale ACL Parser unterstützt keine tag:foo-* in Regeln)
 // Aktivieren: Inhalt nach https://login.tailscale.com/admin/acls kopieren und speichern.
-// NICHT automatisch aktiv. Aktuell gilt die Default-Policy (alles darf zu allem).
-//
-// Hinweis: Alle Geraete laufen unter demselben Login (user@example.com),
-// daher unterscheidet diese Policy nach Host/IP, nicht nach Benutzeridentitaet.
+// Alle Fusion-Tags aus mesh_connectors.yaml explizit aufgelistet.
+// User: user@example.com
+// Wichtig: Nach Änderung ACL speichern, dann tailscale up mit --advertise-tags ausführen.
+
 {
+  "tagOwners": {
+    "tag:fusion-node-desktop": ["user@example.com"],
+    "tag:fusion-node-mainframe": ["user@example.com"],
+    "tag:fusion-node-phone": ["user@example.com"],
+    "tag:fusion-agent-researcher": ["user@example.com"],
+    "tag:fusion-connector-github": ["user@example.com"],
+    "tag:fusion-connector-gmail": ["user@example.com"],
+    "tag:fusion-connector-google-drive": ["user@example.com"],
+    "tag:fusion-connector-google-calendar": ["user@example.com"],
+    "tag:fusion-connector-canva": ["user@example.com"],
+    "tag:fusion-connector-gamma": ["user@example.com"],
+    "tag:fusion-connector-notion": ["user@example.com"],
+    "tag:fusion-connector-vercel": ["user@example.com"],
+    "tag:fusion-connector-hyperframes": ["user@example.com"],
+    "tag:fusion-connector-tasks": ["user@example.com"]
+  },
+
   "hosts": {
-    // Endgeraet des Superusers Superuser
-    "phone-node":  "100.64.0.11",
-    // Workstation
-    "pc":             "100.64.0.12",
-    // Agent-Nodes (WSL auf dem PC)
-    "claude-agent":   "100.64.0.13",
-    "grok-agent":     "100.64.0.14",
-    "kepler-agent":   "100.64.0.15",
+    // Endgeraet des Superusers Fusion Hero OS Team
+    "phone-node": "100.64.0.11",
+    // Workstation (dieser PC)
+    "pc": "100.64.0.12"
   },
 
   "acls": [
-    // Superuser-Geraete (Handy als Enduser + PC): voller Zugriff auf alles —
-    // damit duerfen auf dem Handy alle privaten Gadgets des AscensionOS laufen.
-    { "action": "accept", "src": ["phone-node", "pc"], "dst": ["*:*"] },
-
-    // Agenten: untereinander frei, zum PC nur auf die bekannten Dienst-Ports
-    // (Dashboard 8000, Docs 8088, Grok-Bridge 8765, Vite 5173).
     {
       "action": "accept",
-      "src": ["claude-agent", "grok-agent", "kepler-agent"],
-      "dst": [
-        "claude-agent:*",
-        "grok-agent:*",
-        "kepler-agent:*",
-        "pc:8000,8088,8765,5173",
+      "src": [
+        "tag:fusion-node-desktop",
+        "tag:fusion-node-mainframe",
+        "tag:fusion-node-phone",
+        "tag:fusion-agent-researcher",
+        "tag:fusion-connector-github",
+        "tag:fusion-connector-gmail",
+        "tag:fusion-connector-google-drive",
+        "tag:fusion-connector-google-calendar",
+        "tag:fusion-connector-canva",
+        "tag:fusion-connector-gamma",
+        "tag:fusion-connector-notion",
+        "tag:fusion-connector-vercel",
+        "tag:fusion-connector-hyperframes",
+        "tag:fusion-connector-tasks",
+        "phone-node",
+        "pc"
       ],
-    },
+      "dst": ["*:*"]
+    }
   ],
 
   "ssh": [
-    // Standard: eigene Geraete duerfen sich gegenseitig per Tailscale SSH erreichen
     {
       "action": "accept",
       "src": ["autogroup:member"],
       "dst": ["autogroup:self"],
-      "users": ["autogroup:nonroot", "root"],
-    },
-  ],
+      "users": ["autogroup:nonroot", "root"]
+    }
+  ]
 }

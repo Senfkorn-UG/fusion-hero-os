@@ -1,0 +1,68 @@
+# Fusion Hero OS v10 — Deploy / Push / Merge vocabulary
+# Canonical: deploy=private · push=public · merge=both via dual timeline
+
+version: "1.0"
+platform_version: "10.0.0"
+policy: pseudo_inhouse_only
+freemium: false
+
+principle: >
+  deploy means private (local vault / operator-only).
+  push means public (GitHub / publishable surfaces only).
+  merge means both: connect private and public using the dual timeline (t ∥ τ).
+
+operations:
+  deploy:
+    meaning: private
+    german: "privat"
+    scope:
+      - local vault
+      - masterseed private shards (GPG+QUBO)
+      - operator secrets
+      - dual-timeline training outputs under ~/.fusion
+      - creative artifacts under ~/.fusion/creative
+    never:
+      - github public remote as destination of private shards
+      - publishing .env or *.shard.gpg
+    cli:
+      - python -m fusion_hero_os.core.ops_deploy
+      - python -m fusion_hero_os.core.masterseed_vault --seal
+      - python -m fusion_hero_os.core.dual_timeline_training
+    identity: operator_local
+
+  push:
+    meaning: public
+    german: "öffentlich"
+    scope:
+      - git push to known remote (95guknow/fusion-hero-os)
+      - public MasterSeed display only
+      - docs / code allowed by push_layer_guard
+    never:
+      - private vault paths
+      - secrets denylist
+    cli:
+      - python scripts/wanted_push_via_secrets.py
+      - git push origin main   # after push-layer-guard ALLOW
+    identity: known_remote_public
+    guard: push_layer_guard.yaml
+
+  merge:
+    meaning: both
+    german: "beide — privat und öffentlich verbinden"
+    scope:
+      - bind public display_id to private module/function shards
+      - align real time t with imaginary time τ
+      - produce merge manifest linking public + private timelines
+    never:
+      - leak private payloads into public git tree
+    cli:
+      - python -m fusion_hero_os.core.ops_merge
+    axes:
+      t: real_chronology
+      tau: imaginary_structural
+    output: ~/.fusion/ops/merge_latest.json
+
+mapping_table:
+  deploy: private
+  push: public
+  merge: both_via_timeline

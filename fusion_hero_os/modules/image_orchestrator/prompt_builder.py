@@ -7,7 +7,7 @@ from typing import Any, Dict, List
 
 def build_prompt(user_prompt: str, identity: Dict[str, Any]) -> str:
     """Kombiniert User-Prompt mit Character-Bible / Style-Tags."""
-    name = identity.get("name", "ALTE_Frau_95g")
+    name = identity.get("name", "BuilderProfile")
     tags: List[str] = list(identity.get("style_tags", []))
     palette = identity.get("palette", {})
     seed = identity.get("primary_seed", "")

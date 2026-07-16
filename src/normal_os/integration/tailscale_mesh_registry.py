@@ -7,6 +7,7 @@ Jeder Konnektor ist ein eigenständiges Mesh-Segment mit eigener Identität und 
 import json
 import os
 import subprocess
+import sys
 from datetime import datetime
 from pathlib import Path
 
@@ -32,25 +33,17 @@ def _load_registry_fallback():
         from mesh_roles import mesh_nodes_for_registry, get_roles_registry
         reg = get_roles_registry()
         nodes = mesh_nodes_for_registry()
-<<<<<<< HEAD
-        tailnet = reg.get("tailnet", "tail391adb.ts.net")
-=======
         tailnet = reg.get("tailnet", "example.ts.net")
->>>>>>> 404701973eb09fd68448759c001b712e6fb2ef09
     except Exception:
         nodes = {
             "mainframe": {
                 "role": "orchestrator",
-                "hostname": "desktop-kpki9e4",
+                "hostname": "mainframe",
                 "platform": "windows",
             },
-            "desktop": {"role": "grok-workstation", "hostname": "desktop-kpki9e4"},
+            "desktop": {"role": "grok-workstation", "hostname": "mainframe"},
         }
-<<<<<<< HEAD
-        tailnet = "tail391adb.ts.net"
-=======
         tailnet = "example.ts.net"
->>>>>>> 404701973eb09fd68448759c001b712e6fb2ef09
 
     connectors = [
         "github", "gmail", "google_drive", "google_calendar",
@@ -119,6 +112,22 @@ MCP_PATH_ALIASES = {
     "hyperframes": "hyperframes_by_heygen",
 }
 
+GOOGLE_OAUTH_CONNECTORS = frozenset({"gmail", "google_drive", "google_calendar"})
+
+
+def _google_oauth_status(connector_id: str) -> dict:
+    try:
+        from connectors.google_oauth import oauth_status
+        return oauth_status(connector_id)
+    except ImportError:
+        normal_os = Path(__file__).resolve().parents[1]
+        if str(normal_os) not in sys.path:
+            sys.path.insert(0, str(normal_os))
+        from connectors.google_oauth import oauth_status
+        return oauth_status(connector_id)
+    except Exception as exc:
+        return {"ready": False, "reason": str(exc)}
+
 
 def _probe_mcp_connector(connector_id: str, config: dict) -> dict:
     """Probe a single connector mesh segment."""
@@ -128,7 +137,18 @@ def _probe_mcp_connector(connector_id: str, config: dict) -> dict:
     links = _get_connector_llm_links()
     linked_llm = links.get(connector_id)
 
-    return {
+    oauth = _google_oauth_status(connector_id) if connector_id in GOOGLE_OAUTH_CONNECTORS else None
+    oauth_ready = bool(oauth and oauth.get("ready"))
+    if oauth_ready:
+        segment_status = "registered"
+    elif tools_exist:
+        segment_status = "registered"
+    elif oauth and oauth.get("token_present"):
+        segment_status = "oauth_partial"
+    else:
+        segment_status = "pending"
+
+    result = {
         "mesh_id": config.get("mesh_id", f"mesh-connector-{connector_id}"),
         "connector_id": connector_id,
         "type": config.get("type", "mcp"),
@@ -138,11 +158,15 @@ def _probe_mcp_connector(connector_id: str, config: dict) -> dict:
         "description": config.get("description", ""),
         "linked_llm": linked_llm,
         "linked_llm_path": f"/llm/{linked_llm}/status" if linked_llm else None,
-        "segment_status": "registered" if tools_exist else "pending",
+        "segment_status": segment_status,
         "mcp_tools_available": tools_exist,
         "mcp_path": str(mcp_path),
         "timestamp": datetime.now().isoformat(),
     }
+    if oauth is not None:
+        result["oauth"] = oauth
+        result["oauth_ready"] = oauth_ready
+    return result
 
 
 def get_mesh_status() -> dict:

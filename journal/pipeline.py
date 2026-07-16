@@ -14,7 +14,7 @@ Offline-Weg: Transkript-Dateien (JSONL) in journal/inbox/ ablegen und
 `python -m journal.pipeline` ausfuehren.
 
 Alles unterhalb der MANUELL-Markierung im Markdown bleibt beim Neu-Rendern
-erhalten — dort kann der Maintainer von Hand weiterschreiben.
+erhalten — dort kann der Operator von Hand weiterschreiben.
 """
 from __future__ import annotations
 

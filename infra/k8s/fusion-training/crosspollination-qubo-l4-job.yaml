@@ -1,0 +1,99 @@
+# Crosspollination QUBO — GOOD / budget-friendly (1x NVIDIA L4)
+# Same algorithm, smaller cost (~0.70 EUR/h GPU model rate)
+# Use when H100 quota/scale-up is blocked or monthly ops budget is tight.
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  generateName: crosspoll-qubo-l4-
+  namespace: fusion-training
+  labels:
+    app: crosspoll-qubo
+    app.kubernetes.io/version: "10.0.0"
+    fusion-hero-os/platform-version: "10.0.0"
+    tier: L3_cluster
+    server-class: l4-good
+    algo-class: force_cluster_compute
+    sole-authority: poly_mesh_router
+spec:
+  backoffLimit: 2
+  ttlSecondsAfterFinished: 86400
+  activeDeadlineSeconds: 21600
+  template:
+    metadata:
+      labels:
+        app: crosspoll-qubo
+        server-class: l4-good
+    spec:
+      serviceAccountName: fusion-training-ksa
+      restartPolicy: OnFailure
+      initContainers:
+        - name: fetch-code
+          image: google/cloud-sdk:alpine
+          command:
+            - /bin/sh
+            - -c
+            - |
+              set -euo pipefail
+              mkdir -p /workspace/training
+              gsutil -m cp -r "gs://fusion-ai-data-project-bbf0e6db-52e1-462b-8e3/training/*" /workspace/training/
+              test -f /workspace/training/crosspollination_qubo_optimize.py
+          volumeMounts:
+            - name: workspace
+              mountPath: /workspace
+      containers:
+        - name: crosspoll-optimizer
+          image: nvcr.io/nvidia/pytorch:24.06-py3
+          command:
+            - /bin/bash
+            - -c
+            - |
+              set -euo pipefail
+              pip install -q numpy numba
+              export PYTHONPATH="/workspace/training:${PYTHONPATH:-}"
+              cd /workspace/training
+              python3 crosspollination_qubo_optimize.py
+              gsutil -m cp -r /quantum-data/crosspollination/* \
+                gs://fusion-ai-data-project-bbf0e6db-52e1-462b-8e3/crosspollination/ || true
+          env:
+            - name: FUSION_DATA_ROOT
+              value: /quantum-data
+            - name: FUSION_QUBO_N
+              value: "256"
+            - name: FUSION_ANNEAL_STEPS
+              value: "8000"
+            - name: FUSION_N_RESTARTS
+              value: "8"
+            - name: FUSION_CROSS_SOURCES
+              value: "mesh,dissertation,qubo,operator,ascension,heroic"
+            - name: FUSION_CARDINALITY_K
+              value: "32"
+            - name: FUSION_SERVER_CLASS
+              value: "l4-good-europe-west3"
+            - name: FUSION_NO_LOCAL_DUAL_START
+              value: "1"
+          resources:
+            requests:
+              cpu: "4"
+              memory: 16Gi
+              nvidia.com/gpu: "1"
+            limits:
+              cpu: "4"
+              memory: 16Gi
+              nvidia.com/gpu: "1"
+          volumeMounts:
+            - name: workspace
+              mountPath: /workspace
+            - name: data
+              mountPath: /quantum-data
+      volumes:
+        - name: workspace
+          emptyDir: {}
+        - name: data
+          emptyDir: {}
+      nodeSelector:
+        cloud.google.com/gke-accelerator: nvidia-l4
+      tolerations:
+        - key: nvidia.com/gpu
+          operator: Exists
+          effect: NoSchedule

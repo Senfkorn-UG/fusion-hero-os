@@ -1,0 +1,130 @@
+# Pseudo-Inhouse AI Services — Fusion Hero OS v10
+# Policy: freemium=false — no freemium SKUs; only pseudo-inhouse facade.
+# Placement: L1 Mainframe (/api/ai/inhouse, /v1/chat/completions)
+# SaaS is never source-of-truth; external providers are membranes only.
+# Honesty: keys/rate limits may apply; membranes change over time.
+
+version: "1.0"
+platform_version: "10.0.0"
+policy: pseudo_inhouse_only
+freemium: false
+principle: >
+  All LLM access is via the local AI server facade (pseudo-inhouse).
+  Optional external providers are membranes, not freemium products.
+placement: L1
+facade:
+  openai_compatible: /v1/chat/completions
+  status: /api/ai/inhouse/status
+  chat: /api/ai/inhouse/chat
+  catalog: /api/ai/inhouse/catalog
+  models: /v1/models
+local_truth: inhouse  # MasterSeed, registry, routes — not SaaS responses
+
+# Failover order for pseudo-inhouse complete (first available wins)
+chain:
+  - ollama          # true local free
+  - openrouter_free # free-model pool via OpenRouter
+  - groq            # free tier
+  - gemini          # free tier
+  - huggingface     # free inference (rate-limited)
+  - cloudflare_ai   # Workers AI free tier
+  - nvidia          # NIM free credits when key present
+  - github_models   # GitHub Models free when token present
+  - internal        # always-on heroic fallback (no external call)
+
+services:
+  ollama:
+    kind: local
+    free: true
+    cost: "0 (local compute)"
+    base_url: http://127.0.0.1:11434
+    framework: ollama
+    default_model: llama3.2
+    notes: True in-house compute; install models via ollama pull
+  openrouter_free:
+    kind: gateway
+    free: true
+    cost: "free models only (see openrouter free tier)"
+    base_url: https://openrouter.ai/api/v1
+    framework: openrouter
+    api_key_env: [OPENROUTER_API_KEY]
+    default_model: google/gemma-2-9b-it:free
+    free_models:
+      - google/gemma-2-9b-it:free
+      - meta-llama/llama-3.2-3b-instruct:free
+      - qwen/qwen-2.5-7b-instruct:free
+      - mistralai/mistral-7b-instruct:free
+      - microsoft/phi-3-mini-128k-instruct:free
+    notes: Prefer :free model ids; key often still required for routing
+  groq:
+    kind: cloud_free_tier
+    free: true
+    cost: "free tier rate limits"
+    base_url: https://api.groq.com/openai/v1
+    framework: groq
+    api_key_env: [GROQ_API_KEY]
+    default_model: llama-3.3-70b-versatile
+    alt_models:
+      - llama-3.1-8b-instant
+      - gemma2-9b-it
+      - mixtral-8x7b-32768
+  gemini:
+    kind: cloud_free_tier
+    free: true
+    cost: "Google AI Studio free tier"
+    framework: gemini
+    api_key_env: [GOOGLE_API_KEY, GEMINI_API_KEY]
+    default_model: gemini-2.0-flash
+  huggingface:
+    kind: cloud_free_tier
+    free: true
+    cost: "HF free inference (limited)"
+    base_url: https://router.huggingface.co/v1
+    framework: huggingface
+    api_key_env: [HF_TOKEN, HUGGINGFACE_API_KEY, HUGGING_FACE_HUB_TOKEN]
+    default_model: meta-llama/Meta-Llama-3-8B-Instruct
+  cloudflare_ai:
+    kind: cloud_free_tier
+    free: true
+    cost: "Workers AI free allocation"
+    base_url_template: "https://api.cloudflare.com/client/v4/accounts/{account_id}/ai/v1"
+    framework: cloudflare_ai
+    api_key_env: [CLOUDFLARE_API_TOKEN, CF_API_TOKEN]
+    account_env: [CLOUDFLARE_ACCOUNT_ID, CF_ACCOUNT_ID]
+    default_model: "@cf/meta/llama-3.1-8b-instruct"
+  nvidia:
+    kind: cloud_free_credits
+    free: conditional
+    cost: "NIM free credits when NVIDIA_API_KEY set"
+    framework: nvidia
+    api_key_env: [NVIDIA_API_KEY, NGC_API_KEY, NVAPI_KEY]
+    default_model: meta/llama-3.1-8b-instruct
+  github_models:
+    kind: cloud_free_tier
+    free: true
+    cost: "GitHub Models free rate limits"
+    base_url: https://models.inference.ai.azure.com
+    framework: github_models
+    api_key_env: [GITHUB_TOKEN, GH_TOKEN]
+    default_model: gpt-4o-mini
+  internal:
+    kind: local_fallback
+    free: true
+    cost: "0"
+    framework: internal
+    default_model: fusion-hero-internal
+    notes: Always available heroic stub — not a frontier model
+
+# Capability routing hints (pseudo-inhouse roles)
+roles:
+  thinker: [ollama, openrouter_free, groq, gemini]
+  worker: [groq, openrouter_free, gemini, huggingface, ollama]
+  verifier: [gemini, groq, openrouter_free, ollama]
+  code: [groq, openrouter_free, ollama, huggingface]
+  fast: [groq, ollama, gemini]
+
+anti_patterns:
+  - saas-as-source-of-truth
+  - storing secrets in git
+  - claiming free tier is unlimited
+  - bypassing consent for personal data to free SaaS

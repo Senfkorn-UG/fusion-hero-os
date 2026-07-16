@@ -62,6 +62,7 @@ def test_inventory_covers_archives(inventory):
 
 
 def test_inventory_pdfs_are_actually_extracted(inventory):
+    pytest.importorskip("pypdf")
     pdfs = [e for e in inventory if e.modality == "pdf"]
 <<<<<<< HEAD
     assert len(pdfs) >= 20, "Master-Archiv-PDFs fehlen im Inventar"
@@ -78,6 +79,7 @@ def test_inventory_pdfs_are_actually_extracted(inventory):
 
 
 def test_inventory_images_have_dimensions(inventory):
+    pytest.importorskip("PIL")
     images = [e for e in inventory if e.modality == "image"
               and e.extraction.get("status") == "ok"]
     assert images, "kein Bild extrahiert"

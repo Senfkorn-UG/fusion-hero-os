@@ -88,11 +88,7 @@ def _get_vr_status() -> dict:
     root = Path(os.environ.get("FUSION_HERO_ROOT", str(ROOT)))
     vr_root = Path(os.environ.get("FUSION_VR_ASSETS_ROOT", str(root / "03_VR_Assets")))
     expected = [
-<<<<<<< HEAD
-        "vr_mister_jailbait_hero_equirectangular.jpg",
-=======
-        "vr_mister_Contributor_hero_equirectangular.jpg",
->>>>>>> 404701973eb09fd68448759c001b712e6fb2ef09
+        "vr_builder_hero_equirectangular.jpg",
         "heroic_evolution_fractal.jpg",
     ]
     assets = []
@@ -141,13 +137,30 @@ def _workstation_paths_file() -> Optional[Path]:
     return None
 
 
+def _get_google_oauth_status() -> dict:
+    try:
+        normal_os = ROOT.parent
+        if str(normal_os) not in sys.path:
+            sys.path.insert(0, str(normal_os))
+        from connectors.google_oauth import all_connectors_status
+        return all_connectors_status()
+    except Exception as e:
+        return {"error": str(e), "ready_count": 0}
+
+
 def _get_workstation() -> dict:
     ws = _workstation_paths_file()
     if not ws:
         return {"configured": False}
     try:
-        with open(ws, encoding="utf-8") as f:
-            return {"configured": True, "paths": json.load(f)}
+        import sys
+
+        ws_dir = ws.parent
+        if str(ws_dir) not in sys.path:
+            sys.path.insert(0, str(ws_dir))
+        from resolve_paths import resolve_paths  # type: ignore[import-not-found]
+
+        return {"configured": True, "paths": resolve_paths(ws_dir), "source": str(ws)}
     except Exception as e:
         return {"configured": False, "error": str(e)}
 
@@ -155,26 +168,38 @@ def _get_workstation() -> dict:
 def _check_phone_visibility(unified: dict, tailscale: dict) -> dict:
     """Warnung wenn Phone in Config aber nicht in Tailscale-Peers."""
     phone_cfg = (unified.get("nodes") or {}).get("phone", {})
-<<<<<<< HEAD
-    expected = phone_cfg.get("hostname", "redmi-note-13-pro-5g")
-=======
     expected = phone_cfg.get("hostname", "phone-node")
->>>>>>> 404701973eb09fd68448759c001b712e6fb2ef09
+    aliases = [expected.lower()]
+    aliases.extend(a.lower() for a in phone_cfg.get("hostname_aliases", []))
+    aliases.extend(["redmi", "android"])
     peer_list = tailscale.get("peer_list") or []
-    found = any(
-        expected.lower() in (p.get("hostname") or "").lower()
-        or expected.lower() in (p.get("magicdns") or "").lower()
-        for p in peer_list
-    )
+    found_peer = None
+    for p in peer_list:
+        hn = (p.get("hostname") or "").lower()
+        dns = (p.get("magicdns") or "").lower()
+        os_name = (p.get("os") or "").lower()
+        if os_name == "android" or any(a in hn or a in dns for a in aliases):
+            found_peer = p
+            break
+    found = found_peer is not None
     hint = phone_cfg.get("login_hint") or (
         "Handy und PC muessen im gleichen Tailnet sein (gleicher Login: Google, nicht GitHub)"
     )
+    file_mirror = {}
+    try:
+        from mesh_file_share import get_mirror_status
+        file_mirror = get_mirror_status()
+    except Exception as e:
+        file_mirror = {"error": str(e)}
     return {
         "expected_hostname": expected,
+        "resolved_hostname": (found_peer or {}).get("hostname"),
         "visible": found,
+        "online": (found_peer or {}).get("online", False),
         "peer_count": tailscale.get("peers", 0),
         "account_login": tailscale.get("login"),
         "fix_hint": None if found else hint,
+        "file_mirror": file_mirror,
     }
 
 
@@ -255,6 +280,7 @@ def get_unified_status() -> dict:
     phone_check = _check_phone_visibility(unified, tailscale)
     vr_status = _get_vr_status()
     graph = _build_graph(unified, mesh, llm)
+    google_oauth = _get_google_oauth_status()
 
     mainframe_role = {}
     try:
@@ -286,6 +312,7 @@ def get_unified_status() -> dict:
             "connectors_registered": mesh.get("connectors_registered"),
             "tailnet": mesh.get("tailnet"),
         },
+        "google_oauth": google_oauth,
         "llm_summary": {
             "count": llm.get("count"),
             "available": llm.get("available"),

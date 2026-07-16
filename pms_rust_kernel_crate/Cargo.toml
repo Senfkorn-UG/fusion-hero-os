@@ -1,10 +1,6 @@
 [package]
 name = "pms_rust_kernel"
-<<<<<<< HEAD
-version = "8.3.0"
-=======
-version = "9.0.0"
->>>>>>> 404701973eb09fd68448759c001b712e6fb2ef09
+version = "10.0.0"
 edition = "2021"
 description = "Deterministischer PMS-Minimal-Kernel: PMS.yaml-Validierung, JSONL-Audit, Fail-Closed"
 

@@ -1,32 +1,56 @@
 #!/bin/bash
-# Tailscale Installation + Setup für Fusion Hero OS Heimserver
-# Layer 0 kompatibel – 09.07.2026
+# Tailscale Installation + Mesh Setup for Fusion Hero OS (Linux/WSL)
+# Usage:
+#   export TS_AUTHKEY=tskey-auth-...
+#   sudo -E ./tailscale_install.sh
 
-set -e
+set -euo pipefail
 
-echo "🚀 [Fusion Hero OS] Tailscale Installation wird gestartet..."
+echo "[Fusion Hero OS] Tailscale Installation & Mesh Config starting..."
 
-# 1. Tailscale offizielles Install-Skript ausführen
-curl -fsSL https://tailscale.com/install.sh | sh
+if [[ -z "${TS_AUTHKEY:-}" ]]; then
+    echo "Set TS_AUTHKEY first (reusable key from login.tailscale.com/admin/settings/keys)"
+    echo "  export TS_AUTHKEY=tskey-auth-..."
+    echo "  sudo -E ./tailscale_install.sh"
+    exit 1
+fi
 
-echo "✅ Tailscale Binary installiert."
+TS_CMD=(tailscale)
+if [[ "${EUID:-$(id -u)}" -ne 0 ]]; then
+    TS_CMD=(sudo tailscale)
+fi
 
-# 2. tailscaled Service aktivieren
-sudo systemctl enable --now tailscaled
+if command -v tailscale >/dev/null 2>&1; then
+    echo "-> Tailscale already installed: $(command -v tailscale)"
+else
+    echo "-> Downloading and installing Tailscale..."
+    curl -fsSL https://tailscale.com/install.sh | sh
+fi
 
-echo "✅ tailscaled Service aktiviert."
+if command -v systemctl >/dev/null 2>&1 && [[ "${EUID:-$(id -u)}" -eq 0 ]]; then
+    echo "-> Enabling tailscaled service..."
+    systemctl enable --now tailscaled || true
+fi
 
-# 3. Authentifizierung starten (öffnet Browser oder gibt Login-Link aus)
+if [[ -z "${TS_HOSTNAME:-}" ]]; then
+    if grep -qi microsoft /proc/version 2>/dev/null; then
+        TS_HOSTNAME="mainframe-wsl"
+    else
+        TS_HOSTNAME="mainframe"
+    fi
+fi
+
 echo ""
-echo "🔐 Jetzt Tailscale authentifizieren..."
-echo "   Bitte im Browser anmelden (GitHub / Google / Microsoft empfohlen)."
-echo ""
+echo "-> Running tailscale up (hostname=${TS_HOSTNAME})..."
+"${TS_CMD[@]}" up \
+    --reset \
+    --auth-key="${TS_AUTHKEY}" \
+    --hostname="${TS_HOSTNAME}" \
+    --accept-routes \
+    --ssh
 
-sudo tailscale up --ssh
-
 echo ""
-echo "✅ Tailscale erfolgreich eingerichtet!"
+"${TS_CMD[@]}" status || true
 echo ""
-echo "Nächster Schritt: ./tailscale_start.sh ausführen (falls noch nicht geschehen)"
-echo ""
-echo "Status prüfen mit: tailscale status"
+echo "Install complete. Optional tags after ACL tagOwners:"
+echo "  tailscale up --advertise-tags=tag:fusion-node-desktop --advertise-exit-node"

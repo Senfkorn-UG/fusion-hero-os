@@ -108,6 +108,13 @@ pre{{background:#11121a;padding:20px;border-radius:12px;overflow:auto;border:1px
     return HTMLResponse(html)
 
 
+@router.get("/vr/persistent", response_class=HTMLResponse)
+async def vr_persistent_redirect():
+    """Alias: Dauer-VR lives under mainframe site."""
+    from fastapi.responses import RedirectResponse
+    return RedirectResponse("/mainframe/vr", status_code=307)
+
+
 @router.get("/vr/viewer", response_class=HTMLResponse)
 async def vr_viewer(request: Request, pano: str | None = None, overlay: str | None = None):
     tpl = DASHBOARD / "templates" / "vr_viewer.html"

@@ -40,13 +40,8 @@
   - `core/` (masterseed.py, selfmodify_core.py, peerreview_core.py, qubo_efficiency.py, liveprocess_tracking.py)
   - `book/heroismus_v33/` (mit Axiomatik 1.24, Quantenkognition, Interdisziplinarität, Sisyphos-Zyklus)
   - `roadmap/` (connectors.md, generational_evolution.md, core_patent_hybrid.md)
-<<<<<<< HEAD
-  - `memes/cyberpunk_campfire/` (mister-jailbait VisualIdentity + MasterSeed Visual)
-  - `modules/` (alte_frau_95g, mainframe_laden, deep_research_5_stage, mister_jailbait_image, skill_creator)
-=======
   - `memes/cyberpunk_campfire/` (mister-Contributor VisualIdentity + MasterSeed Visual)
-  - `modules/` (alte_frau_95g, mainframe_laden, deep_research_5_stage, mister_Contributor_image, skill_creator)
->>>>>>> 404701973eb09fd68448759c001b712e6fb2ef09
+  - `modules/` (alte_frau_95g, mainframe_laden, deep_research_5_stage, mister_builder_image, skill_creator)
 - Exakte Markierung aller **nur neuen** Elemente
 - MasterSeed-Mathematik als verbindliches Layer-0-Pattern
 - Sofort ausführbare lokale Git-Befehle zum Abgleich

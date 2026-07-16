@@ -1,0 +1,98 @@
+# Periodic coordination on GKE Autopilot — real image + Workload Identity
+# Platform: Fusion Hero OS v10.0.0
+#
+# Prerequisites (one-time):
+#   1. Artifact Registry image:
+#        gcloud builds submit --config=infra/k8s/fusion-coordination/cloudbuild.yaml .
+#   2. WI binding:
+#        gcloud iam service-accounts add-iam-policy-binding \
+#          fusion-training-sa@PROJECT.iam.gserviceaccount.com \
+#          --role=roles/iam.workloadIdentityUser \
+#          --member=serviceAccount:PROJECT.svc.id.goog[fusion-coordination/fusion-coordination-ksa]
+#   3. GCS objectAdmin already on fusion-training-sa (terraform senfkorn-fusion-stack)
+#
+# Apply:
+#   kubectl apply -f namespace.yaml
+#   kubectl apply -f coordination-cronjob.yaml
+# Manual once:
+#   kubectl create job --from=cronjob/fusion-service-coordination fusion-coord-manual-$(date +%s) -n fusion-coordination
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: fusion-coordination-ksa
+  namespace: fusion-coordination
+  labels:
+    app.kubernetes.io/part-of: fusion-hero-os
+    app.kubernetes.io/version: "10.0.0"
+    fusion-hero-os/platform-version: "10.0.0"
+  annotations:
+    iam.gke.io/gcp-service-account: fusion-training-sa@project-bbf0e6db-52e1-462b-8e3.iam.gserviceaccount.com
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: fusion-service-coordination
+  namespace: fusion-coordination
+  labels:
+    app: fusion-coordination
+    app.kubernetes.io/part-of: fusion-hero-os
+    app.kubernetes.io/version: "10.0.0"
+    fusion-hero-os/platform-version: "10.0.0"
+    tier: L3_cluster
+spec:
+  schedule: "*/30 * * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  startingDeadlineSeconds: 600
+  jobTemplate:
+    spec:
+      backoffLimit: 1
+      ttlSecondsAfterFinished: 86400
+      activeDeadlineSeconds: 900
+      template:
+        metadata:
+          labels:
+            app: fusion-coordination
+            app.kubernetes.io/version: "10.0.0"
+            fusion-hero-os/platform-version: "10.0.0"
+        spec:
+          serviceAccountName: fusion-coordination-ksa
+          restartPolicy: OnFailure
+          # Autopilot: no nodeSelectors required; avoid GPU
+          containers:
+            - name: coordinator
+              image: europe-west3-docker.pkg.dev/project-bbf0e6db-52e1-462b-8e3/fusion-hero/coordination:v10.0.0
+              imagePullPolicy: Always
+              args:
+                - --mode
+                - all
+                - --upload-gcs
+                - --catalog
+                - /app/mesh_service_coordination.yaml
+              env:
+                - name: FUSION_PLATFORM_VERSION
+                  value: "10.0.0"
+                - name: FUSION_OPERATIVE_KANON
+                  value: "v10.0.0"
+                - name: FUSION_COORD_GCS_PREFIX
+                  value: gs://fusion-ai-data-project-bbf0e6db-52e1-462b-8e3/coordination
+                - name: GOOGLE_CLOUD_PROJECT
+                  value: project-bbf0e6db-52e1-462b-8e3
+                - name: HOME
+                  value: /var/fusion
+              resources:
+                requests:
+                  cpu: "250m"
+                  memory: 512Mi
+                limits:
+                  cpu: "1"
+                  memory: 1Gi
+              securityContext:
+                allowPrivilegeEscalation: false
+                readOnlyRootFilesystem: false
+                runAsNonRoot: true
+                runAsUser: 10001
+                capabilities:
+                  drop: ["ALL"]

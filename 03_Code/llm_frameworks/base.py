@@ -102,6 +102,8 @@ def openai_chat(
     timeout: int,
     provider: str = "openai",
     extra_headers: Optional[dict] = None,
+    temperature: Optional[float] = None,
+    max_tokens: Optional[int] = None,
 ) -> Tuple[str, dict]:
     if requests is None:
         raise RuntimeError("requests nicht installiert — pip install requests")
@@ -112,12 +114,18 @@ def openai_chat(
     }
     if extra_headers:
         headers.update(extra_headers)
+    # default 0.4; accuracy/control instances pass temperature=0.0
+    temp = 0.4 if temperature is None else float(temperature)
     payload = {
         "model": model,
         "messages": messages,
-        "temperature": 0.4,
-        "max_tokens": DEFAULT_MAX_TOKENS,
+        "temperature": temp,
+        "max_tokens": int(max_tokens or DEFAULT_MAX_TOKENS),
     }
+    if temp <= 0.0:
+        # force deterministic decoding where provider supports it
+        payload["temperature"] = 0.0
+        payload["top_p"] = 1.0
     sess = get_http_session(provider, base)
     post = sess.post if sess else requests.post
     resp = post(url, headers=headers, json=payload, timeout=timeout)

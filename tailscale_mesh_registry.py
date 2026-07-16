@@ -34,14 +34,10 @@ def _load_registry_fallback():
     ]
     return {
         "mesh_version": "1.0",
-<<<<<<< HEAD
-        "tailnet": "tail391adb.ts.net",
-=======
         "tailnet": "example.ts.net",
->>>>>>> 404701973eb09fd68448759c001b712e6fb2ef09
         "nodes": {
             "mainframe": {"role": "orchestrator", "hostname": "mainframe"},
-            "desktop": {"role": "grok-workstation", "hostname": "desktop-kpki9e4"},
+            "desktop": {"role": "grok-workstation", "hostname": "mainframe"},
         },
         "connectors": {
             name: {

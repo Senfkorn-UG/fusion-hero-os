@@ -1,4 +1,4 @@
-﻿"""
+"""
 AscensionOS Core Modules
 """
 

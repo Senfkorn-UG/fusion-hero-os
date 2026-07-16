@@ -1,0 +1,127 @@
+# Fusion Hero OS v10.0.0 — platform pin on GKE (L3)
+# Apply:
+#   kubectl apply -f infra/k8s/platform-version/fusion-platform-v10.yaml
+#
+# Labels use hyphen form where GCP/k8s label rules forbid dots.
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: fusion-training
+  labels:
+    app.kubernetes.io/part-of: fusion-hero-os
+    app.kubernetes.io/version: "10.0.0"
+    fusion-hero-os/platform-version: "10.0.0"
+    fusion-hero-os/operative-kanon: v10.0.0
+    fusion-hero-os/inherits: v8.3-stack
+    fusion-hero-os/aspirational: v9.10-ascension
+    org: senfkorn-ug
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: fusion-coordination
+  labels:
+    app.kubernetes.io/part-of: fusion-hero-os
+    app.kubernetes.io/version: "10.0.0"
+    fusion-hero-os/platform-version: "10.0.0"
+    fusion-hero-os/operative-kanon: v10.0.0
+    fusion-hero-os/inherits: v8.3-stack
+    fusion-hero-os/aspirational: v9.10-ascension
+    org: senfkorn-ug
+    purpose: service-structure-coordination
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: fusion-platform-version
+  namespace: fusion-training
+  labels:
+    app.kubernetes.io/part-of: fusion-hero-os
+    app.kubernetes.io/version: "10.0.0"
+    fusion-hero-os/platform-version: "10.0.0"
+data:
+  platform_version: "10.0.0"
+  operative_kanon: "v10.0.0"
+  inherits: "v8.3 functional stack + Stage-A/B"
+  aspirational: "v9.10 AscensionOS track (loadable)"
+  release_url: "https://github.com/95guknow/fusion-hero-os/releases/tag/v10.0.0"
+  best_version: "BEST_VERSION.md"
+  cluster: "senfkorn-gke-cluster"
+  region: "europe-west3"
+  tier: "L3_cluster"
+  propagated_at: "2026-07-16T00:00:00Z"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: fusion-platform-version
+  namespace: fusion-coordination
+  labels:
+    app.kubernetes.io/part-of: fusion-hero-os
+    app.kubernetes.io/version: "10.0.0"
+    fusion-hero-os/platform-version: "10.0.0"
+data:
+  platform_version: "10.0.0"
+  operative_kanon: "v10.0.0"
+  inherits: "v8.3 functional stack + Stage-A/B"
+  aspirational: "v9.10 AscensionOS track (loadable)"
+  release_url: "https://github.com/95guknow/fusion-hero-os/releases/tag/v10.0.0"
+  best_version: "BEST_VERSION.md"
+  cluster: "senfkorn-gke-cluster"
+  region: "europe-west3"
+  tier: "L3_cluster"
+  propagated_at: "2026-07-16T00:00:00Z"
+---
+# Lightweight proof: schedules on L3 and echoes v10 pin (no GPU, cheap)
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: fusion-v10-propagation-proof
+  namespace: fusion-coordination
+  labels:
+    app: fusion-v10-propagation-proof
+    app.kubernetes.io/part-of: fusion-hero-os
+    app.kubernetes.io/version: "10.0.0"
+    fusion-hero-os/platform-version: "10.0.0"
+    routing: cluster-only
+spec:
+  backoffLimit: 1
+  ttlSecondsAfterFinished: 86400
+  template:
+    metadata:
+      labels:
+        app: fusion-v10-propagation-proof
+        fusion-hero-os/platform-version: "10.0.0"
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: proof
+          image: busybox:1.36
+          command:
+            - /bin/sh
+            - -c
+            - |
+              set -e
+              echo "fusion_v10_propagation_proof=ok"
+              echo "platform_version=10.0.0"
+              echo "operative_kanon=v10.0.0"
+              echo "inherits=v8.3_stack"
+              echo "aspirational=v9.10_ascension"
+              echo "tier=L3_cluster"
+              echo "cluster=senfkorn-gke-cluster"
+              echo "host=$(hostname)"
+              echo "ts=$(date -Iseconds 2>/dev/null || date)"
+              sleep 3
+          env:
+            - name: FUSION_PLATFORM_VERSION
+              value: "10.0.0"
+            - name: FUSION_OPERATIVE_KANON
+              value: "v10.0.0"
+          resources:
+            requests:
+              cpu: "50m"
+              memory: 64Mi
+            limits:
+              cpu: "200m"
+              memory: 128Mi

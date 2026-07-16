@@ -1,4 +1,4 @@
-﻿"""LLM Providers Package"""
+"""LLM Providers Package"""
 from .base import LLMProvider, LLMMessage, LLMResponse
 from .google import GoogleProvider
 from .openrouter import OpenRouterProvider

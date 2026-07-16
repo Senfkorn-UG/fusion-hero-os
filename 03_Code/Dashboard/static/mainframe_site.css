@@ -1,0 +1,149 @@
+/* Mainframe Website · Dauer-VR · IDE · Worktree */
+:root {
+  --bg: #0a0a0f;
+  --panel: #11121a;
+  --line: #1e293b;
+  --text: #e2e8f0;
+  --muted: #94a3b8;
+  --accent: #40e0d0;
+  --amber: #f59e0b;
+  --green: #00d4aa;
+  --violet: #7c3aed;
+}
+* { box-sizing: border-box; }
+.mf-body {
+  margin: 0;
+  min-height: 100vh;
+  background: radial-gradient(1200px 600px at 10% -10%, #12203a 0%, var(--bg) 55%);
+  color: var(--text);
+  font-family: ui-sans-serif, system-ui, Segoe UI, sans-serif;
+}
+.mf-header {
+  display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px;
+  padding: 16px 20px; border-bottom: 1px solid var(--line);
+  background: rgba(10,12,20,.85); backdrop-filter: blur(8px);
+  position: sticky; top: 0; z-index: 10;
+}
+.mf-header.compact { padding: 10px 16px; }
+.mf-brand { display: flex; gap: 12px; align-items: center; }
+.mf-logo {
+  width: 42px; height: 42px; border-radius: 50%;
+  display: grid; place-items: center;
+  background: linear-gradient(135deg, var(--green), var(--amber));
+  color: #000; font-weight: 800;
+}
+.mf-header h1 { margin: 0; font-size: 1.15rem; letter-spacing: .12em; }
+.mf-sub { margin: 2px 0 0; color: var(--muted); font-size: 12px; }
+.mf-nav { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.mf-nav a {
+  color: var(--accent); text-decoration: none; font-size: 13px;
+  border: 1px solid #40e0d033; padding: 6px 10px; border-radius: 999px;
+}
+.mf-nav a:hover, .mf-nav a.accent { background: #40e0d018; border-color: var(--accent); }
+.mf-grid {
+  max-width: 1200px; margin: 0 auto; padding: 20px;
+  display: grid; gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+.mf-card {
+  background: var(--panel); border: 1px solid var(--line); border-radius: 14px;
+  padding: 16px 18px;
+}
+.mf-card.hero { grid-column: 1 / -1; }
+.mf-card h2 { margin: 0 0 10px; font-size: 14px; letter-spacing: .14em; color: var(--green); }
+.muted { color: var(--muted); font-size: 14px; line-height: 1.5; }
+.mf-tiles {
+  display: grid; gap: 12px; margin-top: 14px;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+.tile {
+  display: flex; flex-direction: column; gap: 4px;
+  padding: 14px; border-radius: 12px; text-decoration: none; color: var(--text);
+  border: 1px solid var(--line); background: #0d111a; transition: .15s border-color, .15s transform;
+}
+.tile:hover { border-color: var(--accent); transform: translateY(-2px); }
+.tile-icon { font-size: 22px; color: var(--accent); }
+.tile strong { letter-spacing: .06em; }
+.tile em { font-style: normal; color: var(--muted); font-size: 12px; }
+.tile.vr { box-shadow: inset 0 0 0 1px #7c3aed33; }
+.tile.ide { box-shadow: inset 0 0 0 1px #00d4aa33; }
+.mf-pre {
+  background: #0a0c12; border: 1px solid var(--line); border-radius: 10px;
+  padding: 12px; overflow: auto; font-size: 12px; line-height: 1.4; max-height: 320px;
+  white-space: pre-wrap; word-break: break-word;
+}
+.mf-pre.small { max-height: 180px; font-size: 11px; }
+.mf-list { font-size: 13px; line-height: 1.6; }
+.mf-list a { color: var(--accent); }
+.mf-links { margin: 0; padding-left: 18px; }
+.mf-links a { color: var(--accent); }
+.mf-footer {
+  text-align: center; color: var(--muted); font-size: 12px; padding: 24px;
+  border-top: 1px solid var(--line);
+}
+.mf-footer a { color: var(--accent); }
+.mono { font-family: ui-monospace, Consolas, monospace; }
+
+/* IDE */
+.ide-body { display: flex; flex-direction: column; min-height: 100vh; }
+.ide-layout {
+  flex: 1; display: grid; min-height: 0;
+  grid-template-columns: minmax(200px, 280px) 1fr minmax(200px, 280px);
+}
+@media (max-width: 960px) {
+  .ide-layout { grid-template-columns: 1fr; }
+}
+.ide-sidebar, .ide-status {
+  border-right: 1px solid var(--line); background: #0c0e16; overflow: auto;
+  padding: 10px;
+}
+.ide-status { border-right: none; border-left: 1px solid var(--line); }
+.ide-side-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.btn-mini {
+  border: 1px solid #40e0d044; background: #121722; color: var(--accent);
+  border-radius: 6px; padding: 2px 8px; font-size: 12px; cursor: pointer; text-decoration: none;
+}
+.ide-crumbs { font-size: 11px; color: var(--muted); margin-bottom: 8px; word-break: break-all; }
+.ide-crumbs a { color: var(--accent); margin-right: 4px; }
+.ide-tree { font-size: 13px; }
+.ide-tree .row {
+  display: flex; gap: 6px; padding: 4px 6px; border-radius: 6px; cursor: pointer;
+  text-decoration: none; color: var(--text);
+}
+.ide-tree .row:hover { background: #151a28; }
+.ide-tree .dir { color: var(--amber); }
+.ide-tree .file { color: var(--text); }
+.ide-main { display: flex; flex-direction: column; min-width: 0; background: #08090e; }
+.ide-toolbar {
+  display: flex; gap: 10px; align-items: center; flex-wrap: wrap;
+  padding: 8px 12px; border-bottom: 1px solid var(--line); background: #0e111a;
+}
+.ide-editor {
+  margin: 0; flex: 1; padding: 14px 16px; overflow: auto;
+  font: 12.5px/1.45 ui-monospace, Consolas, monospace; color: #d1e0f0;
+  white-space: pre-wrap; word-break: break-word;
+}
+.ide-status h3 { margin: 12px 0 6px; font-size: 11px; letter-spacing: .12em; color: var(--green); }
+
+/* Worktree table */
+.wt-wrap { max-width: 1100px; margin: 0 auto; padding: 16px 20px 40px; }
+.wt-bar { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 12px; }
+.wt-filter {
+  margin-left: auto; background: #0e111a; border: 1px solid var(--line);
+  color: var(--text); border-radius: 8px; padding: 6px 10px; min-width: 180px;
+}
+.wt-table { border: 1px solid var(--line); border-radius: 12px; overflow: hidden; background: var(--panel); }
+.wt-row {
+  display: grid; grid-template-columns: 1fr 90px 120px 160px;
+  gap: 8px; padding: 8px 12px; border-bottom: 1px solid #151a24; font-size: 13px;
+  align-items: center;
+}
+.wt-row:last-child { border-bottom: none; }
+.wt-row.head { background: #0e121c; color: var(--muted); font-size: 11px; letter-spacing: .08em; }
+.wt-row a { color: var(--accent); text-decoration: none; }
+.wt-row a:hover { text-decoration: underline; }
+.wt-row .name-dir { color: var(--amber); font-weight: 600; }
+@media (max-width: 700px) {
+  .wt-row { grid-template-columns: 1fr 70px; }
+  .wt-row .hide-sm { display: none; }
+}

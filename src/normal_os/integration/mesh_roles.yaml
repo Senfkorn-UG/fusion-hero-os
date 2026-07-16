@@ -1,124 +1,228 @@
-# Fusion Hero OS — Kanonische Tailscale-Mesh-Rollen (Single Source of Truth)
-# Der Windows-Desktop ist der Mainframe (Orchestrator). Linux-Knoten ist archiviert.
-
-mesh_roles_version: "1.1"
-updated: "2026-07-12"
-<<<<<<< HEAD
-tailnet: tail391adb.ts.net
-=======
+mesh_roles_version: '1.3'
+updated: '2026-07-15'
 tailnet: example.ts.net
->>>>>>> 404701973eb09fd68448759c001b712e6fb2ef09
-principle: "Windows-Desktop = Mainframe — zentraler Orchestrator im Tailscale-Mesh"
-
-# Rolle → physischer Knoten (kanonisch)
+principle: Windows desktop = Mainframe orchestrator
+live_inventory: false
 role_assignments:
   mainframe:
     node_id: mainframe
     role: orchestrator
-    hostname: desktop-kpki9e4
-<<<<<<< HEAD
-    magicdns: desktop-kpki9e4.tail391adb.ts.net
-=======
-    magicdns: host.example.ts.net
->>>>>>> 404701973eb09fd68448759c001b712e6fb2ef09
+    hostname: mainframe
+    magicdns: mainframe.example.ts.net
     platform: windows
+    status: configured
     tailscale_tag: tag:fusion-node-mainframe
     canonical: true
-    aliases: [desktop]
+    aliases:
+    - desktop
     services:
-      - fusion-dashboard
-      - hero-docs-server
-      - normalos-bridge
-      - tailscale-control
-      - fusion-integration-hub
-      - grok-cli
-      - mcp-bridges
-      - ollama
-
+    - fusion-dashboard
+    - hero-docs-server
+    - normalos-bridge
+    - tailscale-control
+    - fusion-integration-hub
+    - grok-cli
+    - mcp-bridges
+    - ollama
   workstation:
     node_id: desktop
     role: grok-workstation
     same_as: mainframe
-    hostname: desktop-kpki9e4
-<<<<<<< HEAD
-    magicdns: desktop-kpki9e4.tail391adb.ts.net
-=======
-    magicdns: host.example.ts.net
->>>>>>> 404701973eb09fd68448759c001b712e6fb2ef09
+    hostname: mainframe
+    magicdns: mainframe.example.ts.net
     platform: windows
+    status: configured
     tailscale_tag: tag:fusion-node-desktop
-
   mobile:
     node_id: phone
     role: mobile-client
-<<<<<<< HEAD
-    hostname: redmi-note-13-pro-5g
-    magicdns: redmi-note-13-pro-5g.tail391adb.ts.net
+    hostname: phone
+    hostname_aliases:
+    - phone-node
+    magicdns: phone.example.ts.net
     platform: android
+    status: configured
     tailscale_tag: tag:fusion-node-phone
-    login_required: stephan95g@googlemail.com
-=======
-    hostname: phone-node
-    magicdns: host.example.ts.net
-    platform: android
-    tailscale_tag: tag:fusion-node-phone
-    login_required: user@example.com
->>>>>>> 404701973eb09fd68448759c001b712e6fb2ef09
-    login_warning: "Nicht GitHub — gleicher Login wie Desktop (Google)"
-
+    file_mirror_client: true
+  cloud_exit:
+    node_id: mesh-exit
+    role: mesh-exit
+    hostname: mesh-exit
+    magicdns: mesh-exit.example.ts.net
+    platform: linux
+    status: configured
+    offers_exit: true
+    note: Cloud mesh exit + fractal replica (local override)
   legacy:
     node_id: legacy-linux
     role: archived
-    hostname: mainframe
-<<<<<<< HEAD
-    magicdns: mainframe.tail391adb.ts.net
-=======
-    magicdns: host.example.ts.net
->>>>>>> 404701973eb09fd68448759c001b712e6fb2ef09
+    hostname: legacy-mainframe
+    magicdns: legacy-mainframe.example.ts.net
     platform: linux
     status: offline
-    tailscale_status: "offline >2d — nicht mehr im aktiven Mesh"
-    note: "Frueherer Linux-Knoten — Mainframe-Rolle auf Windows-Desktop uebertragen (2026-07-12)"
+    note: Former Linux host — role moved to Windows mainframe
     action: none
-
+  legacy_gcp:
+    node_id: legacy-exit
+    role: legacy-exit
+    hostname: legacy-exit
+    magicdns: legacy-exit.example.ts.net
+    platform: linux
+    status: offline
+    offers_exit: true
+    note: Legacy cloud exit placeholder
   wsl:
     node_id: wsl-ubuntu
     role: dev-leaf
     platform: linux
-    hostname: wsl-ubuntu
-    status: login_required
-<<<<<<< HEAD
-    login_required: stephan95g@googlemail.com
-=======
-    login_required: user@example.com
->>>>>>> 404701973eb09fd68448759c001b712e6fb2ef09
+    hostname: mainframe-wsl
+    magicdns: mainframe-wsl.example.ts.net
+    status: optional
+    tailscale_tag: tag:fusion-node-wsl
     setup_script: workstation/tailscale_wsl_setup.sh
-    login_url_file: "~/.fusion/tailscale-wsl-login.url"
-    note: "Entwicklungs-Leaf — kein Mainframe; Tailscale optional fuer Mesh-Checks"
-
-# Speicher — Google Drive als Standard fuer nicht-operative Daten
+    mesh_setup_script: workstation/mainframe_mesh_setup.sh
+    virtual_exit_default: wsl-dev
+    note: WSL dev leaf
 storage:
   policy_id: google_drive_cold_default
   policy_file: workstation/storage_policy.json
   cold_default: google_drive
   local_operational_only: true
-  gdrive_cold_root: "Meine Ablage/FusionHero_Offload"
+  gdrive_cold_root: FusionHero_Offload
   vault_provenance: 95guknow/fusion-hero-vault
   apply_script: workstation/apply-storage-policy.ps1
-
-# Git - bifurzierter Bottom-Up-Merge (WSL -> Windows -> GitHub)
 git:
   merge_policy: bottom_up
   bottom_up_script: workstation/merge-bottom-up.ps1
   wsl_script: workstation/merge-bottom-up.sh
-  status_file: "~/.fusion/merge-bottom-up.status.json"
-
-# Routing (Funnel + MagicDNS) — zeigt auf Windows-Mainframe
+  status_file: ~/.fusion/merge-bottom-up.status.json
 routing:
-<<<<<<< HEAD
-  base_url: https://desktop-kpki9e4.tail391adb.ts.net
-=======
-  base_url: https://host.example.ts.net
->>>>>>> 404701973eb09fd68448759c001b712e6fb2ef09
-  mainframe_hostname: desktop-kpki9e4
+  base_url: https://mainframe.example.ts.net
+  mainframe_hostname: mainframe
   funnel_port: 8088
+file_share:
+  enabled: true
+  serve_port: 8088
+  max_file_bytes: 26214400
+  phone_hostname_aliases:
+  - phone-node
+  - phone
+  zones:
+  - id: docs
+    label: Dokumentation
+    path: docs
+    max_depth: 3
+    max_files: 200
+  - id: journal
+    label: Journal
+    path: journal
+    max_depth: 2
+    max_files: 100
+  - id: mathematik
+    label: Mathematik
+    path: 02_Mathematik
+    max_depth: 2
+    max_files: 40
+    extensions:
+    - .json
+    - .py
+    - .txt
+    - .md
+  - id: archiv
+    label: Archiv
+    path: archiv
+    max_depth: 4
+    max_files: 80
+    extensions:
+    - .md
+    - .json
+    - .sh
+    - .py
+    exclude_extensions:
+    - .obf
+  - id: workstation
+    label: Workstation
+    path: workstation
+    max_depth: 1
+    extensions:
+    - .json
+    - .yaml
+    - .yml
+    - .example
+    - .md
+    - .sh
+    - .ps1
+    max_files: 80
+  - id: filedrops_out
+    label: Filedrops
+    kind: absolute
+    path: ~/.fusion/mesh/filedrops/outbound
+    max_depth: 3
+    max_files: 150
+  - id: mesh_config
+    label: Mesh Config
+    path: .
+    max_depth: 0
+    names:
+    - mesh_connectors.yaml
+    - fusion_unified.yaml
+    - mesh_virtual_exit_nodes.yaml
+    - src/normal_os/integration/mesh_roles.yaml
+  phone_urls:
+    portal: /mesh/files/phone
+    manifest: /mesh/files/manifest
+    status: /mesh/files/status
+    drop: /mesh/files/drop
+  sync_script: workstation/mesh_phone_mirror.sh
+filedrop_sync:
+  enabled: true
+  local_roots:
+    inbound: ~/.fusion/mesh/filedrops/inbound
+    outbound: ~/.fusion/mesh/filedrops/outbound
+  repo_drops:
+  - journal/inbox
+  - workstation/inbox_export
+  gdrive_subpaths:
+    mirror: mesh/mirror
+    filedrops: mesh/filedrops
+    archives: mesh/archives
+    mathematik: mesh/mathematik
+  journal_ingest_on_sync: true
+  android_subdir: android
+fractal_persistence:
+  enabled: true
+  module: fractal_mainframe_mesh.py
+  storage_root: ~/.fusion/mesh/fractal
+  setup_windows: workstation/mainframe_mesh_setup.ps1
+  setup_wsl: workstation/mainframe_mesh_setup.sh
+  levels:
+    L0: anchor
+    L1: node
+    L2: segment
+    L3: exit_profile
+  replicate_via: hero-docs-server:8088/mesh/fractal/replica
+virtual_exit_nodes:
+  config: mesh_virtual_exit_nodes.yaml
+  default_profile: direct
+  mainframe_elevated: google-server
+cloud_backends:
+  module: mesh_cloud_backends.py
+  setup_script: workstation/mainframe_mesh_cloud_setup.ps1
+  supabase:
+    project_ref: YOUR_SUPABASE_PROJECT_REF
+    schema_v5: 03_Code/Dashboard/supabase/schema_migration_v5_fractal_mesh.sql
+    env_file: 03_Code/Dashboard/.env
+  google_drive:
+    cold_path: FusionHero_Offload/mesh/fractal
+    mathematik_path: FusionHero_Offload/mesh/mathematik
+  google_server:
+    hostname: mesh-exit
+    gce_instance: mesh-exit
+    magicdns: mesh-exit.example.ts.net
+    pending_queue: ~/.fusion/mesh/fractal/pending_google_server.json
+mathematics_sync:
+  enabled: true
+  module: mesh_mathematics_sync.py
+  gdrive_subpath: mesh/mathematik
+  manifest_file: mathematics_manifest.json
+platform_version: 10.0.0

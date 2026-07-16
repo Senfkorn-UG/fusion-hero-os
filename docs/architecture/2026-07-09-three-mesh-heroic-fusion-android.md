@@ -16,14 +16,14 @@
 This document captures the architecture decisions from the 2026-07-09 session regarding:
 
 - A clean three-zone logical mesh architecture using one Tailscale tailnet
-- The rollout of "Unified Heroic Fusion Android" on the Redmi Note 13 Pro 5G
+- The rollout of "Unified Heroic Fusion Android" on the phone
 - Deep integration of pc-handy-bridge and phonelink-control
 - Foundation for running the ALTE_Frau_95g Heroic Core on the mobile device
 
 ## 1. Current Tailscale State
 
 ### Devices
-- `desktop-kpki9e4` (Windows): Stable, Connected
+- `mainframe` (Windows): Stable, Connected
 - `phone-node` (Android): Unstable – frequent "Logged out" with `fetch control key: context canceled` error
 
 ### Problem Analysis
@@ -50,7 +50,7 @@ Instead of three separate tailnets, we use **one primary tailnet** with strict s
 **Root + Magisk** (chosen by user)
 
 ### Goals
-- Transform the Redmi Note 13 Pro 5G into a **mobile Heroic Extension Node** of the Fusion Hero OS Mainframe
+- Transform the phone into a **mobile Heroic Extension Node** of the Fusion Hero OS Mainframe
 - Deep visual identity (Heroic / Cyberpunk Campfire / Mister Contributor aesthetic) at SystemUI level
 - Functional integration of `pc-handy-bridge` v8.1 and `phonelink-control` v8.2
 - System-level heroic core services (quick tiles, background processes, theory tools)

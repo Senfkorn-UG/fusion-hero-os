@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mainframe Worktree · Fusion Hero OS</title>
+  <link rel="stylesheet" href="/static/mainframe_site.css">
+</head>
+<body class="mf-body">
+  <header class="mf-header compact">
+    <div class="mf-brand">
+      <span class="mf-logo">▤</span>
+      <div>
+        <h1>WORKTREE HYPERLINKED</h1>
+        <p class="mf-sub mono" id="wt-root">{{REPO_ROOT}}</p>
+      </div>
+    </div>
+    <nav class="mf-nav">
+      <a href="/mainframe">Hub</a>
+      <a href="/mainframe/ide">IDE</a>
+      <a href="/mainframe/vr">Dauer-VR</a>
+      <a href="/mainframe/ops">Ops</a>
+      <a href="/">Dashboard</a>
+    </nav>
+  </header>
+
+  <main class="wt-wrap">
+    <div class="wt-bar">
+      <div id="wt-crumbs" class="ide-crumbs"></div>
+      <input id="wt-filter" class="wt-filter" type="search" placeholder="Filter name…" />
+    </div>
+    <div id="wt-table" class="wt-table">loading…</div>
+    <section class="mf-card" style="margin-top:16px">
+      <h2>Git worktrees & related trees</h2>
+      <div id="wt-git" class="mf-list">…</div>
+    </section>
+  </main>
+  <script src="/static/mainframe_site.js"></script>
+  <script>
+    MainframeSite.bootWorktree('{{INITIAL_PATH}}');
+  </script>
+</body>
+</html>

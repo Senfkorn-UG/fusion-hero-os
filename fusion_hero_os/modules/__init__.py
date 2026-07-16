@@ -1,7 +1,7 @@
 """Core-Module, die den :class:`~fusion_hero_os.core.base_module.BaseModule`
 -Vertrag implementieren und über den Dispatcher ansprechbar sind.
 
-``alte_frau_95g/``, ``mainframe_laden/``, ``skill_creator/`` sind
+``builder_profile/``, ``mainframe_laden/``, ``skill_creator/`` sind
 eigenständige, noch unimplementierte Platzhalter-Pakete (siehe README.md in
 diesem Ordner) und bewusst NICHT Teil von :data:`ALL_CORE_MODULES` — sie
 haben keinen Code, der den BaseModule-Vertrag erfüllen könnte.

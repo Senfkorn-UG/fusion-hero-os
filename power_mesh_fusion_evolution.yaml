@@ -1,0 +1,144 @@
+# Power Mesh Fusion — Langzeit-Evolution bottom-up der Dissertation
+# Policy: pseudo_inhouse_only · freemium=false · Dissertation-as-OS
+# Geltung: Spezifikation (pipeline) · Evolution-Trajectory = Modell · Fitness-Score = Bedingt
+
+version: "1.0"
+platform_version: "10.0.0"
+principle: >
+  Bottom-up: Leaf-Fragmente → Module → Mesh → Fusion → Power (Ω) → Dissertation-Ausdruck.
+  Power Mesh = verteilte Organe (Mesh) mit Asymmetrie/Verantwortung (Power) und
+  Organ-Fusion (Fusion Hero OS). Langzeit = generational evolution über duale Zeit t∥τ.
+  Die Evolution *der Dissertation* ist die Evolution des OS (Dissertation ≡ OS).
+
+ontology: dissertation_as_os
+direction: bottom_up
+policy:
+  freemium: false
+  pseudo_inhouse_only: true
+
+# Dual timeline (aligned with dual_timeline_training)
+timeline:
+  real: t        # wall-clock / mtime chronology
+  imaginary: tau # structural height ∈ [0,1] bottom-up
+
+evolution:
+  generations: 64
+  mu: 4
+  lambda: 12
+  seed: 95
+  elite_keep: 2
+  mutation_rate: 0.18
+  # fitness weights (sum ≈ 1)
+  weights:
+    stratum_coverage: 0.35
+    fusion_coherence: 0.20
+    mesh_presence: 0.15
+    power_governance: 0.15
+    dissertation_expression: 0.15
+  output_dir: ~/.fusion/power_mesh_evolution
+
+# Bottom-up strata S0 (leaf) → S6 (public expression of dissertation)
+# Evidence = relative paths under repo root; missing files lower coverage.
+strata:
+  - id: S0
+    name: leaf_fragments
+    tau: 0.08
+    desc: "Nichts → Namen, VERSION, Proof-Anker"
+    evidence:
+      - VERSION
+      - proof_registry.yaml
+      - fusion_hero_os/__init__.py
+      - fusion_hero_os/core/base_module.py
+  - id: S1
+    name: core_modules
+    tau: 0.22
+    desc: "Core runtime organs (Autopoiesis-Maschine)"
+    evidence:
+      - fusion_hero_os/core/dispatcher.py
+      - fusion_hero_os/config.py
+      - fusion_hero_os/core/control_instances.py
+      - fusion_hero_os/core/dual_timeline_training.py
+      - fusion_hero_os/core/inside_out_inventory.py
+      - fusion_hero_os/core/push_layer_guard.py
+      - fusion_hero_os/core/masterseed_public.py
+  - id: S2
+    name: mesh_nerves
+    tau: 0.38
+    desc: "Mesh membranes, interconnect, route table"
+    evidence:
+      - mesh_connectors.yaml
+      - mesh_service_coordination.yaml
+      - docs/mesh/README.md
+      - docs/mesh/GROK_INTERCONNECT.md
+      - docs/dissertation/anhaenge/A07_Mesh_Interconnect_Routing.md
+      - fusion_hero_os/core/grok_route_table.py
+  - id: S3
+    name: fusion_organs
+    tau: 0.52
+    desc: "LLM frameworks, dashboard, modules, orchestration"
+    evidence:
+      - 03_Code/llm_frameworks/registry.py
+      - 03_Code/Dashboard/app.py
+      - fusion_hero_os/modules/generational_evolution.py
+      - control_instances.yaml
+      - fusion_integration_hub.py
+  - id: S4
+    name: power_governance
+    tau: 0.68
+    desc: "Power Ω — Consent, push guard, ops vocabulary, PMS"
+    evidence:
+      - docs/04_execution/PMS_OPERATOR_CATALOG_v7.5.md
+      - docs/mesh/PUSH_LAYER_GUARD.md
+      - fusion_hero_os/core/ops_vocabulary.py
+      - BRANCH_STRATEGY.md
+      - workstation/merge-bottom-up.ps1
+  - id: S5
+    name: dissertation_text
+    tau: 0.84
+    desc: "Textuelle Ausdrucksform + Anhänge V3.3"
+    evidence:
+      - docs/dissertation/README.md
+      - docs/dissertation/ONTOLOGIE_DISSERTATION_IST_DAS_OS.md
+      - docs/dissertation/anhaenge/00_INDEX_ANHAENGE.md
+      - docs/dissertation/anhaenge/A01_Fundament_aus_dem_Nichts.md
+      - docs/dissertation/anhaenge/A09_Entwicklungsgeschichte_Null_bis_v10.md
+      - docs/dissertation/anhaenge/A12_Power_Mesh_Fusion_Langzeit_Evolution_Bottom_Up.md
+      - docs/kompendium/V3.3_DESIGNVORLAGE_VERBINDLICH.md
+  - id: S6
+    name: public_merge
+    tau: 1.0
+    desc: "Public expression / release trail (push surface)"
+    evidence:
+      - docs/dissertation/PUBLICATION_v1.1.md
+      - docs/dissertation/ACADEMIA_ABSTRACT_DE.md
+      - docs/control/CONTROL_INSTANCES.md
+      - docs/mesh/PSEUDO_INHOUSE_AI.md
+
+# Power operators (PMS-aligned, conceptual — not PMS-Rust validator)
+power_operators:
+  - symbol: Omega
+    name: Asymmetry
+    role: "responsibility gradient across mesh nodes"
+  - symbol: Theta
+    name: Temporality
+    role: "long-term trajectory t∥τ"
+  - symbol: Sigma
+    name: Integration
+    role: "fusion of organs into coherence"
+  - symbol: Psi
+    name: Self_Binding
+    role: "dissertation-as-os commitment"
+
+# Bottom-up merge ladder (ops vocabulary)
+merge_ladder:
+  - tier: 0
+    name: leaf
+    meaning: "WSL / edge fragments — develop only"
+  - tier: 1
+    name: mainframe
+    meaning: "Windows fusion-hero-os — merge + private deploy"
+  - tier: 2
+    name: public
+    meaning: "origin/main push — public expression"
+
+public_summary: docs/dissertation/power_mesh_evolution.summary.json

@@ -1,10 +1,10 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
 [project]
 name = "ascension-os"
-<<<<<<< HEAD
-version = "8.3.0"
-=======
-version = "9.0.0"
->>>>>>> 404701973eb09fd68448759c001b712e6fb2ef09
+version = "10.0.0"
 description = "AscensionOS - Fusion Hero OS Coevolutionary Variant (CEC, Persistent Sisyphos, AscensionCore, Heroic Core, Kernel AI)"
 readme = "README.md"
 requires-python = ">=3.11"
@@ -40,14 +40,9 @@ dependencies = [
     "openai>=1.30.0",
     "mistralai>=0.6.0",
     "huggingface-hub>=0.22.0",
-<<<<<<< HEAD
-=======
-    "pypdf>=4.0.0",
-    "Pillow>=10.0.0",
->>>>>>> 404701973eb09fd68448759c001b712e6fb2ef09
 ]
 [project.optional-dependencies]
-dev = ["ruff>=0.5.0", "mypy>=1.10.0", "pre-commit>=3.6.0"]
+dev = ["ruff>=0.5.0", "mypy>=1.10.0", "pre-commit>=3.6.0", "pypdf>=4.0.0", "Pillow>=10.0.0"]
 gpu = ["torch>=2.3.0", "accelerate>=0.30.0"]
 full = ["redis>=5.0.0", "prometheus-client>=0.19.0"]
 [project.scripts]
@@ -56,15 +51,11 @@ ascension-bridge = "normal_os.bridge.grok_pc_bridge:main"
 ascension-dashboard = "normal_os.dashboard.app:run"
 ascension-hub = "normal_os.integration.fusion_integration_hub:main"
 [tool.setuptools.packages.find]
-where = ["src"]
+where = ["src", "."]
+include = ["normal_os*", "fusion_hero_os*", "ascension_os*"]
+exclude = ["tests*", "legacy_sources*"]
 [tool.ruff]
 target-version = "py311"
 line-length = 100
 [tool.mypy]
-<<<<<<< HEAD
 python_version = "3.11"
-=======
-python_version = "3.11"
-[tool.pytest.ini_options]
-pythonpath = ["."]
->>>>>>> 404701973eb09fd68448759c001b712e6fb2ef09

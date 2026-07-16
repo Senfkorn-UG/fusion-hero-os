@@ -2,11 +2,7 @@
  HEROISMUS
  Kritische Gesamtedition des Heroik-Korpus
  Rekonstruktivistischer Eudaimonismus
-<<<<<<< HEAD
- Stephan Hagen Urban
-=======
  Fusion Hero OS Team
->>>>>>> 404701973eb09fd68448759c001b712e6fb2ef09
  Edition 0.6 — Juli 2026
  Autonome Konsolidierung mit erweitertem Zeitrahmen (1. April – 1. Juli 2026)
  Fusion Hero OS | Hyper-Threading Mode

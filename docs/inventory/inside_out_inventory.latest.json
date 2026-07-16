@@ -1,0 +1,350 @@
+{
+  "ok": true,
+  "method": "inside_out",
+  "not": "outside_in",
+  "principle": "inventory what exists; storage location is metadata only",
+  "platform": "10.0.0",
+  "policy": "pseudo_inhouse_only",
+  "freemium": false,
+  "generated_at": "2026-07-15T14:43:01.495441+00:00",
+  "duration_sec": 3.4,
+  "identity": {
+    "masterseed_public": {
+      "display_id": "MS-PUB-v10-THC01H70-BB5A",
+      "public_fingerprint": "06a2c00627da13906952864ef7d1eb867798da5a71800202291b3b13f8f4436f",
+      "platform_version": "10.0.0",
+      "criticality_target_display": "0.22 (model)",
+      "integrity_ok": true,
+      "state_hash_prefix": "c1cfe3f73095",
+      "presented_at": "2026-07-15T14:42:58.098784+00:00",
+      "policy": "public_unique_private_obfuscated"
+    },
+    "ops_vocabulary": {
+      "deploy": "private",
+      "push": "public",
+      "merge": "both_via_timeline"
+    },
+    "version_file": "10.0.0"
+  },
+  "counts": {
+    "items": 2121,
+    "files": 2088,
+    "dir_markers": 33,
+    "bytes_total": 258021493,
+    "by_ring": {
+      "masterseed_identity": 34,
+      "core_runtime": 43,
+      "modules_method_meta": 82,
+      "surfaces_dashboard_llm": 197,
+      "canon_configs_docs": 243,
+      "ascension_and_archive": 879,
+      "operator_local_state": 643
+    },
+    "by_class": {
+      "python": 789,
+      "prose": 305,
+      "other": 245,
+      "config": 242,
+      "xsd": 117,
+      "document": 67,
+      "masterseed": 42,
+      "script": 37,
+      "collapsed_dir": 33,
+      "image": 29,
+      "html": 26,
+      "h": 26,
+      "c": 22,
+      "js": 19,
+      "sample": 14,
+      "sql": 9,
+      "xml": 8,
+      "tf": 8,
+      "css": 7,
+      "training": 6,
+      "lock": 6,
+      "spec": 4,
+      "bak": 4,
+      "bak2": 4,
+      "s": 4,
+      "idx": 4,
+      "pack": 4,
+      "rev": 4,
+      "example": 3,
+      "rs": 3,
+      "err": 3,
+      "log": 3,
+      "mjs": 2,
+      "ld": 2,
+      "simple": 2,
+      "ts": 2,
+      "svelte": 2,
+      "graph": 2,
+      "video": 2,
+      "cfg": 1,
+      "hujson": 1,
+      "jsonc": 1,
+      "tftpl": 1,
+      "out": 1,
+      "zip": 1,
+      "bundle": 1,
+      "mtimes": 1,
+      "env": 1,
+      "sha256": 1
+    },
+    "by_storage": {
+      "repo": 1453,
+      "local:~/.fusion/masterseed": 25,
+      "local:~/.fusion": 422,
+      "local:~/.fusion-hero-os": 18,
+      "local:~/.grok/skills": 181,
+      "local:~/.grok/docs": 22
+    }
+  },
+  "rings": [
+    {
+      "ring": 0,
+      "name": "masterseed_identity",
+      "desc": "Public MasterSeed display + VERSION + proof anchors",
+      "globs_under_repo": [
+        "VERSION",
+        "proof_registry.yaml",
+        "masterseed_public_display.yaml",
+        "fusion_hero_os/core/heroic_core_orchestrator.py",
+        "fusion_hero_os/core/masterseed_public.py",
+        "fusion_hero_os/core/masterseed_vault.py",
+        "fusion_hero_os/core/masterseed_sync.py",
+        "docs/masterseed/**"
+      ],
+      "extra_roots": [
+        "~/.fusion/masterseed"
+      ]
+    },
+    {
+      "ring": 1,
+      "name": "core_runtime",
+      "desc": "fusion_hero_os.core + engine + registry",
+      "globs_under_repo": [
+        "fusion_hero_os/core/**",
+        "fusion_hero_os/engine/**",
+        "fusion_hero_os/registry.py",
+        "fusion_hero_os/__init__.py",
+        "fusion_hero_os/config.py"
+      ],
+      "extra_roots": []
+    },
+    {
+      "ring": 2,
+      "name": "modules_method_meta",
+      "desc": "modules, methodology, meta, providers, orchestration, mcp, bridge",
+      "globs_under_repo": [
+        "fusion_hero_os/modules/**",
+        "fusion_hero_os/methodology/**",
+        "fusion_hero_os/meta/**",
+        "fusion_hero_os/providers/**",
+        "fusion_hero_os/orchestration/**",
+        "fusion_hero_os/mcp/**",
+        "fusion_hero_os/bridge/**",
+        "fusion_hero_os/integrations/**"
+      ],
+      "extra_roots": []
+    },
+    {
+      "ring": 3,
+      "name": "surfaces_dashboard_llm",
+      "desc": "Dashboard, llm_frameworks, scripts ops",
+      "globs_under_repo": [
+        "03_Code/Dashboard/**",
+        "03_Code/llm_frameworks/**",
+        "03_Code/training/**",
+        "03_Code/internal_llm/**",
+        "scripts/**",
+        "hero-docs-server.py",
+        "fusion_integration_hub.py"
+      ],
+      "extra_roots": []
+    },
+    {
+      "ring": 4,
+      "name": "canon_configs_docs",
+      "desc": "YAML canons, dissertation, kompendium, mesh docs, ops",
+      "globs_under_repo": [
+        "docs/**",
+        "*.yaml",
+        "*.yml",
+        "BEST_VERSION.md",
+        "README.md",
+        "BRANCH_STRATEGY.md",
+        "DEPLOYMENT_GUIDE.md",
+        "tests/**"
+      ],
+      "extra_roots": []
+    },
+    {
+      "ring": 5,
+      "name": "ascension_and_archive",
+      "desc": "ascension_os, archives, books (existence, not import-all)",
+      "globs_under_repo": [
+        "ascension_os/**",
+        "04_Buch_und_Archiv/**",
+        "06_Master_Archive/**",
+        "core/**",
+        "kernel/**",
+        "src/**",
+        "artifacts/**",
+        "infra/**"
+      ],
+      "extra_roots": []
+    },
+    {
+      "ring": 6,
+      "name": "operator_local_state",
+      "desc": "Local runtime state independent of git storage",
+      "globs_under_repo": [],
+      "extra_roots": [
+        "~/.fusion",
+        "~/.fusion-hero-os",
+        "~/.grok/skills",
+        "~/.grok/docs"
+      ]
+    }
+  ],
+  "rings_nonempty": [
+    "masterseed_identity",
+    "core_runtime",
+    "modules_method_meta",
+    "surfaces_dashboard_llm",
+    "canon_configs_docs",
+    "ascension_and_archive",
+    "operator_local_state"
+  ],
+  "vocabulary": {
+    "deploy": "private",
+    "push": "public",
+    "merge": "both_via_timeline"
+  },
+  "sample_paths_by_ring": {
+    "masterseed_identity": [
+      "~\\.fusion\\masterseed\\private\\modules\\core_cec\\functions\\coherence.shard.gpg",
+      "~\\.fusion\\masterseed\\private\\modules\\core_cec\\functions\\coherence.shard.meta.json",
+      "~\\.fusion\\masterseed\\private\\modules\\core_cec\\functions\\step.shard.gpg",
+      "~\\.fusion\\masterseed\\private\\modules\\core_cec\\functions\\step.shard.meta.json",
+      "~\\.fusion\\masterseed\\private\\modules\\core_masterseed_sync\\functions\\identity_preservation_score.shard.gpg",
+      "~\\.fusion\\masterseed\\private\\modules\\core_masterseed_sync\\functions\\identity_preservation_score.shard.meta.json",
+      "~\\.fusion\\masterseed\\private\\modules\\core_masterseed_sync\\functions\\mutual_sync.shard.gpg",
+      "~\\.fusion\\masterseed\\private\\modules\\core_masterseed_sync\\functions\\mutual_sync.shard.meta.json",
+      "~\\.fusion\\masterseed\\private\\modules\\core_masterseed_sync\\functions\\sync_evolutions.shard.gpg",
+      "~\\.fusion\\masterseed\\private\\modules\\core_masterseed_sync\\functions\\sync_evolutions.shard.meta.json",
+      "~\\.fusion\\masterseed\\private\\modules\\core_orchestrator\\functions\\MasterSeed_state_hash.shard.gpg",
+      "~\\.fusion\\masterseed\\private\\modules\\core_orchestrator\\functions\\MasterSeed_state_hash.shard.meta.json",
+      "~\\.fusion\\masterseed\\private\\modules\\core_orchestrator\\functions\\MasterSeed_verify_integrity.shard.gpg",
+      "~\\.fusion\\masterseed\\private\\modules\\core_orchestrator\\functions\\MasterSeed_verify_integrity.shard.meta.json",
+      "~\\.fusion\\masterseed\\private\\modules\\core_orchestrator\\functions\\bootstrap.shard.gpg"
+    ],
+    "core_runtime": [
+      "REPO\\fusion_hero_os\\__init__.py",
+      "REPO\\fusion_hero_os\\config.py",
+      "REPO\\fusion_hero_os\\core\\README.md",
+      "REPO\\fusion_hero_os\\core\\__init__.py",
+      "REPO\\fusion_hero_os\\core\\base_module.py",
+      "REPO\\fusion_hero_os\\core\\cec.py",
+      "REPO\\fusion_hero_os\\core\\dashboard\\README.md",
+      "REPO\\fusion_hero_os\\core\\dashboard\\__init__.py",
+      "REPO\\fusion_hero_os\\core\\dashboard\\orchestration.py",
+      "REPO\\fusion_hero_os\\core\\dashboard\\workspace.py",
+      "REPO\\fusion_hero_os\\core\\dependency_atlas.py",
+      "REPO\\fusion_hero_os\\core\\dispatcher.py",
+      "REPO\\fusion_hero_os\\core\\dual_timeline_training.py",
+      "REPO\\fusion_hero_os\\core\\grok_interconnect.py",
+      "REPO\\fusion_hero_os\\core\\grok_route_table.py"
+    ],
+    "modules_method_meta": [
+      "REPO\\fusion_hero_os\\bridge\\__init__.py",
+      "REPO\\fusion_hero_os\\bridge\\gateway.py",
+      "REPO\\fusion_hero_os\\bridge\\router.py",
+      "REPO\\fusion_hero_os\\integrations\\__init__.py",
+      "REPO\\fusion_hero_os\\integrations\\phone_link\\__init__.py",
+      "REPO\\fusion_hero_os\\integrations\\phone_link\\reader.py",
+      "REPO\\fusion_hero_os\\mcp\\__init__.py",
+      "REPO\\fusion_hero_os\\mcp\\fhero_mcp_server.py",
+      "REPO\\fusion_hero_os\\meta\\__init__.py",
+      "REPO\\fusion_hero_os\\meta\\api.py",
+      "REPO\\fusion_hero_os\\meta\\cli.py",
+      "REPO\\fusion_hero_os\\meta\\consent.py",
+      "REPO\\fusion_hero_os\\meta\\coupling.py",
+      "REPO\\fusion_hero_os\\meta\\fixtures\\__init__.py",
+      "REPO\\fusion_hero_os\\meta\\graph.py"
+    ],
+    "surfaces_dashboard_llm": [
+      "REPO\\03_Code\\Dashboard\\.env",
+      "REPO\\03_Code\\Dashboard\\.env.example",
+      "REPO\\03_Code\\Dashboard\\.gitignore",
+      "REPO\\03_Code\\Dashboard\\agent_resource_allocator.py",
+      "REPO\\03_Code\\Dashboard\\api_extensions.py",
+      "REPO\\03_Code\\Dashboard\\app.py",
+      "REPO\\03_Code\\Dashboard\\app2.py",
+      "REPO\\03_Code\\Dashboard\\architecture_routes.py",
+      "REPO\\03_Code\\Dashboard\\autoloader.py",
+      "REPO\\03_Code\\Dashboard\\autonomous_tasks.json",
+      "REPO\\03_Code\\Dashboard\\backends\\base.py",
+      "REPO\\03_Code\\Dashboard\\backends\\classical.py",
+      "REPO\\03_Code\\Dashboard\\boot_optimizer.py",
+      "REPO\\03_Code\\Dashboard\\business_plan_routes.py",
+      "REPO\\03_Code\\Dashboard\\config"
+    ],
+    "canon_configs_docs": [
+      "REPO\\BEST_VERSION.md",
+      "REPO\\BRANCH_STRATEGY.md",
+      "REPO\\DEPLOYMENT_GUIDE.md",
+      "REPO\\PMS.yaml",
+      "REPO\\README.md",
+      "REPO\\creative_inhouse_services.yaml",
+      "REPO\\docker-compose.yml",
+      "REPO\\docs\\01_vision\\GEMINI_SYNTHESIS_v9_REVIEW.md",
+      "REPO\\docs\\01_vision\\GROK_EXPORT_REQUEST.md",
+      "REPO\\docs\\01_vision\\IDEEN_BACKLOG.md",
+      "REPO\\docs\\01_vision\\V8_STATUS_REPORT.md",
+      "REPO\\docs\\01_vision\\V8_STRATEGY.md",
+      "REPO\\docs\\01_vision\\V8_SYNTHESIS.md",
+      "REPO\\docs\\02_architecture\\DEPENDENCY_ATLAS.md",
+      "REPO\\docs\\02_architecture\\FUSION_HERO_OS_v7.5_MASTER_UNIFIED.md"
+    ],
+    "ascension_and_archive": [
+      "REPO\\04_Buch_und_Archiv\\Der_Heroischer_Mensch_2026-06-15\\CLI_Version\\heroic_program\\Der_Heroische_Mensch.spec",
+      "REPO\\04_Buch_und_Archiv\\Der_Heroischer_Mensch_2026-06-15\\CLI_Version\\heroic_program\\README.md",
+      "REPO\\04_Buch_und_Archiv\\Der_Heroischer_Mensch_2026-06-15\\CLI_Version\\heroic_program\\README_BUILD_EXE.md",
+      "REPO\\04_Buch_und_Archiv\\Der_Heroischer_Mensch_2026-06-15\\CLI_Version\\heroic_program\\build_windows_exe.bat",
+      "REPO\\04_Buch_und_Archiv\\Der_Heroischer_Mensch_2026-06-15\\CLI_Version\\heroic_program\\data\\philosophers_nodes.json",
+      "REPO\\04_Buch_und_Archiv\\Der_Heroischer_Mensch_2026-06-15\\CLI_Version\\heroic_program\\main.py",
+      "REPO\\04_Buch_und_Archiv\\Der_Heroischer_Mensch_2026-06-15\\CLI_Version\\heroic_program\\main.py.bak",
+      "REPO\\04_Buch_und_Archiv\\Der_Heroischer_Mensch_2026-06-15\\CLI_Version\\heroic_program\\main.py.bak2",
+      "REPO\\04_Buch_und_Archiv\\Der_Heroischer_Mensch_2026-06-15\\CLI_Version\\heroic_program\\main_final_backup.py",
+      "REPO\\04_Buch_und_Archiv\\Der_Heroischer_Mensch_2026-06-15\\CLI_Version\\heroic_program\\requirements.txt",
+      "REPO\\04_Buch_und_Archiv\\Der_Heroischer_Mensch_2026-06-15\\Der_Heroische_Mensch\\Der_Heroische_Mensch.spec",
+      "REPO\\04_Buch_und_Archiv\\Der_Heroischer_Mensch_2026-06-15\\Der_Heroische_Mensch\\README.md",
+      "REPO\\04_Buch_und_Archiv\\Der_Heroischer_Mensch_2026-06-15\\Der_Heroische_Mensch\\README_BUILD_EXE.md",
+      "REPO\\04_Buch_und_Archiv\\Der_Heroischer_Mensch_2026-06-15\\Der_Heroische_Mensch\\build_windows_exe.bat",
+      "REPO\\04_Buch_und_Archiv\\Der_Heroischer_Mensch_2026-06-15\\Der_Heroische_Mensch\\data\\philosophers_nodes.json"
+    ],
+    "operator_local_state": [
+      "~\\.fusion-hero-os\\cost_estimator\\cost_stats.json",
+      "~\\.fusion-hero-os\\cyber_layer_state.json",
+      "~\\.fusion-hero-os\\faden_threads\\index.json",
+      "~\\.fusion-hero-os\\fusion_profile.json",
+      "~\\.fusion-hero-os\\fusion_settings.json",
+      "~\\.fusion-hero-os\\knowledge_graph.json",
+      "~\\.fusion-hero-os\\mainframe_cost_analysis\\history.jsonl",
+      "~\\.fusion-hero-os\\mainframe_cost_analysis\\snapshot.json",
+      "~\\.fusion-hero-os\\mainframe_energy_pricing\\history.jsonl",
+      "~\\.fusion-hero-os\\mainframe_energy_pricing\\snapshot.json",
+      "~\\.fusion-hero-os\\mainframe_energy_pricing\\subcontractor_pricing.json",
+      "~\\.fusion-hero-os\\meta_layer_state.json",
+      "~\\.fusion-hero-os\\process_locks\\watch-room",
+      "~\\.fusion-hero-os\\repo_mirror\\corrections.jsonl",
+      "~\\.fusion-hero-os\\repo_mirror\\golden_manifest.json"
+    ]
+  },
+  "paths": {
+    "full_jsonl": "C:\\Users\\Admin\\.fusion\\inventory\\inside_out\\inventory_full.jsonl",
+    "summary": "C:\\Users\\Admin\\.fusion\\inventory\\inside_out\\inventory_summary.json"
+  }
+}

@@ -1,4 +1,4 @@
-﻿{
+{
     "version":  "1.0",
     "updated":  "2026-07-12",
     "canonical":  {
@@ -28,23 +28,15 @@
                "asset_manifest":  "C:\\Users\\Admin\\fusion-hero-os\\03_Code\\tools\\asset_manifest.yaml"
            },
     "tailscale":  {
-<<<<<<< HEAD
-                      "tailnet":  "tail391adb.ts.net",
-=======
                       "tailnet":  "example.ts.net",
->>>>>>> 404701973eb09fd68448759c001b712e6fb2ef09
                       "mainframe_role":  "orchestrator",
                       "mainframe_node":  "mainframe",
                       "roles_config":  "mesh_roles.yaml",
                       "nodes":  {
                                     "mainframe":  {
                                                       "role":  "orchestrator",
-                                                      "hostname":  "desktop-kpki9e4",
-<<<<<<< HEAD
-                                                      "magicdns":  "desktop-kpki9e4.tail391adb.ts.net",
-=======
-                                                      "magicdns":  "host.example.ts.net",
->>>>>>> 404701973eb09fd68448759c001b712e6fb2ef09
+                                                      "hostname":  "mainframe",
+                                                      "magicdns":  "device.example.ts.net",
                                                       "platform":  "windows",
                                                       "canonical":  true,
                                                       "aliases":  [
@@ -60,38 +52,22 @@
                                     "desktop":  {
                                                     "role":  "grok-workstation",
                                                     "alias_of":  "mainframe",
-                                                    "hostname":  "desktop-kpki9e4",
-<<<<<<< HEAD
-                                                    "magicdns":  "desktop-kpki9e4.tail391adb.ts.net",
-                                                    "platform":  "windows"
-                                                },
-                                    "phone":  {
-                                                  "hostname":  "redmi-note-13-pro-5g",
-                                                  "magicdns":  "redmi-note-13-pro-5g.tail391adb.ts.net",
-                                                  "platform":  "android",
-                                                  "role":  "mobile-client",
-                                                  "login_required":  "stephan95g@googlemail.com",
-=======
-                                                    "magicdns":  "host.example.ts.net",
+                                                    "hostname":  "mainframe",
+                                                    "magicdns":  "device.example.ts.net",
                                                     "platform":  "windows"
                                                 },
                                     "phone":  {
                                                   "hostname":  "phone-node",
-                                                  "magicdns":  "host.example.ts.net",
+                                                  "magicdns":  "mobile-node.example.ts.net",
                                                   "platform":  "android",
                                                   "role":  "mobile-client",
                                                   "login_required":  "user@example.com",
->>>>>>> 404701973eb09fd68448759c001b712e6fb2ef09
                                                   "login_warning":  "Nicht GitHub â€” gleicher Login wie Desktop (Google)"
                                               },
                                     "legacy-linux":  {
                                                          "role":  "archived",
                                                          "hostname":  "mainframe",
-<<<<<<< HEAD
-                                                         "magicdns":  "mainframe.tail391adb.ts.net",
-=======
-                                                         "magicdns":  "host.example.ts.net",
->>>>>>> 404701973eb09fd68448759c001b712e6fb2ef09
+                                                         "magicdns":  "mainframe-host.example.ts.net",
                                                          "platform":  "linux",
                                                          "status":  "offline",
                                                          "note":  "FrÃ¼herer Linux-Knoten â€” Mainframe auf Windows-Desktop"
@@ -126,27 +102,6 @@
                     "apply_script":  "workstation/apply-storage-policy.ps1",
                     "status_file":  "C:\\Users\\Admin\\.fusion\\storage-policy.status.json"
                 },
-    "interior_design":  {
-                            "app":  "planova",
-                            "label":  "Planova Inneneinrichter",
-                            "install_dir":  "C:\\Users\\Admin\\Programs\\planova",
-                            "executable":  "C:\\Users\\Admin\\Programs\\planova\\planova.exe",
-                            "source_repo":  "https://github.com/XUranus/planova.git",
-                            "install_script":  "C:\\Users\\Admin\\fusion-hero-os\\workstation\\install-planova.ps1",
-                            "features":  {
-                                             "free_local":  [
-                                                                "3d_viewer",
-                                                                "furniture_edit",
-                                                                "style_presets",
-                                                                "glb_export"
-                                                            ],
-                                             "byok_paid":  [
-                                                               "ai_floorplan_parse",
-                                                               "ai_render"
-                                                           ]
-                                         },
-                            "export_hint":  "GLB manuell nach 03_VR_Assets kopieren fuer VR-Viewer"
-                        },
     "local_kernel":  {
                          "module":  "local_infrastructure_kernel",
                          "contract":  "workstation/contracts/local_infrastructure_kernel.v1.json",
@@ -169,5 +124,26 @@
                                         "status_file":  "C:\\Users\\Admin\\.fusion\\merge-bottom-up.status.json",
                                         "log_file":  "C:\\Users\\Admin\\.fusion\\merge-bottom-up.log"
                                     }
-            }
+            },
+    "interior_design":  {
+                            "app":  "planova",
+                            "label":  "Planova Inneneinrichter",
+                            "install_dir":  "C:\\Users\\Admin\\Programs\\planova",
+                            "executable":  "C:\\Users\\Admin\\Programs\\planova\\planova.exe",
+                            "source_repo":  "https://github.com/XUranus/planova.git",
+                            "install_script":  "C:\\Users\\Admin\\fusion-hero-os\\workstation\\install-planova.ps1",
+                            "features":  {
+                                             "free_local":  [
+                                                                "3d_viewer",
+                                                                "furniture_edit",
+                                                                "style_presets",
+                                                                "glb_export"
+                                                            ],
+                                             "byok_paid":  [
+                                                               "ai_floorplan_parse",
+                                                               "ai_render"
+                                                           ]
+                                         },
+                            "export_hint":  "GLB manuell nach 03_VR_Assets kopieren fuer VR-Viewer"
+                        }
 }

@@ -1,0 +1,12 @@
+{
+  "generated_at": "2026-07-15T18:12:45.689898+00:00",
+  "attack_succeeded_on_insecure_mock": true,
+  "attack_blocked_on_secure_mock": true,
+  "public_damage_ct": 0.01,
+  "public_damage_eur": 0.0001,
+  "dormant_days": 900,
+  "grants": 2,
+  "real_chain_transfer": false,
+  "sha16": "84b60590436c1a3a",
+  "sandbox_only": true
+}

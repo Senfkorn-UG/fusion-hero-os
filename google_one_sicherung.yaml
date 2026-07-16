@@ -1,0 +1,96 @@
+# Google One / Drive Sicherung — Fusion Hero OS
+# Policy: pseudo_inhouse_only · freemium=false · secrets NEVER synced
+# deploy=private local snapshots · cloud target = Google One / Drive (operator)
+
+version: "1.2"
+platform_version: "10.0.0"
+activated: true
+provider: google_one
+principle: >
+  Sicherung aktiv: local ~/.fusion/sicherung + Google Drive folder
+  Fusion_Hero_OS_Sicherung under Google One storage. Secrets excluded.
+  Operator-confirmed: Google One plan ACTIVE with 5 TB capacity.
+  Desktop = Drive for Desktop mirror · Phone = Drive app + Google One device backup (analog).
+
+landing_url: "https://one.google.com/?g1_landing_page=1"
+storage_url: "https://one.google.com/storage"
+drive_home: "https://drive.google.com/drive/my-drive"
+
+plan:
+  active: true
+  capacity_tb: 5
+  confirmed_by_operator: true
+  # product quota is Google-side; local snapshots remain public-safe only
+
+drive:
+  folder_name: Fusion_Hero_OS_Sicherung
+  folder_id: "1a_jWLVX7p5Zw4UCOCbpZjGoAOaj3qUpO"
+  web_view_link: "https://drive.google.com/drive/folders/1a_jWLVX7p5Zw4UCOCbpZjGoAOaj3qUpO"
+  subfolders:
+    snapshots_id: "1EzcmnGejSqzk_o2yUPr9FK7iIVa7k-mf"
+    phone_uploads_id: "1-4vzNZWS3IzBBHRXkaqVG8E-UHmU5ON_"
+    manifests_id: "1BxuKlXGZ2fOLEi4LFcqzHaN1zAx85JP9"
+    dissertation_public_safe_id: "1T-Ye_MamdSSupv76yCl8-1gZY1XjweQy"
+    control_summaries_id: "18g6CRX3Mi8oCLUh-idLfRXwmpDOK7_kS"
+
+desktop:
+  app: google_drive_for_desktop
+  download_url: "https://www.google.com/drive/download/"
+  winget: Google.GoogleDrive
+  mirror_local: ~/.fusion/sicherung/drive_mirror
+  # This workstation: DriveFS mirrors Desktop + Documents + Downloads (no G: letter)
+  mirror_mode: folder_mirror
+  mirror_roots:
+    - ~/Documents
+    - ~/Desktop
+    - ~/Downloads
+  fusion_folder_documents: ~/Documents/Fusion_Hero_OS_Sicherung
+  fusion_folder_desktop: ~/Desktop/Fusion_Hero_OS_Sicherung
+
+phone:
+  role: L0_enduser
+  analog_of: desktop_drive_for_desktop
+  drive_android: "https://play.google.com/store/apps/details?id=com.google.android.apps.docs"
+  drive_ios: "https://apps.apple.com/app/google-drive/id507874739"
+  one_android: "https://play.google.com/store/apps/details?id=com.google.android.apps.subscriptions.red"
+  one_ios: "https://apps.apple.com/app/google-one/id1454120035"
+  device_backup: "https://one.google.com/about/device-backup"
+  upload_subfolder: phone_uploads
+  mesh_optional: workstation/mesh_phone_mirror.ps1
+
+local:
+  root: ~/.fusion/sicherung
+  snapshots: ~/.fusion/sicherung/snapshots
+  manifests: ~/.fusion/sicherung/manifests
+  google_one_flag: ~/.fusion/sicherung/google_one/ACTIVATED.json
+  desktop_state: ~/.fusion/sicherung/google_one/DESKTOP_STATE.json
+  phone_state: ~/.fusion/sicherung/google_one/PHONE_STATE.json
+
+# public-safe include globs (repo-relative) — no .env, no secrets, no private keys
+include_globs:
+  - VERSION
+  - docs/dissertation/**/*.md
+  - docs/dissertation/**/*.json
+  - docs/control/*.md
+  - docs/control/*.json
+  - docs/mesh/*.md
+  - power_mesh_fusion_evolution.yaml
+  - control_instances.yaml
+  - proof_registry.yaml
+  - google_one_sicherung.yaml
+
+exclude_globs:
+  - "**/.env*"
+  - "**/*secret*"
+  - "**/*credential*"
+  - "**/push_secret*"
+  - "**/*.pem"
+  - "**/*.key"
+  - "**/id_rsa*"
+  - "**/.fusion/secrets/**"
+
+policy:
+  freemium: false
+  pseudo_inhouse_only: true
+  secrets_excluded: true
+  max_file_mb: 25

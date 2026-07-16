@@ -97,11 +97,7 @@ async def vr_viewer(request: Request):
     if not tpl.exists():
         return HTMLResponse("<h1>vr_viewer.html missing</h1>", status_code=500)
     base = str(request.base_url).rstrip("/")
-<<<<<<< HEAD
-    pano = f"{base}/vr/assets/vr_mister_jailbait_hero_equirectangular.jpg"
-=======
-    pano = f"{base}/vr/assets/vr_mister_Contributor_hero_equirectangular.jpg"
->>>>>>> 404701973eb09fd68448759c001b712e6fb2ef09
+    pano = f"{base}/vr/assets/vr_builder_hero_equirectangular.jpg"
     overlay = f"{base}/vr/assets/heroic_evolution_fractal.jpg"
     html = tpl.read_text(encoding="utf-8")
     html = html.replace("{{PANORAMA_URL}}", pano).replace("{{OVERLAY_URL}}", overlay)
@@ -123,11 +119,7 @@ async def vr_asset_file(filename: str):
 @router.get("/api/vr/status")
 async def api_vr_status():
     assets = []
-<<<<<<< HEAD
-    for name in ("vr_mister_jailbait_hero_equirectangular.jpg", "heroic_evolution_fractal.jpg"):
-=======
-    for name in ("vr_mister_Contributor_hero_equirectangular.jpg", "heroic_evolution_fractal.jpg"):
->>>>>>> 404701973eb09fd68448759c001b712e6fb2ef09
+    for name in ("vr_builder_hero_equirectangular.jpg", "heroic_evolution_fractal.jpg"):
         p = VR_ASSETS / name
         assets.append({
             "file": name,
