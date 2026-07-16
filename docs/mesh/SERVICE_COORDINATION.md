@@ -51,16 +51,30 @@ python scripts\mesh_cluster_coordinator.py --mode plan --upload-gcs
 
 Ausgabe: `~/.fusion/mesh/coordination/latest.json`
 
-## Cluster aktivieren (wenn kubectl + WI stehen)
+## Cluster live (v10.0.0 — Image + Workload Identity)
 
-```bash
-# kubectl im PATH (Cloud SDK bin) + gcloud container clusters get-credentials ...
-kubectl apply -f infra/k8s/fusion-coordination/namespace.yaml
-# Image/WI/PROJECT_ID in CronJob ersetzen, dann:
+**Stand 2026-07-16:** CronJob `fusion-service-coordination` läuft auf GKE Autopilot.
+
+| Baustein | Wert |
+|----------|------|
+| Image | `europe-west3-docker.pkg.dev/project-bbf0e6db-52e1-462b-8e3/fusion-hero/coordination:v10.0.0` |
+| KSA | `fusion-coordination/fusion-coordination-ksa` |
+| GSA (WI) | `fusion-training-sa@…` (`roles/iam.workloadIdentityUser`) |
+| GCS | `gs://fusion-ai-data-project-bbf0e6db-52e1-462b-8e3/coordination/` |
+| Schedule | `*/30 * * * *` |
+
+```powershell
+# Full redeploy (Cloud Build + apply + one-shot verify)
+powershell -File scripts\deploy_coordination_gke.ps1
+
+# Or apply only
+gcloud container clusters get-credentials senfkorn-gke-cluster --region europe-west3
 kubectl apply -f infra/k8s/fusion-coordination/coordination-cronjob.yaml
+kubectl create job --from=cronjob/fusion-service-coordination fusion-coord-manual -n fusion-coordination
 ```
 
-Bis das Image gebaut ist: **lokaler Coordinator** ist die operative Quelle; CronJob-Manifest ist vorbereitet.
+**Hinweis:** Cluster-Inventar hat kein Tailscale → `inventory_ok=false` im Pod ist erwartet.  
+GCS-Upload nutzt `google-cloud-storage` + Workload Identity (nicht gsutil).
 
 ## Anti-Patterns
 

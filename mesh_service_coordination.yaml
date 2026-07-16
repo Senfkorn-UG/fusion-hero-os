@@ -16,6 +16,16 @@ gke_propagation:
   proof_job: fusion-v10-propagation-proof
   manifest: infra/k8s/platform-version/fusion-platform-v10.yaml
   status: propagated
+  coordination:
+    status: live
+    cronjob: fusion-service-coordination
+    image: europe-west3-docker.pkg.dev/project-bbf0e6db-52e1-462b-8e3/fusion-hero/coordination:v10.0.0
+    ksa: fusion-coordination/fusion-coordination-ksa
+    gsa: fusion-training-sa@project-bbf0e6db-52e1-462b-8e3.iam.gserviceaccount.com
+    gcs_prefix: gs://fusion-ai-data-project-bbf0e6db-52e1-462b-8e3/coordination
+    schedule: "*/30 * * * *"
+    verified_at: "2026-07-16T00:08:45Z"
+    deploy_script: scripts/deploy_coordination_gke.ps1
 catalog_id: fusion-service-coordination
 
 # ---------------------------------------------------------------------------

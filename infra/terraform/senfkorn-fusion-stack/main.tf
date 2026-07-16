@@ -51,3 +51,10 @@ resource "google_service_account_iam_member" "fusion_training_wi" {
   role               = "roles/iam.workloadIdentityUser"
   member             = "serviceAccount:${var.project_id}.svc.id.goog[${var.training_namespace}/fusion-training-ksa]"
 }
+
+# Coordination CronJob (fusion-coordination NS) reuses same GSA + objectAdmin
+resource "google_service_account_iam_member" "fusion_coordination_wi" {
+  service_account_id = google_service_account.fusion_training.name
+  role               = "roles/iam.workloadIdentityUser"
+  member             = "serviceAccount:${var.project_id}.svc.id.goog[fusion-coordination/fusion-coordination-ksa]"
+}
