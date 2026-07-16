@@ -72,6 +72,12 @@ Guarantee). Es ersetzt den v8-Funktionskern nicht; es härtet und vereinheitlich
 - Scan/Report: `python scripts/extract_operator_urban.py` · Doc: `docs/security/OPERATOR_IDENTITY_MEMBRANE.md`
 - Dissertation/Academia behalten Autorennamen (Publication-Surface); operatives Paket person-clean
 
+### API-Plane-Trennung Hyperraum / Business (2026-07-16)
+
+- **hyperraum** = halbprivater Operator-Hyperraum · **business** = klassische Product-API
+- Katalog `api_planes.yaml` · Classifier `fusion_hero_os.core.api_plane` · Routes `/api/planes`, `/api/v1/business/*`, `/api/hyperraum/*`
+- Doc: `docs/architecture/API_PLANE_SEPARATION.md` · Legacy-Pfade bleiben (additive BCG)
+
 ### Ererbter v8.3-Funktionskern (weiterhin operativ)
 
 - QUBO-Engine (`fusion_hero_os/engine/mainframe.py`, Numba + optionales Rust-Backend)

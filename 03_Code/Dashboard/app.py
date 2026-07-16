@@ -1409,6 +1409,13 @@ try:
 except Exception as _bp_err:
     print(f"[API] Business plan routes note: {_bp_err}")
 
+# === API Planes: Hyperraum (half-private) vs Business (classical product API) ===
+try:
+    from api_plane_routes import router as _plane_router
+    app.include_router(_plane_router)
+except Exception as _plane_err:
+    print(f"[API] API plane routes note: {_plane_err}")
+
 # === Alle Module + fehlende Endpunkte freigeben ===
 try:
     from api_extensions import router as _extensions_router
