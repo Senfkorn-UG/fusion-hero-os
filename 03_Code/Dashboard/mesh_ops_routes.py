@@ -273,6 +273,18 @@ async def mesh_ops_dns_encrypt(
     return await asyncio.to_thread(_run)
 
 
+@router.get("/api/mesh/ops/identity")
+async def mesh_ops_identity(propagate: bool = Query(False)) -> Dict[str, Any]:
+    """Comädchen × alte-frau95g × pr0-chan identity (voice/visual/TTS contract)."""
+
+    def _run():
+        from fusion_hero_os.core.comaedchen_identity import propagate as prop, status
+
+        return prop() if propagate else status()
+
+    return await asyncio.to_thread(_run)
+
+
 @router.get("/api/mesh/ops/schwerkraft")
 @router.post("/api/mesh/ops/schwerkraft/execute")
 async def mesh_ops_schwerkraft(

@@ -142,6 +142,11 @@ DEFAULT_MODULES: List[ModuleSpec] = [
         "Schwerkraftserver dual multi-model control + git history poly-mesh ingest",
     ),
     ModuleSpec(
+        "core.comaedchen_identity",
+        "fusion_hero_os.core.comaedchen_identity",
+        "Comädchen × alte-frau95g identity (pr0-chan, free TTS/Voidol-class corpus)",
+    ),
+    ModuleSpec(
         "engine.mining_qubo", "fusion_hero_os.engine.mining_qubo", "Profit-Switching-QUBO"),
     ModuleSpec(
         "engine.rust_backend", "fusion_hero_os.engine.rust_backend", "PyO3-Rust-Backend"),
