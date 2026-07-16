@@ -65,9 +65,29 @@ Phone/Peers im Tailnet erreichen das **ohne LAN**.
 - GKE-Pod als Source-of-Truth für Secrets  
 - Funnel ohne explizite Operator-Freigabe  
 
+## Algorithmus-Orchestrierung (perfekt)
+
+Sole authority: `poly_mesh_router`  
+Orchestrator: `fusion_hero_os.core.poly_mesh_orchestrator`
+
+```powershell
+# Plan + coherence score (0-100)
+python scripts/orchestrate_poly_mesh.py
+
+# Execute: coordinator + dual-start asserts + OS port + headset mesh_only
+python scripts/orchestrate_poly_mesh.py --execute
+```
+
+Waves: L1 control → L2 replica → L3 force_cluster → L0 edge → general.  
+Perfect = score 100, no dual-start, force_cluster on L3 or blocked, control plane L1.
+
+State: `~/.fusion/mesh/orchestration/last_report.json`  
+Summary: `docs/mesh/poly_mesh_orchestration.summary.json`
+
 ## Verwandt
 
 - `docs/mesh/SERVICE_COORDINATION.md`  
 - `docs/mesh/POLY_MESH_OFFLOAD_STATUS.md`  
 - `docs/architecture/API_PLANE_SEPARATION.md`  
 - `workstation/force-headset-mesh-only.ps1`  
+

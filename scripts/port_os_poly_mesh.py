@@ -33,6 +33,7 @@ def main() -> int:
     ap.add_argument("--status", action="store_true")
     ap.add_argument("--no-serve", action="store_true")
     ap.add_argument("--no-coordinator", action="store_true")
+    ap.add_argument("--orchestrate", action="store_true", help="run poly-mesh algorithm orchestrator")
     ap.add_argument("--json", action="store_true")
     args = ap.parse_args()
 
@@ -45,6 +46,10 @@ def main() -> int:
             serve=not args.no_serve,
             run_coordinator=not args.no_coordinator,
         )
+        if args.orchestrate:
+            from fusion_hero_os.core.poly_mesh_orchestrator import orchestrate
+
+            r["orchestration"] = orchestrate(execute=True)
         # public artifact (no secrets)
         art = ROOT / "artifacts" / "2026-07-16_os_poly_mesh_port.md"
         lines = [
