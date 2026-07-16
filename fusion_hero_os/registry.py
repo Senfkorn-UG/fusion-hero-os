@@ -81,6 +81,11 @@ DEFAULT_MODULES: List[ModuleSpec] = [
     ModuleSpec(
         "core.cec", "fusion_hero_os.core.cec", "CoEvolutionaryClosure"),
     ModuleSpec(
+        "core.pure_core_coevolution",
+        "fusion_hero_os.core.pure_core_coevolution",
+        "Pure-Core Langzeit-Coevolution (formale Math + Algorithmen = Core; Rest = fremde Stärken)",
+    ),
+    ModuleSpec(
         "core.rhe", "fusion_hero_os.core.rhe", "RustHybridEmbodiment"),
     ModuleSpec(
         "core.psycholysis_trigger", "fusion_hero_os.core.psycholysis_trigger", "PsycholysisTrigger"),

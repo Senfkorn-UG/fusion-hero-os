@@ -40,11 +40,24 @@ RESTARTS = os.environ.get("FUSION_N_RESTARTS")
 SEED = int(os.environ.get("FUSION_WEIGHT_SEED", "42"))
 DATA = Path(os.environ.get("FUSION_DATA_ROOT", "/quantum-data"))
 OUT = DATA / "crosspollination"
+def _default_cross_sources() -> str:
+    """Core-first sources: pure-core membrane (formal math + algos + foreign)."""
+    try:
+        from fusion_hero_os.core.pure_core_coevolution import crosspoll_sources
+
+        return ",".join(crosspoll_sources())
+    except Exception:
+        return (
+            "formal_math,diverse_algorithms,pure_core,"
+            "mesh,cluster,llm,saas,ascension,operator"
+        )
+
+
 SOURCES = [
     s.strip()
     for s in os.environ.get(
         "FUSION_CROSS_SOURCES",
-        "mesh,dissertation,qubo,operator,ascension",
+        _default_cross_sources(),
     ).split(",")
     if s.strip()
 ]
