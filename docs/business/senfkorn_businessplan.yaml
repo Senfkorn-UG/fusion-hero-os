@@ -78,9 +78,13 @@ rates_eur_europe_west3:
   cpu_light_job_hour: 0.03
   l4_gpu_hour: 0.70
   a100_gpu_hour: 3.90
+  h100_gpu_hour: 12.00   # order-of-magnitude europe-west3 Autopilot; confirm Billing
   l1_desk_power_hour: 0.08
   l4_saas_api_est_hour: 0.02
-  note: Defaults 2026-07; override via env later if needed
+  note: |
+    Defaults 2026-07 europe-west3. Quota snapshot: L4=1, A100=0, H100 needs request.
+    Best available under quota now = L4; best-in-class after quota = H100 80GB.
+
 
 subcontractor_api_pricing:
   margin_pct: 1.50
@@ -131,10 +135,21 @@ revenue_model:
   target_gross_margin_pct: 1.50
 
 financial_targets:
-  monthly_infra_ceiling_eur: 150
+  monthly_infra_ceiling_eur: 200
   break_even_tokens_per_month_1k: 50000
   training_budget_one_shot_eur: 700
+  quantum_optimization_campaign_eur: 5000
+  quantum_budget_split:
+    gpu_classical_best: 2500   # L4 now + H100 after quota
+    quantum_cloud_qpu: 1500    # IonQ / D-Wave / Google Quantum
+    storage_egress_retries: 400
+    mesh_ops_buffer: 300
+    reserve: 300
   l3_light_task_budget_eur_per_day: 2.0
+  note: |
+    €5k campaign is separate from monthly ops envelope.
+    Quantum computing is strategic: classical GPU SA + real QPU path.
+
 
 compliance:
   pricing_transparency: Realkosten-gebunden, alle 60s neu berechnet
