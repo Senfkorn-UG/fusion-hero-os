@@ -85,6 +85,12 @@ Guarantee). Es ersetzt den v8-Funktionskern nicht; es härtet und vereinheitlich
 - Registry: `~/.fusion/mesh/os_port/latest.json` · Doc: `docs/mesh/OS_POLY_MESH_PORT.md`
 - Secrets bleiben L1; AudioRelay mesh-only; Tailscale Apps-UI ≠ OS-Port
 
+### Kostenfunktion v2.0 (2026-07-16)
+
+- \(C_h=C_{L1}+C_{L2}+C_{L3}+C_{L4}\) · FEU · kompetitive \(P_{1k}\) · soft \(\Pi(\mathrm{tier})\)
+- Modul `fusion_hero_os.core.poly_mesh_cost_function` · Businessplan **v1.2**
+- API: `GET /api/v1/business/cost-function` · Doc: `docs/business/COST_FUNCTION_v2.md`
+
 ### Ererbter v8.3-Funktionskern (weiterhin operativ)
 
 - QUBO-Engine (`fusion_hero_os/engine/mainframe.py`, Numba + optionales Rust-Backend)
