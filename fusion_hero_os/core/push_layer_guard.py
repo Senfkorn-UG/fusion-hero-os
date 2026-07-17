@@ -447,6 +447,9 @@ def evaluate_push(
                     **_sec,
                 )
     except Exception:
+        # Optional integration: a bug or import failure in god_layer_seal
+        # must fail open (fall through to the normal branch rules below)
+        # rather than blocking every push because of an unrelated error.
         pass
 
     branch_rules = (cfg.get("branches") or {}).get(branch) or (cfg.get("branches") or {}).get("*") or {}
