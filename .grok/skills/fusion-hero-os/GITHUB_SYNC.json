@@ -1,0 +1,20 @@
+﻿{
+    "repo":  "95guknow/fusion-hero-os",
+    "branch":  "main",
+    "head":  "d8d587e9890dc411ea68819ec9a11511242d1493",
+    "synced_at":  "2026-07-17T07:11:39",
+    "version":  "v10.0.0",
+    "platform_version":  "10.0.0",
+    "operative_kanon":  "v10.0.0",
+    "inherits":  "v8.3 functional stack + Stage-A/B",
+    "aspirational":  "v9.10 AscensionOS track (loadable)",
+    "best_version":  "BEST_VERSION.md",
+    "deployment_guide":  "DEPLOYMENT_GUIDE.md",
+    "release_url":  "https://github.com/95guknow/fusion-hero-os/releases/tag/v10.0.0",
+    "grok_cli_version":  "0.2.102",
+    "grok_cli_checked_at":  "2026-07-17T07:11:37.2103790+02:00",
+    "previous_grok_cli_version":  "0.2.101",
+    "gui":  "http://127.0.0.1:8000",
+    "gui_module":  "03_Code/Dashboard/app.py",
+    "nicegui_legacy":  "http://127.0.0.1:8080"
+}
