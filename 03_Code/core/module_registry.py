@@ -250,6 +250,58 @@ def _build_registry() -> None:
 
     _register("highest_layer", 4, "layer4", _highest_layer, "Heroic Highest Layer Roadmap")
 
+    def _entwicklungsquant():
+        try:
+            from entwicklungsquant_bus import EntwicklungsquantBus  # type: ignore
+
+            bus = EntwicklungsquantBus()
+            demo = getattr(bus, "status", None)
+            if callable(demo):
+                return demo()
+            return {
+                "module": "entwicklungsquant_bus",
+                "available": True,
+                "class": type(bus).__name__,
+                "note": "Bus importable; call run_demo/status for live quanta",
+            }
+        except Exception as exc:  # noqa: BLE001
+            return {"module": "entwicklungsquant_bus", "available": False, "error": str(exc)[:200]}
+
+    _register(
+        "entwicklungsquant_bus",
+        2,
+        "orchestration",
+        _entwicklungsquant,
+        "Entwicklungsquant-Bus (diskrete Ko-Evolution / Banach-Fixpunkt)",
+    )
+
+    def _poly_mesh_ops():
+        try:
+            from fusion_hero_os.core.poly_mesh_router import probe_gke  # type: ignore
+
+            gke = probe_gke() if callable(probe_gke) else {}
+        except Exception as exc:  # noqa: BLE001
+            gke = {"ok": False, "error": str(exc)[:120]}
+        try:
+            from fusion_hero_os.core.poly_mesh_os_port import status as os_port_status  # type: ignore
+
+            port = os_port_status() if callable(os_port_status) else {}
+        except Exception as exc:  # noqa: BLE001
+            port = {"ok": False, "error": str(exc)[:120]}
+        return {
+            "module": "poly_mesh_ops",
+            "gke": gke,
+            "os_port": port if isinstance(port, dict) else {"raw": str(port)[:200]},
+        }
+
+    _register(
+        "poly_mesh_ops",
+        2,
+        "mesh",
+        _poly_mesh_ops,
+        "Poly-Mesh ops probe (router + OS port)",
+    )
+
     def _suite_mod(name: str) -> Dict[str, Any]:
         from suite_bridge import suite_inventory
         inv = suite_inventory()

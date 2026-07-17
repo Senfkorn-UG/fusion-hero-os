@@ -100,13 +100,52 @@ DEFAULT_MODULES: List[ModuleSpec] = [
     ModuleSpec(
         "methodology.knowledge", "fusion_hero_os.methodology.knowledge", "Wissensbasis-Zugriff"),
     ModuleSpec(
-        "modules.builder_profile", "fusion_hero_os.modules.builder_profile", "Heroic Core Foundation", stub=True),
+        "modules.builder_profile",
+        "fusion_hero_os.modules.builder_profile",
+        "Heroic Core Foundation gate (wired P1)",
+    ),
     ModuleSpec(
-        "modules.mainframe_laden", "fusion_hero_os.modules.mainframe_laden", "Permanent Auto-Load", stub=True),
+        "modules.mainframe_laden",
+        "fusion_hero_os.modules.mainframe_laden",
+        "Permanent Auto-Load / registry load_all (wired P1)",
+    ),
     ModuleSpec(
-        "modules.skill_creator", "fusion_hero_os.modules.skill_creator", "Dynamische Skill-Evolution", stub=True),
+        "modules.skill_creator",
+        "fusion_hero_os.modules.skill_creator",
+        "Dynamische Skill-Evolution proposals (wired P1)",
+    ),
     ModuleSpec(
         "modules.core_modules", "fusion_hero_os.modules", "BaseModule-Adapter"),
+    ModuleSpec(
+        "core.poly_mesh_router",
+        "fusion_hero_os.core.poly_mesh_router",
+        "Poly-Mesh sole router (L0–L3 placement)",
+    ),
+    ModuleSpec(
+        "core.poly_mesh_orchestrator",
+        "fusion_hero_os.core.poly_mesh_orchestrator",
+        "Poly-Mesh orchestration waves",
+    ),
+    ModuleSpec(
+        "core.inference_scheduler_qubo",
+        "fusion_hero_os.core.inference_scheduler_qubo",
+        "QUBO inference scheduler (MCP tools)",
+    ),
+    ModuleSpec(
+        "core.mugen_tsuky_chan",
+        "fusion_hero_os.core.mugen_tsuky_chan",
+        "mugen-tsuky.chan protocol facade (clear propagation; obfuscated body)",
+    ),
+    ModuleSpec(
+        "core.schwerkraftserver",
+        "fusion_hero_os.core.schwerkraftserver",
+        "Schwerkraftserver dual multi-model control + git history poly-mesh ingest",
+    ),
+    ModuleSpec(
+        "core.comaedchen_identity",
+        "fusion_hero_os.core.comaedchen_identity",
+        "Comädchen × alte-frau95g identity (pr0-chan, free TTS/Voidol-class corpus)",
+    ),
     ModuleSpec(
         "engine.mining_qubo", "fusion_hero_os.engine.mining_qubo", "Profit-Switching-QUBO"),
     ModuleSpec(
