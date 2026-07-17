@@ -186,6 +186,13 @@ def author_for_publication() -> Dict[str, Any]:
 def public_operator_view() -> Dict[str, Any]:
     """Safe view for logs, mesh, GCS, dissertation *structure* appendices."""
     ident = load_identity()
+    seal: Dict[str, Any] = {}
+    try:
+        from fusion_hero_os.core.god_layer_seal import public_status as seal_status
+
+        seal = seal_status()
+    except Exception:
+        seal = {}
     return {
         "role": ROLE_OPERATOR,
         "operator_id": ident.get("operator_id") or "OP_LOCAL",
@@ -193,6 +200,12 @@ def public_operator_view() -> Dict[str, Any]:
         "person_bound": bool(ident.get("person_bound")),
         "membrane": MEMBRANE,
         "platform_version": PLATFORM,
+        "routing_mode": (ident.get("routing") or {}).get("mode")
+        or seal.get("routing_mode")
+        or "operator",
+        "god_layer_sealed": bool(seal.get("sealed")),
+        "write_rights": seal.get("write_rights") or "open",
+        "read_rights": seal.get("read_rights") or "full",
         # never include legal_name here
     }
 
