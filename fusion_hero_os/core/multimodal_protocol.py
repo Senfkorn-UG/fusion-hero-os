@@ -159,12 +159,53 @@ def _extract_image(path: Path) -> Dict[str, Any]:
         return {"status": "error", "error": str(e)[:120]}
 
 
+def _mutagen_info(path: Path) -> Dict[str, Any]:
+    """Shared audio/video metadata extraction via mutagen.
+
+    mutagen auto-detects the container and reads its own tag/info format;
+    it covers every declared audio extension (mp3/wav/ogg/flac/m4a) and the
+    QuickTime-family video containers (mp4/mov) via mutagen.mp4, but not
+    Matroska/WebM (mkv/webm) - those come back honestly as
+    'unsupported_container' rather than a fabricated success.
+    """
+    try:
+        import mutagen
+    except ImportError:
+        return {"status": "extractor_missing", "hint": "pip install mutagen"}
+    try:
+        f = mutagen.File(str(path))
+    except Exception as e:
+        return {"status": "error", "error": str(e)[:120]}
+    if f is None:
+        return {"status": "unsupported_container", "container": path.suffix.lower().lstrip(".")}
+    info = f.info
+    out: Dict[str, Any] = {
+        "status": "ok",
+        "duration_seconds": round(getattr(info, "length", 0.0), 3),
+    }
+    for attr in ("bitrate", "sample_rate", "channels"):
+        val = getattr(info, attr, None)
+        if val is not None:
+            out[attr] = val
+    return out
+
+
+def _extract_audio(path: Path) -> Dict[str, Any]:
+    return _mutagen_info(path)
+
+
+def _extract_video(path: Path) -> Dict[str, Any]:
+    return _mutagen_info(path)
+
+
 _EXTRACTORS = {
     "text": _extract_text,
     "code": _extract_text,
     "data": _extract_text,
     "pdf": _extract_pdf,
     "image": _extract_image,
+    "audio": _extract_audio,
+    "video": _extract_video,
 }
 
 

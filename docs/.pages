@@ -1,0 +1,27 @@
+nav:
+  - Home: index.md
+  - Monorepo Architektur: monorepo-structure.md
+  - CI/CD Roadmap: workflow-roadmap.md
+  - 01_vision
+  - 02_architecture
+  - architecture
+  - 03_integration
+  - 04_execution
+  - v8
+  - mesh
+  - business
+  - security
+  - sicherung
+  - training
+  - control
+  - ops
+  - dissertation
+  - Heroismus
+  - kompendium
+  - masterseed
+  - meta_neural
+  - android
+  - inventory
+  - agent_context
+  - ...
+  - 99_archive

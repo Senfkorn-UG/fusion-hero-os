@@ -39,7 +39,6 @@ VAULT_PATH = OP_DIR / "identity.local.json"
 PLATFORM = "10.0.0"
 # Unlock confirmation (user protocol). Stored as hash only.
 DEFAULT_UNLOCK_TOKEN = "=====stephanhagenurban"
-_TOKEN_RE = re.compile(r"^[=]*\s*stephanhagenurban\s*[=]*$", re.IGNORECASE)
 
 
 def _now() -> str:
@@ -317,6 +316,9 @@ def try_unlock(confirmation: str) -> Dict[str, Any]:
                     encoding="utf-8",
                 )
         except (OSError, json.JSONDecodeError):
+            # Best-effort vault sync only; the authoritative seal state was
+            # already persisted by _save(d) above, so a failed vault mirror
+            # write here must not turn a successful unlock into an error.
             pass
     out = public_status()
     out["ok"] = True
