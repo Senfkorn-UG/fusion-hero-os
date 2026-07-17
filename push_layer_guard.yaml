@@ -14,17 +14,26 @@ principle: >
 # --- Known identities (authoritative) ---
 identities:
   remote_urls:
+    # Personal / seed account (public kanon host)
     - https://github.com/95guknow/fusion-hero-os.git
     - git@github.com:95guknow/fusion-hero-os.git
     - https://github.com/95guknow/fusion-hero-os
+    # Org host Senfkorn UG (company mirror — same product, dual-public surface)
+    - https://github.com/Senfkorn-UG/fusion-hero-os.git
+    - git@github.com:Senfkorn-UG/fusion-hero-os.git
+    - https://github.com/Senfkorn-UG/fusion-hero-os
   remotes:
     - origin
+    - senfkorn
   branches_default_allow:
     - main
+    - develop
+    - ascension
   platform_version_file: VERSION
   platform_version: "10.0.0"
   repo_name: fusion-hero-os
   owner: 95guknow
+  org: Senfkorn-UG
 
 # Intent tokens — any one unlocks "wanted" path (does not skip secret denylist)
 intent:
