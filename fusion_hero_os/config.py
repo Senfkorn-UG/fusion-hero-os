@@ -55,3 +55,13 @@ def get_config() -> DispatcherConfig:
     if _default_config is None:
         _default_config = DispatcherConfig()
     return _default_config
+
+
+def get_port_base() -> int:
+    """HTTP/dashboard base port (canonical **42069**)."""
+    try:
+        from fusion_hero_os.ports import get_ports
+
+        return get_ports().dashboard
+    except Exception:  # noqa: BLE001
+        return _env_int("FUSION_BACKEND_PORT", _env_int("FUSION_PORT_BASE", 42069))

@@ -36,10 +36,12 @@ app = FastAPI(title="Fusion Hero OS v8 — ALTE_Frau_95g Heroic Core Dashboard")
 # === Consolidated imports for agents + hyperthreading + task orchestration (from heroic_orchestration merge) ===
 import sys, os
 
+_dash_port = os.getenv("FUSION_BACKEND_PORT") or os.getenv("FUSION_PORT_BASE") or "42069"
 _cors_origins = [
     o.strip()
     for o in os.getenv(
         "FUSION_CORS_ORIGINS",
+        f"http://127.0.0.1:{_dash_port},http://localhost:{_dash_port},"
         "http://127.0.0.1:8000,http://localhost:8000",
     ).split(",")
     if o.strip()
@@ -736,9 +738,17 @@ async def watch_room(room_id: str, follower: bool = False):
 
 @app.get("/api/gui/status")
 async def api_gui_status():
+    try:
+        from connectivity import dashboard_port
+
+        _p = dashboard_port()
+    except Exception:
+        _p = int(os.getenv("FUSION_BACKEND_PORT", "42069"))
     return {
         "gui": "dashboard",
-        "url": "http://127.0.0.1:8000",
+        "url": f"http://127.0.0.1:{_p}",
+        "port": _p,
+        "port_base": 42069,
         "type": "fastapi+html",
         "template": "templates/index.html",
         "websocket": "/ws",
@@ -1413,6 +1423,12 @@ except Exception as _bp_err:
 try:
     from api_plane_routes import router as _plane_router
     app.include_router(_plane_router)
+    try:
+        from mesh_ops_routes import router as _mesh_ops_router
+        app.include_router(_mesh_ops_router)
+    except Exception as _mesh_ops_exc:  # noqa: BLE001
+        import logging as _log
+        _log.getLogger("fusion.dashboard").warning("mesh_ops_routes not loaded: %s", _mesh_ops_exc)
 except Exception as _plane_err:
     print(f"[API] API plane routes note: {_plane_err}")
 

@@ -1,0 +1,58 @@
+# =============================================================================
+# PROTOCOL: mugen-tsuky.chan
+# =============================================================================
+# Central, human-readable definition. Implementation code is obfuscated under
+# the same protocol name (see fusion_hero_os.core.mugen_tsuky_chan).
+#
+# Replaces for mesh day-chain / once-link sealing language:
+#   - "heroische" once-name lexicon (user-facing → mugen-tsuky.chan labels)
+#   - standalone "GPG snapshot Versiegelung" branding (folded into mtc seal path)
+# =============================================================================
+
+protocol:
+  id: mugen-tsuky.chan
+  short: mtc
+  version: "1.0.0"
+  platform: "10.0.0"
+  port_base: 42069
+  status: operative
+
+purpose: |
+  Poly-Mesh day-chain integrity and single-use mesh URL sealing.
+  Clear propagation (this file + API + registry). Opaque crypto body.
+
+propagation:
+  # Where the protocol is advertised (always clear)
+  registry: fusion_hero_os.registry / core.mugen_tsuky_chan
+  api:
+    - GET  /api/mesh/ops/mtc
+    - GET  /api/mesh/ops/mtc/status
+    - GET  /api/mesh/ops/mtc/roll
+    - POST /api/mesh/ops/mtc/roll
+    - GET  /api/mesh/ops/once/mint   # once-links under mtc naming
+  state_dir: "~/.fusion/mugen_tsuky_chan"
+  day_artifacts: "~/.fusion/mugen_tsuky_chan/day/"
+  ports_yaml: ports.yaml  # FUSION_PORT_BASE 42069
+
+clarity_rules:
+  - Public fields use protocol id "mugen-tsuky.chan" only (no heroic/GPG marketing names).
+  - Operators read this YAML + /api/mesh/ops/mtc/status for truth.
+  - Crypto internals live in obfuscated module; do not document step-by-step there.
+
+obfuscation:
+  label: mugen-tsuky.chan
+  module: fusion_hero_os.core._mtc_obf
+  facade: fusion_hero_os.core.mugen_tsuky_chan
+  note: Facade is readable; _mtc_obf is intentionally dense/opaque.
+
+day_hash:
+  name: polymesh_hash_nummer_1
+  index: 1
+  default_day: yesterday_utc
+
+outputs:
+  - mtc_day_hash_1
+  - mtc_roll_final
+  - mtc_seal
+  - mtc_once_url
+  - mtc_dns_label

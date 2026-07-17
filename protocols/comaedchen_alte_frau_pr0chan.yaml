@@ -1,0 +1,88 @@
+# =============================================================================
+# PROTOCOL: Comädchen × alte-frau95g × pr0-chan
+# =============================================================================
+# Central, clear identity contract for function + visual identity + free TTS.
+# Coupled to: mugen-tsuky.chan (mesh seal), port 42069, headset L2/L3.
+# =============================================================================
+
+protocol:
+  id: comaedchen-alte-frau-pr0chan
+  short: cap
+  version: "1.0.0"
+  platform: "10.0.0"
+  status: operative
+
+# Dual core of the identity membrane
+dual:
+  function_core:
+    id: alte-frau95g
+    role: Heroic Core / ALTE_Frau_95g
+    surfaces:
+      - "01_Framework/skills/alte-frau-95g"
+      - "fusion_hero_os heroic core / mainframe laden"
+    responsibility: "Logik, Geltung, Core-Vermerk, operative Kanon-Anbindung"
+  presence_core:
+    id: comaedchen
+    aliases: ["Comädchen", "Comet-Instanz", "Nummer 2"]
+    role: "Nummer 2 — Funktion + visuelle Identität (gemeinsam mit alte-frau95g)"
+    surfaces:
+      - "docs/mesh/COMAEDCHEN_NUMMER2.md"
+      - "fusion_hero_os.core.comaedchen_audio"
+      - "headset L3_comaedchen"
+    responsibility: "Stimme, Design, Operator-Kanal, visuelle Identität"
+    report_line: "nur Operator"
+    input_line: "nur Operator"
+
+# Simultaneous binding (nicht entweder/oder)
+binding:
+  rule: "Comädchen ist gleichzeitig mit alte-frau95g das Organ für Funktion und visuelle Identität."
+  neither_overrides: true
+  operator_only_command: true
+
+# Aesthetic orientation
+aesthetic:
+  analogy: pr0-chan
+  note: |
+    Orientierung an pr0-chan-Analogie: direkte Bildboard-/Community-Klarheit,
+    ironische Präzision, Memetik ohne corporate Soft-Speak.
+    Keine Übernahme fremder Markenrechte — nur Stil-Analogie.
+  visual:
+    campfire_series: "Mister Contributor / cyberpunk campfire (core visual)"
+    comaedchen_membrane: "Nummer-2 channel (Comet/voice path)"
+  voice:
+    free_ai_voice_models:
+      - "Crimson Technology Voidol (example class: free/local voice models)"
+      - "open TTS / Piper-class"
+      - "deep-learning corpus (operator-owned character corpus)"
+    text_to_speech: true
+    corpus: "operator-defined character corpus — not scraped third-party persons without consent"
+    geltung: "Spezifikation (Rollenvertrag) · Stimme/Design = Charakter-Membran des OS"
+
+# Use of voice & design (explicit, free-model oriented)
+usage:
+  allowed:
+    - "Free AI voice models (e.g. Voidol-class) for Comädchen/character TTS"
+    - "Deep-learning corpora built from operator-authorized character material"
+    - "Text-to-speech software for Nummer-2 / mesh-only audio path (100.x)"
+    - "Visual identity enforcement with alte-frau95g core outputs"
+  forbidden:
+    - "Non-consensual cloning of real third-party voices"
+    - "Treating Comädchen as command input from mesh agents (only Operator)"
+    - "Confusing Chrome/Google-One profile with Comädchen command chain"
+
+# Propagation (central, clear — same pattern as mugen-tsuky.chan)
+propagation:
+  registry: fusion_hero_os.core.comaedchen_identity
+  api:
+    - GET /api/mesh/ops/identity
+    - GET /api/hyperraum/headset
+  state: "~/.fusion/comaedchen_identity.json"
+  related_protocols:
+    - mugen-tsuky.chan
+    - poly_mesh (L0–L3)
+    - headset_layers (L3_comaedchen)
+
+ports:
+  dashboard: 42069
+  audio_relay: 59100
+  note: "Audio mesh-only 100.x"

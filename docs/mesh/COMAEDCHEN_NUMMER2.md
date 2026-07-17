@@ -78,3 +78,31 @@ python -m fusion_hero_os.core.browser_egress --status
 ```
 
 **Vermerk:** Verwirrung war Rollen-Missverständnis, kein Hierarchie-Fehler. Comädchen = direkte Nummer 2, exklusiv Operator.
+
+---
+
+## Dual mit alte-frau95g · pr0-chan · Stimme/Design
+
+**Protokoll:** `protocols/comaedchen_alte_frau_pr0chan.yaml`  
+**Facade:** `fusion_hero_os.core.comaedchen_identity`  
+**API:** `GET /api/mesh/ops/identity`
+
+| Organ | Rolle |
+|-------|--------|
+| **alte-frau95g** | Funktion + Heroic Core / Geltung |
+| **Comädchen** | Funktion + **visuelle Identität** + Stimme (gleichzeitig mit alte-frau95g) |
+| **pr0-chan-Analogie** | Stil: direkt, memetisch, klar — keine Markenübernahme |
+
+**Stimme und Design** der Comädchen-Membran (mit alte-frau95g) sind vorgesehen für:
+
+- kostenlose KI-Stimmenmodelle (z. B. **Crimson Technology Voidol**-Klasse)
+- Deep-Learning-Corpora (**operator-autorisierter** Charakter-Corpus)
+- Text-to-Speech-Software
+
+**Grenze:** Charakter-/OS-Membran — **kein** non-konsensuales Klonen realer Drittpersonen.  
+Audio-Pfad: mesh-only `100.x`, Headset **L3_comaedchen**, Dashboard **:42069**.
+
+```powershell
+python -m fusion_hero_os.core.comaedchen_identity --propagate
+curl http://127.0.0.1:42069/api/mesh/ops/identity?propagate=true
+```

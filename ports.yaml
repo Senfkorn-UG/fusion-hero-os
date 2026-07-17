@@ -1,0 +1,31 @@
+# Fusion Hero OS — canonical port map (branch/worktree port/42069)
+# Override with FUSION_PORT_BASE / FUSION_BACKEND_PORT / FUSION_FUNNEL_PORT
+
+port_base: 42069
+platform_version: "10.0.0"
+
+services:
+  dashboard:
+    port: 42069
+    bind: "0.0.0.0"
+    path: "03_Code/Dashboard"
+    entry: "uvicorn app:app --host 0.0.0.0 --port 42069"
+  mesh_ops:
+    url: "http://127.0.0.1:42069/api/mesh/ops"
+  static_landing:
+    port: 42069
+    note: "Prefer dashboard on 42069; static site may share or use serve path"
+  tailscale_serve:
+    target: 42069
+    public: "https://desktop-kpki9e4.tail391adb.ts.net/"
+  tailscale_funnel:
+    target: 42069
+    ports_allowed: [443, 8443, 10000]
+  ipc_bridge:
+    port: 19753
+    note: "Separate from HTTP base"
+
+env:
+  FUSION_PORT_BASE: "42069"
+  FUSION_BACKEND_PORT: "42069"
+  FUSION_FUNNEL_PORT: "42069"
