@@ -20,3 +20,21 @@ Der Docs-Pfad beschreibt die technische Seite von Fusion Hero OS.
 - Räume für Status, Operation und Archiv.
 - Einheitliches Datenschema für Nodes, Services und Dokumente.
 
+## Mesh-API (Entwurf)
+
+- `/api/mesh/nodes` – Liste aller Mesh-Knoten mit Status.
+- `/api/mesh/links` – Topologie und Verbindungsqualität.
+- `/api/mesh/events` – Ereignisse (Join, Leave, Fehler, Angriffe).
+
+## XR-API (Entwurf)
+
+- `/api/xr/rooms` – definierte Räume (Status, Operation, Archiv).
+- `/api/xr/panels` – Panels für Dashboards und Logs.
+- `/api/xr/navigation` – Pfade und Übergänge zwischen Räumen.
+
+## Operations-API (Entwurf)
+
+- `/api/ops/services` – Dienste mit Start/Stop/Restart-Operationen.
+- `/api/ops/deployments` – Releases, Rollbacks und Pipelines.
+- `/api/ops/policies` – Sicherheits- und Zugriffsregeln.
+
