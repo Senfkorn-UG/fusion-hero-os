@@ -38,7 +38,6 @@ Der Docs-Pfad beschreibt die technische Seite von Fusion Hero OS.
 - `/api/ops/deployments` – Releases, Rollbacks und Pipelines.
 - `/api/ops/policies` – Sicherheits- und Zugriffsregeln.
 
-
 ## XR Scene Understanding (Entwurf)
 
 AscensionOS nutzt WebXR-Mesh-Detection und Scene-Understanding, um reale Räume als Basis für Hero-Räume zu verwenden.
