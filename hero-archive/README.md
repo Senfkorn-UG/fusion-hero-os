@@ -12,7 +12,13 @@ Der Archiv-Pfad sammelt Kanon-Texte, Dissertation-as-OS und Identity-Fixpunkt-Do
 
 - Forschungsfragmente als Module und Räume.
 - Verknüpfung von theoretischen Stellen mit konkreten Systemteilen.
-- Langzeit-Archiv der Entwicklung von Fusion Hero OS.
+- Langzeit-Archiv der Entwicklung von AscensionOS/Fusion Hero OS.
+
+## Kanon-Ebenen
+
+- Level 1: Basis-Identität (Name, Organisation, Handles).
+- Level 2: System-Identität (Architektur, Ziele, Prinzipien).
+- Level 3: Leittexte für Entscheidungen und Policies.
 
 ## Verknüpfung mit dem Hero-OS
 
