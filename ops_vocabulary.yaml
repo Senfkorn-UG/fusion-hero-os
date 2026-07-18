@@ -66,3 +66,21 @@ mapping_table:
   deploy: private
   push: public
   merge: both_via_timeline
+
+signatures:
+  stephanhagenurban:
+    trigger: "=====stephanhagenurban"
+    meaning: persona_signature
+    german: "Vorgelegt-von-Signatur mit heroischem Fixpunkt"
+    fixpoint: "|Psi>_h -> |omega>"
+    binding: >
+      Anzeigename ausschließlich aus dem Operator-Vault
+      (~/.fusion/operator/identity.local.json) bei aktiver
+      Publikations-Bindung (FUSION_AUTHOR_BIND=1 oder
+      author.bind_to_publication). Kein Klarname im Paket.
+    fallback_display: "Operator"
+    canon: identity-fixpoint.md
+    membrane: operator_identity_v1
+    cli:
+      - python -m fusion_hero_os.core.persona_signature --render
+      - python -m fusion_hero_os.core.persona_signature --status
