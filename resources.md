@@ -1,5 +1,7 @@
 # AscensionOS / Fusion Hero OS Ressourcen
 
+> **Stand:** v10.0.0 · 2026-07-18
+
 Diese Seite sammelt Ressourcen, die in AscensionOS/Fusion Hero OS einfließen oder angebunden werden sollen.
 
 ## Eigene Repositories und Organisationen

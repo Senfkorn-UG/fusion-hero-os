@@ -1,5 +1,7 @@
 # AscensionOS / Fusion Hero OS Architektur
 
+> **Stand:** v10.0.0 · 2026-07-18
+
 AscensionOS ist ein mehrschichtiges Betriebssystem für Mesh, Services und XR-Oberflächen.
 
 ## Schichten
@@ -14,6 +16,12 @@ AscensionOS ist ein mehrschichtiges Betriebssystem für Mesh, Services und XR-Ob
 - Telemetrie und Logs steigen aus dem Mesh-Layer in Dashboards und XR-Räume auf.
 - APIs verbinden Services mit XR-Clients und Hero-Dashboards.
 - Archiv-Layer verknüpft jede technische Entität mit einer semantischen Identität (Kanon).
+
+## Workflow-Schicht: Hyperclusterup Zitterpolymesh
+
+- DAG-Scheduler mit Parallel-Virtual-Hyperthreading über vier Lanes (CPU, MEM, GPU, QPU) — siehe [Zitterpolymesh](zitterpolymesh.md).
+- Pipelines und Dependencies deklarativ in `zitterpolymesh_pipeline.yaml`, CI-Abbild in `.github/workflows/zitterpolymesh-ci.yml`.
+- Race-sichere Persistenz: `race_guard` (Locks/Atomic/CAS), multimodale Pseudohorkrux-Shards + Autosave (`pseudo_horcrux`).
 
 ## Ressourcen und Anbindung
 
