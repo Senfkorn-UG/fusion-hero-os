@@ -38,3 +38,18 @@ Der Docs-Pfad beschreibt die technische Seite von Fusion Hero OS.
 - `/api/ops/deployments` – Releases, Rollbacks und Pipelines.
 - `/api/ops/policies` – Sicherheits- und Zugriffsregeln.
 
+
+## XR Scene Understanding (Entwurf)
+
+AscensionOS nutzt WebXR-Mesh-Detection und Scene-Understanding, um reale Räume als Basis für Hero-Räume zu verwenden.
+
+- Raum-Mesh: Globale Mesh-Daten für Wände, Böden, Objekte.
+- Objekt-Meshes: Semantisch gekennzeichnete Objekte (Panels, Konsolen, Archiv-Säulen).
+- Anchors: Feste Punkte zur Verankerung von Dashboards und Hero-UI.
+
+### Zielbild
+
+- Statusraum: Dashboards schweben an den Wänden oder stehen als Konsolen im Raum.
+- Operationsraum: Steuer-Panels sind an Anchors verankert, Aktionen sind räumlich arrangiert.
+- Archivraum: Kanon-Dokumente sind als begehbare Objekte oder Regale im Raum vorhanden.
+
