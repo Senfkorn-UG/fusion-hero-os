@@ -6,7 +6,7 @@ Diese index.md ist deine Startfläche: Sie macht klar, was Fusion Hero OS ist, w
 
 Von dieser Landing Page aus führen dich drei Hauptpfade tiefer:
 
-- Fusion Hero OS Docs – technische Doku, APIs, Kanon-Dateien und Pipelines.
-- Mesh & Cybersecurity – Senfkorn-Strategien für Schutz, Kontrolle und Orientierung.
-- Hero-Archiv – Dissertation-as-OS, Core-Texts und Identity-Fixpunkt-Kanon.
+- [Fusion Hero OS Docs](docs/) – technische Doku, APIs, Kanon-Dateien und Pipelines.
+- [Mesh & Cybersecurity](mesh/) – Senfkorn-Strategien für Schutz, Kontrolle und Orientierung.
+- [Hero-Archiv](hero-archive/) – Dissertation-as-OS, Core-Texts und Identity-Fixpunkt-Kanon.
 
