@@ -15,12 +15,11 @@ Geltung: Spezifikation · live topology = empirical.
 from __future__ import annotations
 
 import json
-import os
 import subprocess
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 
 __all__ = [
     "orchestrate",
@@ -236,7 +235,6 @@ def coherence_score(plan: Dict[str, Any]) -> Dict[str, Any]:
 def plan_only() -> Dict[str, Any]:
     """Build full orchestration plan without side effects."""
     R = _load_router()
-    catalog = R["load_catalog"]()
     gke = R["probe_gke"]()
     mesh = _mesh_inventory()
     routed = R["route_all"]()

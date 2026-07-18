@@ -14,7 +14,6 @@ from __future__ import annotations
 import fnmatch
 import json
 import os
-import re
 import subprocess
 from dataclasses import asdict, dataclass, field
 from datetime import datetime, timezone
