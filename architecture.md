@@ -18,6 +18,6 @@ AscensionOS ist ein mehrschichtiges Betriebssystem für Mesh, Services und XR-Ob
 ## Ressourcen und Anbindung
 
 - Siehe [Ressourcen-Register](resources.md) für externe Tools, Frameworks und Repositories.
-- Eigene Repos und Orgs werden über GitHub angebunden.
+- Ressourcen-Updates werden per GitHub Actions und Skript `scripts/update_resources.sh` automatisiert angestoßen.
 - Externe Frameworks (Mesh, XR, Archiv) werden als Services und Clients im System verortet.
 
