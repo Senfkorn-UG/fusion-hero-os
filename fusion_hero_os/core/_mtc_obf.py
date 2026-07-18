@@ -3,6 +3,7 @@
 # Generated pack; clear propagation is protocols/mugen_tsuky_chan.yaml
 from __future__ import annotations
 import base64, zlib, types as _t
+from typing import Any, Dict
 _MTC = "mugen-tsuky.chan"
 _B = """\
 c-p;M>u%dd7XGiNn5B`1tR+^oY}wXU0eq2@qHb(BDbPao(nE42aYK<TNhMNk1O3(Ci^V>}K3JY)&
@@ -67,8 +68,9 @@ kg+uGRUMvHmQFS*+M*9vJh+;d>MRQ$|o*tkW&t2GN^=XgTHin}L_lX!+|`X?Zh4hkKfy>^qYekQX
 jTgqD@qgCnBV)}mU-Ks*SYJ%i~cp~aRE^?-Fk>J7Kbb;_D_Xm?rbCF_@u}-Y1$N0;Nl+N*oKp58g
 J__yo)<E7_;R;&+0i!1gF#
 """
-def _L():
-    g = {'__name__': 'fusion_hero_os.core._mtc_obf_inner', '__package__': 'fusion_hero_os.core'}
+def _L() -> Dict[str, Any]:
+    # Rückgabetyp explizit: die exportierten Namen sind Callables, keine str
+    g: Dict[str, Any] = {'__name__': 'fusion_hero_os.core._mtc_obf_inner', '__package__': 'fusion_hero_os.core'}
     c = compile(zlib.decompress(base64.b85decode(''.join(_B.split()))), '<mugen-tsuky.chan>', 'exec')
     exec(c, g, g)
     return g

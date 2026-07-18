@@ -21,6 +21,9 @@ show_help() {
     echo "  fusion           - Verknüpfter Gesamtstatus (Mesh + LLM + Tailscale)"
     echo "  fusion-graph     - Integrationsgraph anzeigen"
     echo "  llm              - Alle LLM-Frameworks anzeigen"
+    echo "  ssh              - Tailscale SSH auf diesem Node aktivieren (tailscale set --ssh)"
+    echo "  hyper4d          - Hyper4D-Node registrieren + bifurkal syncen (Layer-ω)"
+    echo "  hyper4d-status   - Hyper4D-Status (/mesh/hyper4d/status Payload)"
     echo "  funnel           - Funnel für Hero Docs Server aktivieren"
     echo "  notify           - Phone Notification Monitor starten"
     echo "  fractal-save     - Mainframe fractal auf Mesh speichern"
@@ -74,6 +77,19 @@ case "$1" in
     llm)
         echo "→ LLM Framework Status:"
         python3 "$SCRIPT_DIR/03_Code/llm_status.py"
+        ;;
+    ssh)
+        echo "→ Aktiviere Tailscale SSH auf diesem Node..."
+        sudo tailscale set --ssh
+        echo "✅ Tailscale SSH aktiv (Zugriff gemäß Tailnet-ACLs)."
+        ;;
+    hyper4d)
+        echo "→ Hyper4D-Node registrieren + bifurkale Synchronisation..."
+        python3 "$SCRIPT_DIR/tailscale_mesh_registry.py" hyper4d-register
+        python3 "$SCRIPT_DIR/tailscale_mesh_registry.py" hyper4d-sync
+        ;;
+    hyper4d-status)
+        python3 "$SCRIPT_DIR/tailscale_mesh_registry.py" hyper4d-status
         ;;
     funnel)
         echo "→ Aktiviere Funnel..."

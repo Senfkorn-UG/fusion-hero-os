@@ -12,6 +12,12 @@
 # placeholders over allowlisting it.
 
 allow_literals:
+  # Public persona pseudonym — deliberately part of the published canon
+  # (repo description "die alte-frau95g als HELD", Hero-Archiv, Kanon-Texte).
+  # Not a legal name; the operator-identity membrane keeps legal names out of
+  # the package. Full scrub remains tracked in IMPROVEMENT_BACKLOG_v10.
+  - "alte-frau95g"
+  - "alte-frau-95g"
   # Documentation / neutral placeholder emails.
   - "user@example.com"
   - "you@example.com"
