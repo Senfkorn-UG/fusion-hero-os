@@ -69,5 +69,5 @@ if (-not $NoFunnel) {
 Write-Host ""
 Write-Host "Local:  http://127.0.0.1:$Port/"
 Write-Host "MeshOps: http://127.0.0.1:$Port/api/mesh/ops"
-Write-Host "Funnel: https://desktop-kpki9e4.tail391adb.ts.net/"
+Write-Host "Funnel: https://your-node.example.ts.net/"
 Write-Host "Done."
