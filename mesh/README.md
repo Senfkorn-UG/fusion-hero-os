@@ -8,6 +8,7 @@ Der Mesh-Pfad bündelt alles, was mit Netz, Schutz und Kontrolle zu tun hat.
 - Karten-Ansicht: Geolokalisierte Nodes und Reichweiten auf einer Map.
 - Node-Details: Detail-Panel mit Metriken, Logs und Identitätsdaten.
 - Alerts: Liste von Ausfällen, Anomalien und verdächtigen Ereignissen.
+- Mesh-Monitoring-Panel: Einbindung von Prometheus/Grafana zur Anzeige von Mesh-Metriken (z.B. Latenz, Paketverlust, Durchsatz).
 
 ## Security-Framework
 

@@ -5,7 +5,7 @@ Der Docs-Pfad beschreibt die technische Seite von Fusion Hero OS.
 ## Statusraum – Dashboards und Monitoring
 
 - System-Health-Dashboards (z.B. Prometheus/Grafana).
-- Mesh-Monitoring für Knoten, Links und Latenz.
+- Mesh-Monitoring für Knoten, Links und Latenz (Mesh-Metrics in Grafana-Panels).
 - LLM- und Service-Status-Panels.
 
 ## Operationsraum – Steuerung und Pipelines
