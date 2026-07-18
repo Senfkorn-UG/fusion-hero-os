@@ -1,5 +1,7 @@
 # AscensionOS / Fusion Hero OS Architektur
 
+> **Stand:** v10.0.0 · 2026-07-18
+
 AscensionOS ist ein mehrschichtiges Betriebssystem für Mesh, Services und XR-Oberflächen.
 
 ## Schichten

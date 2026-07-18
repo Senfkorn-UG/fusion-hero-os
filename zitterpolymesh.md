@@ -1,5 +1,7 @@
 # Hyperclusterup Zitterpolymesh — Workflows, Pipelines, Dependencies
 
+> **Stand:** v10.0.0 · 2026-07-18
+
 Das Zitterpolymesh ist die Workflow-Schicht von AscensionOS/Fusion Hero OS:
 ein DAG-Scheduler mit **Parallel-Virtual-Hyperthreading (PVHT)** über vier
 Lanes, plus race-sichere Autosave-/Horkrux-Persistenz.

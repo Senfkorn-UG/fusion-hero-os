@@ -5,8 +5,6 @@ import threading
 import time
 from pathlib import Path
 
-import pytest
-
 from fusion_hero_os.core.pseudo_horcrux import (
     MODALITIES,
     AutosaveDaemon,

@@ -133,7 +133,7 @@ def detect_lanes() -> Dict[LaneKind, LaneProfile]:
         qpu_backend = "dwave-neal"
         qpu_detail = "Simulated-Annealing-Sampler (Simulator, kein echter QPU)"
     except Exception:
-        pass
+        pass  # neal ist optional — Fallback bleibt der Stdlib-SA-Sampler
     lanes[LaneKind.QPU] = LaneProfile(
         kind=LaneKind.QPU,
         workers=2,

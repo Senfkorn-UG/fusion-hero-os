@@ -16,6 +16,10 @@ on:
     branches: [ main ]
   workflow_dispatch:
 
+# CI liest nur Repo-Inhalte; kein Job braucht Schreibrechte auf dem Token.
+permissions:
+  contents: read
+
 # Race-Condition-Guard auf CI-Ebene: pro Ref läuft höchstens ein Mesh-Lauf,
 # neue Läufe verdrängen den alten (kein paralleles Schreiben auf denselben Zustand).
 concurrency:
