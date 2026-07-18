@@ -50,10 +50,11 @@ und deklarieren ihre Plattform-Kompatibilität in `fuhos_compat.yaml`
 
 ### `main` (Stable Release Line)
 - Geschützt. Direkte Pushes sind blockiert.
-- Nur Merges via Pull Request von `develop` oder `ascension`.
+- Nur Merges via Pull Request (Feature-Branches oder `ascension`).
 
-### `develop` – Option A Track (Evolutionary)
-- Aktive Weiterentwicklung des bestehenden Heroic Core.
+### `develop` – Option A Track (Evolutionary) — eingestellt
+- Historischer Track; der Remote-Branch wurde nach dem Merge in `main`
+  entfernt. Aktive Weiterentwicklung läuft über Feature-Branches → `main`.
 
 ### `ascension` – Option B Track (Strong Ascension Path)
 - Radikalere Entwicklungslinie für AscensionOS.
@@ -90,6 +91,6 @@ bash workstation/merge-bottom-up.sh --message "feat: ..."
 - Keine Duplikate im Repo-Root (`workstation/`, `tools/`, `src/` sind kanonisch)
 - Status: `~/.fusion/merge-bottom-up.status.json`
 
-**Hinweis:** `develop`/`ascension` sind derzeit hinter `main` — zuerst `main` in die Tracks mergen, nicht umgekehrt.
+**Hinweis:** `ascension` wird nach jedem `main`-Merge nachgezogen — zuerst `main` in den Track mergen, nicht umgekehrt.
 
 **Ziel:** Alles seit April 2026 entwickelte soll in AscensionOS münden.

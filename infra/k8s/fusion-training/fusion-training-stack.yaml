@@ -37,8 +37,8 @@ spec:
     metadata:
       labels:
         app: fusion-training
-    app.kubernetes.io/version: "10.0.0"
-    fusion-hero-os/platform-version: "10.0.0"
+        app.kubernetes.io/version: "10.0.0"
+        fusion-hero-os/platform-version: "10.0.0"
         tier: tier1-l4
     spec:
       serviceAccountName: fusion-training-ksa

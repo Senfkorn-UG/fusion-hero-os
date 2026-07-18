@@ -4,11 +4,14 @@ Fusion Hero OS — Mesh Connector Registry
 Jeder Konnektor ist ein eigenständiges Mesh-Segment mit eigener Identität und Health-Probe.
 """
 
+import hashlib
 import json
 import os
 import subprocess
+import time
 from datetime import datetime
 from pathlib import Path
+from typing import Any, Callable, Dict, Optional
 
 REGISTRY_PATH = Path(__file__).parent / "mesh_connectors.yaml"
 
@@ -171,10 +174,200 @@ def get_connector_status(connector_id: str) -> dict:
     return segment
 
 
+# ---------------------------------------------------------------------------
+# Layer-ω Bifurkale Synchronisation (Direktive 2026-07-15)
+# register_hyper4d_node() + bifurcal_sync() — von der Direktive gefordert.
+# Registry-State liegt operator-lokal (~/.fusion/mesh/hyper4d/registry.json),
+# race-sicher via race_guard-CAS wenn das Paket verfügbar ist.
+# ---------------------------------------------------------------------------
+
+HYPER4D_TAG = "tag:fusion-hyper4d-node"
+HYPER4D_CAPABILITIES = [
+    "hyper4d_coevolution",
+    "layer_omega_fixedpoint",
+    "autopoietic_morphing",
+    "bifurcal_sync",
+]
+
+
+def _hyper4d_registry_path() -> Path:
+    base = os.environ.get("FUSION_HYPER4D_DIR") or str(
+        Path.home() / ".fusion" / "mesh" / "hyper4d"
+    )
+    p = Path(base)
+    p.mkdir(parents=True, exist_ok=True)
+    return p / "registry.json"
+
+
+def _cas_update(
+    path: Path,
+    mutate: Callable[[Optional[Dict[str, Any]]], Dict[str, Any]],
+) -> Dict[str, Any]:
+    try:
+        from fusion_hero_os.core.race_guard import compare_and_swap_json
+
+        return compare_and_swap_json(path, mutate)
+    except ImportError:
+        # Fallback ohne Lock für Umgebungen ohne installiertes Paket
+        current: Dict[str, Any] = {}
+        if path.is_file():
+            try:
+                current = json.loads(path.read_text(encoding="utf-8"))
+            except (OSError, json.JSONDecodeError):
+                current = {}
+        new_obj = mutate(current or None)
+        new_obj["_generation"] = int((current or {}).get("_generation") or 0) + 1
+        tmp = path.with_suffix(".json.tmp")
+        tmp.write_text(
+            json.dumps(new_obj, indent=2, ensure_ascii=False), encoding="utf-8"
+        )
+        os.replace(tmp, path)
+        return new_obj
+
+
+def _node_identity() -> Dict[str, Any]:
+    ts = _get_tailscale_self()
+    hostname = (
+        ts.get("hostname")
+        or os.environ.get("COMPUTERNAME")
+        or os.environ.get("HOSTNAME")
+        or "local-node"
+    )
+    return {"hostname": str(hostname), "tailscale": ts}
+
+
+def _file_sha256(path: Path) -> Optional[str]:
+    if not path.is_file():
+        return None
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def _read_hyper4d_registry() -> Dict[str, Any]:
+    path = _hyper4d_registry_path()
+    if not path.is_file():
+        return {}
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return {}
+
+
+def hyper4d_status() -> Dict[str, Any]:
+    """Status-Payload für /mesh/hyper4d/status (Direktive §3)."""
+    reg = _read_hyper4d_registry()
+    ident = _node_identity()
+    node = (reg.get("nodes") or {}).get(ident["hostname"]) or {}
+    return {
+        "ok": True,
+        "protocol": "hyper4d",
+        "node": ident["hostname"],
+        "registered": ident["hostname"] in (reg.get("nodes") or {}),
+        "phase_sec": round(time.time() % 16, 3),  # Co-Evolution Phase (0–15s)
+        "feedback_strength": float(node.get("feedback_strength") or 0.0),
+        "fixedpoint": node.get("fixedpoint")
+        or {"anchor": "identity-fixpoint", "stable": True},
+        "generation": int(reg.get("_generation") or 0),
+        "registry": str(_hyper4d_registry_path()),
+    }
+
+
+def register_hyper4d_node() -> Dict[str, Any]:
+    """Direktive §1: diese Instanz als hyper4d-Node registrieren."""
+    ident = _node_identity()
+
+    def mut(cur: Optional[Dict[str, Any]]) -> Dict[str, Any]:
+        base = dict(cur or {})
+        nodes = dict(base.get("nodes") or {})
+        entry = dict(nodes.get(ident["hostname"]) or {})
+        entry.update(
+            {
+                "tailscale_tag": HYPER4D_TAG,
+                "capabilities": list(HYPER4D_CAPABILITIES),
+                "registered_at": entry.get("registered_at")
+                or datetime.now().isoformat(),
+                "status_path": "/mesh/hyper4d/status",
+                "online": bool((ident["tailscale"] or {}).get("online")),
+            }
+        )
+        nodes[ident["hostname"]] = entry
+        base["nodes"] = nodes
+        base["tag"] = HYPER4D_TAG
+        return base
+
+    result = _cas_update(_hyper4d_registry_path(), mut)
+    return {
+        "ok": True,
+        "node": ident["hostname"],
+        "tag": HYPER4D_TAG,
+        "capabilities": list(HYPER4D_CAPABILITIES),
+        "generation": int(result.get("_generation") or 0),
+        "registry": str(_hyper4d_registry_path()),
+    }
+
+
+def bifurcal_sync() -> Dict[str, Any]:
+    """Direktive §2: Pfad A (Pull) + Pfad B (Push) in einer CAS-Transaktion.
+
+    Pull: Stand von mesh_connectors.yaml + fusion_unified.yaml (sha256/mtime)
+    in den Node-Eintrag übernehmen. Push: lokale Phase, Feedback-Stärke und
+    Fixed-Point-Status ins Registry-State zurückspielen. Co-evolutionär:
+    die Feedback-Stärke wächst gedämpft pro Sync (Ceiling 1.0).
+    """
+    base_dir = Path(__file__).parent
+    pulled: Dict[str, Any] = {}
+    for name in ("mesh_connectors.yaml", "fusion_unified.yaml"):
+        f = base_dir / name
+        pulled[name] = {
+            "present": f.is_file(),
+            "sha256": _file_sha256(f),
+            "mtime": f.stat().st_mtime if f.is_file() else None,
+        }
+    ident = _node_identity()
+    phase = round(time.time() % 16, 3)
+
+    def mut(cur: Optional[Dict[str, Any]]) -> Dict[str, Any]:
+        base = dict(cur or {})
+        nodes = dict(base.get("nodes") or {})
+        entry = dict(nodes.get(ident["hostname"]) or {})
+        prev = float(entry.get("feedback_strength") or 0.0)
+        entry.update(
+            {
+                "last_sync": datetime.now().isoformat(),
+                "phase_sec": phase,
+                "feedback_strength": round(min(1.0, prev * 0.9 + 0.1), 4),
+                "fixedpoint": {"anchor": "identity-fixpoint", "stable": True},
+                "pulled": pulled,  # Pfad A
+            }
+        )
+        nodes[ident["hostname"]] = entry  # Pfad B
+        base["nodes"] = nodes
+        return base
+
+    result = _cas_update(_hyper4d_registry_path(), mut)
+    node = (result.get("nodes") or {}).get(ident["hostname"]) or {}
+    return {
+        "ok": True,
+        "node": ident["hostname"],
+        "pull": pulled,
+        "push": {
+            "phase_sec": node.get("phase_sec"),
+            "feedback_strength": node.get("feedback_strength"),
+        },
+        "generation": int(result.get("_generation") or 0),
+        "status": hyper4d_status(),
+    }
+
+
 if __name__ == "__main__":
     import sys
 
-    if len(sys.argv) > 1:
+    if len(sys.argv) > 1 and sys.argv[1] == "hyper4d-register":
+        status = register_hyper4d_node()
+    elif len(sys.argv) > 1 and sys.argv[1] == "hyper4d-sync":
+        status = bifurcal_sync()
+    elif len(sys.argv) > 1 and sys.argv[1] == "hyper4d-status":
+        status = hyper4d_status()
+    elif len(sys.argv) > 1:
         status = get_connector_status(sys.argv[1])
     else:
         status = get_mesh_status()
