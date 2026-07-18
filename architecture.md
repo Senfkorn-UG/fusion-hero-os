@@ -15,3 +15,9 @@ AscensionOS ist ein mehrschichtiges Betriebssystem für Mesh, Services und XR-Ob
 - APIs verbinden Services mit XR-Clients und Hero-Dashboards.
 - Archiv-Layer verknüpft jede technische Entität mit einer semantischen Identität (Kanon).
 
+## Ressourcen und Anbindung
+
+- Siehe [Ressourcen-Register](resources.md) für externe Tools, Frameworks und Repositories.
+- Eigene Repos und Orgs werden über GitHub angebunden.
+- Externe Frameworks (Mesh, XR, Archiv) werden als Services und Clients im System verortet.
+
