@@ -15,6 +15,12 @@ AscensionOS ist ein mehrschichtiges Betriebssystem für Mesh, Services und XR-Ob
 - APIs verbinden Services mit XR-Clients und Hero-Dashboards.
 - Archiv-Layer verknüpft jede technische Entität mit einer semantischen Identität (Kanon).
 
+## Workflow-Schicht: Hyperclusterup Zitterpolymesh
+
+- DAG-Scheduler mit Parallel-Virtual-Hyperthreading über vier Lanes (CPU, MEM, GPU, QPU) — siehe [Zitterpolymesh](zitterpolymesh.md).
+- Pipelines und Dependencies deklarativ in `zitterpolymesh_pipeline.yaml`, CI-Abbild in `.github/workflows/zitterpolymesh-ci.yml`.
+- Race-sichere Persistenz: `race_guard` (Locks/Atomic/CAS), multimodale Pseudohorkrux-Shards + Autosave (`pseudo_horcrux`).
+
 ## Ressourcen und Anbindung
 
 - Siehe [Ressourcen-Register](resources.md) für externe Tools, Frameworks und Repositories.

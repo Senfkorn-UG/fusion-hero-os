@@ -1,0 +1,77 @@
+# Hyperclusterup Zitterpolymesh — Pipeline- und Dependency-Definition
+#
+# Geladen von fusion_hero_os/core/zitterpolymesh.py (mesh_from_pipeline).
+# Jede Task nennt Lane (cpu/mem/gpu/qpu), Op (registrierte Funktion) und
+# deps (Namen anderer Tasks). Der Scheduler startet eine Task, sobald ihre
+# deps erfüllt sind — kein globaler Barrier, dadurch flüssige Workflows.
+#
+# Ehrlichkeits-Hinweis: GPU-Lane fällt ohne Hardware auf CPU zurück
+# (virtual=true im Report), QPU-Lane ist immer Simulated Annealing.
+
+version: 1
+mesh: hyperclusterup-zitterpolymesh
+timeout_sec: 300
+
+workflows:
+  # Boot-Sequenz: alle vier Lanes parallel anfahren, dann Zustand shard-en.
+  boot-fluid:
+    tasks:
+      - name: seed-cpu
+        lane: cpu
+        op: cpu_sum_squares
+        payload: { n: 200000 }
+      - name: seed-gpu
+        lane: gpu
+        op: gpu_matmul
+        payload: { n: 64 }
+      - name: seed-qpu
+        lane: qpu
+        op: qpu_min_qubo
+      # MEM wartet auf CPU-Seed (Zustand existiert erst danach) …
+      - name: shard-state
+        lane: mem
+        op: mem_shard_roundtrip
+        deps: [seed-cpu]
+        payload: { bytes: 1000000 }
+      # … während GPU/QPU parallel weiterlaufen. Merge erst am Ende.
+      - name: merge-lanes
+        lane: cpu
+        op: cpu_sum_squares
+        deps: [shard-state, seed-gpu, seed-qpu]
+        payload: { n: 50000 }
+
+  # Autosave-/Horkrux-Pfad: I/O-lastig, läuft komplett auf der MEM-Lane,
+  # CPU-Verifikation hängt dran (Cross-Lane-Dependency).
+  horcrux-cycle:
+    tasks:
+      - name: write-shards
+        lane: mem
+        op: mem_shard_roundtrip
+        payload: { bytes: 500000 }
+      - name: write-shards-mirror
+        lane: mem
+        op: mem_shard_roundtrip
+        payload: { bytes: 500000 }
+      - name: verify-cycle
+        lane: cpu
+        op: cpu_sum_squares
+        deps: [write-shards, write-shards-mirror]
+        payload: { n: 100000 }
+
+  # Coevolution: QPU-Annealing zuerst, CPU wertet aus, MEM archiviert.
+  qubo-coevolution:
+    tasks:
+      - name: anneal
+        lane: qpu
+        op: qpu_min_qubo
+        retries: 3
+      - name: evaluate
+        lane: cpu
+        op: cpu_sum_squares
+        deps: [anneal]
+        payload: { n: 100000 }
+      - name: archive
+        lane: mem
+        op: mem_shard_roundtrip
+        deps: [evaluate]
+        payload: { bytes: 250000 }

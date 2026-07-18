@@ -15,6 +15,7 @@ Fusion Hero OS organisiert deine Infrastruktur in drei Räumen, die du als Web-O
 Von dieser Landing Page aus führen dich fünf Hauptpfade tiefer:
 
 - [Architektur](architecture.md) – AscensionOS/Fusion Hero OS als Gesamtsystem.
+- [Zitterpolymesh](zitterpolymesh.md) – Workflow-Schicht: Pipelines, Dependencies, PVHT-Lanes, Autosave & Pseudohorkruxe.
 - [Fusion Hero OS Docs](docs/) – technische Doku, APIs, Kanon-Dateien und Pipelines.
 - [Mesh & Cybersecurity](mesh/) – Senfkorn-Strategien für Schutz, Kontrolle und Orientierung.
 - [Hero-Archiv](hero-archive/) – Dissertation-as-OS, Core-Texts und Identity-Fixpunkt-Kanon.

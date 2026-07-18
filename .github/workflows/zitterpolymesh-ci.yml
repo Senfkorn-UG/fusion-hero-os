@@ -1,0 +1,121 @@
+name: Hyperclusterup Zitterpolymesh CI
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - "fusion_hero_os/core/zitterpolymesh.py"
+      - "fusion_hero_os/core/pseudo_horcrux.py"
+      - "fusion_hero_os/core/race_guard.py"
+      - "zitterpolymesh_pipeline.yaml"
+      - "tests/test_zitterpolymesh.py"
+      - "tests/test_pseudo_horcrux.py"
+      - "tests/test_race_guard.py"
+      - ".github/workflows/zitterpolymesh-ci.yml"
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+# Race-Condition-Guard auf CI-Ebene: pro Ref läuft höchstens ein Mesh-Lauf,
+# neue Läufe verdrängen den alten (kein paralleles Schreiben auf denselben Zustand).
+concurrency:
+  group: zitterpolymesh-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # Stufe 1 — Fixpunkt: Pipeline-DAG validieren (Zyklen, unbekannte Deps/Ops).
+  mesh-validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install minimal deps (stdlib + yaml + pytest)
+        run: pip install pyyaml pytest
+      - name: Probe lanes (ehrliches Hardware-Reporting)
+        run: python -m fusion_hero_os.core.zitterpolymesh --probe
+      - name: Validate pipeline DAG
+        run: python -m fusion_hero_os.core.zitterpolymesh --validate
+
+  # Stufe 2 — Parallel-Virtual-Hyperthreading: alle vier Lanes als
+  # parallele Matrix-Jobs (CPU, MEM, GPU-virtuell, QPU-Simulator).
+  lane-smoke:
+    needs: mesh-validate
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        lane: [cpu, mem, gpu, qpu]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install pyyaml
+      - name: Smoke lane ${{ matrix.lane }}
+        run: python -m fusion_hero_os.core.zitterpolymesh --smoke --lane ${{ matrix.lane }}
+
+  # Stufe 2 (parallel) — Raceconditions + Pseudohorkruxe + Autosave.
+  race-and-horcrux:
+    needs: mesh-validate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install pyyaml pytest
+      - name: Race guard + horcrux + autosave tests
+        run: >
+          python -m pytest -q
+          tests/test_race_guard.py
+          tests/test_pseudo_horcrux.py
+          tests/test_zitterpolymesh.py
+      - name: Concurrent race stress harness (8 Writer x 20 Writes)
+        run: |
+          python - <<'PY'
+          import json
+          from fusion_hero_os.core.race_guard import race_stress_test
+          result = race_stress_test("/tmp/zpm-race.json", n_workers=8, n_writes_each=20)
+          print(json.dumps(result, indent=2))
+          assert result["ok"], "race stress test failed"
+          PY
+
+  # Stufe 3 — flüssiger End-to-End-Lauf aller Workflows der Pipeline.
+  fluid-workflows:
+    needs: [lane-smoke, race-and-horcrux]
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        workflow: [boot-fluid, horcrux-cycle, qubo-coevolution]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install pyyaml
+      - name: Run workflow ${{ matrix.workflow }}
+        run: python -m fusion_hero_os.core.zitterpolymesh --run ${{ matrix.workflow }}
+
+  # Stufe 4 — Report in die Actions-Zusammenfassung.
+  mesh-report:
+    needs: fluid-workflows
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install pyyaml
+      - name: Write mesh summary
+        run: |
+          {
+            echo "## Hyperclusterup Zitterpolymesh — Lauf OK"
+            echo ""
+            echo '```json'
+            python -m fusion_hero_os.core.zitterpolymesh --probe
+            echo '```'
+            echo ""
+            echo "Lanes: CPU/MEM real, GPU virtuell ohne Hardware, QPU immer Simulated Annealing."
+          } >> "$GITHUB_STEP_SUMMARY"
