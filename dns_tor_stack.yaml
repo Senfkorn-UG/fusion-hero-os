@@ -10,7 +10,7 @@ principle: >
   Not a crime tool — privacy + mesh + onion service reachability.
 
 tailscale:
-  magicdns_suffix: tail391adb.ts.net
+  magicdns_suffix: example.ts.net  # Platzhalter — echtes Tailnet nur operator-lokal
   accept_dns: true
   # health fix: explicit clearnet resolvers when override is off
   note: MagicDNS for *.ts.net; system upstream for the rest
@@ -59,7 +59,7 @@ routing_table:
     via: tor_dnsport
   - match: "*.ts.net"
     via: system_or_tailscale
-  - match: "*.tail391adb.ts.net"
+  - match: "*.example.ts.net"
     via: system_or_tailscale
   - match: "*"
     via: clearnet_upstream

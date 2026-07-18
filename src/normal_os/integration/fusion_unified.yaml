@@ -1,10 +1,17 @@
 # Fusion Hero OS v10 — Unified Integration Graph
 # Mesh <-> LLM <-> Tailscale <-> Orchestration
 # Public placeholders only (example.ts.net). Live topology is operator-local.
+#
+# Dissertation-as-OS: this graph is an organ of the dissertation
+# (Fusion Hero OS IS the work; text is one expression).
+# Ontology: docs/dissertation/ONTOLOGIE_DISSERTATION_IST_DAS_OS.md
+# Control plane endpoints below: control_plane / interconnect / grok_route
 
 version: "1.1"
 platform_version: "10.0.0"
 principle: "Jedes Segment ist eigenstaendig UND ueber den Integration Hub verbunden"
+ontology: "dissertation_as_os"
+dissertation_text: "docs/dissertation/"
 tailnet: example.ts.net
 
 layers:
@@ -69,6 +76,12 @@ layers:
     config: src/normal_os/integration/mesh_roles.yaml
     health: /mesh/files/status
     phone_portal: /mesh/files/phone
+  service_coordination:
+    module: scripts.mesh_cluster_coordinator
+    config: mesh_service_coordination.yaml
+    health: ~/.fusion/mesh/coordination/latest.json
+    cluster: infra/k8s/fusion-coordination/
+    purpose: "inhouse vs external placement + GKE rechenzeit for inventory/plan"
   knowledge:
     module: fusion_hero_os.core.layer_registry
     config:
@@ -193,10 +206,6 @@ trinity_roles:
   worker: gpt
   verifier: grok
 
-# Dissertation-as-OS: endpoints are surfaces of the living dissertation
-# (see docs/dissertation/ONTOLOGIE_DISSERTATION_IST_DAS_OS.md)
-ontology: dissertation_as_os
-
 endpoints:
   # Control plane (Grok interconnect — canonical re-routes)
   control_plane: /mainframe/grok
@@ -205,6 +214,22 @@ endpoints:
   grok_routes_table: /api/grok/routes
   grok_chat: /api/grok/chat
   grok_status: /api/grok/status
+  # Pseudo-inhouse AI + Creative facade (freemium=false)
+  ai_inhouse_status: /api/ai/inhouse/status
+  ai_inhouse_chat: /api/ai/inhouse/chat
+  ai_inhouse_catalog: /api/ai/inhouse/catalog
+  creative_inhouse_status: /api/creative/inhouse/status
+  creative_inhouse_create: /api/creative/inhouse/create
+  openai_compatible: /v1/chat/completions
+  openai_models: /v1/models
+  openai_images: /v1/images/generations
+  dual_timeline_status: /api/training/dual-timeline/status
+  dual_timeline_run: /api/training/dual-timeline/run
+  push_layer_guard: push_layer_guard.yaml
+  ops_vocabulary: ops_vocabulary.yaml
+  ops_deploy: private
+  ops_push: public
+  ops_merge: both_via_timeline
   mainframe_hub: /mainframe
   dauer_vr: /mainframe/vr
   ide: /mainframe/ide
