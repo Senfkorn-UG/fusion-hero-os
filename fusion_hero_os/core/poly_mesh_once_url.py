@@ -48,6 +48,12 @@ HEROIC_NAMES = (
 DEFAULT_TTL_SEC = 900  # 15 min
 DEFAULT_PORT = 42069
 
+# The real MagicDNS host is operator-local infrastructure, never hardcoded in
+# public source. At runtime the live Tailscale DNSName is read from `tailscale
+# status` (see below); this env-driven constant is only the fallback/default and
+# defaults to a neutral placeholder so the public skeleton carries no real node.
+MESH_HOST = os.environ.get("FUSION_MESH_HOST", "your-node.example.ts.net")
+
 
 def _state_dir() -> Path:
     d = Path.home() / ".fusion" / "poly_mesh_once"
@@ -192,8 +198,8 @@ def mint_once_url(
     port: int = DEFAULT_PORT,
     *,
     ttl_sec: int = DEFAULT_TTL_SEC,
-    public_base: str = "https://desktop-kpki9e4.tail391adb.ts.net",
-    mesh_base: str = "https://desktop-kpki9e4.tail391adb.ts.net",
+    public_base: str = f"https://{MESH_HOST}",
+    mesh_base: str = f"https://{MESH_HOST}",
     name: Optional[str] = None,
     target_path: str = "/",
 ) -> OnceUrl:
@@ -274,7 +280,7 @@ def mint_from_tailscale(
     ip4 = next((i for i in ips if str(i).startswith("100.")), None) or (ips[0] if ips else None)
     if not ip4:
         raise RuntimeError("no Tailscale mesh IP")
-    dns = (self.get("DNSName") or "desktop-kpki9e4.tail391adb.ts.net.").rstrip(".")
+    dns = (self.get("DNSName") or f"{MESH_HOST}.").rstrip(".")
     public_base = kwargs.pop("public_base", f"https://{dns}")
     mesh_base = kwargs.pop("mesh_base", f"https://{dns}")
     once = mint_once_url(

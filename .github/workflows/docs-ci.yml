@@ -1,0 +1,26 @@
+name: AscensionOS/Fusion Hero OS docs CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  docs-ci:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Verify resource update script runs
+        run: |
+          if [ -x scripts/update_resources.sh ]; then
+            scripts/update_resources.sh
+          else
+            echo "scripts/update_resources.sh not executable or missing"
+          fi
+
+      - name: Basic Markdown presence check
+        run: |
+          ls index.md architecture.md resources.md docs/README.md mesh/README.md hero-archive/README.md

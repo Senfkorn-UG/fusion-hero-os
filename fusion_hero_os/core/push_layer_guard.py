@@ -421,6 +421,37 @@ def evaluate_push(
         dotenv_loaded=dotenv_loaded,
     )
 
+    # God-layer seal: force-push locked until private-person unlock confirmation
+    # (surface/docs/conventional commits remain allowed; god-layer force/self-mod blocked)
+    try:
+        from fusion_hero_os.core.god_layer_seal import is_sealed, require_write
+
+        if is_sealed() and force:
+            ok_w, why = require_write(scope="force_push")
+            if not ok_w:
+                return PushDecision(
+                    allow=False,
+                    reason=why,
+                    wanted=False,
+                    unwanted=True,
+                    intent=intent,
+                    auto_save=auto_save,
+                    remote_ok=remote_ok,
+                    branch=branch,
+                    remote=remote,
+                    layers_touched=layers,
+                    files=files,
+                    commit_subjects=subjects,
+                    platform_ok=platform_ok,
+                    advice="God-layer sealed for private person. Full read OK. Unlock with confirmation =====stephanhagenurban",
+                    **_sec,
+                )
+    except Exception:
+        # Optional integration: a bug or import failure in god_layer_seal
+        # must fail open (fall through to the normal branch rules below)
+        # rather than blocking every push because of an unrelated error.
+        pass
+
     branch_rules = (cfg.get("branches") or {}).get(branch) or (cfg.get("branches") or {}).get("*") or {}
     if force and branch_rules.get("block_force", True):
         if not intent:

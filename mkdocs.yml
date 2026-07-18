@@ -26,7 +26,6 @@ markdown_extensions:
   - pymdownx.highlight:
       anchor_linenums: true
 
-nav:
-  - Home: index.md
-  - Monorepo Architektur: monorepo-structure.md
-  - CI/CD Roadmap: workflow-roadmap.md
+plugins:
+  - search
+  - awesome-pages

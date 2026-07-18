@@ -17,7 +17,7 @@ services:
     note: "Prefer dashboard on 42069; static site may share or use serve path"
   tailscale_serve:
     target: 42069
-    public: "https://desktop-kpki9e4.tail391adb.ts.net/"
+    public: "https://your-node.example.ts.net/"
   tailscale_funnel:
     target: 42069
     ports_allowed: [443, 8443, 10000]

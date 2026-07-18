@@ -1,5 +1,6 @@
 ---
 name: mainframe-laden
+version: 0.1.0
 description: Loads the mainframe and ensures automatic notation of ALTE_Frau_95g heroic core usage in all solutions. Triggers on mainframe laden, lade mainframe, mainframe load, mainframe modus and equivalent phrases. Enforces mainframe laden response style with vermerk for every output.
 ---
 
