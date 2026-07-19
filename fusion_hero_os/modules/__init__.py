@@ -28,6 +28,7 @@ from fusion_hero_os.modules.heroic_llm_ea import HeroicLLMEAOrchestrator
 from fusion_hero_os.modules.image_orchestrator import HeroicImageOrchestrator
 from fusion_hero_os.modules.timespace_token import TimespaceTokenCoreModule
 from fusion_hero_os.modules.phone_link import PhoneLinkCoreModule
+from fusion_hero_os.modules.hero_autoupdate import HeroAutoupdateCoreModule
 
 #: Alle Core-Module, die :func:`fusion_hero_os.core.dispatcher.build_default_dispatcher`
 #: standardmäßig registriert.
@@ -46,6 +47,7 @@ ALL_CORE_MODULES: List[Type[BaseModule]] = [
     HeroicImageOrchestrator,
     TimespaceTokenCoreModule,
     PhoneLinkCoreModule,
+    HeroAutoupdateCoreModule,
 ]
 
 __all__ = [
@@ -64,4 +66,5 @@ __all__ = [
     "HeroicImageOrchestrator",
     "TimespaceTokenCoreModule",
     "PhoneLinkCoreModule",
+    "HeroAutoupdateCoreModule",
 ]

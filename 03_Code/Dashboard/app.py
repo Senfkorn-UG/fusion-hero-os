@@ -1021,6 +1021,12 @@ async def api_input(payload: InputPayload):
     query = (payload.query or "").strip()
     if not query:
         return {"status": "error", "msg": "empty query"}
+    try:
+        from fusion_hero_os.core.hero_autoupdate import get_hero_autoupdate
+
+        get_hero_autoupdate().touch(source="api_input")
+    except Exception:
+        pass
     normalized, cat, _, dom = classify_and_normalize(query)
     job_id = str(uuid.uuid4())[:8]
     agent_map = {"Math": "math-worker", "Phil": "phil-worker", "Info": "info-worker"}
