@@ -235,29 +235,39 @@ if (-not $SkipGui) {
     }
 }
 
-# 7) Hero Autoupdate background
+# 7) Hero Autoupdate — startup notify + background poller (1 min)
 Write-Log "[7] Hero Autoupdate service..."
 try {
-    $auCmd = @"
-import os, sys
+    $auOnce = @"
+import os, sys, json
 sys.path.insert(0, r'$Root')
 os.environ['FUSION_REPO_ROOT'] = r'$Root'
-from fusion_hero_os.core.hero_autoupdate import get_service, HeroAutoupdateConfig
-svc = get_service()
-if hasattr(svc, 'start'):
-    svc.start()
-    print('started')
-elif hasattr(svc, 'ensure_running'):
-    print(svc.ensure_running())
-else:
-    # tick once + leave process if service has run loop
-    if hasattr(svc, 'tick'):
-        print(svc.tick())
-    print('service_bound', type(svc).__name__)
+from fusion_hero_os.core.hero_autoupdate import get_hero_autoupdate
+svc = get_hero_autoupdate()
+n = svc.notify_startup()
+t = svc.tick(do_fetch=True)
+print(json.dumps({'startup': n.get('ok', True), 'tick': t.get('ok', True), 'git_head': t.get('git_head')}))
 "@
-    $auOut = & $Python -c $auCmd 2>&1 | Out-String
-    $steps["hero_autoupdate"] = @{ ok = $true; detail = $auOut.Trim() }
-    Write-Log "Hero Autoupdate: $($auOut.Trim())" "OK"
+    $auOut = & $Python -c $auOnce 2>&1 | Out-String
+    # detached poller (survives controller exit)
+    $poller = @"
+import os, sys, time
+sys.path.insert(0, r'$Root')
+os.environ['FUSION_REPO_ROOT'] = r'$Root'
+from fusion_hero_os.core.hero_autoupdate import get_hero_autoupdate
+svc = get_hero_autoupdate()
+while True:
+    try:
+        svc.tick(do_fetch=False)
+    except Exception:
+        pass
+    time.sleep(max(30, float(svc.config.poll_interval_sec or 60)))
+"@
+    $pollerPath = Join-Path $FusionDir "hero_autoupdate_poller.py"
+    Set-Content -Path $pollerPath -Value $poller -Encoding UTF8
+    Start-Process -FilePath $Python -ArgumentList $pollerPath -WorkingDirectory $Root -WindowStyle Hidden
+    $steps["hero_autoupdate"] = @{ ok = $true; detail = $auOut.Trim(); poller = $pollerPath }
+    Write-Log "Hero Autoupdate: $($auOut.Trim()) + poller started" "OK"
 } catch {
     $steps["hero_autoupdate"] = @{ ok = $false; error = "$_" }
     Write-Log "Hero Autoupdate fail: $_" "WARN"
