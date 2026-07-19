@@ -405,6 +405,12 @@ async def api_grok_chat(payload: ChatPayload):
     msg = (payload.message or "").strip()
     if not msg:
         return {"status": "error", "error": "empty message"}
+    try:
+        from fusion_hero_os.core.hero_autoupdate import get_hero_autoupdate
+
+        get_hero_autoupdate().touch(source="grok_chat")
+    except Exception:
+        pass
     # Pre-route every chat message through interconnect route table
     route_plan = {}
     try:
