@@ -1,0 +1,119 @@
+# Graph API hub — all connectors (Meta Graph + GraphQL + REST graph-style)
+# Dry-run by default. Live only when tokens present AND force_live=true / FUSION_GRAPH_LIVE=1
+#
+# Platform: Fusion Hero OS v12.0.0
+
+version: "1.0"
+platform_version: "12.0.0"
+policy: dry_run_default
+freemium: false
+
+principle: >
+  One hub for graph-style APIs across connectors. No network calls without
+  explicit credentials + live flag. would_execute=false until then.
+
+defaults:
+  timeout_sec: 30
+  api_version: "v21.0"
+  force_live: false  # override with env FUSION_GRAPH_LIVE=1
+
+connectors:
+  instagram:
+    kind: meta_graph
+    skill_module: InstagramGraphCoreModule
+    base_url: "https://graph.facebook.com"
+    env_token: INSTAGRAM_ACCESS_TOKEN
+    env_user_id: IG_USER_ID
+    alt_token: META_ACCESS_TOKEN
+    actions:
+      - status
+      - media_container
+      - media_publish
+      - me
+    public_profile: "https://www.instagram.com/95guknow/"
+    pack: docs/security/media/meister_hasch_v12/
+
+  facebook:
+    kind: meta_graph
+    skill_module: FacebookGraphCoreModule
+    base_url: "https://graph.facebook.com"
+    env_token: META_ACCESS_TOKEN
+    env_page_id: FACEBOOK_PAGE_ID
+    actions:
+      - status
+      - me
+      - page_feed
+
+  github_graphql:
+    kind: graphql
+    skill_module: GitHubCoreModule
+    base_url: "https://api.github.com/graphql"
+    env_token: GITHUB_TOKEN
+    actions:
+      - status
+      - query
+
+  github_rest:
+    kind: rest
+    skill_module: GitHubCoreModule
+    base_url: "https://api.github.com"
+    env_token: GITHUB_TOKEN
+    actions:
+      - status
+      - get
+
+  x_api:
+    kind: rest
+    skill_module: XAPICoreModule
+    base_url: "https://api.twitter.com/2"
+    env_token: X_BEARER_TOKEN
+    actions:
+      - status
+      - search
+    allow_write_env: X_ALLOW_WRITE
+
+  gmail:
+    kind: rest
+    skill_module: GmailCoreModule
+    base_url: "https://gmail.googleapis.com/gmail/v1"
+    env_token: GOOGLE_ACCESS_TOKEN
+    actions:
+      - status
+      - profile
+    note: OAuth token only; dry-run without GOOGLE_ACCESS_TOKEN
+
+  drive:
+    kind: rest
+    skill_module: DriveCoreModule
+    base_url: "https://www.googleapis.com/drive/v3"
+    env_token: GOOGLE_ACCESS_TOKEN
+    actions:
+      - status
+      - files_list
+
+  vercel:
+    kind: rest
+    skill_module: VercelDeploymentConnectorCoreModule
+    base_url: "https://api.vercel.com"
+    env_token: VERCEL_TOKEN
+    actions:
+      - status
+      - deployments
+
+  notion:
+    kind: rest
+    skill_module: NotionConnectorCoreModule
+    base_url: "https://api.notion.com/v1"
+    env_token: NOTION_TOKEN
+    actions:
+      - status
+      - search
+
+  canva:
+    kind: rest
+    skill_module: CanvaConnectorCoreModule
+    base_url: "https://api.canva.com/rest/v1"
+    env_token: CANVA_API_TOKEN
+    actions:
+      - status
+    note: MCP may supersede; dry-run without token
