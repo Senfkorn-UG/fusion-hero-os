@@ -186,7 +186,7 @@ try {
 # 4) Meister Hasch integrity (status only)
 Write-Log "[4] Meister Hasch status..."
 try {
-    $mh = & $Python -c "from fusion_hero_os.core.meister_hasch_optimize import status; import json; print(json.dumps(status()))" 2>&1
+    $mh = & $Python -c 'from fusion_hero_os.core.meister_hasch_optimize import status; import json; print(json.dumps(status()))' 2>&1
     $steps["meister_hasch"] = $mh | Out-String
     Write-Log "Meister status captured" "OK"
 } catch {
