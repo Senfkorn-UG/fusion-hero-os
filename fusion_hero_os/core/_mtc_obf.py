@@ -2,7 +2,8 @@
 # Protocol facade: fusion_hero_os.core.mugen_tsuky_chan
 # Generated pack; clear propagation is protocols/mugen_tsuky_chan.yaml
 from __future__ import annotations
-import base64, zlib, types as _t
+import base64
+import zlib
 from typing import Any, Dict
 _MTC = "mugen-tsuky.chan"
 _B = """\

@@ -17,7 +17,6 @@ from __future__ import annotations
 
 import hashlib
 import json
-import math
 import os
 from dataclasses import asdict, dataclass, field
 from datetime import datetime, timezone
@@ -238,7 +237,6 @@ def audit(
 ) -> AuditReport:
     cfg = load_config()
     gates_cfg = list(cfg.get("control_gates") or [])
-    attacks = {a["id"]: a for a in (cfg.get("attack_classes") or [])}
     answers = gate_answers if gate_answers is not None else _default_gate_answers(cfg)
 
     gate_results: List[GateResult] = []
@@ -461,7 +459,7 @@ def emit_warning(report: AuditReport, cfg: Optional[Dict[str, Any]] = None) -> L
                 "| Transpose reciprocity vs naive equality | Strict amount/resource/payee binding |",
                 "| Commutator [Q,B]≠0 | Pay/grant order attacks if unbound |",
                 "",
-                f"## Result",
+                "## Result",
                 "",
                 f"- Gates: **{report.controls_ok}/{report.controls_total}**",
                 f"- Open attacks: {', '.join(a.get('id','') for a in report.open_attacks) or '(none)'}",

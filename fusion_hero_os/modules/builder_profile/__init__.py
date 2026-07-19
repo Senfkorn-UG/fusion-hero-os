@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any, Dict
 
 MODULE_ID = "builder_profile"
 PLATFORM = "10.0.0"

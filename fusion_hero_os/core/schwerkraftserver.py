@@ -15,13 +15,11 @@ from __future__ import annotations
 
 import hashlib
 import json
-import os
 import subprocess
 import time
-from dataclasses import asdict, dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional
 
 ROOT = Path(__file__).resolve().parents[2]
 PROTOCOL = "mugen-tsuky.chan"

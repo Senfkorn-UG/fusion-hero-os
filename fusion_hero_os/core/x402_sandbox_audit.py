@@ -23,7 +23,7 @@ import hashlib
 import json
 import secrets
 import time
-from dataclasses import asdict, dataclass, field
+from dataclasses import asdict, dataclass
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Set, Tuple
@@ -401,7 +401,6 @@ def simulate_successful_attack(
     victim = MockX402Server(insecure_cfg)
     victim.price = price_str
     victim.payee_canonical = dormant_wallet["address_mock"]  # value notionally from dormant wallet
-    attacker = MockClient(victim)
 
     timeline: List[Dict[str, Any]] = []
     timeline.append(
@@ -549,7 +548,7 @@ def simulate_successful_attack(
                 f"- **Betrag:** **0,01 ct** (= {damage_eur} EUR)",
                 f"- **Quelle:** langzeit-inaktive Lab-Wallet (`{dormant_days}` Tage ohne Aktivität)",
                 f"- **Adresse (Mock):** `{dormant_wallet['address_mock']}`",
-                f"- **On-Chain:** **nein** (keine private keys, kein Broadcast)",
+                "- **On-Chain:** **nein** (keine private keys, kein Broadcast)",
                 f"- **Notional bei 2 Grants:** {economic['notional_value_label']}",
                 "",
                 "## Timeline",
@@ -666,7 +665,7 @@ def run_sandbox_audit(*, budget_eur: float = 500.0) -> Dict[str, Any]:
         f"**Time:** {report['generated_at']}",
         f"**Budget cap:** €{budget_eur:.0f} (lab used €0 chain fees)",
         f"**Proved cases:** {proved}/{len(cases)}",
-        f"**External targets:** none · **Exploit payloads:** none",
+        "**External targets:** none · **Exploit payloads:** none",
         f"**Threat score (gates open):** {threat.risk_score} ({threat.level})",
         "",
         "## Evidence cases (secure vs insecure mock)",
@@ -717,8 +716,8 @@ def run_sandbox_audit(*, budget_eur: float = 500.0) -> Dict[str, Any]:
                 "",
                 "Local authorized lab. No external systems attacked. No exploit payloads.",
                 "",
-                f"See operator proof: `~/.fusion/alerts/X402_SANDBOX_AUDIT_PROOF.md`",
-                f"Summary: `docs/security/x402_sandbox_proof.summary.json`",
+                "See operator proof: `~/.fusion/alerts/X402_SANDBOX_AUDIT_PROOF.md`",
+                "Summary: `docs/security/x402_sandbox_proof.summary.json`",
                 "",
                 "```powershell",
                 "python -m fusion_hero_os.core.x402_sandbox_audit",

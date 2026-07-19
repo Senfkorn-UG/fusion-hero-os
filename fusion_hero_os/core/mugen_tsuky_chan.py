@@ -34,7 +34,7 @@ def status() -> Dict[str, Any]:
     """Central, clear protocol status (no obfuscation in the message)."""
     spec_ok = SPEC_PATH.is_file()
     try:
-        obf = _obf()
+        _obf()  # nur Importbarkeit des obfuskierten Body prüfen
         body_ok = True
         body_err = None
     except Exception as exc:  # noqa: BLE001

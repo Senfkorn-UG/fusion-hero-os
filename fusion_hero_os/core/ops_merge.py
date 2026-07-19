@@ -12,7 +12,7 @@ import json
 import time
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 
 from fusion_hero_os.core.ops_vocabulary import OPS_MERGE, meaning_of
 
@@ -72,7 +72,7 @@ def merge_both(
             out["steps"].append({"step": "deploy_private", "ok": False, "error": str(e)[:160]})
 
     try:
-        from fusion_hero_os.core.masterseed_vault import list_module_split, vault_root, status as vst
+        from fusion_hero_os.core.masterseed_vault import list_module_split, status as vst
 
         vs = vst()
         for entry in list_module_split():
@@ -104,7 +104,7 @@ def merge_both(
     timeline_meta: Dict[str, Any] = {}
     if include_timeline:
         try:
-            from fusion_hero_os.core.dual_timeline_training import status as ts, run_auto_train
+            from fusion_hero_os.core.dual_timeline_training import run_auto_train
 
             # ensure fresh axes
             tr = run_auto_train(write=True)

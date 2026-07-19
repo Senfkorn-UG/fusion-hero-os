@@ -23,7 +23,6 @@ from __future__ import annotations
 
 import asyncio
 import contextlib
-import os
 import time
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, TYPE_CHECKING
@@ -213,12 +212,13 @@ class UnifiedHeroicLLMCore:
                     "unified_core_version": self._version,
                     "sisyphos_state": self.sisyphos.get_state(),
                     "heroic_context_injected": context == "heroic",
+                    "latency_ms": round((time.time() - start) * 1000, 2),
                 })
                 # Sisyphos-Cycle updaten (Last als Proxy für Prompt-Komplexität)
                 complexity = min(1.0, len(prompt) / 800)
                 self.sisyphos.step(complexity)
                 return result
-            except Exception as e:
+            except Exception:
                 # Psycholyse-Trigger bei hoher Last
                 if self.psycholysis and self.sisyphos.load > 0.75:
                     try:
