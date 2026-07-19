@@ -1,9 +1,9 @@
 {
   "kind": "masterseed_peer_confirmations_public",
-  "ts": "2026-07-19T10:08:59.290629+00:00",
+  "ts": "2026-07-19T10:19:09.946522+00:00",
   "platform": "10.0.0",
-  "display_id": "MS-PUB-v10-THC01H70-BB5A",
-  "public_fingerprint_prefix": "06a2c00627da1390",
+  "display_id": "MS-PUB-v12-CMCFEAVV-682D",
+  "public_fingerprint_prefix": "6518f72b7b87c001",
   "integrity_ok": true,
   "peers_confirmed": 5,
   "all_peers_confirmed": true,
@@ -22,7 +22,7 @@
         "mainframe": 0.92,
         "peer": 0.92
       },
-      "confirmed_at": "2026-07-19T10:08:57.482275+00:00"
+      "confirmed_at": "2026-07-19T10:19:08.146648+00:00"
     },
     {
       "peer": "mesh_edge",
@@ -36,7 +36,7 @@
         "mainframe": 0.92,
         "peer": 0.92
       },
-      "confirmed_at": "2026-07-19T10:08:57.482275+00:00"
+      "confirmed_at": "2026-07-19T10:19:08.146648+00:00"
     },
     {
       "peer": "hypercluster",
@@ -50,7 +50,7 @@
         "mainframe": 0.95,
         "peer": 0.95
       },
-      "confirmed_at": "2026-07-19T10:08:57.482275+00:00"
+      "confirmed_at": "2026-07-19T10:19:08.146648+00:00"
     },
     {
       "peer": "senfkorn_mirror",
@@ -64,7 +64,7 @@
         "mainframe": 0.95,
         "peer": 0.95
       },
-      "confirmed_at": "2026-07-19T10:08:57.482275+00:00"
+      "confirmed_at": "2026-07-19T10:19:08.146648+00:00"
     },
     {
       "peer": "dissertation",
@@ -78,7 +78,7 @@
         "mainframe": 0.95,
         "peer": 0.95
       },
-      "confirmed_at": "2026-07-19T10:08:57.482275+00:00"
+      "confirmed_at": "2026-07-19T10:19:08.146648+00:00"
     }
   ],
   "mesh": {
