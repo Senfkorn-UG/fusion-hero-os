@@ -32,6 +32,9 @@
 | `MEISTER_HASCH_ALL_CHANNELS.md` | Channel map |
 | `MEISTER_HASCH_BIFOKAL.md` | Lokal ↔ global |
 | `MEISTER_HASCH_KONTROLLE.md` | This control report |
+| `MEISTER_HASCH_FABLE5_MYTHOS5.md` | Fable5+Mythos5 optimize (Hypertarnkappe · Hyperpanzerknacker) |
+| `docs/security/HYPERTARNKAPPE_HYPERPANZERKNACKER.md` | Cloak + lab-probe policy |
+| `meister_hasch_optimize.summary.json` | Machine-readable optimize report |
 
 ## Nachbesserungen (dieser Lauf)
 

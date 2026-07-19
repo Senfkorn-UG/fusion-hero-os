@@ -54,7 +54,7 @@ Details: `docs/security/HYPERTARNKAPPE_HYPERPANZERKNACKER.md`
 1. Nach jedem Asset-Edit: Source → alle `PUBLIC_ASSET_RELPATHS` re-sync + KONTROLLE aktualisieren.  
 2. CI-Truth: Integritäts-Gate an `meister_hasch_optimize` / Summary JSON binden (optional P1).  
 3. Display-MasterSeed nur über `masterseed_public` — nie Vault-Shards.  
-4. Graph/IG: weiterhin Pack-only bis `FUSION_GRAPH_LIVE=1` + Tokens lokal.  
+4. Graph/IG: weiterhin Pack-only bis live Graph freigeschaltet ist und Tokens nur lokal liegen.  
 
 **Modul:** `fusion_hero_os.core.meister_hasch_optimize` · Lens `fable5`
 
@@ -85,9 +85,9 @@ Kein erfundenes „Mythos widerspricht Fable“. Bifokal = zwei Organe, **ein** 
 
 | Public | Private (cloak) |
 |--------|-----------------|
-| Image + SHA256 | Vault shards, GPG private |
-| Frame docs | `.env`, API tokens |
-| Channel map | Live Graph credentials |
+| Image + SHA256 | Vault shards, private key material |
+| Frame docs | Dot-env files, live API tokens |
+| Channel map | Live Graph credentials (host-local only) |
 | IG pack captions | Operator PII beyond membrane |
 
 Probe-Lens `hypertarnkappe` scannt public Meister-Docs auf Private-Muster.

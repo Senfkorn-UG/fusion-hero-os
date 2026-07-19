@@ -14,6 +14,9 @@
 | Android layer | `docs/android/meister_hasch.png` |
 | Journal | `journal/meister_hasch.png` |
 | Control report | `docs/dissertation/MEISTER_HASCH_KONTROLLE.md` |
+| Fable5+Mythos5 optimize | `docs/dissertation/MEISTER_HASCH_FABLE5_MYTHOS5.md` |
+| Hypertarnkappe / Hyperpanzerknacker | `docs/security/HYPERTARNKAPPE_HYPERPANZERKNACKER.md` |
+| Optimize summary JSON | `docs/dissertation/meister_hasch_optimize.summary.json` |
 | Raw origin | https://raw.githubusercontent.com/95guknow/fusion-hero-os/main/docs/dissertation/assets/meister_hasch.png |
 | Blob origin | https://github.com/95guknow/fusion-hero-os/blob/main/docs/dissertation/assets/meister_hasch.png |
 | Senfkorn org | https://github.com/Senfkorn-UG/fusion-hero-os |

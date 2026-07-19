@@ -30,6 +30,13 @@
 
 See `MEISTER_HASCH_KONTROLLE.md` — integrity PASS (source = all local copies = GitHub raw).
 
+## Fable5 + Mythos5 · Hypertarnkappe · Hyperpanzerknacker
+
+- Bifocal optimize: `MEISTER_HASCH_FABLE5_MYTHOS5.md`
+- Cloak / lab probe: `docs/security/HYPERTARNKAPPE_HYPERPANZERKNACKER.md`
+- CLI: `python scripts/meister_hasch_fable_mythos_optimize.py`
+- Module: `fusion_hero_os.core.meister_hasch_optimize`
+
 ## Frame
 
 Labor: Held + Operator ↔ Meister · pure Erkenntnis · private vault never in git.

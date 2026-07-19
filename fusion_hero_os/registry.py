@@ -150,6 +150,11 @@ DEFAULT_MODULES: List[ModuleSpec] = [
         "engine.mining_qubo", "fusion_hero_os.engine.mining_qubo", "Profit-Switching-QUBO"),
     ModuleSpec(
         "engine.rust_backend", "fusion_hero_os.engine.rust_backend", "PyO3-Rust-Backend"),
+    ModuleSpec(
+        "core.meister_hasch_optimize",
+        "fusion_hero_os.core.meister_hasch_optimize",
+        "Meister Hasch Fable5+Mythos5 bifocal optimize (Hypertarnkappe cloak + Hyperpanzerknacker lab probe)",
+    ),
 ]
 
 

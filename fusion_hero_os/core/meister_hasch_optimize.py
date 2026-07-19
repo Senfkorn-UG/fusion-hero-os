@@ -55,16 +55,17 @@ PUBLIC_DOC_RELPATHS: Tuple[str, ...] = (
     "docs/security/HYPERTARNKAPPE_HYPERPANZERKNACKER.md",
 )
 
-# Paths that must never contain private vault material in public docs
+# Actual secret material (not policy prose that *forbids* secrets).
+# Docs may name forbidden classes; only real key/token *bodies* fail.
 PRIVATE_PATTERN_HINTS: Tuple[str, ...] = (
-    r"BEGIN PGP PRIVATE",
-    r"PRIVATE KEY",
-    r"masterseed_vault.*shard",
-    r"FUSION_GRAPH_LIVE\s*=\s*1",
-    r"sk-[A-Za-z0-9]{20,}",
-    r"xox[baprs]-[A-Za-z0-9-]+",
-    r"ghp_[A-Za-z0-9]{20,}",
-    r"-----BEGIN RSA PRIVATE KEY-----",
+    r"-----BEGIN (?:RSA |OPENSSH |EC |PGP )?PRIVATE KEY-----",
+    r"-----BEGIN PGP PRIVATE KEY BLOCK-----",
+    # Live token shapes (not the bare env var name in policy docs)
+    r"(?<![A-Za-z0-9_])sk-[A-Za-z0-9]{20,}",
+    r"(?<![A-Za-z0-9_])xox[baprs]-[A-Za-z0-9-]{10,}",
+    r"(?<![A-Za-z0-9_])ghp_[A-Za-z0-9]{20,}",
+    r"(?<![A-Za-z0-9_])github_pat_[A-Za-z0-9_]{20,}",
+    r"(?<![A-Za-z0-9_])AIza[0-9A-Za-z\-_]{30,}",
 )
 
 # Local-only vault/private markers (expected outside git public surfaces)

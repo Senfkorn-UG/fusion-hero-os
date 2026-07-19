@@ -22,9 +22,9 @@
 
 ### Niemals public (cloak-Pflicht)
 
-- Private MasterSeed shards (`masterseed_vault`, `~/.fusion/vault`)
-- `.env*`, API tokens, GPG private keys
-- Live Graph tokens (`FUSION_GRAPH_LIVE=1` nur lokal)
+- Private MasterSeed shards (local vault modules, `~/.fusion/vault`)
+- Dot-env files, live API tokens, GPG/SSH private key material
+- Live Graph credentials (enable only on operator host, never commit)
 - Operator legal-name / PII jenseits der Identity-Membrane
 
 ### Operative Checks

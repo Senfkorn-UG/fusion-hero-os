@@ -28,6 +28,9 @@ Hypotheses only · labor frame · no Realraum commitment of private shards.
 - `docs/dissertation/MEISTER_HASCH_ALL_CHANNELS.md`
 - `docs/dissertation/MEISTER_HASCH_BIFOKAL.md`
 - `docs/dissertation/MEISTER_HASCH_KONTROLLE.md`
+- `docs/dissertation/MEISTER_HASCH_FABLE5_MYTHOS5.md`
+- `docs/security/HYPERTARNKAPPE_HYPERPANZERKNACKER.md`
+- `docs/dissertation/meister_hasch_optimize.summary.json`
 
 ## Public URLs
 
@@ -38,4 +41,5 @@ Hypotheses only · labor frame · no Realraum commitment of private shards.
 - https://github.com/95guknow/fusion-hero-os/blob/main/docs/android/meister_hasch.png
 - https://github.com/Senfkorn-UG/fusion-hero-os (dual-org main)
 
-Display: `MS-PUB-v10-THC01H70-BB5A` · Platform v10.0.0
+Display: MasterSeed public via `masterseed_public` · Platform v12.0.0  
+Optimize: Fable5 (engineering) + Mythos5 (narrative, same base) · Hypertarnkappe · Hyperpanzerknacker lab-only
