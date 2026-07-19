@@ -1,0 +1,21 @@
+name: Update AscensionOS/Fusion Hero OS resources
+
+on:
+  schedule:
+    - cron: "0 3 * * *"   # täglich um 03:00 UTC
+  workflow_dispatch:       # manuell auslösbar
+
+jobs:
+  update-resources:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run resource update script
+        run: scripts/update_resources.sh
+
+      - name: Commit and push updates
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "chore: auto-update AscensionOS/Fusion Hero OS resources"

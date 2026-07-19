@@ -2,7 +2,24 @@ mesh_version: '1.2'
 tailnet: example.ts.net
 updated: '2026-07-15'
 live_inventory: false
+# Dissertation-as-OS: mesh registry is an organ of the dissertation
+# (OS = work; text = one expression). docs/dissertation/ONTOLOGIE_DISSERTATION_IST_DAS_OS.md
+ontology: dissertation_as_os
 principle: Jeder Konnektor = ein einzelnes Teil des Mesh (eigene ID, Host, Health, Tag)
+# Layer-Omega-Direktive 2026-07-15 §5: Node-Typ fuer bifurkale Co-Evolution
+node_types:
+  hyper4d-coevo:
+    description: Hyper4D Co-Evolution Node (bifurkale Synchronisation)
+    tailscale_tag: tag:fusion-hyper4d-node
+    status_path: /mesh/hyper4d/status
+    capabilities:
+    - hyper4d_coevolution
+    - layer_omega_fixedpoint
+    - autopoietic_morphing
+    - bifurcal_sync
+    registry_cli:
+    - python tailscale_mesh_registry.py hyper4d-register
+    - python tailscale_mesh_registry.py hyper4d-sync
 nodes:
   mainframe:
     role: orchestrator
@@ -156,6 +173,32 @@ connectors:
     tailscale_tag: tag:fusion-connector-tasks
     description: Tasks MCP
 routing:
+  # Grok interconnect control plane (canonical re-routes)
+  control_plane: /mainframe/grok
+  interconnect: /api/grok/interconnect
+  grok_route: /api/grok/route
+  grok_routes_table: /api/grok/routes
+  grok_chat: /api/grok/chat
+  grok_status: /api/grok/status
+  ai_inhouse_status: /api/ai/inhouse/status
+  ai_inhouse_chat: /api/ai/inhouse/chat
+  creative_inhouse_status: /api/creative/inhouse/status
+  creative_inhouse_create: /api/creative/inhouse/create
+  openai_compatible: /v1/chat/completions
+  openai_images: /v1/images/generations
+  mainframe_hub: /mainframe
+  dauer_vr: /mainframe/vr
+  ide: /mainframe/ide
+  worktree: /mainframe/worktree
+  ops: /mainframe/ops
+  legacy_redirects:
+    /grok: /mainframe/grok
+    /ide: /mainframe/ide
+    /worktree: /mainframe/worktree
+    /portal: /mainframe
+    /interconnect: /mainframe/grok
+    /vr/persistent: /mainframe/vr
+    /api/interconnect: /api/grok/interconnect
   base_url: https://mainframe.example.ts.net
   unified: /fusion/status
   fusion_graph: /fusion/graph

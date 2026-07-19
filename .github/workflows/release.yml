@@ -26,7 +26,7 @@ jobs:
 
       - name: Build Documentation
         run: |
-          pip install mkdocs-material
+          pip install mkdocs-material mkdocs-awesome-pages-plugin
           mkdocs build --clean
 
       - name: Create GitHub Release

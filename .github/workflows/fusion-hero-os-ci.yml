@@ -123,7 +123,7 @@ jobs:
 
     - name: Multimodal-Protokoll Gate (Archiv-Inventar)
       run: |
-        pip install pypdf Pillow
+        pip install pypdf Pillow mutagen
         python -m fusion_hero_os.core.multimodal_protocol --check
 
     - name: Doc-Versions Gate (versionierte Benennung)

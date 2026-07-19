@@ -7,7 +7,7 @@ from typing import Any, Dict, List, Optional
 from fusion_hero_os.core.base_module import BaseModule, ReviewCriterion, ReviewResult
 from fusion_hero_os.modules.heroic_llm_ea.evolution import EvolutionConfig, EvolutionarySelector
 from fusion_hero_os.modules.heroic_llm_ea.fitness import score_with_peer_review
-from fusion_hero_os.modules.heroic_llm_ea.memory import MutationMemory, ProposalRecord
+from fusion_hero_os.modules.heroic_llm_ea.memory import ProposalRecord
 from fusion_hero_os.modules.heroic_llm_ea.providers import (
     CampfireTemplateProvider,
     CallableLLMProvider,

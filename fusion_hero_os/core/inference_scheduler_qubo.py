@@ -64,7 +64,7 @@ _ROOT = Path(__file__).resolve().parents[2]
 if str(_ROOT) not in sys.path:
     sys.path.insert(0, str(_ROOT))
 
-from qb_qubo import parallel_anneal  # kanonische Kopie (QBQUBO-KOPIEN-SYNC)
+from qb_qubo import parallel_anneal  # noqa: E402 — nach sys.path-Injektion (QBQUBO-KOPIEN-SYNC)
 
 
 @dataclass

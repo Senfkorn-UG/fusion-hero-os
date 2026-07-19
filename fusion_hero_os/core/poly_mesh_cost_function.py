@@ -478,7 +478,7 @@ def main() -> int:
     ap = argparse.ArgumentParser(description="Poly-Mesh Cost Function v2")
     ap.add_argument("--status", action="store_true")
     ap.add_argument("--json", action="store_true")
-    args = ap.parse_args()
+    ap.parse_args()  # validiert Flags/--help; Ausgabe ist ohnehin JSON-Status
     r = cost_function_status()
     print(json.dumps(r, indent=2, ensure_ascii=False))
     return 0 if r.get("ok") else 1

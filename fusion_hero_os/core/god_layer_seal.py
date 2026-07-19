@@ -39,7 +39,6 @@ VAULT_PATH = OP_DIR / "identity.local.json"
 PLATFORM = "10.0.0"
 # Unlock confirmation (user protocol). Stored as hash only.
 DEFAULT_UNLOCK_TOKEN = "=====stephanhagenurban"
-_TOKEN_RE = re.compile(r"^[=]*\s*stephanhagenurban\s*[=]*$", re.IGNORECASE)
 
 
 def _now() -> str:
@@ -211,14 +210,6 @@ def _bind_private_person_vault() -> Path:
     Names come from env if set, else known local bind from operator directive.
     """
     OP_DIR.mkdir(parents=True, exist_ok=True)
-    legal = (
-        os.environ.get("FUSION_AUTHOR_LEGAL_NAME", "").strip()
-        or "Stephan Hagen Urban"
-    )
-    pub = (
-        os.environ.get("FUSION_AUTHOR_PUBLICATION_NAME", "").strip()
-        or legal
-    )
     existing: Dict[str, Any] = {}
     if VAULT_PATH.is_file():
         try:
@@ -227,6 +218,18 @@ def _bind_private_person_vault() -> Path:
                 existing = {}
         except (OSError, json.JSONDecodeError):
             existing = {}
+    # Legal name never lives in git (see module docstring): it comes only from
+    # the operator-local env or the operator-local vault. No hardcoded fallback —
+    # an unset env with no prior vault binding means an empty legal_name, i.e.
+    # the module never invents a name into public source.
+    legal = (
+        os.environ.get("FUSION_AUTHOR_LEGAL_NAME", "").strip()
+        or ((existing.get("author") or {}).get("legal_name") or "").strip()
+    )
+    pub = (
+        os.environ.get("FUSION_AUTHOR_PUBLICATION_NAME", "").strip()
+        or legal
+    )
     payload = {
         **existing,
         "role": "operator",  # immutable role
@@ -317,6 +320,9 @@ def try_unlock(confirmation: str) -> Dict[str, Any]:
                     encoding="utf-8",
                 )
         except (OSError, json.JSONDecodeError):
+            # Best-effort vault sync only; the authoritative seal state was
+            # already persisted by _save(d) above, so a failed vault mirror
+            # write here must not turn a successful unlock into an error.
             pass
     out = public_status()
     out["ok"] = True

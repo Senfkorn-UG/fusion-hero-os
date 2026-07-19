@@ -39,7 +39,7 @@ _ROOT = Path(__file__).resolve().parents[2]
 if str(_ROOT) not in sys.path:
     sys.path.insert(0, str(_ROOT))
 
-from fusion_hero_os.core.inference_scheduler_qubo import (
+from fusion_hero_os.core.inference_scheduler_qubo import (  # noqa: E402 — nach sys.path-Injektion
     ScheduleProblem,
     solve_schedule,
 )

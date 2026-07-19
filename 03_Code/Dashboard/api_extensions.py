@@ -405,6 +405,12 @@ async def api_grok_chat(payload: ChatPayload):
     msg = (payload.message or "").strip()
     if not msg:
         return {"status": "error", "error": "empty message"}
+    try:
+        from fusion_hero_os.core.hero_autoupdate import get_hero_autoupdate
+
+        get_hero_autoupdate().touch(source="grok_chat")
+    except Exception:
+        pass
     # Pre-route every chat message through interconnect route table
     route_plan = {}
     try:
@@ -609,6 +615,58 @@ async def api_phone_link_status():
     from fusion_hero_os.integrations.phone_link import phone_link_status
 
     return await asyncio.to_thread(phone_link_status)
+
+
+@router.get("/api/hero-autoupdate/status")
+async def api_hero_autoupdate_status():
+    """Status: 1-Min-Polling, Idle, 5-Min-Erinnerung, Android-Notify-Config."""
+    from fusion_hero_os.core.hero_autoupdate import get_hero_autoupdate
+
+    return await asyncio.to_thread(get_hero_autoupdate().status)
+
+
+@router.post("/api/hero-autoupdate/touch")
+async def api_hero_autoupdate_touch(payload: Optional[Dict[str, Any]] = None):
+    """Interaktion zum Held markieren — setzt den 5-Min-Erinnerungs-Timer zurück."""
+    from fusion_hero_os.core.hero_autoupdate import get_hero_autoupdate
+
+    source = "api"
+    if isinstance(payload, dict) and payload.get("source"):
+        source = str(payload["source"])
+    return await asyncio.to_thread(get_hero_autoupdate().touch, source)
+
+
+@router.post("/api/hero-autoupdate/tick")
+async def api_hero_autoupdate_tick(payload: Optional[Dict[str, Any]] = None):
+    """Einen logischen Poll-Zyklus manuell auslösen."""
+    from fusion_hero_os.core.hero_autoupdate import get_hero_autoupdate
+
+    force = bool((payload or {}).get("force_reminder", False))
+    do_fetch = bool((payload or {}).get("do_fetch", False))
+    return await asyncio.to_thread(
+        lambda: get_hero_autoupdate().tick(force_reminder=force, do_fetch=do_fetch)
+    )
+
+
+@router.get("/api/hero-autoupdate/config")
+async def api_hero_autoupdate_config():
+    from fusion_hero_os.core.hero_autoupdate import get_hero_autoupdate
+
+    st = await asyncio.to_thread(get_hero_autoupdate().status)
+    return {
+        "ok": True,
+        "poll_interval_sec": st["poll_interval_sec"],
+        "reminder_after_sec": st["reminder_after_sec"],
+        "reminder_cooldown_sec": st["reminder_cooldown_sec"],
+        "android_channel": "system_notification",
+        "android_notify_configured": st["android_notify_configured"],
+        "enabled": st["enabled"],
+        "defaults": {
+            "poll_interval_sec": 60,
+            "reminder_after_sec": 300,
+            "channel": "Android system notification (ntfy / PHONE_NOTIFY_WEBHOOK_URL)",
+        },
+    }
 
 
 @router.get("/api/phone-link/messages")

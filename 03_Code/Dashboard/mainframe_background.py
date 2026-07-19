@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Async background loops: cost analysis + repo mirror correction daemons."""
+"""Async background loops: cost analysis + repo mirror + hero autoupdate daemons."""
 from __future__ import annotations
 
 import asyncio
@@ -48,6 +48,33 @@ async def energy_pricing_loop(interval_sec: float) -> None:
             pass
 
 
+async def hero_autoupdate_loop(interval_sec: float) -> None:
+    """1-Min default: logisches Polling + 5-Min Android-Erinnerung Interaktion zum Held."""
+    from fusion_hero_os.core.hero_autoupdate import get_hero_autoupdate
+
+    svc = get_hero_autoupdate()
+    # Startup notify once (Android system notification if webhook configured)
+    if os.getenv("FUSION_HERO_AUTOUPDATE_STARTUP_NOTIFY", "1") == "1":
+        try:
+            await asyncio.to_thread(svc.notify_startup)
+        except Exception:
+            pass
+
+    while True:
+        await asyncio.sleep(max(15.0, interval_sec))
+        try:
+            # Re-read config each cycle so env/yaml changes apply without restart
+            from fusion_hero_os.core.hero_autoupdate import HeroAutoupdateConfig
+
+            svc.config = HeroAutoupdateConfig.load()
+            interval_sec = svc.config.poll_interval_sec
+            if not svc.config.enabled:
+                continue
+            await asyncio.to_thread(svc.tick)
+        except Exception:
+            pass
+
+
 def start_mainframe_daemons() -> Dict[str, Any]:
     global _running
     if _running:
@@ -61,10 +88,15 @@ def start_mainframe_daemons() -> Dict[str, Any]:
     # When energy-pricing-daemon runs as a separate container, skip in-process loop
     energy_external = os.getenv("FUSION_ENERGY_PRICING_EXTERNAL", "0") == "1"
 
+    hero_enabled = os.getenv("FUSION_HERO_AUTOUPDATE", "1") == "1"
+    hero_int = float(os.getenv("FUSION_HERO_POLL_INTERVAL_SEC", "60"))
+
     asyncio.create_task(cost_analysis_loop(cost_int))
     asyncio.create_task(repo_mirror_loop(mirror_int))
     if not energy_external:
         asyncio.create_task(energy_pricing_loop(energy_int))
+    if hero_enabled:
+        asyncio.create_task(hero_autoupdate_loop(hero_int))
     _running = True
     return {
         "started": True,
@@ -73,4 +105,9 @@ def start_mainframe_daemons() -> Dict[str, Any]:
         "energy_interval_sec": energy_int,
         "energy_external": energy_external,
         "mirror_auto_correct": os.getenv("FUSION_REPO_MIRROR_AUTO_CORRECT", "1") == "1",
+        "hero_autoupdate": hero_enabled,
+        "hero_poll_interval_sec": hero_int,
+        "hero_reminder_after_sec": float(
+            os.getenv("FUSION_HERO_REMINDER_AFTER_SEC", "300")
+        ),
     }

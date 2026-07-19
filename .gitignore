@@ -93,3 +93,6 @@ legacy_sources/**/body.json
 mesh_live_inventory.json
 **/*mesh_live_inventory*.json
 
+# MkDocs build output
+/site/
+

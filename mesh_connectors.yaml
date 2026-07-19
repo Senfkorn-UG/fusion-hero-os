@@ -6,6 +6,20 @@ live_inventory: false
 # (OS = work; text = one expression). docs/dissertation/ONTOLOGIE_DISSERTATION_IST_DAS_OS.md
 ontology: dissertation_as_os
 principle: Jeder Konnektor = ein einzelnes Teil des Mesh (eigene ID, Host, Health, Tag)
+# Layer-Omega-Direktive 2026-07-15 §5: Node-Typ fuer bifurkale Co-Evolution
+node_types:
+  hyper4d-coevo:
+    description: Hyper4D Co-Evolution Node (bifurkale Synchronisation)
+    tailscale_tag: tag:fusion-hyper4d-node
+    status_path: /mesh/hyper4d/status
+    capabilities:
+    - hyper4d_coevolution
+    - layer_omega_fixedpoint
+    - autopoietic_morphing
+    - bifurcal_sync
+    registry_cli:
+    - python tailscale_mesh_registry.py hyper4d-register
+    - python tailscale_mesh_registry.py hyper4d-sync
 nodes:
   mainframe:
     role: orchestrator

@@ -7,10 +7,8 @@ Canonical language for Fusion Hero OS v10.
 from __future__ import annotations
 
 import json
-import os
-from dataclasses import asdict, dataclass
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict
 
 ROOT = Path(__file__).resolve().parents[2]
 CONFIG = ROOT / "ops_vocabulary.yaml"
