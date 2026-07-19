@@ -1,13 +1,33 @@
-# Meister Hasch — Public Sandbox Frame
+# Meister Hasch — Public Sandbox Frame (all channels)
 
-**Asset:** `docs/dissertation/assets/meister_hasch.png` (mirror: `memes/meister_hasch.png`)
+**Asset SHA256:** `a032b31b3f7025852528d3ce5e6f64c163345a7b50632d5447cb751213d5f81e`
 
-**Thesis (labor):** Held + Operator negotiate with Meister without real-world commit — pure Erkenntnisgewinn.
+## Thesis (labor)
 
-**Roles:** Meister = integrity probe · Held = Fusion Hero OS kernel · St3phaN = Operator (no decision in-session).
+Held + Operator negotiate with Meister without real-world commit — pure Erkenntnisgewinn.
 
-**Rules:** hypotheses only · labor frame · no Realraum commitment.
+## Roles
 
-**Ops:** public surface only. Private MasterSeed shards stay under `~/.fusion` (never git).
+- **Meister** — integrity / consequence probe  
+- **Held** — Fusion Hero OS kernel  
+- **St3phaN** — Operator (no decision in-session)
 
-**Display:** MS-PUB-v10 · platform v10.0.0
+## Rules
+
+Hypotheses only · labor frame · no Realraum commitment of private shards.
+
+## Public paths (repo)
+
+- `docs/dissertation/assets/meister_hasch.png`
+- `memes/meister_hasch.png`
+- `docs/mesh/public/meister_hasch.png`
+- `docs/dissertation/MEISTER_HASCH_ALL_CHANNELS.md`
+
+## Public URLs
+
+- https://raw.githubusercontent.com/95guknow/fusion-hero-os/main/docs/dissertation/assets/meister_hasch.png
+- https://github.com/95guknow/fusion-hero-os/blob/main/docs/dissertation/assets/meister_hasch.png
+- https://github.com/95guknow/fusion-hero-os/blob/main/memes/meister_hasch.png
+- https://github.com/95guknow/fusion-hero-os/blob/main/docs/mesh/public/meister_hasch.png
+
+Display: `MS-PUB-v10-THC01H70-BB5A` · Platform v10.0.0
