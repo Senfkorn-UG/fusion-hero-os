@@ -1,0 +1,95 @@
+{
+  "kind": "masterseed_peer_confirmations_public",
+  "ts": "2026-07-19T10:08:59.290629+00:00",
+  "platform": "10.0.0",
+  "display_id": "MS-PUB-v10-THC01H70-BB5A",
+  "public_fingerprint_prefix": "06a2c00627da1390",
+  "integrity_ok": true,
+  "peers_confirmed": 5,
+  "all_peers_confirmed": true,
+  "final_elite_fitness": 0.95,
+  "identity_preservation_score": 100.0,
+  "confirmations": [
+    {
+      "peer": "ascension",
+      "role": "ascension_track",
+      "ok": true,
+      "identity_preserved": {
+        "mainframe": true,
+        "peer": true
+      },
+      "post_fitness": {
+        "mainframe": 0.92,
+        "peer": 0.92
+      },
+      "confirmed_at": "2026-07-19T10:08:57.482275+00:00"
+    },
+    {
+      "peer": "mesh_edge",
+      "role": "L0_edge",
+      "ok": true,
+      "identity_preserved": {
+        "mainframe": true,
+        "peer": true
+      },
+      "post_fitness": {
+        "mainframe": 0.92,
+        "peer": 0.92
+      },
+      "confirmed_at": "2026-07-19T10:08:57.482275+00:00"
+    },
+    {
+      "peer": "hypercluster",
+      "role": "L1_hypercluster",
+      "ok": true,
+      "identity_preserved": {
+        "mainframe": true,
+        "peer": true
+      },
+      "post_fitness": {
+        "mainframe": 0.95,
+        "peer": 0.95
+      },
+      "confirmed_at": "2026-07-19T10:08:57.482275+00:00"
+    },
+    {
+      "peer": "senfkorn_mirror",
+      "role": "dual_org",
+      "ok": true,
+      "identity_preserved": {
+        "mainframe": true,
+        "peer": true
+      },
+      "post_fitness": {
+        "mainframe": 0.95,
+        "peer": 0.95
+      },
+      "confirmed_at": "2026-07-19T10:08:57.482275+00:00"
+    },
+    {
+      "peer": "dissertation",
+      "role": "dissertation_as_os",
+      "ok": true,
+      "identity_preserved": {
+        "mainframe": true,
+        "peer": true
+      },
+      "post_fitness": {
+        "mainframe": 0.95,
+        "peer": 0.95
+      },
+      "confirmed_at": "2026-07-19T10:08:57.482275+00:00"
+    }
+  ],
+  "mesh": {
+    "ok": true,
+    "ported": true,
+    "tiers": [
+      "L0_edge",
+      "L1_mainframe"
+    ],
+    "mesh_ip": "100.75.140.40",
+    "organ_count": 10
+  },
+  "satz_ref": "fusion_hero_os.core.masterseed_sync.mutual_sync"
+}
