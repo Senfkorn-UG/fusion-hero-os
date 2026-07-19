@@ -74,7 +74,7 @@ $env:FUSION_AUTO_LOAD = "1"
 $env:PYTHONPATH = $Root
 & $Python -m fusion_hero_os.core.dauer_eupression --install 2>&1 | Out-Host
 & $Python -m fusion_hero_os.core.poly_fa_write_gate --install-handover 2>&1 | Out-Host
-& $Python -c "from fusion_hero_os.core.meister_hasch_optimize import status; import json; print(json.dumps(status()))" 2>&1 | Out-Host
+& $Python -c 'from fusion_hero_os.core.meister_hasch_optimize import status; import json; print(json.dumps(status()))' 2>&1 | Out-Host
 Pop-Location
 
 # 3) Launcher cmd (used by Startup + Task)
@@ -144,7 +144,9 @@ $ready = @{
     )
     manual_fallback    = "powershell -File $ControllerPs1"
 }
-$ready | ConvertTo-Json -Depth 6 | Set-Content -Path $StatePath -Encoding UTF8
+$json = $ready | ConvertTo-Json -Depth 6
+$utf8NoBom = New-Object System.Text.UTF8Encoding $false
+[System.IO.File]::WriteAllText($StatePath, $json, $utf8NoBom)
 
 # 7) PrepOnly pin via controller
 & powershell -NoProfile -ExecutionPolicy Bypass -File $ControllerPs1 -PrepOnly

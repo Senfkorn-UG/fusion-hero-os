@@ -36,7 +36,8 @@ def _load() -> Dict[str, Any]:
             "platform_version": PLATFORM,
         }
     try:
-        data = json.loads(STATE_PATH.read_text(encoding="utf-8"))
+        raw = STATE_PATH.read_text(encoding="utf-8-sig")
+        data = json.loads(raw)
         return data if isinstance(data, dict) else {}
     except (OSError, json.JSONDecodeError):
         return {"ok": False, "error": "unreadable_state"}
