@@ -3,7 +3,7 @@
 # External APIs (if any) are membranes only — never product tier, never SoT.
 
 version: "1.0"
-platform_version: "10.0.0"
+platform_version: "12.0.0"
 policy: pseudo_inhouse_only
 freemium: false
 principle: >

@@ -171,4 +171,4 @@ connector_links:
   vercel: grok
   hyperframes: gemini
   tasks: claude
-platform_version: 10.0.0
+platform_version: "12.0.0"

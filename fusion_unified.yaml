@@ -8,7 +8,7 @@
 # Control plane endpoints below: control_plane / interconnect / grok_route
 
 version: "1.1"
-platform_version: "10.0.0"
+platform_version: "12.0.0"
 principle: "Jedes Segment ist eigenstaendig UND ueber den Integration Hub verbunden"
 ontology: "dissertation_as_os"
 dissertation_text: "docs/dissertation/"
