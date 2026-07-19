@@ -50,6 +50,12 @@ python scripts/extract_operator_urban.py --bind-from-env
 - Mesh peers see `operator`, not a legal person string.
 - Headset / AudioRelay path is operator membrane, not person-named.
 
+## Person-Übergabe + Poly-FA (2026-07-19)
+
+- **Hören/Sprechen:** voll an private Person (Vault) — `docs/security/PERSON_HANDOVER_HEAR_SPEAK.md`
+- **Struktur-Schreibrecht:** nur autorisierter **Desktop**, nur **auf Anfrage**, nur **Poly-FA** — `docs/security/POLY_FA_WRITE_GATE.md`
+- Modul: `fusion_hero_os.core.poly_fa_write_gate`
+
 ## Dissertation
 
 Monographie und Academia behalten den kanonischen **Autorennamen** (Namenskanon).  
