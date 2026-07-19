@@ -112,12 +112,36 @@ def can_write(*, scope: str = "god_layer") -> bool:
 
     When sealed: False until unlock confirmation.
     Non-god scopes (docs/chore) may still write if not classified as god_layer.
+
+    Poly-FA overlay (when installed): even if god-layer is "open", structure
+    writes still require desktop-only + on-request + Poly-FA grant
+    (see ``poly_fa_write_gate``). Surface/audio scopes stay open for the person.
     """
+    surface_ok = {"docs", "chore", "surface", "report", "status", "hear", "speak", "audio", "read"}
+    if scope in surface_ok:
+        return True
+
+    # Poly-FA policy (desktop-only, request, multi-factor) — prefer when active
+    try:
+        from fusion_hero_os.core.poly_fa_write_gate import can_write_now, load_policy
+
+        pol = load_policy()
+        if pol.get("active", True) and (pol.get("write") or {}).get("poly_fa_required"):
+            gate = can_write_now(scope=scope)
+            if not gate.get("allowed"):
+                return False
+            # allowed under poly FA — still respect sealed lock if sealed
+            if not is_sealed():
+                return True
+    except Exception:
+        pass
+
     if not is_sealed():
         return True
     # sealed: only unlock restores write
     d = _load()
     if d.get("write_rights") in ("full", "open"):
+        # still blocked above if poly-FA denies
         return True
     # allow classifying soft scopes while sealed? default deny for god scopes
     god_scopes = {
@@ -132,8 +156,6 @@ def can_write(*, scope: str = "god_layer") -> bool:
     }
     if scope in god_scopes:
         return False
-    # surface scopes still allowed when sealed (read-mostly ops)
-    surface_ok = {"docs", "chore", "surface", "report"}
     return scope in surface_ok
 
 
@@ -339,6 +361,13 @@ def public_status() -> Dict[str, Any]:
     """Safe status — no legal names, no raw tokens."""
     d = _load()
     sealed = bool(d.get("sealed"))
+    poly: Dict[str, Any] = {}
+    try:
+        from fusion_hero_os.core.poly_fa_write_gate import public_status as poly_status
+
+        poly = poly_status()
+    except Exception:
+        poly = {}
     return {
         "ok": True,
         "platform_version": PLATFORM,
@@ -356,6 +385,17 @@ def public_status() -> Dict[str, Any]:
         "scopes_locked": d.get("scopes_locked") if sealed else [],
         "can_read": can_read(),
         "can_write_god_layer": can_write(scope="god_layer"),
+        "poly_fa": {
+            "active": poly.get("active"),
+            "desktop_only": (poly.get("write") or {}).get("desktop_only"),
+            "on_request_only": (poly.get("write") or {}).get("on_request_only"),
+            "poly_fa_required": (poly.get("write") or {}).get("poly_fa_required"),
+            "hear_speak": (poly.get("person_handover") or {}).get("hear_speak"),
+            "is_authorized_desktop": poly.get("is_authorized_desktop"),
+            "active_grants": poly.get("active_grants"),
+        }
+        if poly
+        else {},
         "seal_path": str(SEAL_PATH),
         "seal_exists": SEAL_PATH.is_file(),
     }

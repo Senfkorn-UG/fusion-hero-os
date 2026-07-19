@@ -155,6 +155,11 @@ DEFAULT_MODULES: List[ModuleSpec] = [
         "fusion_hero_os.core.meister_hasch_optimize",
         "Meister Hasch Fable5+Mythos5 bifocal optimize (Hypertarnkappe cloak + Hyperpanzerknacker lab probe)",
     ),
+    ModuleSpec(
+        "core.poly_fa_write_gate",
+        "fusion_hero_os.core.poly_fa_write_gate",
+        "Poly-FA write gate: desktop-only structure writes, on-request, multi-factor (person hears/speaks full)",
+    ),
 ]
 
 
