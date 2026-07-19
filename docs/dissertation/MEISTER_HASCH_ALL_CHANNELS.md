@@ -1,31 +1,33 @@
-# Meister Hasch — Bifokal Update (lokal ↔ global)
+# Meister Hasch — All Channels (public)
 
 **SHA256:** `a032b31b3f7025852528d3ce5e6f64c163345a7b50632d5447cb751213d5f81e`  
-**Source:** `C:\Dissertation_95guknow\meister_hasch.png`  
-**Mode:** bifokal (Innen/Außen · lokal/global · alle aktiven Branches · dual-org)
+**Size:** 654464 · **Control:** PASS (`MEISTER_HASCH_KONTROLLE.md`)
 
-## Lokal (Innen)
+## GitHub (origin + senfkorn)
 
-- `docs/dissertation/assets/meister_hasch.png`
-- `memes/meister_hasch.png`
-- `docs/mesh/public/meister_hasch.png`
-- `docs/android/meister_hasch.png`
-- `journal/meister_hasch.png`
-- Source disk: `C:\Dissertation_95guknow\meister_hasch.png`
+| Channel | Path / URL |
+|---------|------------|
+| Dissertation asset | `docs/dissertation/assets/meister_hasch.png` |
+| SHA256 sidecar | `docs/dissertation/assets/meister_hasch.sha256` |
+| Memes | `memes/meister_hasch.png` |
+| Mesh public | `docs/mesh/public/meister_hasch.png` |
+| Android layer | `docs/android/meister_hasch.png` |
+| Journal | `journal/meister_hasch.png` |
+| Control report | `docs/dissertation/MEISTER_HASCH_KONTROLLE.md` |
+| Raw origin | https://raw.githubusercontent.com/95guknow/fusion-hero-os/main/docs/dissertation/assets/meister_hasch.png |
+| Blob origin | https://github.com/95guknow/fusion-hero-os/blob/main/docs/dissertation/assets/meister_hasch.png |
+| Senfkorn org | https://github.com/Senfkorn-UG/fusion-hero-os |
 
-## Global (Außen)
+## Branches (asset present)
 
-- GitHub `95guknow/fusion-hero-os` (origin): main, develop, ascension, active tracks
-- GitHub `Senfkorn-UG/fusion-hero-os` (senfkorn): main + tracks
-- Staging/public: `95guknow/FuHOS_pub` (mirror asset)
-- Poly-Mesh file portal + Horcrux refs (hash only for private mesh)
+`main` · `develop` · `ascension` · active feature tracks (dual-org)
 
-## URLs
+## Poly-Mesh / Hypercluster
 
-- https://raw.githubusercontent.com/95guknow/fusion-hero-os/main/docs/dissertation/assets/meister_hasch.png
-- https://github.com/95guknow/fusion-hero-os/blob/main/memes/meister_hasch.png
-- https://github.com/Senfkorn-UG/fusion-hero-os
+- L1 mainframe Tailscale portal when peers online  
+- Horcrux: hash + public URL refs only (no private vault)
 
 ## Frame
 
-Labor: Held + Operator ↔ Meister · pure Erkenntnis · private vault never in git.
+Labor / Sandkasten: Held + Operator ↔ Meister · pure Erkenntnis · **no Realraum commit of private vault**.  
+Image itself is **public surface**.

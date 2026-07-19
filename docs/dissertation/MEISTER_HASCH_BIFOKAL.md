@@ -26,6 +26,10 @@
 - https://github.com/95guknow/fusion-hero-os/blob/main/memes/meister_hasch.png
 - https://github.com/Senfkorn-UG/fusion-hero-os
 
+## Control
+
+See `MEISTER_HASCH_KONTROLLE.md` — integrity PASS (source = all local copies = GitHub raw).
+
 ## Frame
 
 Labor: Held + Operator ↔ Meister · pure Erkenntnis · private vault never in git.
