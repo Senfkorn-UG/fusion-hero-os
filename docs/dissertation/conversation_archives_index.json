@@ -1,12 +1,12 @@
 {
   "ok": true,
-  "scanned_at": "2026-07-15T14:45:10.821536+00:00",
+  "scanned_at": "2026-07-19T09:40:21.455323+00:00",
   "totals": {
-    "instances": 7,
+    "instances": 8,
     "session_search_db": 1,
-    "sessions": 51,
-    "bytes": 184222522,
-    "chat_history_files": 10
+    "sessions": 71,
+    "bytes": 317233830,
+    "chat_history_files": 30
   },
   "instances": [
     {
@@ -29,46 +29,63 @@
     {
       "role_hint": "git_workspace_session",
       "path_public": "C:\\Program Files\\Git",
-      "session_count": 3,
-      "file_count": 212,
-      "bytes": 138362442,
+      "session_count": 19,
+      "file_count": 1087,
+      "bytes": 269152574,
       "artifact_totals": {
-        "announcements": 1,
-        "dialog_stream": 1,
-        "event_stream": 1,
-        "code_hunks": 1,
-        "plan": 1,
-        "plan_mode": 1,
-        "prompt_context": 1,
-        "resources": 1,
-        "rewind": 1,
-        "signals": 1,
-        "session_summary": 1,
-        "system_prompt": 1,
-        "update_stream": 1,
-        "compaction_md": 2,
-        "terminal_log": 191
+        "announcements": 16,
+        "dialog_stream": 17,
+        "event_stream": 17,
+        "code_hunks": 5,
+        "plan": 2,
+        "plan_mode": 3,
+        "prompt_context": 17,
+        "resources": 8,
+        "rewind": 16,
+        "signals": 8,
+        "session_summary": 17,
+        "system_prompt": 17,
+        "update_stream": 16,
+        "compaction_md": 6,
+        "terminal_log": 866
       }
     },
     {
       "role_hint": "user_home_session",
       "path_public": "~",
-      "session_count": 40,
-      "file_count": 83,
-      "bytes": 7293688,
+      "session_count": 42,
+      "file_count": 107,
+      "bytes": 7361293,
       "artifact_totals": {
         "terminal_log": 56,
-        "announcements": 1,
-        "dialog_stream": 2,
-        "event_stream": 2,
+        "announcements": 3,
+        "dialog_stream": 4,
+        "event_stream": 4,
         "code_hunks": 1,
-        "prompt_context": 2,
+        "prompt_context": 4,
         "resources": 2,
-        "rewind": 2,
+        "rewind": 4,
         "signals": 2,
-        "session_summary": 2,
-        "system_prompt": 2,
-        "update_stream": 2
+        "session_summary": 4,
+        "system_prompt": 4,
+        "update_stream": 4
+      }
+    },
+    {
+      "role_hint": "unknown",
+      "path_public": "~\\Desktop",
+      "session_count": 1,
+      "file_count": 13,
+      "bytes": 28577,
+      "artifact_totals": {
+        "announcements": 1,
+        "dialog_stream": 1,
+        "event_stream": 1,
+        "prompt_context": 1,
+        "rewind": 1,
+        "session_summary": 1,
+        "system_prompt": 1,
+        "update_stream": 1
       }
     },
     {
@@ -107,24 +124,24 @@
     {
       "role_hint": "system32_cwd_session",
       "path_public": "C:\\Windows\\system32",
-      "session_count": 5,
-      "file_count": 428,
-      "bytes": 38500155,
+      "session_count": 6,
+      "file_count": 450,
+      "bytes": 40625149,
       "artifact_totals": {
-        "announcements": 4,
-        "dialog_stream": 5,
-        "event_stream": 5,
+        "announcements": 5,
+        "dialog_stream": 6,
+        "event_stream": 6,
         "code_hunks": 2,
         "plan": 1,
         "plan_mode": 2,
-        "prompt_context": 5,
-        "resources": 3,
-        "rewind": 4,
-        "signals": 3,
-        "session_summary": 5,
-        "system_prompt": 5,
-        "update_stream": 5,
-        "terminal_log": 352
+        "prompt_context": 6,
+        "resources": 4,
+        "rewind": 5,
+        "signals": 4,
+        "session_summary": 6,
+        "system_prompt": 6,
+        "update_stream": 6,
+        "terminal_log": 362
       }
     }
   ],

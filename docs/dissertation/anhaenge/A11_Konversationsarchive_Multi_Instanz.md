@@ -1,9 +1,13 @@
 # A11 — Konversationsarchive auf mehreren Instanzen
 
-**Autor-Kontext:** Stephan Hagen Urban · **Plattform:** Fusion Hero OS v10.0.0  
+**Operator-Rolle:** operator · **Autor-Kontext:** Stephan Hagen Urban  
+**Plattform:** Fusion Hero OS v10.0.0  
 **Feld:** Autopoietische Autopolitik / Autopoietic Autopolitics  
 **Geltung:** Spezifikation (Inventar) · Dialoginhalte bleiben **privat** (deploy)  
-**Erfasst:** 2026-07-15T14:45:10.821536+00:00
+**Erfasst:** 2026-07-19T09:40:21.455323+00:00
+
+> Person (legal name) is **extracted** from the Operator role via 
+> `fusion_hero_os.core.operator_identity` — runtime never requires it.
 
 ## Synthese
 
@@ -27,22 +31,23 @@ Volltexte der Chats werden **nicht** in die öffentliche Monographie übernommen
 
 ## Gesamtsummen
 
-- **Instanzen (CWD-Wurzeln):** 7
-- **Sessions:** 51
-- **Bytes (roh):** 184222522
-- **chat_history.jsonl (Dialog-Streams):** 10
+- **Instanzen (CWD-Wurzeln):** 8
+- **Sessions:** 71
+- **Bytes (roh):** 317233830
+- **chat_history.jsonl (Dialog-Streams):** 30
 
 ## Instanzen (Rollen-Hints)
 
 | Rolle (Hint) | Decodierter Pfad (public-safe) | Sessions | Dateien | Bytes |
 |--------------|--------------------------------|----------|---------|-------|
 | drive_root_session | `C:\` | 1 | 10 | 30313 |
-| git_workspace_session | `C:\Program Files\Git` | 3 | 212 | 138362442 |
-| user_home_session | `~` | 40 | 83 | 7293688 |
+| git_workspace_session | `C:\Program Files\Git` | 19 | 1087 | 269152574 |
+| user_home_session | `~` | 42 | 107 | 7361293 |
+| unknown | `~\Desktop` | 1 | 13 | 28577 |
 | desktop_dashboard_instance | `~\Desktop\ALTE_Frau_95g_Beste_Version\03_Code\Dashboard` | 1 | 0 | 0 |
 | worktree_agent_instance | `~\Desktop\best-FuHOS\.worktrees\fusion-hero-os-agent-0aa308ee` | 0 | 1 | 410 |
 | worktree_agent_instance | `~\Desktop\best-FuHOS\.worktrees\normalOS-nummer2-8a9ae021` | 1 | 10 | 35514 |
-| system32_cwd_session | `C:\Windows\system32` | 5 | 428 | 38500155 |
+| system32_cwd_session | `C:\Windows\system32` | 6 | 450 | 40625149 |
 
 ## Typische Artefakte je Session
 
@@ -67,21 +72,21 @@ Volltexte der Chats werden **nicht** in die öffentliche Monographie übernommen
 
 ## Artifact-Zählungen (aggregiert)
 
-- **terminal_log:** 599
-- **dialog_stream:** 10
-- **event_stream:** 10
-- **prompt_context:** 10
-- **session_summary:** 10
-- **system_prompt:** 10
-- **update_stream:** 10
-- **rewind:** 9
-- **announcements:** 8
-- **resources:** 6
-- **signals:** 6
-- **code_hunks:** 4
-- **plan_mode:** 3
-- **plan:** 2
-- **compaction_md:** 2
+- **terminal_log:** 1284
+- **dialog_stream:** 30
+- **event_stream:** 30
+- **prompt_context:** 30
+- **session_summary:** 30
+- **system_prompt:** 30
+- **update_stream:** 29
+- **rewind:** 28
+- **announcements:** 27
+- **resources:** 14
+- **signals:** 14
+- **code_hunks:** 8
+- **compaction_md:** 6
+- **plan_mode:** 5
+- **plan:** 3
 
 ## Verbindung zur Dissertation
 
@@ -105,7 +110,23 @@ Volltexte der Chats werden **nicht** in die öffentliche Monographie übernommen
 |------------|------:|------:|-----------|-------|
 | `019f471d-62f8-7073-a808-e7004d431a72` | 0 | 0 | — | — |
 | `019f4f21-faf5-7f70-8a09-9bd8b4700d66` | 0 | 0 | — | — |
-| `019f64d0-1f93-7962-9138-aceaa4ebc4fc` | 211 | 138352093 | announcements,code_hunks,dialog_stream,event_stream,plan,plan_mode,prompt_context,resources,rewind,session_summary,signals,system_prompt,update_stream | 2026-07-15T14:45:10.458664+00:00 |
+| `019f64d0-1f93-7962-9138-aceaa4ebc4fc` | 397 | 184245927 | announcements,code_hunks,dialog_stream,event_stream,plan,plan_mode,prompt_context,resources,rewind,session_summary,signals,system_prompt,update_stream | 2026-07-15T23:05:22.431058+00:00 |
+| `019f682c-9578-7162-82f8-0b2cafb470be` | 132 | 22380517 | announcements,code_hunks,dialog_stream,event_stream,plan,plan_mode,prompt_context,resources,rewind,session_summary,signals,system_prompt,update_stream | 2026-07-16T07:15:40.652413+00:00 |
+| `019f69c8-70d5-7242-a860-29119bc87680` | 13 | 116707 | announcements,dialog_stream,event_stream,prompt_context,resources,rewind,session_summary,signals,system_prompt,update_stream | 2026-07-16T07:20:49.951128+00:00 |
+| `019f6a87-df2c-7a52-a7ad-509635f0fcff` | 218 | 29868346 | announcements,code_hunks,dialog_stream,event_stream,prompt_context,resources,rewind,session_summary,signals,system_prompt,update_stream | 2026-07-16T16:50:36.654174+00:00 |
+| `019f6bb2-643c-7232-9e83-ddbb24fbd4e2` | 14 | 4643826 | announcements,dialog_stream,event_stream,prompt_context,resources,rewind,session_summary,signals,system_prompt,update_stream | 2026-07-16T16:13:03.873627+00:00 |
+| `019f6e7b-ff77-7301-8cc4-d398d444a8e1` | 61 | 6216291 | announcements,code_hunks,dialog_stream,event_stream,prompt_context,resources,rewind,session_summary,signals,system_prompt,update_stream | 2026-07-17T05:23:56.970014+00:00 |
+| `019f6e93-8ffc-7dc0-8ce2-867353f3772f` | 57 | 7086136 | announcements,dialog_stream,event_stream,prompt_context,resources,rewind,session_summary,signals,system_prompt,update_stream | 2026-07-17T06:12:45.004141+00:00 |
+| `019f6ee6-a40a-7143-9ec7-170c86725ea5` | 6 | 22728 | dialog_stream,event_stream,prompt_context,session_summary,system_prompt | 2026-07-17T07:08:05.575512+00:00 |
+| `019f6ee7-ad55-7731-8ec4-3b3337597240` | 9 | 32422 | announcements,dialog_stream,event_stream,prompt_context,rewind,session_summary,system_prompt,update_stream | 2026-07-17T07:09:12.309018+00:00 |
+| `019f6f17-051d-76c0-a41f-5c44a0e65f9f` | 10 | 3367879 | announcements,dialog_stream,event_stream,prompt_context,rewind,session_summary,system_prompt,update_stream | 2026-07-17T08:00:37.668405+00:00 |
+| `019f6f1e-59ab-7a93-9f8f-19efe98f4867` | 9 | 29374 | announcements,dialog_stream,event_stream,prompt_context,rewind,session_summary,system_prompt,update_stream | 2026-07-17T08:08:17.713160+00:00 |
+| `019f6fd3-d4c2-71c2-a6f7-56822e1b3aa6` | 10 | 41182 | announcements,dialog_stream,event_stream,plan_mode,prompt_context,rewind,session_summary,system_prompt,update_stream | 2026-07-17T11:27:26.820376+00:00 |
+| `019f6fd5-47ea-77b1-8149-dff451a00f7e` | 9 | 29644 | announcements,dialog_stream,event_stream,prompt_context,rewind,session_summary,system_prompt,update_stream | 2026-07-17T11:28:19.448043+00:00 |
+| `019f7216-ba6f-7c42-b91f-dcb84e0d9068` | 9 | 51007 | announcements,dialog_stream,event_stream,prompt_context,rewind,session_summary,system_prompt,update_stream | 2026-07-17T21:59:43.672001+00:00 |
+| `019f75f8-8841-79f2-a774-cf7d37f31174` | 12 | 28049 | announcements,dialog_stream,event_stream,prompt_context,rewind,session_summary,system_prompt,update_stream | 2026-07-18T16:04:11.311439+00:00 |
+| `019f7608-a141-7660-ae15-840dd153eed4` | 12 | 28488 | announcements,dialog_stream,event_stream,prompt_context,rewind,session_summary,system_prompt,update_stream | 2026-07-18T16:22:15.131161+00:00 |
+| `019f7994-b043-71c1-8217-de1a698efe72` | 108 | 10904017 | announcements,code_hunks,dialog_stream,event_stream,prompt_context,resources,rewind,session_summary,signals,system_prompt,update_stream | 2026-07-19T09:40:20.819350+00:00 |
 
 ### Instanz: `~` (user_home_session)
 
@@ -151,6 +172,14 @@ Volltexte der Chats werden **nicht** in die öffentliche Monographie übernommen
 | `019f4f35-8b93-7982-8470-634b38ac24bc` | 0 | 0 | — | — |
 | `019f612b-4f23-7252-8605-2ac2ef03a411` | 49 | 6431621 | announcements,code_hunks,dialog_stream,event_stream,prompt_context,resources,rewind,session_summary,signals,system_prompt,update_stream | 2026-07-14T16:42:59.388891+00:00 |
 | `019f6183-a8dd-79f1-810b-36f45c2b513b` | 32 | 851351 | dialog_stream,event_stream,prompt_context,resources,rewind,session_summary,signals,system_prompt,update_stream | 2026-07-14T16:58:43.109497+00:00 |
+| `019f7577-5656-7301-9e66-193f63b78abc` | 12 | 35635 | announcements,dialog_stream,event_stream,prompt_context,rewind,session_summary,system_prompt,update_stream | 2026-07-18T13:43:03.641695+00:00 |
+| `019f7577-b4a0-7560-9029-f4569038013a` | 12 | 27878 | announcements,dialog_stream,event_stream,prompt_context,rewind,session_summary,system_prompt,update_stream | 2026-07-18T13:43:29.054590+00:00 |
+
+### Instanz: `~\Desktop` (unknown)
+
+| session_id | files | bytes | artifacts | mtime |
+|------------|------:|------:|-----------|-------|
+| `019f75d6-17e0-74b1-b554-6e46368e2a2e` | 12 | 28444 | announcements,dialog_stream,event_stream,prompt_context,rewind,session_summary,system_prompt,update_stream | 2026-07-18T15:27:03.543901+00:00 |
 
 ### Instanz: `~\Desktop\ALTE_Frau_95g_Beste_Version\03_Code\Dashboard` (desktop_dashboard_instance)
 
@@ -177,7 +206,8 @@ Volltexte der Chats werden **nicht** in die öffentliche Monographie übernommen
 | `019f61e4-fdb3-7b92-9ba3-e47d43987c3a` | 11 | 1573014 | dialog_stream,event_stream,prompt_context,resources,rewind,session_summary,signals,system_prompt,update_stream | 2026-07-14T18:31:19.719229+00:00 |
 | `019f620e-bc1b-78b3-91eb-ff05b066c5df` | 9 | 32692 | announcements,dialog_stream,event_stream,prompt_context,rewind,session_summary,system_prompt,update_stream | 2026-07-14T19:19:30.674537+00:00 |
 | `019f6212-5838-7233-a947-5f3aeb2bbe5c` | 8 | 28846 | announcements,dialog_stream,event_stream,prompt_context,session_summary,system_prompt,update_stream | 2026-07-14T19:20:04.424697+00:00 |
-| `019f63ce-3433-7d52-ac80-5027eb5f902d` | 134 | 14791469 | announcements,code_hunks,dialog_stream,event_stream,plan_mode,prompt_context,resources,rewind,session_summary,signals,system_prompt,update_stream | 2026-07-15T08:05:48.903861+00:00 |
+| `019f63ce-3433-7d52-ac80-5027eb5f902d` | 135 | 14242354 | announcements,code_hunks,dialog_stream,event_stream,plan_mode,prompt_context,resources,rewind,session_summary,signals,system_prompt,update_stream | 2026-07-16T13:32:20.608227+00:00 |
+| `019f6b2c-d3cc-7d93-a7f8-633050eba6d9` | 21 | 2673835 | announcements,dialog_stream,event_stream,prompt_context,resources,rewind,session_summary,signals,system_prompt,update_stream | 2026-07-16T19:04:07.061976+00:00 |
 
 ## Private Vollform
 

@@ -1,31 +1,28 @@
 {
-  "generated_at": "2026-07-16T10:54:05.542863+00:00",
+  "generated_at": "2026-07-19T09:53:29.593619+00:00",
   "score": 100,
   "grade": "perfect",
   "perfect": true,
   "online_tiers": [
     "L0_edge",
-    "L1_mainframe",
-    "L2_mesh_anchor",
-    "L3_cluster",
-    "ephemeral"
+    "L1_mainframe"
   ],
   "counts": {
     "total": 16,
-    "cluster": 3,
-    "local_l1": 11,
-    "blocked": 0
+    "cluster": 0,
+    "local_l1": 13,
+    "blocked": 3
   },
   "waves": [
     {
       "wave": 0,
       "name": "control_plane_l1",
-      "n": 11
+      "n": 12
     },
     {
       "wave": 1,
       "name": "mesh_replica_l2",
-      "n": 2
+      "n": 0
     },
     {
       "wave": 2,

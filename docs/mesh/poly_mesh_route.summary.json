@@ -1,16 +1,16 @@
 {
-  "generated_at": "2026-07-16T10:57:45.257684+00:00",
-  "gke_live": true,
+  "generated_at": "2026-07-19T09:54:08.067418+00:00",
+  "gke_live": false,
   "counts": {
     "total": 16,
-    "cluster": 3,
-    "local_l1": 11,
-    "blocked": 0
+    "cluster": 0,
+    "local_l1": 13,
+    "blocked": 3
   },
-  "cluster_ids": [
+  "cluster_ids": [],
+  "blocked_ids": [
     "qubo-anneal",
     "fusion-stability-train",
     "academia-curriculum-train"
-  ],
-  "blocked_ids": []
+  ]
 }
