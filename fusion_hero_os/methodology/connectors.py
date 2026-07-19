@@ -340,6 +340,49 @@ class XAPIConnector(BaseConnector):
         return self._delegate("post", "post", text=text)
 
 
+class InstagramConnector(BaseConnector):
+    """Instagram via Meta Graph API (vgl. GraphAPIHub / InstagramGraphCoreModule).
+
+    Default DRY-RUN. Live nur mit Client-Injection ODER GraphAPIHub
+    (INSTAGRAM_ACCESS_TOKEN + IG_USER_ID + FUSION_GRAPH_LIVE=1).
+    """
+
+    skill_module = "InstagramGraphCoreModule"
+
+    def publish(self, image_url: str, caption: str = "") -> Dict[str, Any]:
+        """Plant/führt IG media publish aus (DRY-RUN ohne Client)."""
+        if not self.available:
+            # Prefer unified hub dry-run plan for consistency
+            try:
+                from fusion_hero_os.connectors.graph_api import build_default_hub
+
+                return build_default_hub().instagram_publish(
+                    image_url=image_url, caption=caption, force_live=False
+                )
+            except Exception:
+                return self._dry_run("publish", image_url=image_url, caption=caption)
+        return self._delegate(
+            "publish", "publish", image_url=image_url, caption=caption
+        )
+
+    def me(self) -> Dict[str, Any]:
+        return self._delegate("me", "me")
+
+
+class MetaGraphConnector(BaseConnector):
+    """Generic Meta Graph wrapper (Facebook pages / shared token)."""
+
+    skill_module = "FacebookGraphCoreModule"
+
+    def me(self) -> Dict[str, Any]:
+        return self._delegate("me", "me")
+
+    def request(self, path: str, method: str = "GET", **params: Any) -> Dict[str, Any]:
+        return self._delegate(
+            "request", "request", path=path, method=method, params=params
+        )
+
+
 # ---------------------------------------------------------------------------
 # Registry
 # ---------------------------------------------------------------------------
@@ -347,23 +390,26 @@ class XAPIConnector(BaseConnector):
 class ConnectorRegistry:
     """Hält die Connectoren und meldet deren Verfügbarkeit.
 
-    Per Default werden alle fünf Connectoren *ohne* echten Client angelegt —
+    Per Default werden alle Connectoren *ohne* echten Client angelegt —
     d. h. ``available()`` liefert für alle ``False`` und sämtliche Operationen
     sind DRY-RUNs. Echte Clients können nachträglich via :meth:`inject`
-    bereitgestellt werden.
+    bereitgestellt werden. Graph-style APIs: siehe
+    ``fusion_hero_os.connectors.graph_api.GraphAPIHub``.
     """
 
     connectors: Dict[str, BaseConnector] = field(default_factory=dict)
 
     @classmethod
     def default(cls) -> "ConnectorRegistry":
-        """Erzeugt eine Registry mit allen fünf Standard-Connectoren (DRY-RUN)."""
+        """Erzeugt eine Registry mit Standard-Connectoren inkl. Graph (DRY-RUN)."""
         reg = cls()
         reg.register(GitHubConnector())
         reg.register(DriveConnector())
         reg.register(VercelConnector())
         reg.register(GmailConnector())
         reg.register(XAPIConnector())
+        reg.register(InstagramConnector())
+        reg.register(MetaGraphConnector())
         return reg
 
     # -- Verwaltung ---------------------------------------------------------

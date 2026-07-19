@@ -617,6 +617,50 @@ async def api_phone_link_status():
     return await asyncio.to_thread(phone_link_status)
 
 
+@router.get("/api/graph/connectors")
+async def api_graph_connectors():
+    """Graph API hub — status of all graph-style connectors (dry-run default)."""
+    from fusion_hero_os.connectors.graph_api import status_all
+
+    return await asyncio.to_thread(status_all)
+
+
+@router.get("/api/graph/connectors/{connector_id}")
+async def api_graph_connector_status(connector_id: str):
+    from fusion_hero_os.connectors.graph_api import build_default_hub
+
+    hub = build_default_hub()
+    return await asyncio.to_thread(hub.status, connector_id)
+
+
+@router.post("/api/graph/connectors/{connector_id}/{action}")
+async def api_graph_connector_dispatch(
+    connector_id: str, action: str, payload: Optional[Dict[str, Any]] = None
+):
+    """Dispatch graph action. Live only with tokens + FUSION_GRAPH_LIVE=1."""
+    from fusion_hero_os.connectors.graph_api import build_default_hub
+
+    hub = build_default_hub()
+    body = payload or {}
+    return await asyncio.to_thread(lambda: hub.dispatch(connector_id, action, **body))
+
+
+@router.post("/api/graph/instagram/publish")
+async def api_graph_instagram_publish(payload: Optional[Dict[str, Any]] = None):
+    """Instagram Graph two-step publish (dry-run without token/live flag)."""
+    from fusion_hero_os.connectors.graph_api import build_default_hub
+
+    hub = build_default_hub()
+    p = payload or {}
+    return await asyncio.to_thread(
+        lambda: hub.instagram_publish(
+            image_url=str(p.get("image_url") or ""),
+            caption=str(p.get("caption") or ""),
+            force_live=bool(p.get("force_live")),
+        )
+    )
+
+
 @router.get("/api/hero-autoupdate/status")
 async def api_hero_autoupdate_status():
     """Status: 1-Min-Polling, Idle, 5-Min-Erinnerung, Android-Notify-Config."""
