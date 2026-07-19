@@ -165,6 +165,11 @@ DEFAULT_MODULES: List[ModuleSpec] = [
         "fusion_hero_os.core.dauer_eupression",
         "Dauer-Eupression: continuous good-pressure along dauer_eupression_deps.yaml (Eupression∥Eudaimon)",
     ),
+    ModuleSpec(
+        "core.autoload_controller",
+        "fusion_hero_os.core.autoload_controller",
+        "Autoload Controller status (post-reboot prepare/load orchestration)",
+    ),
 ]
 
 
