@@ -71,9 +71,27 @@ class PublicMasterSeedView:
         )
 
 
-def public_fingerprint(seed: Optional[MasterSeed] = None, platform_version: str = "10.0.0") -> str:
+def _platform_version_default() -> str:
+    """Read root VERSION when present; fallback 12.0.0 (current kanon)."""
+    try:
+        from pathlib import Path
+
+        vf = Path(__file__).resolve().parents[2] / "VERSION"
+        if vf.is_file():
+            v = vf.read_text(encoding="utf-8").strip()
+            if v:
+                return v
+    except Exception:
+        pass
+    return "12.0.0"
+
+
+def public_fingerprint(
+    seed: Optional[MasterSeed] = None, platform_version: Optional[str] = None
+) -> str:
     """Fingerprint over public-safe fields only (not private vault material)."""
     seed = seed or MasterSeed()
+    platform_version = platform_version or _platform_version_default()
     payload = {
         "genesis_hash": seed.genesis_hash,
         "criticality_target": seed.criticality_target,
@@ -85,7 +103,7 @@ def public_fingerprint(seed: Optional[MasterSeed] = None, platform_version: str 
     return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
 
 
-def display_id_from_fingerprint(fp_hex: str, major: str = "10") -> str:
+def display_id_from_fingerprint(fp_hex: str, major: str = "12") -> str:
     """MS-PUB-v{major}-{short8}-{check4} — unique under fingerprint collision resistance."""
     raw = bytes.fromhex(fp_hex[:10])  # 5 bytes
     short = _b32_crockford(raw).upper()
@@ -113,9 +131,10 @@ def parse_display_id(display_id: str) -> Optional[Dict[str, str]]:
 def public_view(
     seed: Optional[MasterSeed] = None,
     *,
-    platform_version: str = "10.0.0",
+    platform_version: Optional[str] = None,
 ) -> PublicMasterSeedView:
     seed = seed or MasterSeed()
+    platform_version = platform_version or _platform_version_default()
     fp = public_fingerprint(seed, platform_version)
     major = platform_version.split(".")[0]
     did = display_id_from_fingerprint(fp, major=major)

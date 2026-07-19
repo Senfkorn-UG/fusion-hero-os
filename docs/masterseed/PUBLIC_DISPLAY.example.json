@@ -1,10 +1,10 @@
 {
-  "display_id": "MS-PUB-v10-THC01H70-BB5A",
-  "public_fingerprint": "06a2c00627da13906952864ef7d1eb867798da5a71800202291b3b13f8f4436f",
-  "platform_version": "10.0.0",
+  "display_id": "MS-PUB-v12-CMCFEAVV-682D",
+  "public_fingerprint": "6518f72b7b87c001684c969c8b2bca29ada01ea52da078288166737b19717ac9",
+  "platform_version": "12.0.0",
   "criticality_target_display": "0.22 (model)",
   "integrity_ok": true,
   "state_hash_prefix": "c1cfe3f73095",
-  "presented_at": "2026-07-19T10:15:20.312287+00:00",
+  "presented_at": "2026-07-19T10:16:21.208146+00:00",
   "policy": "public_unique_private_obfuscated"
 }
