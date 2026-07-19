@@ -242,29 +242,31 @@ Write-Log "[7] Hero Autoupdate service..."
 try {
     $auOncePath = Join-Path $FusionDir "hero_autoupdate_once.py"
     $pollerPath = Join-Path $FusionDir "hero_autoupdate_poller.py"
-    $oncePy = @(
-        "import os, sys, json"
-        "sys.path.insert(0, r'$Root')"
-        "os.environ['FUSION_REPO_ROOT'] = r'$Root'"
-        "from fusion_hero_os.core.hero_autoupdate import get_hero_autoupdate"
-        "svc = get_hero_autoupdate()"
-        "n = svc.notify_startup()"
-        "t = svc.tick(do_fetch=True)"
-        "print(json.dumps({'startup': n.get('ok', True), 'tick': t.get('ok', True), 'git_head': t.get('git_head')}))"
-    ) -join "`n"
-    $pollerPy = @(
-        "import os, sys, time"
-        "sys.path.insert(0, r'$Root')"
-        "os.environ['FUSION_REPO_ROOT'] = r'$Root'"
-        "from fusion_hero_os.core.hero_autoupdate import get_hero_autoupdate"
-        "svc = get_hero_autoupdate()"
-        "while True:"
-        "    try:"
-        "        svc.tick(do_fetch=False)"
-        "    except Exception:"
-        "        pass"
-        "    time.sleep(max(30, float(svc.config.poll_interval_sec or 60)))"
-    ) -join "`n"
+    $oncePy = @'
+import os, sys, json
+sys.path.insert(0, r"__ROOT__")
+os.environ["FUSION_REPO_ROOT"] = r"__ROOT__"
+from fusion_hero_os.core.hero_autoupdate import get_hero_autoupdate
+svc = get_hero_autoupdate()
+n = svc.notify_startup()
+t = svc.tick(do_fetch=True)
+print(json.dumps({"startup": n.get("ok", True), "tick": t.get("ok", True), "git_head": t.get("git_head")}))
+'@
+    $pollerPy = @'
+import os, sys, time
+sys.path.insert(0, r"__ROOT__")
+os.environ["FUSION_REPO_ROOT"] = r"__ROOT__"
+from fusion_hero_os.core.hero_autoupdate import get_hero_autoupdate
+svc = get_hero_autoupdate()
+while True:
+    try:
+        svc.tick(do_fetch=False)
+    except Exception:
+        pass
+    time.sleep(max(30, float(svc.config.poll_interval_sec or 60)))
+'@
+    $oncePy = $oncePy.Replace("__ROOT__", $Root)
+    $pollerPy = $pollerPy.Replace("__ROOT__", $Root)
     Set-Content -Path $auOncePath -Value $oncePy -Encoding UTF8
     Set-Content -Path $pollerPath -Value $pollerPy -Encoding UTF8
     $auOut = & $Python $auOncePath 2>&1 | Out-String
