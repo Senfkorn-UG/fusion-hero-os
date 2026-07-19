@@ -3,7 +3,7 @@
 # Gemini + further providers: multi-slots analog (temp=0, verifier JSON)
 
 version: "1.2"
-platform_version: "10.0.0"
+platform_version: "12.0.0"
 principle: >
   Independent control instances run on different models. Each instance is forced
   to maximum accuracy (temperature=0, verifier protocol, structured JSON score).
