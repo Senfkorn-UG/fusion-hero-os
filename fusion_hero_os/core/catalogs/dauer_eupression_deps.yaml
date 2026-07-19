@@ -1,0 +1,103 @@
+# Dauer-Eupression — dependency chain (explicit, versioned)
+# Order: foundations first → telos last. Pressure is applied bottom-up.
+# Geltung: Spezifikation (policy) · scores = Modell / Heuristik
+# Never put legal names or unlock phrases here.
+
+version: 1
+platform_version: "12.0.0"
+policy_id: dauer_eupression_deps_v1
+mode: continuous
+principle: "Eupression without Eudaimon is stress; Eudaimon without Eupression is soft."
+
+# Dual organ
+organs:
+  eupression:
+    role: "good pressure — integrity, consequence, honesty gates"
+    continuous: true
+  eudaimon:
+    role: "flourishing telos — person hear/speak + long-horizon good"
+    continuous: true
+    metric_module: fusion_hero_os.modules.weltraudaimonia
+
+# Bottom-up dependency DAG (depends_on must already pass)
+nodes:
+  - id: base_module
+    import: fusion_hero_os.core.base_module
+    layer: foundation
+    depends_on: []
+    probe: import_only
+    pressure: structural
+
+  - id: operator_identity
+    import: fusion_hero_os.core.operator_identity
+    layer: membrane
+    depends_on: [base_module]
+    probe: public_operator_view
+    pressure: membrane
+
+  - id: god_layer_seal
+    import: fusion_hero_os.core.god_layer_seal
+    layer: membrane
+    depends_on: [operator_identity]
+    probe: public_status
+    pressure: seal
+
+  - id: poly_fa_write_gate
+    import: fusion_hero_os.core.poly_fa_write_gate
+    layer: membrane
+    depends_on: [god_layer_seal, operator_identity]
+    probe: public_status
+    pressure: write_gate
+    note: "structure write only desktop + request + poly-FA"
+
+  - id: dependency_atlas
+    import: fusion_hero_os.core.dependency_atlas
+    layer: knowledge
+    depends_on: [base_module]
+    probe: atlas_summary
+    pressure: graph_integrity
+
+  - id: layer_registry
+    import: fusion_hero_os.core.layer_registry
+    layer: knowledge
+    depends_on: [dependency_atlas]
+    probe: status_if_any
+    pressure: layer_graph
+
+  - id: meister_hasch_optimize
+    import: fusion_hero_os.core.meister_hasch_optimize
+    layer: surface
+    depends_on: [poly_fa_write_gate, dependency_atlas]
+    probe: status
+    pressure: sandkasten_integrity
+
+  - id: weltraudaimonia
+    import: fusion_hero_os.modules.weltraudaimonia
+    layer: telos
+    depends_on: [meister_hasch_optimize, operator_identity]
+    probe: weltrau_score
+    pressure: eudaimon_metric
+
+  - id: comaedchen_audio
+    import: fusion_hero_os.core.comaedchen_audio
+    layer: person_membrane
+    depends_on: [operator_identity, weltraudaimonia]
+    probe: status
+    pressure: hear_speak
+    note: "full hear/speak for private person; surface scope no poly-FA"
+
+# Continuous loop
+continuous:
+  enabled: true
+  min_interval_sec: 60
+  state_path_rel: ".fusion/dauer_eupression.json"
+  fail_closed_on_missing_dep: true
+  surface_scopes_open: [hear, speak, audio, docs, report, status, read]
+  structure_write_requires: poly_fa_write_gate
+
+# Default eudaimon axis scores when no override (honest lab baseline)
+eudaimon_default_scores:
+  stakeholder_breadth: 0.55
+  reversibility: 0.85
+  time_horizon: 0.75
+  evidence_quality: 0.70

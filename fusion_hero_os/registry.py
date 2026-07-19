@@ -160,6 +160,11 @@ DEFAULT_MODULES: List[ModuleSpec] = [
         "fusion_hero_os.core.poly_fa_write_gate",
         "Poly-FA write gate: desktop-only structure writes, on-request, multi-factor (person hears/speaks full)",
     ),
+    ModuleSpec(
+        "core.dauer_eupression",
+        "fusion_hero_os.core.dauer_eupression",
+        "Dauer-Eupression: continuous good-pressure along dauer_eupression_deps.yaml (Eupression∥Eudaimon)",
+    ),
 ]
 
 
