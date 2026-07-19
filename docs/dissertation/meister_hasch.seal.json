@@ -1,0 +1,47 @@
+{
+  "seal_id": "MH-SEAL-v12-A032B31B-20260719",
+  "kind": "meister_hasch_public_integrity_seal",
+  "sealed": true,
+  "platform_version": "12.0.0",
+  "asset": {
+    "filename": "meister_hasch.png",
+    "source_disk": "C:\\Dissertation_95guknow\\meister_hasch.png",
+    "sha256": "a032b31b3f7025852528d3ce5e6f64c163345a7b50632d5447cb751213d5f81e",
+    "size_bytes": 654464
+  },
+  "hexa_multipath": {
+    "count": 6,
+    "status": "PASS",
+    "paths": [
+      "C:\\Dissertation_95guknow\\meister_hasch.png",
+      "docs/dissertation/assets/meister_hasch.png",
+      "memes/meister_hasch.png",
+      "docs/mesh/public/meister_hasch.png",
+      "docs/android/meister_hasch.png",
+      "journal/meister_hasch.png"
+    ]
+  },
+  "send_surfaces": [
+    "docs/security/media/IG_meister_hasch.png",
+    "docs/security/media/meister_hasch_v12/IG_meister_hasch.png",
+    "docs/dissertation/assets/meister_hasch.sha256"
+  ],
+  "lenses": {
+    "fable5": "engineering_integrity",
+    "mythos5": "narrative_geltung_same_base",
+    "hypertarnkappe": "privacy_cloak_public_surface",
+    "hyperpanzerknacker": "lab_only_integrity_probe"
+  },
+  "masterseed_public_display": "MS-PUB-v12-CMCFEAVV-682D",
+  "policy": {
+    "frame": "labor_sandkasten",
+    "private_vault_in_git": false,
+    "sandbox_only": true,
+    "dry_run_default": true,
+    "public_safe": true
+  },
+  "frame": "Held + Operator ↔ Meister · pure Erkenntnis · no Realraum vault commit",
+  "sealed_at": "2026-07-19T10:39:05Z",
+  "tip_at_seal_prep": "7ace6a3f6eafcf236593504a216cf65fc8cdedca",
+  "geltung": "Spezifikation (hash seal) · public surface only"
+}

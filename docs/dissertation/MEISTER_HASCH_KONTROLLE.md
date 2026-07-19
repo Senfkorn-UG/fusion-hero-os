@@ -33,6 +33,8 @@
 | `MEISTER_HASCH_BIFOKAL.md` | Lokal ↔ global |
 | `MEISTER_HASCH_KONTROLLE.md` | This control report |
 | `MEISTER_HASCH_FABLE5_MYTHOS5.md` | Fable5+Mythos5 optimize (Hypertarnkappe · Hyperpanzerknacker) |
+| `MEISTER_HASCH_SEALED.md` | Public integrity seal + send report |
+| `meister_hasch.seal.json` | Machine seal (SHA256 · hexa · policy) |
 | `docs/security/HYPERTARNKAPPE_HYPERPANZERKNACKER.md` | Cloak + lab-probe policy |
 | `meister_hasch_optimize.summary.json` | Machine-readable optimize report |
 

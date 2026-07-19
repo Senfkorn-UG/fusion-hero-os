@@ -29,6 +29,8 @@ Hypotheses only · labor frame · no Realraum commitment of private shards.
 - `docs/dissertation/MEISTER_HASCH_BIFOKAL.md`
 - `docs/dissertation/MEISTER_HASCH_KONTROLLE.md`
 - `docs/dissertation/MEISTER_HASCH_FABLE5_MYTHOS5.md`
+- `docs/dissertation/MEISTER_HASCH_SEALED.md`
+- `docs/dissertation/meister_hasch.seal.json`
 - `docs/security/HYPERTARNKAPPE_HYPERPANZERKNACKER.md`
 - `docs/dissertation/meister_hasch_optimize.summary.json`
 
