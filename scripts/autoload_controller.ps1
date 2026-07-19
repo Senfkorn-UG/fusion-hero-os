@@ -105,10 +105,12 @@ if (Test-Path $LockPath) {
         $old = Get-Content $LockPath -Raw | ConvertFrom-Json
         $age = [datetime]::UtcNow - [datetime]::Parse($old.at)
         if ($age.TotalMinutes -lt 20 -and $old.pid -and (Get-Process -Id $old.pid -ErrorAction SilentlyContinue)) {
-            Write-Log "Another autoload controller running (pid=$($old.pid)) — exit" "WARN"
+            Write-Log "Another autoload controller running (pid=$($old.pid)) - exit" "WARN"
             exit 0
         }
-    } catch {}
+    } catch {
+        # stale lock ok
+    }
 }
 @{ pid = $PID; at = (Get-Date).ToUniversalTime().ToString("o") } | ConvertTo-Json |
     Set-Content $LockPath -Encoding UTF8
@@ -235,36 +237,37 @@ if (-not $SkipGui) {
     }
 }
 
-# 7) Hero Autoupdate — startup notify + background poller (1 min)
+# 7) Hero Autoupdate - startup notify + background poller (1 min)
 Write-Log "[7] Hero Autoupdate service..."
 try {
-    $auOnce = @"
-import os, sys, json
-sys.path.insert(0, r'$Root')
-os.environ['FUSION_REPO_ROOT'] = r'$Root'
-from fusion_hero_os.core.hero_autoupdate import get_hero_autoupdate
-svc = get_hero_autoupdate()
-n = svc.notify_startup()
-t = svc.tick(do_fetch=True)
-print(json.dumps({'startup': n.get('ok', True), 'tick': t.get('ok', True), 'git_head': t.get('git_head')}))
-"@
-    $auOut = & $Python -c $auOnce 2>&1 | Out-String
-    # detached poller (survives controller exit)
-    $poller = @"
-import os, sys, time
-sys.path.insert(0, r'$Root')
-os.environ['FUSION_REPO_ROOT'] = r'$Root'
-from fusion_hero_os.core.hero_autoupdate import get_hero_autoupdate
-svc = get_hero_autoupdate()
-while True:
-    try:
-        svc.tick(do_fetch=False)
-    except Exception:
-        pass
-    time.sleep(max(30, float(svc.config.poll_interval_sec or 60)))
-"@
+    $auOncePath = Join-Path $FusionDir "hero_autoupdate_once.py"
     $pollerPath = Join-Path $FusionDir "hero_autoupdate_poller.py"
-    Set-Content -Path $pollerPath -Value $poller -Encoding UTF8
+    $oncePy = @(
+        "import os, sys, json"
+        "sys.path.insert(0, r'$Root')"
+        "os.environ['FUSION_REPO_ROOT'] = r'$Root'"
+        "from fusion_hero_os.core.hero_autoupdate import get_hero_autoupdate"
+        "svc = get_hero_autoupdate()"
+        "n = svc.notify_startup()"
+        "t = svc.tick(do_fetch=True)"
+        "print(json.dumps({'startup': n.get('ok', True), 'tick': t.get('ok', True), 'git_head': t.get('git_head')}))"
+    ) -join "`n"
+    $pollerPy = @(
+        "import os, sys, time"
+        "sys.path.insert(0, r'$Root')"
+        "os.environ['FUSION_REPO_ROOT'] = r'$Root'"
+        "from fusion_hero_os.core.hero_autoupdate import get_hero_autoupdate"
+        "svc = get_hero_autoupdate()"
+        "while True:"
+        "    try:"
+        "        svc.tick(do_fetch=False)"
+        "    except Exception:"
+        "        pass"
+        "    time.sleep(max(30, float(svc.config.poll_interval_sec or 60)))"
+    ) -join "`n"
+    Set-Content -Path $auOncePath -Value $oncePy -Encoding UTF8
+    Set-Content -Path $pollerPath -Value $pollerPy -Encoding UTF8
+    $auOut = & $Python $auOncePath 2>&1 | Out-String
     Start-Process -FilePath $Python -ArgumentList $pollerPath -WorkingDirectory $Root -WindowStyle Hidden
     $steps["hero_autoupdate"] = @{ ok = $true; detail = $auOut.Trim(); poller = $pollerPath }
     Write-Log "Hero Autoupdate: $($auOut.Trim()) + poller started" "OK"
