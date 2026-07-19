@@ -18,10 +18,10 @@ import json
 import os
 import time
 from collections import defaultdict
-from dataclasses import asdict, dataclass, field
+from dataclasses import asdict, dataclass
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Dict, Iterable, List, Optional, Set, Tuple
+from typing import Any, Dict, Iterable, List, Optional, Set
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -212,8 +212,7 @@ def _iter_files(base: Path, max_files: int) -> Iterable[Path]:
         yield base
         return
     for dirpath, dirnames, filenames in os.walk(base):
-        # prune
-        pruned = []
+        # prune skip/collapse dirs in place (os.walk honors dirnames mutation)
         for d in list(dirnames):
             if d in SKIP_DIR_NAMES or d in COLLAPSE_DIR_NAMES:
                 # emit marker once
@@ -446,7 +445,7 @@ def run_inventory(*, write: bool = True) -> Dict[str, Any]:
             "# Inside-Out Inventory — what exists",
             "",
             f"**Generated:** {report['generated_at']}",
-            f"**Method:** inside-out (not outside-in)",
+            "**Method:** inside-out (not outside-in)",
             f"**Items:** {report['counts']['items']} · **Files:** {report['counts']['files']} · **Bytes:** {bytes_total}",
             "",
             "## Identity (innermost)",

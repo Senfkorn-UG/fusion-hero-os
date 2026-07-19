@@ -19,7 +19,7 @@ import secrets
 import time
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, Optional, Tuple
 
 # Heroic name pool (Fusion / Senfkorn / Hypermoderne lexicon)
 HEROIC_NAMES = (

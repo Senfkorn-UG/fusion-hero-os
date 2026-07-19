@@ -140,10 +140,10 @@ def qq_equality_residual(psi: np.ndarray, P_A: np.ndarray, P_B: np.ndarray) -> f
     """
     P_A = _check_projector(P_A)
     P_B = _check_projector(P_B)
-    I = np.eye(P_A.shape[0], dtype=np.complex128)
+    Id = np.eye(P_A.shape[0], dtype=np.complex128)
     s = BeliefState(psi)
-    lhs = s.prob_sequence(P_A, P_B) + s.prob_sequence(I - P_A, I - P_B)
-    rhs = s.prob_sequence(P_B, P_A) + s.prob_sequence(I - P_B, I - P_A)
+    lhs = s.prob_sequence(P_A, P_B) + s.prob_sequence(Id - P_A, Id - P_B)
+    rhs = s.prob_sequence(P_B, P_A) + s.prob_sequence(Id - P_B, Id - P_A)
     return float(lhs - rhs)
 
 

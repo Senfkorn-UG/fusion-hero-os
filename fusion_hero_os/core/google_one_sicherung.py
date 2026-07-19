@@ -17,12 +17,10 @@ import hashlib
 import json
 import os
 import shutil
-import sys
 import time
-from dataclasses import asdict, dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional
 
 try:
     from fusion_hero_os.core.browser_egress import open_url as _egress_open
@@ -157,7 +155,7 @@ def activate(*, open_browser: bool = True) -> Dict[str, Any]:
                 "# Google One Sicherung — aktiv",
                 "",
                 f"**Status:** ACTIVATED (`{now}`)",
-                f"**Provider:** Google One + Drive",
+                "**Provider:** Google One + Drive",
                 f"**Landing:** {flag['landing_url']}",
                 f"**Storage:** {flag['storage_url']}",
                 f"**Drive-Ordner:** [{flag['drive_folder_name']}]({flag.get('drive_web_view_link') or '#'})",

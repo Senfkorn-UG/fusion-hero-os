@@ -22,7 +22,7 @@ import threading
 import time
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, Optional, Tuple
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -101,12 +101,15 @@ def start_tor_if_possible() -> Dict[str, Any]:
     data = _tor_data()
     torrc = data / "torrc"
     if not torrc.is_file():
-        # copy from repo template if present
+        # copy from repo template if present, else write built-in default
         repo_rc = ROOT / "configs" / "torrc"
         template = Path.home() / ".fusion" / "tor" / "torrc"
         if not template.is_file():
-            template.write_text(
-                f"""SocksPort 127.0.0.1:{socks_port}
+            if repo_rc.is_file():
+                template.write_text(repo_rc.read_text(encoding="utf-8"), encoding="utf-8")
+            else:
+                template.write_text(
+                    f"""SocksPort 127.0.0.1:{socks_port}
 DNSPort 127.0.0.1:{dns_port}
 ControlPort 127.0.0.1:{int(tor_c.get('control_port') or 9051)}
 CookieAuthentication 1
@@ -115,8 +118,8 @@ AutomapHostsSuffixes .onion,.exit
 ClientOnly 1
 AvoidDiskWrites 1
 """,
-                encoding="utf-8",
-            )
+                    encoding="utf-8",
+                )
         torrc = template
 
     log = data / "tor.log"
