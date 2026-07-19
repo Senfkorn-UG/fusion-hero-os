@@ -1,4 +1,4 @@
-# Fusion Hero OS v10.0.0
+# Fusion Hero OS v12.0.0
 
 **Operativer Kanon** · ALTE_Frau_95g Heroic Core (v8.3 stack + Stage-A/B) · AscensionOS v9.10 aspirational
 
@@ -6,8 +6,8 @@
 
 | | |
 |--|--|
-| Version | **10.0.0** (`VERSION` / tag `v10.0.0`) |
-| Release | [github.com/95guknow/fusion-hero-os/releases/tag/v10.0.0](https://github.com/95guknow/fusion-hero-os/releases/tag/v10.0.0) |
+| Version | **12.0.0** (`VERSION` / tag `v12.0.0`) |
+| Release | [github.com/95guknow/fusion-hero-os/releases/tag/v12.0.0](https://github.com/95guknow/fusion-hero-os/releases/tag/v12.0.0) |
 | Repo | [95guknow/fusion-hero-os](https://github.com/95guknow/fusion-hero-os) |
 | Dashboard (local) | `http://127.0.0.1:8000` |
 
@@ -29,4 +29,4 @@ python scripts/bump_version.py --check
 python scripts/activate_v10.py --no-http
 ```
 
-*MAINFRAME GELADEN · Fusion Hero OS v10.0.0 · BCG*
+*MAINFRAME GELADEN · Fusion Hero OS v12.0.0 · BCG*
