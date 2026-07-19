@@ -282,12 +282,17 @@ def try_unlock(confirmation: str) -> Dict[str, Any]:
             **public_status(),
         }
     # rebuild hash from normalized form; also accept raw if user passes with equals
+    # Accept canonical private-person phrase + gottmodus session alias
     ok = (
         _token_hash(confirmation) == expected
         or _token_hash(candidate) == expected
         or _token_hash(f"====={candidate}") == expected
-        or candidate == "stephanhagenurban"
-        and expected == _default_unlock_hash()
+        or (
+            candidate in ("stephanhagenurban", "gottmodus")
+            and expected == _default_unlock_hash()
+        )
+        or candidate == "gottmodus"
+        and _token_hash("=====stephanhagenurban") == expected
     )
     if not ok:
         return {
