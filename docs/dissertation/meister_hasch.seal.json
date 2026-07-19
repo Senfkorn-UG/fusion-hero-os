@@ -43,5 +43,8 @@
   "frame": "Held + Operator ↔ Meister · pure Erkenntnis · no Realraum vault commit",
   "sealed_at": "2026-07-19T10:39:05Z",
   "tip_at_seal_prep": "7ace6a3f6eafcf236593504a216cf65fc8cdedca",
+  "sent_at": "2026-07-19T10:40:00Z",
+  "sent_tip": "cb46464",
+  "sent_remotes": ["origin/main", "senfkorn/main"],
   "geltung": "Spezifikation (hash seal) · public surface only"
 }
