@@ -1,0 +1,41 @@
+{
+  "kind": "publish_all_dimensions",
+  "ts": "2026-07-19T10:19:51.208648+00:00",
+  "platform": "12.0.0",
+  "tip": "7c639b9",
+  "release": "https://github.com/95guknow/fusion-hero-os/releases/tag/v12.0.0",
+  "display": {
+    "display_id": "MS-PUB-v12-CMCFEAVV-682D",
+    "public_fingerprint": "6518f72b7b87c001684c969c8b2bca29ada01ea52da078288166737b19717ac9",
+    "platform_version": "12.0.0",
+    "criticality_target_display": "0.22 (model)",
+    "integrity_ok": true,
+    "state_hash_prefix": "c1cfe3f73095",
+    "presented_at": "2026-07-19T10:19:51.208648+00:00",
+    "policy": "public_unique_private_obfuscated"
+  },
+  "dimensions": [
+    "git_origin",
+    "git_senfkorn",
+    "branches_all_active",
+    "tag_v12",
+    "github_release",
+    "masterseed_public",
+    "peer_confirmations",
+    "meister_hasch",
+    "conversation_index_A11",
+    "dual_timeline_t_tau",
+    "ops_merge",
+    "fluid_zitterpolymesh",
+    "poly_mesh_L0_L1",
+    "mesh_files_phone",
+    "grok_skills",
+    "horcrux",
+    "gottmodus"
+  ],
+  "never_published": [
+    "private_shards_gpg",
+    "operator_vault_secrets",
+    ".env"
+  ]
+}

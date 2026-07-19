@@ -1,11 +1,11 @@
 {
   "ok": true,
-  "scanned_at": "2026-07-19T09:40:21.455323+00:00",
+  "scanned_at": "2026-07-19T10:19:50.805332+00:00",
   "totals": {
     "instances": 8,
     "session_search_db": 1,
     "sessions": 71,
-    "bytes": 317233830,
+    "bytes": 324198636,
     "chat_history_files": 30
   },
   "instances": [
@@ -30,15 +30,15 @@
       "role_hint": "git_workspace_session",
       "path_public": "C:\\Program Files\\Git",
       "session_count": 19,
-      "file_count": 1087,
-      "bytes": 269152574,
+      "file_count": 1141,
+      "bytes": 276117380,
       "artifact_totals": {
         "announcements": 16,
         "dialog_stream": 17,
         "event_stream": 17,
         "code_hunks": 5,
         "plan": 2,
-        "plan_mode": 3,
+        "plan_mode": 4,
         "prompt_context": 17,
         "resources": 8,
         "rewind": 16,
@@ -47,7 +47,7 @@
         "system_prompt": 17,
         "update_stream": 16,
         "compaction_md": 6,
-        "terminal_log": 866
+        "terminal_log": 919
       }
     },
     {

@@ -4,7 +4,7 @@
 **Plattform:** Fusion Hero OS v10.0.0  
 **Feld:** Autopoietische Autopolitik / Autopoietic Autopolitics  
 **Geltung:** Spezifikation (Inventar) · Dialoginhalte bleiben **privat** (deploy)  
-**Erfasst:** 2026-07-19T09:40:21.455323+00:00
+**Erfasst:** 2026-07-19T10:19:50.805332+00:00
 
 > Person (legal name) is **extracted** from the Operator role via 
 > `fusion_hero_os.core.operator_identity` — runtime never requires it.
@@ -33,7 +33,7 @@ Volltexte der Chats werden **nicht** in die öffentliche Monographie übernommen
 
 - **Instanzen (CWD-Wurzeln):** 8
 - **Sessions:** 71
-- **Bytes (roh):** 317233830
+- **Bytes (roh):** 324198636
 - **chat_history.jsonl (Dialog-Streams):** 30
 
 ## Instanzen (Rollen-Hints)
@@ -41,7 +41,7 @@ Volltexte der Chats werden **nicht** in die öffentliche Monographie übernommen
 | Rolle (Hint) | Decodierter Pfad (public-safe) | Sessions | Dateien | Bytes |
 |--------------|--------------------------------|----------|---------|-------|
 | drive_root_session | `C:\` | 1 | 10 | 30313 |
-| git_workspace_session | `C:\Program Files\Git` | 19 | 1087 | 269152574 |
+| git_workspace_session | `C:\Program Files\Git` | 19 | 1141 | 276117380 |
 | user_home_session | `~` | 42 | 107 | 7361293 |
 | unknown | `~\Desktop` | 1 | 13 | 28577 |
 | desktop_dashboard_instance | `~\Desktop\ALTE_Frau_95g_Beste_Version\03_Code\Dashboard` | 1 | 0 | 0 |
@@ -72,7 +72,7 @@ Volltexte der Chats werden **nicht** in die öffentliche Monographie übernommen
 
 ## Artifact-Zählungen (aggregiert)
 
-- **terminal_log:** 1284
+- **terminal_log:** 1337
 - **dialog_stream:** 30
 - **event_stream:** 30
 - **prompt_context:** 30
@@ -84,8 +84,8 @@ Volltexte der Chats werden **nicht** in die öffentliche Monographie übernommen
 - **resources:** 14
 - **signals:** 14
 - **code_hunks:** 8
+- **plan_mode:** 6
 - **compaction_md:** 6
-- **plan_mode:** 5
 - **plan:** 3
 
 ## Verbindung zur Dissertation
@@ -126,7 +126,7 @@ Volltexte der Chats werden **nicht** in die öffentliche Monographie übernommen
 | `019f7216-ba6f-7c42-b91f-dcb84e0d9068` | 9 | 51007 | announcements,dialog_stream,event_stream,prompt_context,rewind,session_summary,system_prompt,update_stream | 2026-07-17T21:59:43.672001+00:00 |
 | `019f75f8-8841-79f2-a774-cf7d37f31174` | 12 | 28049 | announcements,dialog_stream,event_stream,prompt_context,rewind,session_summary,system_prompt,update_stream | 2026-07-18T16:04:11.311439+00:00 |
 | `019f7608-a141-7660-ae15-840dd153eed4` | 12 | 28488 | announcements,dialog_stream,event_stream,prompt_context,rewind,session_summary,system_prompt,update_stream | 2026-07-18T16:22:15.131161+00:00 |
-| `019f7994-b043-71c1-8217-de1a698efe72` | 108 | 10904017 | announcements,code_hunks,dialog_stream,event_stream,prompt_context,resources,rewind,session_summary,signals,system_prompt,update_stream | 2026-07-19T09:40:20.819350+00:00 |
+| `019f7994-b043-71c1-8217-de1a698efe72` | 162 | 17865550 | announcements,code_hunks,dialog_stream,event_stream,plan_mode,prompt_context,resources,rewind,session_summary,signals,system_prompt,update_stream | 2026-07-19T10:19:50.495929+00:00 |
 
 ### Instanz: `~` (user_home_session)
 
