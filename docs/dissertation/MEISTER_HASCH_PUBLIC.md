@@ -19,8 +19,10 @@ Hypotheses only · labor frame · no Realraum commitment of private shards.
 
 ## Public paths (repo)
 
-- `docs/dissertation/assets/meister_hasch.png`
+- `docs/dissertation/assets/meister_hasch.png` — **canonical sealed**
 - `docs/dissertation/assets/meister_hasch.sha256`
+- `docs/dissertation/assets/meister_hasch.jpg` — Perplexity session capture (see `MEISTER_HASCH_JPG_CAPTURE.md`)
+- `docs/dissertation/assets/meister_hasch.jpg.sha256`
 - `memes/meister_hasch.png`
 - `docs/mesh/public/meister_hasch.png`
 - `docs/android/meister_hasch.png`

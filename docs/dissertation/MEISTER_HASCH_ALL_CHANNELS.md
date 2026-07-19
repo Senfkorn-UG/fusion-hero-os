@@ -7,8 +7,11 @@
 
 | Channel | Path / URL |
 |---------|------------|
-| Dissertation asset | `docs/dissertation/assets/meister_hasch.png` |
-| SHA256 sidecar | `docs/dissertation/assets/meister_hasch.sha256` |
+| Dissertation asset (canonical PNG) | `docs/dissertation/assets/meister_hasch.png` |
+| SHA256 sidecar (PNG) | `docs/dissertation/assets/meister_hasch.sha256` |
+| Session capture (JPG) | `docs/dissertation/assets/meister_hasch.jpg` |
+| SHA256 sidecar (JPG) | `docs/dissertation/assets/meister_hasch.jpg.sha256` |
+| JPG capture doc | `docs/dissertation/MEISTER_HASCH_JPG_CAPTURE.md` |
 | Memes | `memes/meister_hasch.png` |
 | Mesh public | `docs/mesh/public/meister_hasch.png` |
 | Android layer | `docs/android/meister_hasch.png` |

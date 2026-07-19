@@ -46,5 +46,14 @@
   "sent_at": "2026-07-19T10:40:00Z",
   "sent_tip": "cb46464",
   "sent_remotes": ["origin/main", "senfkorn/main"],
-  "geltung": "Spezifikation (hash seal) · public surface only"
+  "geltung": "Spezifikation (hash seal) · public surface only",
+  "session_capture_jpg": {
+    "filename": "meister_hasch.jpg",
+    "role": "perplexity_session_screenshot_not_canonical_seal",
+    "sha256": "01fa9e0fc8be7c2f0452fb49c78a662119c7edd4e142f4ee539813094477d1e4",
+    "size_bytes": 408814,
+    "geometry": "1920x1080",
+    "doc": "docs/dissertation/MEISTER_HASCH_JPG_CAPTURE.md",
+    "note": "Coexists with sealed PNG; does not replace MH-SEAL-v12"
+  }
 }
