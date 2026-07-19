@@ -98,9 +98,13 @@ auto_save:
 # Hard denylist — always block (even with intent, secrets stay blocked)
 # Note: do NOT use broad *secret* (would block wanted_push_via_secrets.py)
 deny_globs:
+  # Real secret env files only — NOT .env.example (public template, BCG).
   - "**/.env"
-  - "**/.env.*"
   - "**/.env.local"
+  - "**/.env.production"
+  - "**/.env.development"
+  - "**/.env.staging"
+  - "**/.env.*.local"
   - "**/secrets.env"
   - "**/credentials.json"
   - "**/credentials*.json"
