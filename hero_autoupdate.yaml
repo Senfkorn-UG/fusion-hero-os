@@ -1,0 +1,45 @@
+# Hero Autoupdate — logisches Polling + Android-Erinnerung
+# Kanon: Interaktion zum Held, Android System-Notifications (ntfy / Webhook)
+#
+# Defaults (verbindlich, per Env überschreibbar):
+#   poll_interval_sec     = 60   (1 min logisches Polling)
+#   reminder_after_sec    = 300  (5 min ohne Interaktion → Erinnerung)
+#   notify via Android: PHONE_NOTIFY_WEBHOOK_URL (ntfy.sh empfohlen)
+
+enabled: true
+
+# Logisches Polling-Intervall für Status/Updates und Idle-Check
+poll_interval_sec: 60
+
+# Nach so vielen Sekunden ohne "Interaktion zum Held" → Android-Erinnerung
+reminder_after_sec: 300
+
+# Minimale Pause zwischen gleichen Erinnerungs-Notifications (Anti-Spam)
+reminder_cooldown_sec: 300
+
+# Bei Git-HEAD-Änderung / Health-Wechsel ebenfalls Android-Notify
+notify_on_update: true
+notify_on_health_change: true
+
+# Dashboard light-health Endpoint (relativ, Host via FUSION_DASHBOARD_URL)
+health_url: "http://127.0.0.1:8000/api/health?light=true"
+
+# Persistenter State (relativ zum Repo-Root, falls relativ)
+state_path: ".fusion/hero_autoupdate_state.json"
+
+# Notification-Texte (Android System-Notification title/body)
+reminder_title: "Held — Interaktion fällig"
+reminder_message: "Seit {idle_min} Min keine Interaktion zum Held. Mainframe wartet (v{version})."
+update_title: "Held — Autoupdate"
+update_message: "Update erkannt: {detail}"
+startup_title: "Held — Autoupdate aktiv"
+startup_message: "Polling {poll_min} Min · Erinnerung nach {remind_min} Min · Android-Notify"
+
+# Android delivery (Env hat Vorrang)
+# PHONE_NOTIFY_WEBHOOK_URL=https://ntfy.sh/<dein-topic>
+# PHONE_NOTIFY_PRIORITY=default|high|urgent
+android:
+  channel: system_notification
+  priority: high
+  tags: "heroic,bell"
+  click_url: "http://127.0.0.1:8000/"
