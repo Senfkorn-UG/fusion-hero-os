@@ -9,19 +9,22 @@ company:
   region: europe-west3
   currency: EUR
   gcp:
-    project_id: project-bbf0e6db-52e1-462b-8e3
-    organization_id: "860382843512"
-    billing_account_id: "01109F-F022BF-0FCD9A"
-    billing_account_name: "Mein Rechnungskonto 1"
+    # Real project/org/billing identifiers are operator-local secrets, not
+    # public source. Fill them via env (.env / vault), see keys in .env.example:
+    # GCP_PROJECT_ID, GCP_ORG_ID, GCP_BILLING_ACCOUNT_ID, GCP_BUDGET_ID.
+    project_id: YOUR_GCP_PROJECT
+    organization_id: "YOUR_GCP_ORG_ID"
+    billing_account_id: "YOUR_GCP_BILLING_ACCOUNT_ID"
+    billing_account_name: "YOUR_GCP_BILLING_ACCOUNT_NAME"
     billing_enabled: true
-    budgets_console: "https://console.cloud.google.com/billing/01109F-F022BF-0FCD9A/budgets"
+    budgets_console: "https://console.cloud.google.com/billing/YOUR_GCP_BILLING_ACCOUNT_ID/budgets"
     # Live budget (API 2026-07-16, corrected): sole budget = Ops ceiling
     active_budget:
       name: "Senfkorn Ops 200 EUR/Monat"
-      budget_id: 5a5d1c8c-9cae-42ab-96f2-222f209d4b5e
+      budget_id: YOUR_GCP_BUDGET_ID
       amount_eur: 200
       period: calendar_month
-      projects: ["project-bbf0e6db-52e1-462b-8e3"]
+      projects: ["YOUR_GCP_PROJECT"]
       thresholds:
         - { percent: 0.50, basis: CURRENT_SPEND }   # 100 EUR
         - { percent: 0.90, basis: CURRENT_SPEND }   # 180 EUR
