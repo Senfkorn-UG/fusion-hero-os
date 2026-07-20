@@ -60,12 +60,12 @@ curl http://127.0.0.1:8000/api/v1/business/cost-function
 
 | Feld | Wert |
 |------|------|
-| Account | `01109F-F022BF-0FCD9A` (Mein Rechnungskonto 1) |
-| Project | `project-bbf0e6db-52e1-462b-8e3` |
+| Account | `YOUR_GCP_BILLING_ACCOUNT_ID` (operator-lokal, siehe .env) |
+| Project | `YOUR_GCP_PROJECT` |
 | **Budget** | **Senfkorn Ops 200 EUR/Monat** |
 | Betrag | **200 EUR** · calendar **month** |
 | Schwellen | 50 % / 90 % / 100 % CURRENT · 90 % FORECASTED |
 | Aligns | `financial_targets.monthly_infra_ceiling_eur: 200` |
-| Console | https://console.cloud.google.com/billing/01109F-F022BF-0FCD9A/budgets |
+| Console | https://console.cloud.google.com/billing/YOUR_GCP_BILLING_ACCOUNT_ID/budgets |
 
 Modell-Idle ~74 €/Monat liegt **unter** dem 200-€-Budget.

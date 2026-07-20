@@ -61,6 +61,8 @@ RULES: Dict[str, re.Pattern] = {
     "magicdns_host": re.compile(r"\b[\w-]+\.[\w-]+\.ts\.net\b"),
     "tailscale_authkey": re.compile(r"\btskey-[A-Za-z0-9-]{10,}\b"),
     "supabase_url": re.compile(r"\bhttps?://[a-z0-9]{20}\.supabase\.co\b"),
+    # GCP Cloud Billing account id: XXXXXX-XXXXXX-XXXXXX (uppercase hex groups).
+    "gcp_billing_account": re.compile(r"\b[0-9A-F]{6}-[0-9A-F]{6}-[0-9A-F]{6}\b"),
     "aws_access_key": re.compile(r"\bAKIA[0-9A-Z]{16}\b"),
     "generic_api_token": re.compile(r"\b(?:sk|xoxb|ghp|gho|ghs)_[A-Za-z0-9]{20,}\b"),
     "private_key_block": re.compile(r"-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----"),
@@ -72,8 +74,8 @@ RULES: Dict[str, re.Pattern] = {
 # identifiers) whose full remediation is a separate, import-affecting refactor.
 BLOCKING_RULES = {
     "private_email", "ipv4_address", "magicdns_host", "tailscale_authkey",
-    "supabase_url", "aws_access_key", "generic_api_token", "private_key_block",
-    DENYLIST_RULE,
+    "supabase_url", "gcp_billing_account", "aws_access_key", "generic_api_token",
+    "private_key_block", DENYLIST_RULE,
 }
 
 # Path-scoped promotion (v10 Stage-B): the ``persona_identifier`` rule is a
