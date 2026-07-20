@@ -29,6 +29,13 @@ def test_governance_owner_is_senfkorn_holding():
     assert hc.governance["consent_required_for_personal_data"] is True
 
 
+def test_default_constructor_uses_module_default_governance():
+    """Ohne from_config() greift der Dataclass-Default DEFAULT_GOVERNANCE."""
+    hc = AscensionHypercluster()
+    assert hc.governance == DEFAULT_GOVERNANCE
+    assert hc.governance is not DEFAULT_GOVERNANCE  # eigene Kopie, kein Alias
+
+
 def test_all_four_lanes_used_by_default_units():
     lanes = {u.lane for u in DEFAULT_UNITS}
     assert lanes == set(LaneKind), "Hypercluster soll alle vier PVHT-Lanes bespielen"
