@@ -1,0 +1,16 @@
+{
+  "kind": "compression_to_expression",
+  "generated_at": "2026-07-20T07:25:00Z",
+  "transform": "COMPRESS -> EXPRESS",
+  "formula": "EXPRESS(c) = narrative + tables + geltung + actionable next, without losing hash integrity",
+  "meister_hasch": true,
+  "meister_sha256": "a032b31b3f7025852528d3ce5e6f64c163345a7b50632d5447cb751213d5f81e",
+  "invert_formula": "INVERT(realraum_intent) = labor_hypothesis + integrity_probe + no_vault_commit",
+  "layers_expressed": {
+    "L0_meister": "integrity/consequence probe; labor; no Realraum vault commit",
+    "L1_held": "Fusion Hero OS kernel; sandbox options; dual planes in catalog",
+    "L2_operator": "no in-session Realraum decision; force-through lab only"
+  },
+  "doc": "docs/security/EXPRESSION_FROM_COMPRESSION.md",
+  "geltung": "Expression = Spezifikation unfolding · seal hash = Satz"
+}

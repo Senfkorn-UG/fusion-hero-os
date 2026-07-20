@@ -1,0 +1,46 @@
+{
+  "kind": "super_door_lookaround",
+  "assessed_at": "2026-07-20",
+  "scope": "own_stack_defensive_only",
+  "meister_hasch": true,
+  "doors": [
+    {
+      "id": "cloud_run_shell",
+      "status": "half_open_stub",
+      "problem": "Public URL; full API may appear later without auth"
+    },
+    {
+      "id": "dashboard_post_no_auth",
+      "status": "super_door_if_exposed",
+      "problem": "Many POST control endpoints; little auth in app.py"
+    },
+    {
+      "id": "env_youtube_key",
+      "status": "local_side_door",
+      "problem": "Non-empty API key on disk; gitignored"
+    },
+    {
+      "id": "god_layer_phrase_in_docs",
+      "status": "key_under_doormat",
+      "problem": "Unlock knowledge public; state still local"
+    },
+    {
+      "id": "dot_fusion_bundle",
+      "status": "local_super_cluster",
+      "problem": "Vault, seals, mesh once, secrets colocated"
+    },
+    {
+      "id": "public_github_map",
+      "status": "floorplan",
+      "problem": "Architecture aids targeted misuse of other doors"
+    },
+    {
+      "id": "mcp_connectors",
+      "status": "delegated_open",
+      "problem": "Session tokens can write Notion/Drive/GitHub"
+    }
+  ],
+  "p0": "dashboard_post_no_auth_if_network_exposed",
+  "offense_external": false,
+  "doc": "docs/security/SUPER_DOOR_LOOKAROUND.md"
+}

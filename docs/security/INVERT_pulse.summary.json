@@ -1,0 +1,40 @@
+{
+  "kind": "meister_hasch_INVERT",
+  "generated_at": "2026-07-20T07:20:43.703664+00:00",
+  "formula": "INVERT(realraum_intent) = labor_hypothesis + integrity_probe + no_vault_commit",
+  "anti_inversion": "agent_no_is_not_start_command",
+  "meister_hash_match": true,
+  "meister_sha256": "a032b31b3f7025852528d3ce5e6f64c163345a7b50632d5447cb751213d5f81e",
+  "self_heal": {
+    "healed": true,
+    "initial_distance": 2.0,
+    "final_distance": 0.0,
+    "sha16": "51ffca68b520406f"
+  },
+  "eudaimonia": {
+    "passed": true,
+    "alerts": [],
+    "energy": 0.0,
+    "ceiling": 1000000.0,
+    "role": "eudaemon"
+  },
+  "eudaemon_all_critical_ok": true,
+  "inverted_to": [
+    "labor_hypothesis",
+    "integrity_probe",
+    "no_vault_commit",
+    "self_heal_own_stack",
+    "no_external_targets"
+  ],
+  "not_executed": [
+    "realraum_offense",
+    "foreign_data_exfil",
+    "hyper_combat"
+  ],
+  "policy": {
+    "sandbox_only": true,
+    "meister_hasch": true,
+    "power_force_through_lab": true
+  },
+  "geltung": "INVERT pulse local = Satz"
+}

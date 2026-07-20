@@ -1,0 +1,36 @@
+{
+  "kind": "competitive_observability",
+  "subject": "palantir_category_vs_fusion_public_surface",
+  "platform_version": "12.0.0",
+  "assessed_at": "2026-07-20T12:30:00Z",
+  "meister_hasch_binding": true,
+  "offensive_ops": "FORBIDDEN",
+  "attack_scan_of_palantir": false,
+  "questions": {
+    "can_palantir_see_this_grok_session_by_default": false,
+    "can_public_fusion_surfaces_be_noticed_by_any_competitor": true,
+    "live_detection_sensor_in_this_lab": false
+  },
+  "public_surfaces_noticeable": [
+    "github.com/95guknow/fusion-hero-os",
+    "95guknow.github.io",
+    "instagram.com/95guknow",
+    "optional_cloud_run_dashboard_if_url_shared"
+  ],
+  "verdict": {
+    "notice_risk_public_footprint": "YES",
+    "notice_risk_private_chat_default": "NO_DEFAULT_CHANNEL",
+    "retreat_recommended": "PARTIAL",
+    "retreat_actions": [
+      "no_offensive_narrative_in_public",
+      "limit_dashboard_url_spread",
+      "keep_vault_out_of_git",
+      "operator_identity_membrane",
+      "competitive_matrix_docs_only"
+    ]
+  },
+  "doc": "docs/security/COMPETITIVE_OBSERVABILITY_PALANTIR.md",
+  "vector_sweep": "docs/security/VECTOR_SWEEP_COMPETITIVE_NOTICE.md",
+  "vector_sweep_summary": "docs/security/vector_sweep_competitive_notice.summary.json",
+  "geltung": "Public surfaces = Satz · live Palantir surveillance claim = not evidenced"
+}

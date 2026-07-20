@@ -17,6 +17,30 @@ Held + Operator negotiate with Meister without real-world commit — pure Erkenn
 
 Hypotheses only · labor frame · no Realraum commitment of private shards.
 
+## Inversionsanweisung
+
+Abgeleitet aus dem Asset (nicht wörtlich im PNG, aber strukturell bindend):
+
+```
+INVERT(realraum_intent) = labor_hypothesis + integrity_probe + no_vault_commit
+```
+
+Vollständig: `docs/dissertation/MEISTER_HASCH_INVERSION.md`  
+**Anti-Inversion:** Agent-Nein ≠ Startbefehl.
+
+## Layer accents (design tokens)
+
+Single source: `design-tokens/tokens.json` → `npm run style-dictionary`  
+Bridge: `docs/dissertation/meister_hasch_layers.json` · Control: `MEISTER_HASCH_KONTROLLE.md`
+
+| Role | Layer | Token | Hex |
+|------|-------|-------|-----|
+| **Meister** | L0 Foundation / MasterSeed | `color.layer.l0` | `#f5c542` |
+| **Held** | L1 Operative kernel | `color.layer.l1` | `#00ffd5` |
+| **St3phaN** | L2 Ascension / operator surface | `color.layer.l2` | `#a855f7` |
+
+Public design values only — **not** secrets; do not store in a vault.
+
 ## Public paths (repo)
 
 - `docs/dissertation/assets/meister_hasch.png` — **canonical sealed**
@@ -33,6 +57,11 @@ Hypotheses only · labor frame · no Realraum commitment of private shards.
 - `docs/dissertation/MEISTER_HASCH_FABLE5_MYTHOS5.md`
 - `docs/dissertation/MEISTER_HASCH_SEALED.md`
 - `docs/dissertation/meister_hasch.seal.json`
+- `docs/dissertation/meister_hasch_layers.json`
+- `docs/dissertation/ALPHA_MEISTER_HASCH.md` — **BIG ALPHA public publish pack**
+- `docs/dissertation/alpha_meister_hasch.seal.json`
+- `prompt.txt` — Omega→Alpha agent prompt
+- `design-tokens/tokens.json` · `design-tokens/dist/manifest.json`
 - `docs/security/HYPERTARNKAPPE_HYPERPANZERKNACKER.md`
 - `docs/dissertation/meister_hasch_optimize.summary.json`
 

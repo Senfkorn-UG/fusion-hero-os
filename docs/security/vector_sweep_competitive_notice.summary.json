@@ -1,0 +1,46 @@
+{
+  "kind": "vector_sweep_competitive_notice",
+  "assessed_at": "2026-07-20T13:00:00Z",
+  "platform_version": "12.0.0",
+  "meister_hasch_binding": true,
+  "vectors_used": [
+    "github_mcp_search_repositories",
+    "github_mcp_search_code",
+    "http_probe_own_and_marketing_urls",
+    "web_search_public_product_pages",
+    "local_fs_security_docs"
+  ],
+  "vectors_available_unused": [
+    "gmail",
+    "google_drive",
+    "google_calendar",
+    "notion",
+    "canva",
+    "gamma",
+    "tasks",
+    "vercel"
+  ],
+  "offensive_against_palantir": false,
+  "own_public_repos_noticeable": [
+    "95guknow/fusion-hero-os",
+    "95guknow/normalOS",
+    "95guknow/dashboard",
+    "95guknow/heroische-mathematik",
+    "95guknow/95guknow.github.io"
+  ],
+  "meister_hasch_code_hits_public": 31,
+  "http": {
+    "fusion_hero_os_github": 200,
+    "meister_hasch_sha256_raw": 200,
+    "github_pages": 200,
+    "cloud_run_dashboard": 200,
+    "palantir_marketing": 200
+  },
+  "verdict": {
+    "public_osint_notice": "YES",
+    "default_grok_session_to_palantir": "NO_DEFAULT_CHANNEL",
+    "retreat": "PARTIAL",
+    "attack": "FORBIDDEN"
+  },
+  "doc": "docs/security/VECTOR_SWEEP_COMPETITIVE_NOTICE.md"
+}

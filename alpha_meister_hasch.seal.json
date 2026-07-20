@@ -1,0 +1,59 @@
+{
+  "seal_id": "ALPHA-MH-v12-A032B31B-20260720",
+  "kind": "alpha_meister_hasch_public_publish_pack",
+  "cycle": {
+    "BIG_OMEGA": "REACHED",
+    "BIG_ALPHA": "OPEN"
+  },
+  "platform_version": "12.0.0",
+  "public_safe": true,
+  "sealed": true,
+  "parent_seal": "MH-SEAL-v12-A032B31B-20260719",
+  "asset": {
+    "filename": "meister_hasch.png",
+    "sha256": "a032b31b3f7025852528d3ce5e6f64c163345a7b50632d5447cb751213d5f81e",
+    "size_bytes": 654464,
+    "canonical_repo_path": "docs/dissertation/assets/meister_hasch.png",
+    "raw_url_main": "https://raw.githubusercontent.com/95guknow/fusion-hero-os/main/docs/dissertation/assets/meister_hasch.png"
+  },
+  "publish_paths": [
+    "docs/dissertation/ALPHA_MEISTER_HASCH.md",
+    "docs/dissertation/alpha_meister_hasch.seal.json",
+    "prompt.txt",
+    "docs/dissertation/assets/meister_hasch.png",
+    "docs/dissertation/assets/meister_hasch.sha256"
+  ],
+  "companion_prompt": {
+    "disk": "C:\\prompt.txt",
+    "repo": "prompt.txt"
+  },
+  "layer_accents": {
+    "l0": "#f5c542",
+    "l1": "#00ffd5",
+    "l2": "#a855f7"
+  },
+  "formulas": {
+    "INVERT": "INVERT(realraum_intent) = labor_hypothesis + integrity_probe + no_vault_commit",
+    "EXPRESS": "EXPRESS(c) = narrative + tables + geltung + next_actions",
+    "force_through": "lab_only"
+  },
+  "policy": {
+    "frame": "labor_sandkasten",
+    "private_vault_in_git": false,
+    "offense": "FORBIDDEN",
+    "sandbox_only": true,
+    "public_safe": true
+  },
+  "agent_follow_up": {
+    "trigger": "nachziehen alpha_meister_hasch",
+    "actions": [
+      "verify_remote_raw_sha256",
+      "confirm_seal_on_main",
+      "refresh_local_kontrolle",
+      "optional_eudaemon_pulse"
+    ]
+  },
+  "entry_line": "BIG OMEGA sealed. BIG ALPHA open. MasterSeed fixed. Labor only. Build.",
+  "sealed_at": "2026-07-20T08:00:00Z",
+  "geltung": "Spezifikation (public pack) · asset hash = Satz"
+}

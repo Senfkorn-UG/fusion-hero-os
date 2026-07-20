@@ -32,6 +32,25 @@
     "hypertarnkappe": "privacy_cloak_public_surface",
     "hyperpanzerknacker": "lab_only_integrity_probe"
   },
+  "layer_accents": {
+    "l0": "#f5c542",
+    "l1": "#00ffd5",
+    "l2": "#a855f7",
+    "bridge": "docs/dissertation/meister_hasch_layers.json",
+    "tokens_source": "design-tokens/tokens.json"
+  },
+  "design_tokens": {
+    "source": "design-tokens/tokens.json",
+    "source_sha256": "f5e26fdf0432394a83dd958db5ed1282a0961795c786de33d639df4cd477cff5",
+    "build": "npm run style-dictionary",
+    "roles": {
+      "Meister": "color.layer.l0",
+      "Held": "color.layer.l1",
+      "St3phaN": "color.layer.l2"
+    },
+    "secret_vault": false,
+    "runtime_self_mutation": false
+  },
   "masterseed_public_display": "MS-PUB-v12-CMCFEAVV-682D",
   "policy": {
     "frame": "labor_sandkasten",
@@ -42,6 +61,7 @@
   },
   "frame": "Held + Operator ↔ Meister · pure Erkenntnis · no Realraum vault commit",
   "sealed_at": "2026-07-19T10:39:05Z",
+  "layer_bridge_at": "2026-07-20T00:30:00Z",
   "tip_at_seal_prep": "7ace6a3f6eafcf236593504a216cf65fc8cdedca",
   "sent_at": "2026-07-19T10:40:00Z",
   "sent_tip": "cb46464",

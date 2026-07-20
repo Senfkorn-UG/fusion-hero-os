@@ -48,6 +48,17 @@
 
 `MS-PUB-v12-CMCFEAVV-682D` — private shards **not** in this seal.
 
+## Layer accents (design tokens · additive 2026-07-20)
+
+| Role | Layer | Hex | Token |
+|------|-------|-----|-------|
+| Meister | L0 | `#f5c542` | `color.layer.l0` |
+| Held | L1 | `#00ffd5` | `color.layer.l1` |
+| St3phaN | L2 | `#a855f7` | `color.layer.l2` |
+
+Bridge: `docs/dissertation/meister_hasch_layers.json` · Source: `design-tokens/tokens.json` · Build: `npm run style-dictionary`  
+Asset seal (SHA256) **unchanged**; layer map is public design metadata only.
+
 ## Frame (unveränderlich unter Seal)
 
 Labor / Sandkasten: **Held + Operator ↔ Meister** · reiner Erkenntnisgewinn · **kein** Realraum-Commit privater Vault-Shards.

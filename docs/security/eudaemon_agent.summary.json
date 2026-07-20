@@ -1,0 +1,138 @@
+{
+  "kind": "eudaemon_korridor",
+  "generated_at": "2026-07-20T07:24:09.610173+00:00",
+  "meister_hasch_binding": true,
+  "platform_version": "12.0.0",
+  "policy": {
+    "sandbox_only": true,
+    "no_external_targets": true,
+    "roleplay_lab": true
+  },
+  "geltung": "HTTP corridor = Satz · eudaemon actions local = Satz · mythos = Modell",
+  "doc": "docs/security/EUDAEMON_KORRIDOR_REPORT.md",
+  "corridor": {
+    "base": "https://fusion-hero-os-42426705927.europe-west2.run.app",
+    "spa_shell_count": 8,
+    "static_asset_count": 2,
+    "json_api_count": 0,
+    "reading": "Korridor = öffentliche SPA-Hülle; JSON-API-Plane hier nicht erreichbar. Andere Seite = operator-local Lab (Eudaemon handelt dort).",
+    "steps": [
+      {
+        "path": "/",
+        "status": 200,
+        "bytes": 397,
+        "content_type": "text/html; charset=UTF-8",
+        "kind": "spa_shell",
+        "plane_hint": "public"
+      },
+      {
+        "path": "/assets/index-kwraethi.js",
+        "status": 200,
+        "bytes": 464504,
+        "content_type": "application/javascript; charset=UTF-8",
+        "kind": "static_asset",
+        "plane_hint": "asset"
+      },
+      {
+        "path": "/assets/index-3uS2yhtK.css",
+        "status": 200,
+        "bytes": 37497,
+        "content_type": "text/css; charset=UTF-8",
+        "kind": "static_asset",
+        "plane_hint": "asset"
+      },
+      {
+        "path": "/api/health",
+        "status": 200,
+        "bytes": 397,
+        "content_type": "text/html; charset=UTF-8",
+        "kind": "spa_shell",
+        "plane_hint": "business"
+      },
+      {
+        "path": "/api/planes",
+        "status": 200,
+        "bytes": 397,
+        "content_type": "text/html; charset=UTF-8",
+        "kind": "spa_shell",
+        "plane_hint": "hyperraum"
+      },
+      {
+        "path": "/api/v1/business",
+        "status": 200,
+        "bytes": 397,
+        "content_type": "text/html; charset=UTF-8",
+        "kind": "spa_shell",
+        "plane_hint": "business"
+      },
+      {
+        "path": "/api/v1/business/health",
+        "status": 200,
+        "bytes": 397,
+        "content_type": "text/html; charset=UTF-8",
+        "kind": "spa_shell",
+        "plane_hint": "business"
+      },
+      {
+        "path": "/mainframe",
+        "status": 200,
+        "bytes": 397,
+        "content_type": "text/html; charset=UTF-8",
+        "kind": "spa_shell",
+        "plane_hint": "hyperraum"
+      },
+      {
+        "path": "/heroic",
+        "status": 200,
+        "bytes": 397,
+        "content_type": "text/html; charset=UTF-8",
+        "kind": "spa_shell",
+        "plane_hint": "public"
+      },
+      {
+        "path": "/about",
+        "status": 200,
+        "bytes": 397,
+        "content_type": "text/html; charset=UTF-8",
+        "kind": "spa_shell",
+        "plane_hint": "public"
+      }
+    ]
+  },
+  "other_side": {
+    "agent": "eudaemon",
+    "all_critical_ok": true,
+    "actions": [
+      {
+        "id": "meister_integrity",
+        "ok": true,
+        "detail": "disk↔repo hash"
+      },
+      {
+        "id": "self_heal_qubo_fixpoint",
+        "ok": true,
+        "detail": "dist 4.0→0.0"
+      },
+      {
+        "id": "eudaimonia_corridor",
+        "ok": true,
+        "detail": "within ceiling"
+      },
+      {
+        "id": "dead_letterbox_pulse",
+        "ok": true,
+        "detail": "sha16=c08c3bf924788779"
+      },
+      {
+        "id": "super_door_awareness",
+        "ok": true,
+        "detail": "p0=dashboard_post_no_auth_if_network_exposed"
+      }
+    ],
+    "stance": {
+      "offense": "FORBIDDEN",
+      "publish": "public_safe_lab_only",
+      "goal": "sustainable_good_without_collapse"
+    }
+  }
+}

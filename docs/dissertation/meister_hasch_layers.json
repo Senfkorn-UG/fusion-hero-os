@@ -1,0 +1,55 @@
+{
+  "kind": "meister_hasch_design_token_bridge",
+  "platform_version": "12.0.0",
+  "frame": "labor_sandkasten",
+  "asset": {
+    "source_disk": "C:\\Dissertation_95guknow\\meister_hasch.png",
+    "canonical_repo": "docs/dissertation/assets/meister_hasch.png",
+    "sha256": "a032b31b3f7025852528d3ce5e6f64c163345a7b50632d5447cb751213d5f81e",
+    "size_bytes": 654464
+  },
+  "design_tokens": {
+    "source": "design-tokens/tokens.json",
+    "source_sha256": "f5e26fdf0432394a83dd958db5ed1282a0961795c786de33d639df4cd477cff5",
+    "build": "npm run style-dictionary",
+    "manifest": "design-tokens/dist/manifest.json",
+    "secret_vault": false,
+    "runtime_self_mutation": false
+  },
+  "roles_to_layers": {
+    "Meister": {
+      "layer": "l0",
+      "token": "color.layer.l0",
+      "hex": "#f5c542",
+      "role": "integrity_consequence_probe",
+      "note": "Highest check instance — maps to MasterSeed / foundation accent"
+    },
+    "Held": {
+      "layer": "l1",
+      "token": "color.layer.l1",
+      "hex": "#00ffd5",
+      "role": "fusion_hero_os_kernel",
+      "note": "Operative stack / dashboard kernel accent"
+    },
+    "St3phaN": {
+      "layer": "l2",
+      "token": "color.layer.l2",
+      "hex": "#a855f7",
+      "role": "operator_no_in_session_decision",
+      "note": "Ascension / aspirational track accent — operator surface, not Realraum commit"
+    }
+  },
+  "layer_accents": {
+    "l0": "#f5c542",
+    "l1": "#00ffd5",
+    "l2": "#a855f7"
+  },
+  "policy": {
+    "hypotheses_only": true,
+    "no_realraum_vault_commit": true,
+    "public_design_values_only": true
+  },
+  "verified_at": "2026-07-20T00:30:00Z",
+  "control_doc": "docs/dissertation/MEISTER_HASCH_KONTROLLE.md",
+  "geltung": "Spezifikation (hash + token bridge) · labor frame"
+}

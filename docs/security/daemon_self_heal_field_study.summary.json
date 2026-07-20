@@ -1,0 +1,79 @@
+{
+  "kind": "daemon_self_heal_field_study",
+  "generated_at": "2026-07-20T07:24:09.981524+00:00",
+  "policy": {
+    "sandbox_only": true,
+    "no_external_targets": true,
+    "no_send_to_third_parties": true,
+    "clearweb_lens_only": true,
+    "meister_hasch_labor": true
+  },
+  "dimensions": [
+    "api_auth_gate",
+    "sandbox_only",
+    "vault_local",
+    "dead_letter_quarantine",
+    "cors_localhost",
+    "god_layer_state_ok",
+    "mesh_secret_present",
+    "public_narrative_clean"
+  ],
+  "target_fixed_point": [
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1
+  ],
+  "initial_state": [
+    0,
+    1,
+    0,
+    0,
+    1,
+    1,
+    1,
+    0
+  ],
+  "after_qubo_local_search": [
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1
+  ],
+  "final_state": [
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1
+  ],
+  "healed": true,
+  "contraction_ok": true,
+  "initial_distance": 4.0,
+  "final_distance": 0.0,
+  "method": {
+    "qubo": "local bit-flip search on health Q",
+    "fixed_point_inversion": "x <- project(x + alpha*(x* - x))"
+  },
+  "explicit_non_actions": [
+    "did_not_http_post_to_palantir",
+    "did_not_scan_foreign_hosts",
+    "did_not_exfiltrate_or_request_proprietary_data"
+  ],
+  "sha16": "3bd65869c477d4fc",
+  "geltung": "Local heal outcomes = Satz · clearweb analogy = Modell",
+  "doc": "docs/security/DAEMON_SELF_HEAL_FIELD_STUDY.md",
+  "clearweb_lens_count": 4,
+  "step_count": 1
+}

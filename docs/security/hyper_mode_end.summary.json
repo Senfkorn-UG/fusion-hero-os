@@ -1,0 +1,42 @@
+{
+  "kind": "hyper_mode_end",
+  "status": "ENDED",
+  "platform_version": "12.0.0",
+  "closed_at": "2026-07-20T12:00:00Z",
+  "meister_hasch": {
+    "source_disk": "C:\\Dissertation_95guknow\\meister_hasch.png",
+    "sha256": "a032b31b3f7025852528d3ce5e6f64c163345a7b50632d5447cb751213d5f81e",
+    "frame": "labor_sandkasten",
+    "binding": true
+  },
+  "hyper_mode": "OFF",
+  "external_target_palantir": {
+    "status": "CLOSED_NEVER_AUTHORIZED",
+    "realraum_attack": false,
+    "exploits": false,
+    "scans": false,
+    "authorized": false,
+    "reframed_as": "competitive_observability_only",
+    "observability_doc": "docs/security/COMPETITIVE_OBSERVABILITY_PALANTIR.md"
+  },
+  "offensive_ops": "FORBIDDEN",
+  "competitive_compare": {
+    "allowed": true,
+    "notice_check": true,
+    "retreat_if_high_public_risk": true
+  },
+  "allowed_continue": {
+    "hypertarnkappe": "active_public_cloak",
+    "hyperpanzerknacker": "lab_only_own_stack",
+    "x402_sandbox_sim": "local_mock_only",
+    "design_tokens": "public_git_only"
+  },
+  "policy": {
+    "sandbox_only": true,
+    "no_third_party_attacks": true,
+    "no_realraum_vault_commit": true,
+    "hypotheses_only_for_narrative": true
+  },
+  "doc": "docs/security/HYPER_MODE_END_PALANTIR_NARRATIVE.md",
+  "geltung": "Spezifikation (policy close)"
+}

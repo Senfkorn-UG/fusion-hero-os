@@ -1,0 +1,45 @@
+{
+  "kind": "competitive_notice_packaging",
+  "packaged_at": "2026-07-20T14:00:00Z",
+  "platform_version": "12.0.0",
+  "policy": {
+    "packaging_only": true,
+    "offensive_ops": false,
+    "meister_hasch_binding": true
+  },
+  "local_artifacts": [
+    "docs/security/VECTOR_SWEEP_COMPETITIVE_NOTICE.md",
+    "docs/security/COMPETITIVE_OBSERVABILITY_PALANTIR.md",
+    "docs/security/HYPER_MODE_END_PALANTIR_NARRATIVE.md",
+    "docs/security/PACKAGE_BRIEF_COMPETITIVE_NOTICE.md"
+  ],
+  "connectors": {
+    "notion": {
+      "action": "create_private_page",
+      "status": "ok",
+      "page_id": "3a3c8cce-7d92-8126-80cf-ef3103b265f1",
+      "url": "https://app.notion.com/p/3a3c8cce7d92812680cfef3103b265f1"
+    },
+    "google_drive": {
+      "action": "create_folder",
+      "status": "ok",
+      "folder_id": "1CtQ-DQCJ_ROiliGNv7TMNXiE11HH7Vk8",
+      "url": "https://drive.google.com/drive/folders/1CtQ-DQCJ_ROiliGNv7TMNXiE11HH7Vk8",
+      "note": "MCP has no create_file; drop MD/JSON manually if desired"
+    },
+    "gmail": {
+      "action": "none",
+      "reason": "no_unsolicited_send"
+    },
+    "canva": {
+      "action": "none",
+      "reason": "no_public_design_required"
+    }
+  },
+  "verdict": {
+    "public_osint_notice": "YES",
+    "retreat": "PARTIAL",
+    "attack": "FORBIDDEN",
+    "hyper_mode": "OFF"
+  }
+}

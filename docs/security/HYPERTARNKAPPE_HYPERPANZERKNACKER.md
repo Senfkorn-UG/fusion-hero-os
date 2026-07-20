@@ -1,8 +1,9 @@
 # Hypertarnkappe + Hyperpanzerknacker
 
-**Stand:** 2026-07-19 · **Platform:** Fusion Hero OS v12.0.0  
+**Stand:** 2026-07-20 · **Platform:** Fusion Hero OS v12.0.0  
 **Scope:** Meister Hasch Sandkasten + public publish surfaces  
-**Policy:** lab / Sandkasten · no Realraum vault commit · no third-party attacks
+**Policy:** lab / Sandkasten · no Realraum vault commit · no third-party attacks  
+**Hyper-Modus:** **OFF** (2026-07-20) — externes Target-Narrativ „Palantir“ **CLOSED_NEVER_AUTHORIZED** · siehe `HYPER_MODE_END_PALANTIR_NARRATIVE.md`
 
 ## Kurzdefinition
 
