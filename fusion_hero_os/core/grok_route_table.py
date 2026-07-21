@@ -287,6 +287,21 @@ ROUTE_TABLE: Dict[str, RouteTarget] = {
         ],
         "Tailscale assist nodes self-modulating calculation quantization",
     ),
+    "daycycle": RouteTarget(
+        "daycycle",
+        None,
+        None,
+        "cli",
+        "daycycle-mem-v12.1",
+        [
+            "daycycle",
+            "mem.md",
+            "minutentakt",
+            "zentralkonsolidierung",
+            "testtest",
+        ],
+        "Minute mem · hourly private dev · 4h PR · daily top + fanout (v12.1)",
+    ),
 }
 
 
