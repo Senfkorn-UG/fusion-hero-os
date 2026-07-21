@@ -37,7 +37,7 @@ from typing import Any, Dict, List, Optional, Tuple
 import numpy as np
 
 ROOT = Path(__file__).resolve().parents[2]
-PLATFORM = "12.0.0"
+PLATFORM = "12.1.0"
 CONFIG_PATH = ROOT / "mesh_quantize_selfmod.yaml"
 DOCS_SUMMARY = ROOT / "docs" / "mesh" / "tailscale_quantize_selfmod.latest.json"
 

@@ -39,7 +39,7 @@ __all__ = [
     "heroic_score_for_text",
 ]
 
-PLATFORM = "12.0.0"
+PLATFORM = "12.1.0"
 
 
 @dataclass

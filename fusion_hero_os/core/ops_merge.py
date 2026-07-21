@@ -18,7 +18,7 @@ from fusion_hero_os.core.ops_vocabulary import OPS_MERGE, meaning_of
 
 __all__ = ["merge_both", "status"]
 
-PLATFORM = "12.0.0"
+PLATFORM = "12.1.0"
 
 
 def status() -> Dict[str, Any]:
