@@ -1,10 +1,10 @@
 {
   "kind": "HORKRUX_BOTTOM_UP",
-  "generated_at": "2026-07-21T10:50:50.386646+00:00",
+  "generated_at": "2026-07-21T10:53:33.827333+00:00",
   "platform_target": "12.1.0",
   "platform_version_file": "12.1.0",
-  "kanon_tip": "a7d1d9c",
-  "duration_sec": 15.14,
+  "kanon_tip": "a2ad8d1",
+  "duration_sec": 15.73,
   "ok": true,
   "counts": {
     "total": 24,
@@ -77,7 +77,7 @@
       "layer": "L1_instances",
       "stashed": true,
       "ok": true,
-      "tip": "a7d1d9c",
+      "tip": "a2ad8d1",
       "version": "12.1.0",
       "was_dirty": true,
       "stderr": "",
@@ -309,8 +309,8 @@
       "role": "public_kanon",
       "layer": "L4_remotes",
       "ok": true,
-      "sha": "a7d1d9cbb3630c10e0c17029ce4092637fba2c59",
-      "short": "a7d1d9c",
+      "sha": "a2ad8d1a6f94487214529902088610fe7383a12f",
+      "short": "a2ad8d1",
       "matches_local_kanon": true,
       "stderr": ""
     },
@@ -322,8 +322,8 @@
       "role": "dual_org",
       "layer": "L4_remotes",
       "ok": true,
-      "sha": "a7d1d9cbb3630c10e0c17029ce4092637fba2c59",
-      "short": "a7d1d9c",
+      "sha": "a2ad8d1a6f94487214529902088610fe7383a12f",
+      "short": "a2ad8d1",
       "matches_local_kanon": true,
       "stderr": ""
     },
@@ -350,7 +350,7 @@
           "id": "primary",
           "ok": true,
           "branch": "main",
-          "tip": "a7d1d9c",
+          "tip": "a2ad8d1",
           "stderr": "",
           "role": "kanon"
         },
@@ -377,8 +377,8 @@
     "ok": true,
     "store": "C:\\Users\\Admin\\.fusion\\horcrux\\bottom_up_v12",
     "result": {
-      "generation": 2,
-      "sha256": "a080f23afb7822d9bc1c5e952a5061f5c677eafabe7c7ebfa201e43be10c1284",
+      "generation": 3,
+      "sha256": "d83ecf30f57bbb72e3c8593affb4ab02e471b36cf118e2d3f50ca33fb352c263",
       "shards": [
         "horcrux-json-c0.hx",
         "horcrux-csv-c0.hx",
