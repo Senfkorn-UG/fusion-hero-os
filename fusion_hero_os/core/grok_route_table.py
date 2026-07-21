@@ -260,8 +260,16 @@ ROUTE_TABLE: Dict[str, RouteTarget] = {
         "/api/training/dual-timeline/run",
         "api",
         "dual-timeline-training",
-        ["auto-train", "imaginary-time", "zeitstrahl", "tau"],
-        "Auto-training dual timeline t ∥ τ",
+        [
+            "auto-train",
+            "imaginary-time",
+            "zeitstrahl",
+            "tau",
+            "virtual-timeline",
+            "virtuelle timeline",
+            "heroic timeline",
+        ],
+        "Auto-training dual+virtual timeline t ∥ τ ∥ v (heroic SHU)",
     ),
 }
 
