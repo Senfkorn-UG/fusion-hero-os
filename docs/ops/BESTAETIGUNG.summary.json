@@ -1,10 +1,10 @@
 {
-  "id": "BESTAETIGUNG-1",
-  "utc": "2026-07-21T06:53:03.551282+00:00",
+  "id": "BESTAETIGUNG",
+  "utc": "2026-07-21T06:52:24.279162+00:00",
   "result": "PASS_WITH_WARN",
   "counts": {
-    "total": 23,
-    "pass": 22,
+    "total": 15,
+    "pass": 14,
     "fail_or_miss": 0,
     "warn": 1
   },
@@ -15,8 +15,7 @@
     "offense": "FORBIDDEN",
     "sandbox_only": true,
     "realraum_vault_commit": false,
-    "power_force_through": "lab_only",
     "external_tailnet_mutate": false
   },
-  "geltung": "BESTAETIGUNG-1 local lab state = Satz where hashed/measured"
+  "geltung": "local lab confirmation = Satz where hashed/measured"
 }

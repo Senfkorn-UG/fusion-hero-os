@@ -271,6 +271,22 @@ ROUTE_TABLE: Dict[str, RouteTarget] = {
         ],
         "Auto-training dual+virtual timeline t ∥ τ ∥ v (heroic SHU)",
     ),
+    "quantize_selfmod": RouteTarget(
+        "quantize_selfmod",
+        "/api/mesh/ops/quantize-selfmod",
+        "/api/mesh/ops/quantize-selfmod/cycle",
+        "api",
+        "tailscale-quantize-selfmod",
+        [
+            "tailscale quantize",
+            "quantisierung",
+            "selbstmodulierend",
+            "quantize selfmod",
+            "mesh quantize",
+            "bit depth",
+        ],
+        "Tailscale assist nodes self-modulating calculation quantization",
+    ),
 }
 
 
