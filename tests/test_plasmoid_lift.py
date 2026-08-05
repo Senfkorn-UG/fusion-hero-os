@@ -210,6 +210,30 @@ def test_p3_binding_strictly_decreases_from_fluid_to_plasmoid(rng):
     assert res.residual < 1e-5
 
 
+def test_lift_sets_reason_on_every_exit_path(rng):
+    """`reason` wird auf jedem Ausgang gesetzt — auch bei leerem Schleifenrange.
+
+    Regression zu einer CodeQL-Meldung: die Vorbelegung `reason = "stationary"`
+    war toter Code, weil alle drei break-Pfade UND das else der Schleife sie
+    ohnehin setzen. Sie wurde entfernt; dieser Test verankert, dass dadurch
+    kein Pfad ohne `reason` zurückkehrt (sonst: UnboundLocalError).
+    """
+    pl = _lift_with_positive_spectrum(rng, n=4)
+    x0 = rng.normal(0, 2, 4)
+    valid = {"stationary", "no_descent_step", "budget_exhausted", "degenerate_potential"}
+
+    # leerer Range: Schleifenkörper läuft nie, das else trägt die Begründung
+    res0 = pl.lift(x0, max_steps=0)
+    assert res0.reason == "budget_exhausted"
+    assert res0.steps == 0
+    assert res0.energy == pytest.approx(res0.energy_start, rel=1e-12)
+
+    # Budget erschöpft, stationär erreicht, und ein bereits kraftfreier Start
+    for ms in (1, 2, 25, 50_000):
+        assert pl.lift(x0, max_steps=ms).reason in valid
+    assert pl.lift(pl.ground_state(2.0), max_steps=10).reason in valid
+
+
 def test_p3_lift_starting_in_plasmoid_space_is_a_no_op(rng):
     """Wer schon kraftfrei ist, wird nicht weiter gehoben (Fixpunkt-Eigenschaft)."""
     pl = _lift_with_positive_spectrum(rng, n=5)

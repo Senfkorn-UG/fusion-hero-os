@@ -328,7 +328,12 @@ class PlasmoidLift:
             )
         w_start = self.energy(x)
         hist = [w_start] if keep_history else []
-        reason = "stationary"
+        # steps braucht die Vorbelegung: bei max_steps = 0 ist range() leer und
+        # die Schleifenvariable wird nie gebunden. reason braucht sie NICHT —
+        # jeder Ausgang setzt sie (drei break-Pfade + das else der Schleife, das
+        # auch bei leerem range laeuft). Eine Vorbelegung hier waere toter Code
+        # und wuerde einen vergessenen Pfad still verschlucken statt laut zu
+        # scheitern.
         steps = 0
 
         for steps in range(1, max_steps + 1):
