@@ -55,6 +55,51 @@ claims:
     proofs:
       - tests/test_heroic_math_engine.py::test_module_docstring_does_not_use_blanket_repair_claim
 
+  # ---- Plasmoid-Lift (Gott-Layering v12: Hebung F_h -> P) ------------------
+  - id: P1-BELTRAMI-KRITIKALITAET
+    statement: "Diskreter Woltjer-Satz: x != 0 ist genau dann kritischer Punkt von W auf {H = H(x)}, wenn Sx = alpha x (kraftfrei/Beltrami) — SATZ, Beweis am Code, Sweep in pytest."
+    status: BEWIESEN
+    proofs:
+      - tests/test_plasmoid_lift.py::test_p1_eigenvectors_are_exactly_the_critical_points
+
+  - id: P2-TAYLOR-SCHRANKE
+    statement: "Taylor-Schranke 2W(x) >= alpha_g H(x) fuer ALLE x, mit Gleichheit genau im Eigenraum zu alpha_g (betragskleinster Eigenwert mit sign(alpha_g)=sign(h)) — SATZ, vorzeichensymmetrisch."
+    status: BEWIESEN
+    proofs:
+      - tests/test_plasmoid_lift.py::test_p2_taylor_bound_holds_universally
+      - tests/test_plasmoid_lift.py::test_p2_ground_state_attains_the_bound_exactly
+      - tests/test_plasmoid_lift.py::test_p2_bound_also_holds_for_negative_helicity
+
+  - id: P3-HEBUNG
+    statement: "Die Hebung (projizierter Energieabstieg) erhaelt die Helizitaet exakt (Axiom 1), senkt W monoton (Axiom 2) und hat als Gleichgewichte genau den plasmoiden Raum — SATZ (a)(b)(c)."
+    status: BEWIESEN
+    proofs:
+      - tests/test_plasmoid_lift.py::test_p3_lift_conserves_helicity_exactly
+      - tests/test_plasmoid_lift.py::test_p3_energy_decreases_monotonically
+      - tests/test_plasmoid_lift.py::test_p3_equilibria_are_force_free
+      - tests/test_plasmoid_lift.py::test_p3_binding_strictly_decreases_from_fluid_to_plasmoid
+
+  - id: P4-GRUNDZUSTAND-NICHT-UNIVERSELL
+    statement: "Konvergenz in den Taylor-Grundzustand ist KEIN Satz: die Gleichgewichtsmenge umfasst alle Eigenraeume, ein Start in einem hoeheren Eigenraum bleibt strikt ueber der Schranke stehen. Generisch wird der Grundzustand erreicht; die Rate haengt an der Spektrallucke (Sweep: 4/2492 nur budget-limitiert, danach <= 1.8e-12)."
+    status: BEWIESEN
+    proofs:
+      - tests/test_plasmoid_lift.py::test_p4_is_not_a_universal_law_all_eigenspaces_are_equilibria
+      - tests/test_plasmoid_lift.py::test_p4_reaches_taylor_bound_for_well_separated_spectrum
+    notes: "Negativ-Referenz analog K16: verhindert, dass ein spaeterer Edit P4 stillschweigend zur Satz-Behauptung aufwertet."
+
+  - id: P-DEGENERACY-RELATIV
+    statement: "Der Entartungstest H ~ 0 ist relativ (|H| <= rtol * ||S^-1|| ||x||^2), nicht absolut: ein Test auf H == 0.0 greift nicht, weil die entartete Niveauflaeche numerisch ~1e-17 liefert."
+    status: BEWIESEN
+    proofs:
+      - tests/test_plasmoid_lift.py::test_degeneracy_check_is_scale_invariant
+      - tests/test_plasmoid_lift.py::test_zero_helicity_has_no_ground_state
+
+  - id: PLASMOID-MODELL-HONESTY
+    statement: "Der Modul-Docstring von plasmoid_lift kennzeichnet die Plasma-/Plasmoid-Deutung als MODELL/Analogie (kein Physik-Claim) und weist P4 als nicht-universell aus."
+    status: BEWIESEN
+    proofs:
+      - tests/test_plasmoid_lift.py::test_module_docstring_flags_plasma_reading_as_model
+
   - id: ISING-BRIDGE
     statement: "qubo_to_ising/ising_energy: E_QUBO(x) == E_Ising(s) fuer symmetrische Q unter x=(1+s)/2."
     status: BEWIESEN
