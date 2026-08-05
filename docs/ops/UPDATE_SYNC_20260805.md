@@ -58,8 +58,9 @@ fluid-workflows — alle grün.
 | Punkt | Stand |
 |-------|-------|
 | `pii-scan` rot | **vorbestehend auf `main`**, nicht aus #27 |
-| Befund | `artifacts/ALTE_Frau_95g_Tailscale_MagicDNS_Exploration_2026-08-02.md:5` |
-| Literal | `node-name.tailnet-name.ts.net` — Tailscale-Doku-Platzhalter, kein realer Host |
+| Befund | Regel `magicdns_host` in `artifacts/ALTE_Frau_95g_Tailscale_MagicDNS_Exploration_2026-08-02.md:5` |
+| Art | Tailscales generischer FQDN-Schema-Platzhalter (`<node>` · `<tailnet>` · MagicDNS-Suffix), kein realer Host |
+| Merke | Das Literal wird hier **bewusst nicht** wiedergegeben — sonst meldet der Scanner diese Datei gleich mit (genau das ist beim ersten Entwurf passiert). |
 | Fix | Einzeiler in `scripts/pii_allowlist.yaml` (`allow_literals`) |
 | Warum offen | lockert eine Privacy-Kontrolle → Operator-Entscheidung, nicht nebenbei im Fachthema-PR |
 | `human-confirm/google` | offen by design — Secret `GOOGLE_CONFIRM_WEBAPP_URL` nicht gesetzt, kein Required Check |
