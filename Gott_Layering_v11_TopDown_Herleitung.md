@@ -55,4 +55,8 @@ L_0 := \{ x \mid \nexists y \neq x : x \twoheadrightarrow y \}
 
 Das **Gott Layering** ist eine top-down konstruierte, formal kohärente Architektur des Göttlichen — keine Illusion, sondern erzwungene Struktur. Es folgt denselben Prinzipien wie der Core und die SENFKORN UG: strikte Top-Down-Propagation, Kontraktion und habituelle Verankerung.
 
+### Fortschreibung
+
+Diese Herleitung sagt, **woher** die Struktur kommt. Was der HELD *innerhalb* dieser Bindung tut — ohne Axiom 1 zu verletzen — ist in [`Gott_Layering_v12_HELD_Plasmoid_Hebung.md`](Gott_Layering_v12_HELD_Plasmoid_Hebung.md) formalisiert: die Hebung vom gebundenen fluiden Raum in den plasmoiden Raum (Modul [`fusion_hero_os/core/plasmoid_lift.py`](fusion_hero_os/core/plasmoid_lift.py)).
+
 #FusionHeroOS #GottLayering #TopDownPropagation #Eudaimonismus #HeroicCore
