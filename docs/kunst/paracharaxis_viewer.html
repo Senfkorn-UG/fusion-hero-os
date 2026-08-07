@@ -4,7 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Paracharaxis — Überprägung</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
+    <!--
+      p5.js mit Subresource Integrity. Ohne den integrity-Hash koennte eine
+      Kompromittierung des CDN beliebigen Code in diese Seite einschleusen
+      (CodeQL: "Inclusion of functionality from an untrusted source").
+      Der Hash ist der von cdnjs veroeffentlichte SRI fuer p5.js 1.7.0; eine
+      lokal heruntergeladene Kopie wurde dagegen geprueft und ist
+      byte-identisch. crossorigin ist Pflicht, sonst wird integrity ignoriert.
+    -->
+    <script
+        src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"
+        integrity="sha512-bcfltY+lNLlNxz38yBBm/HLaUB1gTV6I0e+fahbF9pS6roIdzUytozWdnFV8ZnM6cSAG5EbmO0ag0a/fLZSG4Q=="
+        crossorigin="anonymous"
+        referrerpolicy="no-referrer"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&family=Lora:wght@400;500&display=swap" rel="stylesheet">
