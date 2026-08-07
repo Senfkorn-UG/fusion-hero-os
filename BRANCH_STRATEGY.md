@@ -4,9 +4,9 @@
 > (the OS *is* the work). Text under `docs/dissertation/` is one expression.
 > See `docs/dissertation/ONTOLOGIE_DISSERTATION_IST_DAS_OS.md`.
 
-> **Stand:** v15.2.0 · 2026-08-02
+> **Stand:** v20.0.0 · 2026-08-07
 
-## Versionierung (kanonisch ab v8.3.0, aktueller Kanon v15.2.0)
+## Versionierung (kanonisch ab v8.3.0, aktueller Kanon v20.0.0)
 
 **Quelle der Wahrheit ist der annotierte Git-Tag `vMAJOR.MINOR.PATCH` auf
 `main` dieses Repos** (`95guknow/fusion-hero-os`), gespiegelt in der Datei
@@ -27,10 +27,17 @@ abgeleitet — kein Dokument, Branch oder Manifest führt eine eigene Zählung.
     (BCG ununterbrochen). Der Ära-Name beschreibt die Richtung; die tragenden
     Claims stehen in `proof_registry.yaml` mit Status `OFFEN` (siehe
     `BEST_VERSION.md` → „Was v14.0.0 operativ bedeutet"). **Nicht getaggt.**
-  - **15** = aktuelle operative Plattform-Ära, additiv über v14. **Ohne
-    benannten Inhalt** — bisher ein reiner Versionssprung (Manifeste, Doku,
-    Satelliten-Kompatibilität). Aktuell: **`15.0.0`** in `VERSION`,
-    **ebenfalls nicht getaggt**.
+  - **15** = Plattform-Ära additiv über v14. **v15.0.0 ohne benannten Inhalt**
+    (reiner Versionssprung: Manifeste, Doku, Satelliten-Kompatibilität);
+    **v15.2.0 = Öffentliche Kennzeichnung**, Ära-Kern operativ und geprüft.
+    Beide **nicht getaggt**.
+  - **20** = aktuelle operative Plattform-Ära, additiv über v15.2 (BCG
+    ununterbrochen). Ära-Name: **Propagations-Kopplung** — Top-Down-Geltung
+    und Middle-Out-Deckung als Architektur-Dokument verankert, Identitäts-Layer
+    bewusst von `VERSION` entkoppelt. Der Ära-Kern ist **dokumentarisch
+    belegt, der Tag-Stand nicht**; der Sprung wurde als Operator-Entscheidung
+    in Kenntnis des Tag-Rückstands gesetzt (siehe `BEST_VERSION.md`).
+    Aktuell: **`20.0.0`** in `VERSION`, **ebenfalls nicht getaggt**.
 
 - **MINOR** = Feature-/Konsolidierungsstand (neue Layer, Mesh-Ausbau, …).
 - **PATCH** = Fixes.
@@ -38,9 +45,9 @@ abgeleitet — kein Dokument, Branch oder Manifest führt eine eigene Zählung.
 
 > **Achtung — die Tag-Regel gilt derzeit nicht.** Oben steht, die Quelle der
 > Wahrheit sei der annotierte Tag auf `main`. Letzter veröffentlichter Tag ist
-> `v13.0.0`; v14.0.0, v15.0.0 und v15.2.0 existieren nur in `VERSION`. Für drei
-> aufeinanderfolgende Stände ist die Datei dem Tag vorausgelaufen, und der
-> Abstand wächst mit jedem Sprung. `v14.0.0` ist lokal getaggt, aber nie
+> `v13.0.0`; v14.0.0, v15.0.0, v15.2.0 und v20.0.0 existieren nur in `VERSION`.
+> Für vier aufeinanderfolgende Stände ist die Datei dem Tag vorausgelaufen, und
+> der Abstand wächst mit jedem Sprung. `v14.0.0` ist lokal getaggt, aber nie
 > gepusht — der Git-Proxy dieser Umgebung sperrt `refs/tags/*` mit 403.
 > Nachziehen von einer Arbeitskopie mit Push-Recht, dann stimmt die Regel
 > wieder; die Befehle stehen in `BEST_VERSION.md`.
