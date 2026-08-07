@@ -88,3 +88,26 @@ signatures:
     cli:
       - python -m fusion_hero_os.core.persona_signature --render
       - python -m fusion_hero_os.core.persona_signature --status
+
+  normalos:
+    trigger: "=====NormalOS"
+    meaning: product_signature
+    german: "NormalOS-Produktsignatur mit eigener Versionslinie"
+    default_version: "2.0"
+    version_suffix: >
+      Optional direkt hinter dem Trigger: "=====NormalOS v2.0". Ohne Suffix
+      gilt default_version.
+    binding: >
+      NICHT vault-gebunden. "NormalOS" ist ein Produktname, keine
+      natürliche Person — die Operator-Membran schützt Personen; sie auf
+      einen Produktnamen auszudehnen würde sie entwerten. Deshalb steht
+      dieser Name regulär im Paket.
+    membrane: null
+    canon: normalOS/README.md
+    note: >
+      Eigene Versionslinie, bewusst entkoppelt von der
+      Fusion-Hero-OS-Plattformzählung (VERSION). normalOS v2.0 ist nicht
+      Plattform v20 — die Zählungen laufen getrennt.
+    cli:
+      - python -m fusion_hero_os.core.persona_signature --normalos
+      - python -m fusion_hero_os.core.persona_signature --normalos 2.0 --markdown
