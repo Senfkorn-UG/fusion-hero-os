@@ -1,6 +1,7 @@
 # BEST VERSION — Fusion Hero OS
 
-**Stand:** v15.2.0 canonical (VERSION, ungetaggt) — additive over v15.0.0 / v14.0.0 / v13.0.0 / v12.1.0 / v12.0.0 / v10 / v8.3 BCG  
+**Stand:** v20.0.0 canonical (VERSION, ungetaggt) — additive over v15.2.0 / v15.0.0 / v14.0.0 / v13.0.0 / v12.1.0 / v12.0.0 / v10 / v8.3 BCG  
+**v20.0.0:** Platform major (Ära 20) — **Propagations-Kopplung.** Benannter Inhalt: die Unterscheidung von Top-Down-Geltung und Middle-Out-Deckung ist als Architektur-Dokument verankert (`docs/architecture/TOPDOWN_VS_MIDDLEOUT_PROPAGATION.md`), und der Identitäts-Layer ist erstmals bewusst von `VERSION` entkoppelt (`identity-fixpoint.md` v10.1.0), statt eine ungedeckte Nummer zu spiegeln. **Der Ära-Kern ist dokumentarisch belegt, der Tag-Stand nicht** — der Sprung von 15.2.0 auf 20.0.0 vergrößert den ungetaggten Abstand auf vier Stände und wurde in Kenntnis dieses Befundes gesetzt (Operator-Entscheidung, 2026-08-07). Was hier steht, ist damit ausdrücklich **kein** Beleg für die Nummer, sondern die Offenlegung ihres Preises.  
 **v15.2.0:** Platform minor (Ära 15.2) — **Öffentliche Kennzeichnung.** Das System wird ansprechbar: Anbieterkennzeichnung nach § 5 DDG als eigene Seite, Offenlegung der drei Schichten (Betrieb / Forschung / Gedankenspiel) mit Beleg aus dem eigenen Code, und die Dissertation trägt ihren Status auf Seite 1 statt einen Grad-Anspruch. Der Ära-Kern ist **operativ und geprüft** — anders als bei v14, wo die Nummer gesetzt, aber nicht belegt war.  
 **v15.0.0:** Platform major (Ära 15) — **ohne benannten Ära-Inhalt.** Der Sprung war ein reiner Versionssprung: Manifeste, Doku, Satelliten-Kompatibilität. Der Eintrag bleibt so stehen; eine Ära nachträglich mit Inhalt zu füllen, den sie nicht hatte, wäre genau die Sorte Rückdatierung, gegen die die Registry antritt.  
 **v14.0.0:** Platform major (Ära 14) — **Poly-Mesh / n-dimensionale Mannigfaltigkeit**; Claude Science Integration (Multi-Agent Audit, Scientific Connector Protocol, ScientificAuditHorkrux). Der Ära-Kern ist **ASPIRATIONAL/OFFEN**, siehe `proof_registry.yaml` — die Nummer ist gesetzt, nicht belegt.  
@@ -40,19 +41,27 @@ Original und Verfassung der Textqualität:
 
 Code Honesty bleibt organisch: Proof Registry **BEWIESEN / OFFEN / WIDERLEGT** — die Ontologie entbindet nicht von Nachweis.
 
-## Operativer Kanon: v15.2.0 / main
+## Operativer Kanon: v20.0.0 / main
 
-**`VERSION` = `15.2.0` ist die kanonische Plattform-Version** (additiv zu v15.0.0 / v14.0.0 / v13.0.0 / v12.1.0 / v12.0.0 / v10 / v8.3). Quelle der
-Wahrheit: annotierter Git-Tag `v15.2.0` auf `main` (nach Release) + Root-`VERSION`.
+**`VERSION` = `20.0.0` ist die kanonische Plattform-Version** (additiv zu v15.2.0 / v15.0.0 / v14.0.0 / v13.0.0 / v12.1.0 / v12.0.0 / v10 / v8.3). Quelle der
+Wahrheit: annotierter Git-Tag `v20.0.0` auf `main` (nach Release) + Root-`VERSION`.
 Alle Manifeste (`pyproject.toml`, `package.json`, Crate-`Cargo.toml`,
 `fusion_hero_os.__version__`) müssen übereinstimmen (`scripts/bump_version.py --check`).
 
-> **Stand des Tags — drei Ären ohne Release.** `VERSION` steht auf 15.2.0, das
+> **Stand des Tags — vier Stände ohne Release.** `VERSION` steht auf 20.0.0, das
 > letzte **veröffentlichte** Release ist `v13.0.0`. Weder v14.0.0 noch v15.0.0
-> noch v15.2.0 sind getaggt. Damit stimmt die Regel „Quelle der Wahrheit ist der
-> annotierte Tag" (`BRANCH_STRATEGY.md`) für drei aufeinanderfolgende Stände
-> nicht mehr — die `VERSION`-Datei ist dem Kanon vorgelaufen, und der Abstand
-> wächst mit jedem Sprung.
+> noch v15.2.0 noch v20.0.0 sind getaggt. Damit stimmt die Regel „Quelle der
+> Wahrheit ist der annotierte Tag" (`BRANCH_STRATEGY.md`) für vier
+> aufeinanderfolgende Stände nicht mehr — die `VERSION`-Datei ist dem Kanon
+> vorgelaufen, und der Abstand wächst mit jedem Sprung.
+>
+> **Der Sprung auf 20.0.0 (2026-08-07) wurde in Kenntnis dieses Befundes
+> gesetzt.** Er ist eine Operator-Entscheidung, keine Deckung: Die Analyse in
+> `docs/architecture/TOPDOWN_VS_MIDDLEOUT_PROPAGATION.md` hatte zuvor
+> festgehalten, dass ein Ära-Bump genau dann legitim ist, wenn er top-down
+> verankert **und** middle-out gedeckt ist, und dass hier nur der erste Weg
+> gelaufen ist. Der Eintrag hält das fest, statt es zu glätten — dieselbe Regel,
+> unter der v15.0.0 als „ohne benannten Ära-Inhalt" stehen geblieben ist.
 >
 > Der Tag `v14.0.0` existiert **lokal**, hat das Remote aber nie erreicht: der
 > Git-Proxy dieser Arbeitsumgebung sperrt `refs/tags/*` mit 403. Das Nachziehen
@@ -61,8 +70,9 @@ Alle Manifeste (`pyproject.toml`, `package.json`, Crate-`Cargo.toml`,
 > ```
 > git tag -a v14.0.0 cfbb751 -m "Fusion Hero OS v14.0.0 — Ära 14"
 > git tag -a v15.0.0 93e11e4 -m "Fusion Hero OS v15.0.0 — Ära 15"
-> git tag -a v15.2.0 -m "Fusion Hero OS v15.2.0 — Ära 15.2"
-> git push origin v14.0.0 v15.0.0 v15.2.0
+> git tag -a v15.2.0 <commit> -m "Fusion Hero OS v15.2.0 — Ära 15.2"
+> git tag -a v20.0.0 -m "Fusion Hero OS v20.0.0 — Ära 20"
+> git push origin v14.0.0 v15.0.0 v15.2.0 v20.0.0
 > ```
 >
 > `.github/workflows/release.yml` feuert auf `v[0-9]+.[0-9]+.[0-9]+` und baut

@@ -3,7 +3,7 @@
 # Known identifications only (no freemium; pseudo_inhouse_only)
 
 version: "1.0"
-platform_version: "10.0.0"
+platform_version: "20.0.0"
 policy: pseudo_inhouse_only
 freemium: false
 
@@ -30,7 +30,7 @@ identities:
     - develop
     - ascension
   platform_version_file: VERSION
-  platform_version: "10.0.0"
+  platform_version: "20.0.0"
   repo_name: fusion-hero-os
   owner: 95guknow
   org: Senfkorn-UG
