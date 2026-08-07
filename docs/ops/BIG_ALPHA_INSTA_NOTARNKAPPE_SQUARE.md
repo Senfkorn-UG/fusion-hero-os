@@ -2,7 +2,7 @@
 
 **Policy:** public branding tile — *not* hypertarnkappe / identity scrub.  
 **Source desktop:** `OneDrive/Desktop/shuSHU_insta_notarnkappe_bigalpha_v13_square.png`  
-**Platform pin:** root `VERSION` = **15.2.0** (relabeled from visual v13.0.0)
+**Platform pin:** root `VERSION` = **20.0.0** (relabeled from visual v13.0.0)
 
 ## Visual
 
@@ -13,9 +13,9 @@
 | Badge | NO TARNKAPPE · PUBLIC |
 | Title | ASCENSIONOS / BIG ALPHA |
 | Left mid | v9.10 ASPIRATIONAL (unchanged — aspirational track) |
-| Right mid | FUSION HERO OS v15.2.0 |
-| Footer | Fusion Hero OS v15.2.0 · AscensionOS v9.10 |
-| SHA256 (consumer primary) | `21fb7715965c8752e06bdca6635f819357994cb99eb24554a509f7614128eb17` |
+| Right mid | FUSION HERO OS v20.0.0 |
+| Footer | Fusion Hero OS v20.0.0 · AscensionOS v9.10 |
+| SHA256 (consumer primary) | `ac4c4b37120aa8e66b4ebe6f494a88e825baa99fcbccee54789a39706bf460d7` |
 
 ## Repo paths
 
@@ -23,10 +23,10 @@
 - `memes/shuSHU_insta_notarnkappe_bigalpha_v13_square.png`
 - `docs/dissertation/assets/shuSHU_insta_notarnkappe_bigalpha_v13_square.png`
 
-### Relabeled to kanon v15.2.0
+### Relabeled to kanon v20.0.0
 - `memes/shuSHU_insta_notarnkappe_bigalpha_square.png` (consumer primary)
 - `memes/shuSHU_insta_notarnkappe_bigalpha_v15_square.png`
-- `memes/shuSHU_insta_notarnkappe_bigalpha_v15_2_0_square.png`
+- `memes/shuSHU_insta_notarnkappe_bigalpha_v20_0_0_square.png`
 - same under `docs/dissertation/assets/`
 
 ## Method (honesty)

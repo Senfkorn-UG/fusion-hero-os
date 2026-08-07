@@ -13,10 +13,25 @@ VERSION = (ROOT / "VERSION").read_text(encoding="utf-8").strip() or "15.2.0"
 
 
 def font(size: int):
+    """Erste vorhandene Bold-Sans in Kandidatenreihenfolge.
+
+    Ohne die Linux-/macOS-Kandidaten fiel ein Lauf ausserhalb von Windows auf
+    ImageFont.load_default() zurueck. Das ist eine winzige Bitmap-Schrift, die
+    den size-Parameter ignoriert: rechtes Badge und Fusszeile kamen gestaucht
+    und unlesbar heraus, waehrend die nicht neu gemalten Elemente gross und
+    fett blieben — ein sichtbarer Bruch im selben Bild.
+
+    Liberation Sans Bold steht vor DejaVu, weil es metrisch Arial-kompatibel
+    ist und damit der Windows-Zweitwahl (arialbd) entspricht.
+    """
     for p in (
         r"C:\Windows\Fonts\segoeuib.ttf",
         r"C:\Windows\Fonts\arialbd.ttf",
         r"C:\Windows\Fonts\arial.ttf",
+        "/usr/share/fonts/truetype/liberation/LiberationSans-Bold.ttf",
+        "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
+        "/usr/share/fonts/truetype/freefont/FreeSansBold.ttf",
+        "/Library/Fonts/Arial Bold.ttf",
     ):
         if Path(p).is_file():
             return ImageFont.truetype(p, size=size)
