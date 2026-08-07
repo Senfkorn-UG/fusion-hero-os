@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paracharaxis — Überprägung</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&family=Lora:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        /* Anthropic Brand Colors */
+        :root {
+            --anthropic-dark: #141413;
+            --anthropic-light: #faf9f5;
+            --anthropic-mid-gray: #b0aea5;
+            --anthropic-light-gray: #e8e6dc;
+            --anthropic-orange: #d97757;
+            --anthropic-blue: #6a9bcc;
+            --anthropic-green: #788c5d;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, var(--anthropic-light) 0%, #f5f3ee 100%);
+            min-height: 100vh;
+            color: var(--anthropic-dark);
+        }
+
+        .container { display: flex; min-height: 100vh; padding: 20px; gap: 20px; }
+
+        .sidebar {
+            width: 320px; flex-shrink: 0;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 24px; border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(20, 20, 19, 0.1);
+            overflow-y: auto; overflow-x: hidden;
+        }
+
+        .sidebar h1 {
+            font-family: 'Lora', serif; font-size: 24px; font-weight: 500;
+            color: var(--anthropic-dark); margin-bottom: 8px;
+        }
+
+        .sidebar .subtitle {
+            color: var(--anthropic-mid-gray); font-size: 14px;
+            margin-bottom: 32px; line-height: 1.4;
+        }
+
+        .control-section { margin-bottom: 32px; }
+
+        .control-section h3 {
+            font-size: 16px; font-weight: 600; color: var(--anthropic-dark);
+            margin-bottom: 16px; display: flex; align-items: center; gap: 8px;
+        }
+
+        .control-section h3::before { content: '•'; color: var(--anthropic-orange); font-weight: bold; }
+
+        .seed-input {
+            width: 100%; background: var(--anthropic-light); padding: 12px;
+            border-radius: 8px; font-family: 'Courier New', monospace; font-size: 14px;
+            margin-bottom: 12px; border: 1px solid var(--anthropic-light-gray); text-align: center;
+        }
+
+        .seed-input:focus {
+            outline: none; border-color: var(--anthropic-orange);
+            box-shadow: 0 0 0 2px rgba(217, 119, 87, 0.1); background: white;
+        }
+
+        .seed-controls { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; }
+        .regen-button { margin-bottom: 0; }
+
+        .control-group { margin-bottom: 20px; }
+
+        .control-group label {
+            display: block; font-size: 14px; font-weight: 500;
+            color: var(--anthropic-dark); margin-bottom: 8px;
+        }
+
+        .slider-container { display: flex; align-items: center; gap: 12px; }
+
+        .slider-container input[type="range"] {
+            flex: 1; height: 4px; background: var(--anthropic-light-gray);
+            border-radius: 2px; outline: none; -webkit-appearance: none;
+        }
+
+        .slider-container input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none; width: 16px; height: 16px;
+            background: var(--anthropic-orange); border-radius: 50%;
+            cursor: pointer; transition: all 0.2s ease;
+        }
+
+        .slider-container input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.1); background: #c86641;
+        }
+
+        .slider-container input[type="range"]::-moz-range-thumb {
+            width: 16px; height: 16px; background: var(--anthropic-orange);
+            border-radius: 50%; border: none; cursor: pointer; transition: all 0.2s ease;
+        }
+
+        .value-display {
+            font-family: 'Courier New', monospace; font-size: 12px;
+            color: var(--anthropic-mid-gray); min-width: 60px; text-align: right;
+        }
+
+        .color-group { margin-bottom: 16px; }
+        .color-group label { display: block; font-size: 12px; color: var(--anthropic-mid-gray); margin-bottom: 4px; }
+        .color-picker-container { display: flex; align-items: center; gap: 8px; }
+
+        .color-picker-container input[type="color"] {
+            width: 32px; height: 32px; border: none; border-radius: 6px;
+            cursor: pointer; background: none; padding: 0;
+        }
+
+        .color-value { font-family: 'Courier New', monospace; font-size: 12px; color: var(--anthropic-mid-gray); }
+
+        .button {
+            background: var(--anthropic-orange); color: white; border: none;
+            padding: 10px 16px; border-radius: 6px; font-size: 14px; font-weight: 500;
+            cursor: pointer; transition: all 0.2s ease; width: 100%;
+        }
+
+        .button:hover { background: #c86641; transform: translateY(-1px); }
+        .button:active { transform: translateY(0); }
+        .button.secondary { background: var(--anthropic-blue); }
+        .button.secondary:hover { background: #5a8bb8; }
+        .button.tertiary { background: var(--anthropic-green); }
+        .button.tertiary:hover { background: #6b7b52; }
+        .button-row { display: flex; gap: 8px; margin-bottom: 8px; }
+        .button-row .button { flex: 1; }
+
+        .mark-note {
+            font-size: 11px; line-height: 1.5; color: var(--anthropic-mid-gray);
+            background: var(--anthropic-light); border-left: 3px solid var(--anthropic-orange);
+            padding: 10px 12px; border-radius: 4px; margin-top: 4px;
+        }
+
+        .canvas-area { flex: 1; display: flex; align-items: center; justify-content: center; min-width: 0; }
+
+        #canvas-container {
+            width: 100%; max-width: 1000px; border-radius: 12px; overflow: hidden;
+            box-shadow: 0 20px 40px rgba(20, 20, 19, 0.1); background: white;
+        }
+
+        #canvas-container canvas { display: block; width: 100% !important; height: auto !important; }
+
+        .loading { display: flex; align-items: center; justify-content: center; font-size: 18px; color: var(--anthropic-mid-gray); }
+
+        @media (max-width: 600px) {
+            .container { flex-direction: column; }
+            .sidebar { width: 100%; }
+            .canvas-area { padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <h1>Paracharaxis</h1>
+            <div class="subtitle">Überprägung — nD-Polymesh, Schall &amp; Qualm, dadaistischer Schnitt. Jedes Bild trägt seine Herkunft im Bild.</div>
+
+            <!-- Seed Section -->
+            <div class="control-section">
+                <h3>Seed</h3>
+                <input type="number" id="seed-input" class="seed-input" value="12345" onchange="updateSeed()">
+                <div class="seed-controls">
+                    <button class="button secondary" onclick="previousSeed()">← Prev</button>
+                    <button class="button secondary" onclick="nextSeed()">Next →</button>
+                </div>
+                <button class="button tertiary regen-button" onclick="randomSeedAndUpdate()">↻ Random</button>
+            </div>
+
+            <!-- Parameters -->
+            <div class="control-section">
+                <h3>Parameter</h3>
+
+                <div class="control-group">
+                    <label>Dimensionen (n)</label>
+                    <div class="slider-container">
+                        <input type="range" id="dimensions" min="4" max="7" step="1" value="5" oninput="updateParam('dimensions', this.value)">
+                        <span class="value-display" id="dimensions-value">5</span>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label>Gitterweite (Radius)</label>
+                    <div class="slider-container">
+                        <input type="range" id="extent" min="1" max="3" step="1" value="2" oninput="updateParam('extent', this.value)">
+                        <span class="value-display" id="extent-value">2</span>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label>Polyglossie (Stimmen)</label>
+                    <div class="slider-container">
+                        <input type="range" id="voices" min="1" max="3" step="1" value="3" oninput="updateParam('voices', this.value)">
+                        <span class="value-display" id="voices-value">3</span>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label>Schall (Welle)</label>
+                    <div class="slider-container">
+                        <input type="range" id="schall" min="0" max="1" step="0.02" value="0.62" oninput="updateParam('schall', this.value)">
+                        <span class="value-display" id="schall-value">0.62</span>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label>Qualm (Diffusion)</label>
+                    <div class="slider-container">
+                        <input type="range" id="qualm" min="0" max="1" step="0.02" value="0.44" oninput="updateParam('qualm', this.value)">
+                        <span class="value-display" id="qualm-value">0.44</span>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label>Dadaistischer Schnitt</label>
+                    <div class="slider-container">
+                        <input type="range" id="schnitt" min="0" max="1" step="0.02" value="0.36" oninput="updateParam('schnitt', this.value)">
+                        <span class="value-display" id="schnitt-value">0.36</span>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label>Laterne (Suchspur)</label>
+                    <div class="slider-container">
+                        <input type="range" id="laterne" min="0" max="1" step="0.02" value="0.7" oninput="updateParam('laterne', this.value)">
+                        <span class="value-display" id="laterne-value">0.7</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Colors -->
+            <div class="control-section">
+                <h3>Stimmen</h3>
+                <div class="color-group">
+                    <label>Erste Stimme</label>
+                    <div class="color-picker-container">
+                        <input type="color" id="color1" value="#e8b455" onchange="updateColor('color1', this.value)">
+                        <span class="color-value" id="color1-value">#e8b455</span>
+                    </div>
+                </div>
+                <div class="color-group">
+                    <label>Zweite Stimme</label>
+                    <div class="color-picker-container">
+                        <input type="color" id="color2" value="#00e5ff" onchange="updateColor('color2', this.value)">
+                        <span class="color-value" id="color2-value">#00e5ff</span>
+                    </div>
+                </div>
+                <div class="color-group">
+                    <label>Dritte Stimme</label>
+                    <div class="color-picker-container">
+                        <input type="color" id="color3" value="#a855f7" onchange="updateColor('color3', this.value)">
+                        <span class="color-value" id="color3-value">#a855f7</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="control-section">
+                <h3>Aktionen</h3>
+                <div class="button-row">
+                    <button class="button" onclick="regenerate()">Neu zeichnen</button>
+                    <button class="button" onclick="resetParameters()">Reset</button>
+                </div>
+                <button class="button secondary" onclick="downloadPNG()">⤓ PNG speichern</button>
+                <div class="mark-note">
+                    <strong>KI-Kunstmarkierung.</strong> Jedes Bild trägt <code>(Ω)Q-Boi!(ℵ)</code>, die Deklaration <code>KI-GENERIERT</code> und seinen Seed sichtbar im Bild. Der Seed ist der Beleg: derselbe Seed erzeugt dasselbe Bild.
+                </div>
+            </div>
+        </div>
+
+        <div class="canvas-area">
+            <div id="canvas-container">
+                <div class="loading">Paracharaxis wird geprägt …</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ═══════════════════════════════════════════════════════════════════
+        // PARACHARAXIS — Parameter
+        // ═══════════════════════════════════════════════════════════════════
+
+        const ALGO = 'Paracharaxis';
+        const ALGO_VERSION = 'v1.0.0';
+        const MARK = '(Ω)Q-Boi!(א)';
+        const GROUND = [7, 10, 20];
+
+        let params = {
+            seed: 12345,
+            dimensions: 5,
+            extent: 2,
+            voices: 3,
+            schall: 0.62,
+            qualm: 0.40,
+            schnitt: 0.34,
+            laterne: 0.70,
+            colorPalette: ['#e8b455', '#00e5ff', '#a855f7']
+        };
+
+        let defaultParams = JSON.parse(JSON.stringify(params));
+
+        // ═══════════════════════════════════════════════════════════════════
+        // Zustand
+        // ═══════════════════════════════════════════════════════════════════
+
+        let lattice = [];    // ganzzahlige Gitterpunkte in n Dimensionen
+        let edges = [];      // Nachbarschaftskanten (Index-Paare)
+        let rotations = [];  // Rotationsebenen
+        let bases = [];      // Projektionsbasen je Stimme
+        let projected = [];  // [Stimme][Punktindex] -> {x,y,s}
+        let cursor = 0;
+        let phase = 'mesh';
+        let lamp = null;
+
+        const CHUNK = 1400;  // Kanten pro Frame
+
+        // ═══════════════════════════════════════════════════════════════════
+        // Aufbau — ein echtes Gitter, keine Wolke.
+        // Ganzzahlige Punkte erzeugen unter nD-Rotation die Faltungskanten
+        // und Moire-Ordnungen, die eine Zufallsverteilung niemals hergibt.
+        // ═══════════════════════════════════════════════════════════════════
+
+        function initializeSystem() {
+            randomSeed(params.seed);
+            noiseSeed(params.seed);
+
+            const n = params.dimensions;
+            const E = params.extent;
+            const R2 = (E + 0.35) * (E + 0.35);
+
+            // Gitterpunkte innerhalb einer nD-Kugel — begrenzt die Menge und
+            // haelt die Silhouette rund statt wuerfelig.
+            lattice = [];
+            const key = new Map();
+            const coord = new Array(n).fill(-E);
+            const total = Math.pow(2 * E + 1, n);
+            for (let c = 0; c < total; c++) {
+                let rem = c, r2 = 0;
+                for (let k = 0; k < n; k++) {
+                    const v = (rem % (2 * E + 1)) - E;
+                    rem = Math.floor(rem / (2 * E + 1));
+                    coord[k] = v;
+                    r2 += v * v;
+                }
+                if (r2 <= R2 && r2 > 0) {
+                    key.set(coord.join(','), lattice.length);
+                    lattice.push(coord.slice());
+                }
+            }
+
+            // Kanten: Nachbarn mit Abstand 1 auf genau einer Achse.
+            // Das ist das Polymesh — die Kanten tragen das Bild, nicht die Punkte.
+            edges = [];
+            for (let idx = 0; idx < lattice.length; idx++) {
+                const p = lattice[idx];
+                for (let k = 0; k < n; k++) {
+                    const q = p.slice();
+                    q[k] += 1;
+                    const t = key.get(q.join(','));
+                    if (t !== undefined) edges.push([idx, t, k]);
+                }
+            }
+
+            // Rotationsebenen: inkommensurable Winkel, jede Ebene einzeln.
+            rotations = [];
+            for (let i = 0; i < n; i++) {
+                for (let j = i + 1; j < n; j++) {
+                    if (random() < 0.8) rotations.push({ i, j, a: random(TWO_PI) });
+                }
+            }
+
+            // Projektionsbasen je Stimme — innerhalb einer Stimme orthonormal,
+            // zwischen den Stimmen bewusst NICHT. Die Uebersetzungen sollen
+            // einander widersprechen.
+            bases = [];
+            for (let v = 0; v < params.voices; v++) {
+                const bx = new Array(n), by = new Array(n);
+                for (let k = 0; k < n; k++) { bx[k] = random(-1, 1); by[k] = random(-1, 1); }
+                normalize(bx); orthogonalize(by, bx); normalize(by);
+                bases.push([bx, by]);
+            }
+
+            // Alle Punkte einmal rotieren und je Stimme projizieren.
+            const rot = lattice.map(rotatePoint);
+            projected = [];
+            for (let v = 0; v < params.voices; v++) {
+                projected.push(rot.map(q => project(q, bases[v])));
+            }
+
+            lamp = { x: random(width * 0.28, width * 0.72), y: random(height * 0.28, height * 0.72) };
+
+            cursor = 0;
+            phase = 'mesh';
+
+            background(GROUND[0], GROUND[1], GROUND[2]);
+            loop();
+        }
+
+        function normalize(v) {
+            const m = Math.hypot.apply(null, v) || 1;
+            for (let k = 0; k < v.length; k++) v[k] /= m;
+        }
+
+        function orthogonalize(v, ref) {
+            let d = 0;
+            for (let k = 0; k < v.length; k++) d += v[k] * ref[k];
+            for (let k = 0; k < v.length; k++) v[k] -= d * ref[k];
+        }
+
+        function rotatePoint(p) {
+            const q = p.slice();
+            for (let r = 0; r < rotations.length; r++) {
+                const R = rotations[r];
+                const c = Math.cos(R.a), s = Math.sin(R.a);
+                const a = q[R.i], b = q[R.j];
+                q[R.i] = a * c - b * s;
+                q[R.j] = a * s + b * c;
+            }
+            return q;
+        }
+
+        function project(q, basis) {
+            let x = 0, y = 0;
+            for (let k = 0; k < q.length; k++) { x += q[k] * basis[0][k]; y += q[k] * basis[1][k]; }
+            // Perspektivischer Verlust aus den nicht abgebildeten Dimensionen:
+            // das eigentliche Motiv der Bewegung.
+            let w = 0;
+            for (let k = 2; k < q.length; k++) w += q[k] * q[k];
+            const depth = Math.sqrt(w);
+            const E = Math.max(1, params.extent);
+            const s = 1.9 / (1.9 + depth / E);
+            const scale = width * 0.40 / (E * 1.25);
+            return { x: width / 2 + x * s * scale, y: height / 2 + y * s * scale, s: s };
+        }
+
+        // ═══════════════════════════════════════════════════════════════════
+        // Zeichnung
+        // ═══════════════════════════════════════════════════════════════════
+
+        function draw() {
+            if (phase === 'mesh') { drawMeshChunk(); return; }
+            if (phase === 'schnitt') { applyDadaCut(); phase = 'laterne'; return; }
+            if (phase === 'laterne') { drawLantern(); phase = 'marke'; return; }
+            if (phase === 'marke') { stampMark(); phase = 'fertig'; noLoop(); return; }
+        }
+
+        function drawMeshChunk() {
+            const cols = params.colorPalette.map(hexToRgb);
+            const end = Math.min(cursor + CHUNK, edges.length);
+
+            blendMode(ADD);
+            for (let e = cursor; e < end; e++) {
+                const E = edges[e];
+                const a0 = E[0], a1 = E[1], axis = E[2];
+
+                for (let v = 0; v < params.voices; v++) {
+                    const P = projected[v][a0], Q = projected[v][a1];
+                    const col = cols[(v + axis) % cols.length];
+
+                    const mx = (P.x + Q.x) * 0.5, my = (P.y + Q.y) * 0.5;
+                    const dx = mx - width / 2, dy = my - height / 2;
+                    const rad = Math.sqrt(dx * dx + dy * dy) / (width * 0.5);
+
+                    // Schall: stehende Welle. Scharfe Knoten, harte Nullstellen.
+                    const nz = noise(mx * 0.0021, my * 0.0021, v * 4.1);
+                    const wave = Math.sin(rad * 21.0 + nz * 8.0 + v * 1.7);
+                    const knot = Math.pow(Math.abs(wave), 1.9);
+                    const schall = (1 - params.schall) + params.schall * knot;
+
+                    // Qualm: Diffusion frisst die Struktur wieder auf.
+                    const smoke = noise(mx * 0.0011, my * 0.0011, 91.3 + v);
+                    const dissolve = 1 - params.qualm * Math.pow(smoke, 1.4);
+
+                    const depth = (P.s + Q.s) * 0.5;
+                    const a = 132 * schall * dissolve * depth * depth;
+                    if (a < 2.5) continue;
+
+                    stroke(col[0], col[1], col[2], a);
+                    strokeWeight(0.45 + 1.5 * depth * depth);
+                    line(P.x, P.y, Q.x, Q.y);
+                }
+            }
+            blendMode(BLEND);
+
+            // Qualmschleier ueber dem gezeichneten Abschnitt
+            if (params.qualm > 0.03) {
+                blendMode(ADD);
+                noStroke();
+                for (let i = 0; i < 26; i++) {
+                    const gx = random(width), gy = random(height);
+                    const sm = noise(gx * 0.0011, gy * 0.0011, 91.3);
+                    if (sm < 0.52) continue;
+                    const c = cols[Math.floor(random(cols.length))];
+                    fill(c[0], c[1], c[2], 2.6 * params.qualm);
+                    circle(gx, gy, random(80, 260));
+                }
+                blendMode(BLEND);
+            }
+
+            cursor = end;
+            if (cursor >= edges.length) phase = 'schnitt';
+        }
+
+        // Dadaistischer Schnitt: Baender verschieben und die Naht markieren.
+        // Der Schnitt kaschiert nicht — er legt offen, dass die Projektion luegt.
+        function applyDadaCut() {
+            if (params.schnitt <= 0.01) return;
+            const bands = Math.floor(3 + params.schnitt * 8);
+            for (let b = 0; b < bands; b++) {
+                const h = Math.floor(random(16, 40 + params.schnitt * 130));
+                const y = Math.floor(random(0, height - h));
+                const shift = Math.round(random(-1, 1) * params.schnitt * 110);
+                if (Math.abs(shift) < 4) continue;
+                const slice = get(0, y, width, h);
+                noStroke();
+                fill(GROUND[0], GROUND[1], GROUND[2]);
+                rect(0, y, width, h);
+                image(slice, shift, y);
+                // Registerkanten: die Naht wird ausgestellt
+                stroke(232, 180, 85, 70);
+                strokeWeight(1);
+                line(0, y, width, y);
+                line(0, y + h, width, y + h);
+                noStroke();
+            }
+        }
+
+        // Die Laterne: sucht am hellen Tag und findet nichts.
+        function drawLantern() {
+            if (params.laterne <= 0.01) return;
+            const steps = Math.floor(260 + params.laterne * 900);
+            let x = lamp.x, y = lamp.y;
+            blendMode(ADD);
+            for (let i = 0; i < steps; i++) {
+                const ang = noise(x * 0.0017, y * 0.0017, 7.77) * TWO_PI * 2.2;
+                const nx = x + Math.cos(ang) * 3.4;
+                const ny = y + Math.sin(ang) * 3.4;
+                stroke(255, 240, 205, 46 * params.laterne);
+                strokeWeight(1.15);
+                line(x, y, nx, ny);
+                x = nx; y = ny;
+                if (x < 10 || x > width - 10 || y < 10 || y > height - 10) {
+                    x = random(width * 0.22, width * 0.78);
+                    y = random(height * 0.22, height * 0.78);
+                }
+            }
+            noStroke();
+            for (let g = 9; g >= 1; g--) {
+                fill(255, 244, 214, 15);
+                circle(x, y, g * 9);
+            }
+            blendMode(BLEND);
+            noStroke();
+            fill(255, 251, 238, 240);
+            circle(x, y, 5.5);
+        }
+
+        // ═══════════════════════════════════════════════════════════════════
+        // Die Ueberpraegung — verbindlich, nicht optional.
+        // Positionen werden gemessen, nicht geschaetzt: die Marke darf sich
+        // niemals mit der Deklaration ueberlagern.
+        // ═══════════════════════════════════════════════════════════════════
+
+        function stampMark() {
+            const pad = 34;
+            const barH = 76;
+            const midY = height - barH / 2;
+
+            noStroke();
+            fill(GROUND[0], GROUND[1], GROUND[2], 220);
+            rect(0, height - barH, width, barH);
+            stroke(232, 180, 85, 165);
+            strokeWeight(1);
+            line(0, height - barH, width, height - barH);
+            noStroke();
+
+            textAlign(LEFT, CENTER);
+            textStyle(BOLD);
+            textSize(24);
+            fill(232, 180, 85);
+            text(MARK, pad, midY);
+            const markW = textWidth(MARK);
+
+            textStyle(NORMAL);
+            textSize(14);
+            fill(0, 229, 255, 230);
+            text('KI-GENERIERT · AI-GENERATED', pad + markW + 26, midY);
+
+            textAlign(RIGHT, CENTER);
+            textSize(13);
+            fill(190, 130, 255, 240);
+            text(ALGO + ' ' + ALGO_VERSION + '  ·  seed ' + params.seed + '  ·  n=' + params.dimensions, width - pad, midY);
+        }
+
+        function hexToRgb(h) {
+            const s = h.replace('#', '');
+            return [parseInt(s.substring(0, 2), 16), parseInt(s.substring(2, 4), 16), parseInt(s.substring(4, 6), 16)];
+        }
+
+        // ═══════════════════════════════════════════════════════════════════
+        // p5-Einstieg
+        // ═══════════════════════════════════════════════════════════════════
+
+        function setup() {
+            const c = createCanvas(1200, 1200);
+            c.parent('canvas-container');
+            pixelDensity(1);
+            const l = document.querySelector('.loading');
+            if (l) l.style.display = 'none';
+            initializeSystem();
+        }
+
+        // ═══════════════════════════════════════════════════════════════════
+        // UI
+        // ═══════════════════════════════════════════════════════════════════
+
+        function updateParam(name, value) {
+            const ints = ['dimensions', 'extent', 'voices'];
+            params[name] = ints.indexOf(name) >= 0 ? parseInt(value) : parseFloat(value);
+            document.getElementById(name + '-value').textContent = params[name];
+            initializeSystem();
+        }
+
+        function updateColor(id, value) {
+            const idx = { color1: 0, color2: 1, color3: 2 }[id];
+            params.colorPalette[idx] = value;
+            document.getElementById(id + '-value').textContent = value;
+            initializeSystem();
+        }
+
+        function regenerate() { initializeSystem(); }
+
+        function downloadPNG() { saveCanvas('paracharaxis_seed' + params.seed, 'png'); }
+
+        function updateSeedDisplay() { document.getElementById('seed-input').value = params.seed; }
+
+        function updateSeed() {
+            const s = parseInt(document.getElementById('seed-input').value);
+            if (s && s > 0) { params.seed = s; initializeSystem(); } else { updateSeedDisplay(); }
+        }
+
+        function previousSeed() { params.seed = Math.max(1, params.seed - 1); updateSeedDisplay(); initializeSystem(); }
+        function nextSeed() { params.seed = params.seed + 1; updateSeedDisplay(); initializeSystem(); }
+        function randomSeedAndUpdate() { params.seed = Math.floor(Math.random() * 999999) + 1; updateSeedDisplay(); initializeSystem(); }
+
+        function resetParameters() {
+            params = JSON.parse(JSON.stringify(defaultParams));
+            ['dimensions', 'extent', 'voices', 'schall', 'qualm', 'schnitt', 'laterne'].forEach(function (k) {
+                document.getElementById(k).value = params[k];
+                document.getElementById(k + '-value').textContent = params[k];
+            });
+            ['color1', 'color2', 'color3'].forEach(function (id, i) {
+                document.getElementById(id).value = params.colorPalette[i];
+                document.getElementById(id + '-value').textContent = params.colorPalette[i];
+            });
+            updateSeedDisplay();
+            initializeSystem();
+        }
+
+        window.addEventListener('load', updateSeedDisplay);
+    </script>
+</body>
+</html>
