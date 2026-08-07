@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import os
 import shutil
 import sys
 from pathlib import Path
@@ -43,11 +44,23 @@ def read_platform_version() -> str:
 
 
 def pick_font(size: int) -> ImageFont.FreeTypeFont | ImageFont.ImageFont:
+    """Erste vorhandene Bold-Sans in Kandidatenreihenfolge.
+
+    Windows zuerst (der Kanon-Look wurde dort gesetzt), dann Linux — sonst
+    fiel der Lauf auf CI/Containern auf ImageFont.load_default() zurueck, und
+    das ist eine winzige Bitmap-Schrift: das Badge waere unlesbar neben dem
+    28px-Original. Liberation Sans Bold steht vor DejaVu, weil es metrisch
+    Arial-kompatibel ist und damit der Windows-Zweitwahl entspricht.
+    """
     for path in (
         r"C:\Windows\Fonts\segoeuib.ttf",
         r"C:\Windows\Fonts\arialbd.ttf",
         r"C:\Windows\Fonts\seguiemj.ttf",
         r"C:\Windows\Fonts\arial.ttf",
+        "/usr/share/fonts/truetype/liberation/LiberationSans-Bold.ttf",
+        "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
+        "/usr/share/fonts/truetype/freefont/FreeSansBold.ttf",
+        "/Library/Fonts/Arial Bold.ttf",
     ):
         p = Path(path)
         if p.is_file():
@@ -170,18 +183,28 @@ def main() -> int:
         shutil.copy2(tmp, dest)
         written.append(str(dest))
 
-    # External canon + versioned copies (best-effort)
-    for extra in (
-        Path(r"C:\Dissertation_95guknow\assets\big_ALPHA.png"),
-        Path(rf"C:\Dissertation_95guknow\assets\big_ALPHA_v{version}.png"),
-        Path(r"C:\Dissertation_95guknow\assets\big_ALPHA_v15.png"),
-    ):
-        try:
-            if extra.parent.is_dir():
-                shutil.copy2(tmp, extra)
-                written.append(str(extra))
-        except OSError as e:
-            print(f"note: skip {extra}: {e}")
+    # External canon + versioned copies (best-effort) — NUR auf Windows.
+    #
+    # Der frueher hier stehende Guard `extra.parent.is_dir()` war fuer
+    # Windows-Semantik geschrieben und ging auf POSIX still daneben: dort ist
+    # "C:\Dissertation_95guknow\assets\big_ALPHA.png" kein Pfad, sondern EIN
+    # Dateiname (Backslash ist kein Separator). `.parent` ist damit '.', der
+    # Guard greift, und die Kopie landet als Datei mit Backslashes im Namen im
+    # Repo-Root. Ein Lauf auf Linux/CI hat so drei Muelldateien erzeugt.
+    if os.name == "nt":
+        for extra in (
+            Path(r"C:\Dissertation_95guknow\assets\big_ALPHA.png"),
+            Path(rf"C:\Dissertation_95guknow\assets\big_ALPHA_v{version}.png"),
+            Path(r"C:\Dissertation_95guknow\assets\big_ALPHA_v15.png"),
+        ):
+            try:
+                if extra.parent.is_dir():
+                    shutil.copy2(tmp, extra)
+                    written.append(str(extra))
+            except OSError as e:
+                print(f"note: skip {extra}: {e}")
+    else:
+        print("note: externe Kanon-Kopien uebersprungen (kein Windows)")
 
     # Keep historical v13 filename as copy of new art only if explicitly requested?
     # Honesty: big_ALPHA_v13.png should remain v13-era OR be left alone.
