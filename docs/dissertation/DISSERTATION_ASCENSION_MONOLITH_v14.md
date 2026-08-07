@@ -785,11 +785,13 @@ Die Punkte 2 bis 4 sind unmittelbar prüfbar: Es genügt, den jeweiligen Test zu
 | Letzter Commit vor dieser Fassung | `1c15e31`, 2026-07-27 | git |
 | Claims BEWIESEN / OFFEN | **54 / 7** (61 gesamt) | `proof_registry.yaml` |
 
-Zwei Beobachtungen gehören dazu, weil sie sonst niemandem auffielen.
+Drei Beobachtungen gehören dazu, weil sie sonst niemandem auffielen.
 
 **Erstens: Versions-Drift, heute teilweise behoben.** Die Hypercluster-Konfiguration führte bis heute `platform_version: 12.0.0`, während die Plattform bereits auf 13.0.0 stand. Das ist mit dieser Fassung nachgezogen. Die Design-Token stehen weiterhin auf 12.0.0; sie werden hier **nicht** verändert, weil sie über `npm run style-dictionary` einen eigenen Build-Pfad haben und eine stille Änderung an einer Build-Quelle gegen die Arbeitsdisziplin des Projekts verstieße. Der Stand ist damit benannt statt versteckt.
 
 **Zweitens: Das Suffix `aspirational` ist ernst zu nehmen.** Der Ascension-Core trägt die Version `9.10-aspirational`. Das ist keine Marketing-Formel, sondern eine zutreffende Selbstauskunft: Der Track enthält Module, deren Anspruch über ihren belegten Stand hinausreicht. Genau diese Differenz vermisst Bogen 4. Ein Werk, das den Track beschreibt, ohne das Suffix zu erwähnen, hätte die wichtigste Angabe der Datei weggelassen.
+
+**Drittens: Die Tabelle ist ein Schnappschuss, kein Zeiger auf die Gegenwart.** Nach dieser Fassung ist die Plattform weitergezogen: Ein Dual-Org-Fusion-Merge (2026-08-02, `Senfkorn-UG/fusion-hero-os` in den `95guknow`-Kanon eingefügt) hob `VERSION`, den Ascension-Core und den Hypercluster-Plattformbezug auf `15.2.0` — ausdrücklich als Fortführung, nicht als Überschreibung: Der Code-Kommentar in `ascension_core.py` vermerkt „Senfkorn-Zweig führte 14.0.0; kein Downgrade auf origin". Im selben Zug wuchs `proof_registry.yaml` durch fremde, aber saubere Ergänzungen auf 76 Claims (61 BEWIESEN, 13 OFFEN, 2 WIDERLEGT) — unter anderem um die Sätze P1–P4 des Plasmoid-Lift-Moduls (`fusion_hero_os/core/plasmoid_lift.py`, „Gott-Layer v12") und um einen ehrlichen Gegenbeispiel-Fund zur Durchsetzung des Human-Confirm-Gate. Die Tabelle oben wird deshalb **nicht** auf diese Werte umgeschrieben: Sie dokumentiert, was am Tag dieser Fassung galt, nicht was heute gilt — genau wie schon die erste Beobachtung eine Drift benannte, statt sie in die Vergangenheit hinein zu korrigieren. Wer den aktuellen Kanon-Stand sucht, findet ihn in `docs/dissertation/README.md` unter „Kanon-Bezug". Diese Ausweitung ist von der v14.0.0-Discharge-Bilanz unten unberührt: Sie betrifft Module außerhalb des Ascension-Tracks.
 
 #### Die Entladung der Aspiration — Zwischenstand
 

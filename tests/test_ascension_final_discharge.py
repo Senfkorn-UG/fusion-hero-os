@@ -23,14 +23,12 @@ from __future__ import annotations
 
 import ast
 import inspect
-from pathlib import Path
 
 import numpy as np
 import pytest
 
 import ascension_os.core.qubo_ascension_optimizer as qopt
 from ascension_os.core.ascension_core import AscensionCore
-from ascension_os.core.qubo_ascension_optimizer import build_devil_christus_qubo
 from ascension_os.evolution.generational_engine import GenerationalEvolutionEngine
 
 # Methoden, die personenbezogene oder verhaltensnahe Daten beruehren.
@@ -53,7 +51,7 @@ PERSONAL_DATA_METHODS = {
 def test_devil_christus_matrix_is_symmetric_and_correctly_sized() -> None:
     """Q ist symmetrisch mit Kantenlaenge 2n — der Solver-Kontrakt."""
     for n in (1, 2, 5, 12, 30):
-        Q = build_devil_christus_qubo(n)
+        Q = qopt.build_devil_christus_qubo(n)
         assert Q.shape == (2 * n, 2 * n), f"falsche Groesse bei n={n}"
         assert np.allclose(Q, Q.T), f"unsymmetrisch bei n={n}"
 
@@ -61,7 +59,7 @@ def test_devil_christus_matrix_is_symmetric_and_correctly_sized() -> None:
 def test_devil_christus_incoherence_penalty_sits_on_the_pole_pairs() -> None:
     """Die Strafe steht genau auf (d_i, c_i) — und dort in voller Hoehe."""
     n, penalty = 6, 2.0
-    Q = build_devil_christus_qubo(n, incoherence_penalty=penalty)
+    Q = qopt.build_devil_christus_qubo(n, incoherence_penalty=penalty)
     for i in range(n):
         d, c = i, n + i
         assert Q[d, c] + Q[c, d] == pytest.approx(penalty)
@@ -78,7 +76,7 @@ def test_devil_christus_bias_moves_from_devil_to_christus_over_time() -> None:
     als Behauptung ueber reale Entwicklung (MODELL, siehe Modul-Docstring).
     """
     n = 10
-    Q = build_devil_christus_qubo(n, base_bias=1.0)
+    Q = qopt.build_devil_christus_qubo(n, base_bias=1.0)
     devil = [Q[i, i] for i in range(n)]
     christus = [Q[n + i, n + i] for i in range(n)]
 
@@ -91,8 +89,8 @@ def test_devil_christus_bias_moves_from_devil_to_christus_over_time() -> None:
 def test_devil_christus_lock_in_penalty_only_in_the_oscillation_tail() -> None:
     """Die Lock-in-Strafe wirkt ausschliesslich im deklarierten Schwanzbereich."""
     n = 10
-    ohne = build_devil_christus_qubo(n, lock_in_penalty=0.0)
-    mit = build_devil_christus_qubo(n, lock_in_penalty=0.5, oscillation_tail_fraction=0.3)
+    ohne = qopt.build_devil_christus_qubo(n, lock_in_penalty=0.0)
+    mit = qopt.build_devil_christus_qubo(n, lock_in_penalty=0.5, oscillation_tail_fraction=0.3)
     delta = mit - ohne
 
     tail_start = int(n * 0.7)
