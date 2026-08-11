@@ -51,7 +51,13 @@ def _platform_version() -> str:
 
         if pkg_version:
             return str(pkg_version).strip()
-    except Exception:
+    except (ImportError, AttributeError):
+        # Bewusst still: das Paket-__version__ ist nur die bevorzugte Quelle.
+        # Ist es nicht importierbar (Teilinstallation, Import-Zyklus beim
+        # Modulladen) oder fuehrt kein __version__, faellt die Funktion unten
+        # auf die Root-VERSION zurueck. Das ist kein Fehlerfall, sondern der
+        # zweite von zwei gleichwertigen Wegen — deshalb kein Logging und
+        # kein Reraise. Andere Ausnahmen werden absichtlich nicht gefangen.
         pass
     try:
         return (

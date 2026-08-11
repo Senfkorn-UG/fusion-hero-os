@@ -20,8 +20,6 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
-import pytest
-
 REPO_ROOT = Path(__file__).resolve().parents[1]
 GUARD_SRC = REPO_ROOT / "fusion_hero_os" / "core" / "push_layer_guard.py"
 SEAL_SRC = REPO_ROOT / "fusion_hero_os" / "core" / "god_layer_seal.py"
