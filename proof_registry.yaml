@@ -622,3 +622,28 @@ claims:
       - tests/test_version_tag_honesty.py::test_docs_flag_the_gap_when_version_ran_ahead
       - tests/test_version_tag_honesty.py::test_branch_strategy_does_not_claim_the_tag_rule_holds_unconditionally
     notes: "GEGENBEISPIEL 2026-08-01, verschaerft 2026-08-02, erneut verschaerft 2026-08-07: VERSION steht inzwischen auf 20.0.0, letzter veroeffentlichter Tag ist unveraendert v13.0.0 — weder v14.0.0 noch v15.0.0 noch v15.2.0 noch v20.0.0 sind auf dem Remote getaggt. Aus zwei Aeren ohne Release sind vier Staende ohne Release geworden; der Abstand waechst mit jedem Sprung, statt zu schrumpfen. Der Sprung 15.2.0 -> 20.0.0 am 2026-08-07 ist eine Operator-Entscheidung, die in Kenntnis dieses Befundes getroffen wurde: die Analyse in docs/architecture/TOPDOWN_VS_MIDDLEOUT_PROPAGATION.md hatte zuvor festgehalten, dass ein Aera-Bump top-down verankert UND middle-out gedeckt sein muss und dass hier nur der erste Weg gelaufen ist. Der Claim bleibt deshalb WIDERLEGT und wird durch den Sprung nicht beruehrt — er wird von ihm bestaetigt. Die ID bleibt trotzdem stehen, weil eine Umbenennung die Historie des Befunds verwischen wuerde. Ursache fuer das Ausbleiben ist bekannt und keine Ausrede: v14.0.0 ist lokal annotiert getaggt (auf cfbb751), konnte aber nie gepusht werden, weil der Git-Proxy der Arbeitsumgebung refs/tags/* mit 403 sperrt. Die Landing Page wurde am 2026-08-02 von der nie publizierten v14.0.0 auf die tatsaechlich veroeffentlichte v13.0.0 korrigiert, damit die oeffentliche Flaeche nicht laenger eine Version nennt, die es als Release nicht gibt. Der Tag-Zustand selbst ist Server-State und in pytest nicht pruefbar; die verlinkten Tests verankern deshalb das, was IM Repo pruefbar ist: dass beide Dokumente die Luecke ausdruecklich benennen und die Tag-Regel nicht unbedingt behaupten. Behebung nur von einer Arbeitskopie mit direktem Push-Recht: git tag -a v14.0.0 cfbb751, v15.0.0 auf 93e11e4, v15.2.0 auf den zugehoerigen Commit, v20.0.0 auf main, dann git push origin --tags."
+
+  # ---- Aera 20 (2026-08-07) -----------------------------------------------
+  # Das God-Layer-Siegel war bis hierher durch keinen Test gedeckt. Der erste
+  # Blick darauf hat gleich den Defekt gezeigt, den dieser Claim festhaelt.
+  - id: SEAL-FORCE-PUSH-FAIL-CLOSED
+    statement: "Das God-Layer-Siegel sperrt force-pushes auch dann, wenn sein Zustand nicht sauber ausgewertet werden kann — es faellt geschlossen, nicht offen."
+    status: BEWIESEN
+    proofs:
+      - tests/test_god_layer_seal.py::test_seal_evaluation_errors_do_not_fail_open
+      - tests/test_god_layer_seal.py::test_seal_evaluation_error_blocks_force_push
+      - tests/test_god_layer_seal.py::test_seal_blocks_force_push_when_sealed
+      - tests/test_god_layer_seal.py::test_seal_block_is_scoped_to_force_pushes
+      - tests/test_god_layer_seal.py::test_seal_evaluation_error_does_not_block_normal_push
+      - tests/test_god_layer_seal.py::test_missing_module_may_still_fail_open
+    notes: "Vorher fing push_layer_guard den gesamten Siegel-Block mit 'except Exception: pass' ab, ausdruecklich als fail open kommentiert. Damit war das Siegel ausgerechnet im Verdachtsfall wirkungslos: beschaedigtes god_layer_seal.json, Fehler in require_write, jede Stoerung liess den force-push durch. Die urspruengliche Sorge im Kommentar (nicht jeden Push wegen eines fremden Fehlers blockieren) bleibt gewahrt, weil der Block jetzt nur noch fuer force=True laeuft — dafuer gibt es einen eigenen Gegenprobe-Test. ImportError bleibt bewusst fail open: fehlt das Modul ganz, existiert kein Siegel, das umgangen werden koennte. Verifiziert durch Gegenprobe: gegen den alten Guard fallen 4 der 10 Tests durch, mit dem Fix sind alle gruen."
+
+  - id: SEAL-PUBLIC-STATUS-OHNE-TOKEN
+    statement: "public_status() des God-Layer-Siegels haelt seinen eigenen Docstring ein und gibt keinen rohen Entsiegelungs-Token aus; die Plattform-Version darin folgt dem Kanon statt einer Konstante im Code."
+    status: BEWIESEN
+    proofs:
+      - tests/test_god_layer_seal.py::test_public_status_leaks_no_raw_unlock_token
+      - tests/test_god_layer_seal.py::test_operator_status_still_carries_the_hint
+      - tests/test_god_layer_seal.py::test_platform_version_follows_the_canon
+      - tests/test_god_layer_seal.py::test_platform_constant_is_not_a_literal
+    notes: "public_status() war mit 'Safe status — no legal names, no raw tokens' dokumentiert, gab aber unlock_hint aus und als Default den hartkodierten DEFAULT_UNLOCK_TOKEN. status() war ein reines 'return public_status()', die von der Benennung versprochene Trennung existierte also gar nicht; sie ist jetzt hergestellt. Zusaetzlich stand PLATFORM als Literal '10.0.0' im Modul, waehrend die Plattform auf 20.0.0 lief — der Wert geht in jede Statusausgabe und in Seal-/Unlock-Records ein. scripts/bump_version.py --check deckt nur Manifeste ab, nicht Konstanten im Code, deshalb ist die Drift nie aufgefallen; ein Test haelt jetzt fest, dass die Konstante kein Literal mehr sein darf."

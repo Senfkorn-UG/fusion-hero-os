@@ -423,34 +423,58 @@ def evaluate_push(
 
     # God-layer seal: force-push locked until private-person unlock confirmation
     # (surface/docs/conventional commits remain allowed; god-layer force/self-mod blocked)
-    try:
-        from fusion_hero_os.core.god_layer_seal import is_sealed, require_write
-
-        if is_sealed() and force:
-            ok_w, why = require_write(scope="force_push")
-            if not ok_w:
-                return PushDecision(
-                    allow=False,
-                    reason=why,
-                    wanted=False,
-                    unwanted=True,
-                    intent=intent,
-                    auto_save=auto_save,
-                    remote_ok=remote_ok,
-                    branch=branch,
-                    remote=remote,
-                    layers_touched=layers,
-                    files=files,
-                    commit_subjects=subjects,
-                    platform_ok=platform_ok,
-                    advice="God-layer sealed for private person. Full read OK. Unlock with confirmation =====stephanhagenurban",
-                    **_sec,
+    #
+    # Fehlerverhalten: FAIL CLOSED, und zwar ausschliesslich fuer --force.
+    # Frueher fing ein einziges `except Exception: pass` den gesamten Block ab.
+    # Damit war das Siegel ausgerechnet dann wirkungslos, wenn sein Zustand
+    # nicht mehr sauber lesbar war — bei beschaedigtem god_layer_seal.json, bei
+    # einem Fehler in require_write, bei jeder Stoerung im Verdachtsfall. Ein
+    # Siegel, das bei Stoerung aufgeht, ist keins.
+    #
+    # Die urspruengliche Sorge (nicht jeden Push wegen eines fremden Fehlers
+    # blockieren) bleibt gewahrt: Der Block laeuft nur noch fuer force=True.
+    # Pushes ohne --force sind von dieser Aenderung nicht beruehrt.
+    if force:
+        seal_blocked = False
+        seal_why = ""
+        try:
+            from fusion_hero_os.core.god_layer_seal import is_sealed, require_write
+        except ImportError:
+            # Integration ist echt optional: fehlt das Modul, gibt es kein
+            # Siegel, das umgangen werden koennte. Durchfall auf die
+            # Branch-Regeln unten ist hier die richtige Antwort.
+            pass
+        else:
+            try:
+                if is_sealed():
+                    ok_w, why = require_write(scope="force_push")
+                    if not ok_w:
+                        seal_blocked, seal_why = True, why
+            except Exception as exc:
+                seal_blocked = True
+                seal_why = (
+                    "God-layer seal nicht auswertbar "
+                    f"({exc.__class__.__name__}) — force-push im Zweifel gesperrt"
                 )
-    except Exception:
-        # Optional integration: a bug or import failure in god_layer_seal
-        # must fail open (fall through to the normal branch rules below)
-        # rather than blocking every push because of an unrelated error.
-        pass
+
+        if seal_blocked:
+            return PushDecision(
+                allow=False,
+                reason=seal_why,
+                wanted=False,
+                unwanted=True,
+                intent=intent,
+                auto_save=auto_save,
+                remote_ok=remote_ok,
+                branch=branch,
+                remote=remote,
+                layers_touched=layers,
+                files=files,
+                commit_subjects=subjects,
+                platform_ok=platform_ok,
+                advice="God-layer sealed for private person. Full read OK. Unlock with confirmation =====stephanhagenurban",
+                **_sec,
+            )
 
     branch_rules = (cfg.get("branches") or {}).get(branch) or (cfg.get("branches") or {}).get("*") or {}
     if force and branch_rules.get("block_force", True):
