@@ -36,7 +36,41 @@ __all__ = [
 OP_DIR = Path.home() / ".fusion" / "operator"
 SEAL_PATH = OP_DIR / "god_layer_seal.json"
 VAULT_PATH = OP_DIR / "identity.local.json"
-PLATFORM = "10.0.0"
+def _platform_version() -> str:
+    """Plattform-Version aus dem Kanon lesen statt sie hart zu setzen.
+
+    Stand vorher: ``PLATFORM = "10.0.0"`` — fest im Modul, waehrend die
+    Plattform laengst auf 20.0.0 stand. Der Wert geht in jede Statusausgabe
+    ein (``status``, ``public_status``, Seal- und Unlock-Records) und
+    behauptete damit ueber fuenf Aeren hinweg eine Version, die es nicht mehr
+    gab. ``scripts/bump_version.py --check`` deckt nur Manifeste ab, nicht
+    Konstanten im Code — deshalb ist die Drift nie aufgefallen.
+    """
+    try:
+        from fusion_hero_os import __version__ as pkg_version
+
+        if pkg_version:
+            return str(pkg_version).strip()
+    except (ImportError, AttributeError):
+        # Bewusst still: das Paket-__version__ ist nur die bevorzugte Quelle.
+        # Ist es nicht importierbar (Teilinstallation, Import-Zyklus beim
+        # Modulladen) oder fuehrt kein __version__, faellt die Funktion unten
+        # auf die Root-VERSION zurueck. Das ist kein Fehlerfall, sondern der
+        # zweite von zwei gleichwertigen Wegen — deshalb kein Logging und
+        # kein Reraise. Andere Ausnahmen werden absichtlich nicht gefangen.
+        pass
+    try:
+        return (
+            (Path(__file__).resolve().parents[2] / "VERSION")
+            .read_text(encoding="utf-8")
+            .strip()
+            or "0.0.0"
+        )
+    except OSError:
+        return "0.0.0"
+
+
+PLATFORM = _platform_version()
 # Unlock confirmation (user protocol). Stored as hash only.
 DEFAULT_UNLOCK_TOKEN = "=====stephanhagenurban"
 
@@ -378,8 +412,11 @@ def public_status() -> dict[str, Any]:
         or ("locked_until_unlock" if sealed else "open"),
         "routing_mode": (d.get("routing") or {}).get("mode") or "operator",
         "runtime_role": "operator",
-        "unlock_hint": (d.get("unlock") or {}).get("token_hint")
-        or DEFAULT_UNLOCK_TOKEN,
+        # Kein unlock_hint. Der Docstring dieser Funktion sagt "no raw tokens",
+        # gab aber genau den Entsiegelungs-Token aus — als Default sogar den
+        # hartkodierten. Wer den oeffentlichen Status abfragt, braucht die
+        # Anleitung zum Aufbrechen des Siegels nicht; der Operator kennt sie.
+        # status() (operator-lokal) ergaenzt den Hinweis.
         "sealed_at": d.get("sealed_at"),
         "opened_at": d.get("opened_at"),
         "scopes_locked": d.get("scopes_locked") if sealed else [],
@@ -402,7 +439,21 @@ def public_status() -> dict[str, Any]:
 
 
 def status() -> dict[str, Any]:
-    return public_status()
+    """Operator-lokaler Status: wie ``public_status``, zusaetzlich der Hinweis,
+    womit sich das Siegel oeffnen laesst.
+
+    Vorher war das hier ein reines ``return public_status()`` — beide Funktionen
+    lieferten dasselbe, und der Entsiegelungs-Token stand im oeffentlichen
+    Zweig. Die Trennung, die die Benennung verspricht, gab es also nicht. Jetzt
+    schon: ``public_status`` haelt seinen Docstring ("no raw tokens") ein,
+    ``status`` bleibt fuer den Operator vollstaendig.
+    """
+    out = public_status()
+    d = _load()
+    out["unlock_hint"] = (d.get("unlock") or {}).get(
+        "token_hint"
+    ) or DEFAULT_UNLOCK_TOKEN
+    return out
 
 
 def main() -> int:
