@@ -12,7 +12,16 @@ VERSION_FILE="VERSION"
 # Datei vollstaendig neu schreibt, muss alles mitschreiben, was das Gate
 # verlangt; sonst ist jeder manuelle Fix nur bis zum naechsten Lauf gueltig.
 PLATFORM_VERSION="$(tr -d ' \t\r\n' < "$VERSION_FILE")"
-TODAY="$(date -u +%Y-%m-%d)"
+
+# Das Stand-Datum stammt aus dem letzten VERSION-Commit, NICHT aus `date`:
+# update-resources.yml faehrt diesen Generator taeglich um 03:00 UTC mit
+# Auto-Commit auf main. Mit `date` aendert sich die Kopfzeile jede Nacht,
+# der Auto-Commit landet auf main und triggert die komplette CI — jede
+# Nacht ein Commit und ein Lauf, ohne dass sich inhaltlich etwas geaendert
+# hat. Gebunden an VERSION bewegt sich die Zeile nur bei echten Releases,
+# und der Generator wird idempotent. `date` bleibt Fallback ohne Git-Kontext.
+TODAY="$(git log -1 --format=%cs -- "$VERSION_FILE" 2>/dev/null || true)"
+[ -n "$TODAY" ] || TODAY="$(date -u +%Y-%m-%d)"
 
 # Kopf mit Expansion, Rumpf ohne — so kann kein '$' im Fliesstext
 # versehentlich expandiert werden.
